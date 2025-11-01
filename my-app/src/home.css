@@ -1,0 +1,67 @@
+/* General styling for the home page */
+.home {
+  /* Use a very light lavender background for the whole page, matching the image */
+  background-color: #f6f7ff;
+  min-height: 100vh;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+}
+
+/* Container for the main content below the navbar */
+.homeContainer {
+  padding: 2rem 4rem; /* Add some spacing around the content */
+}
+
+/* Styling for the section titles like "Quick Links:" */
+.section-title {
+  color: #1a202c; /* A dark, near-black color for text */
+  font-size: 1.75rem; /* Make titles larger */
+  font-weight: 700; /* Bold font weight */
+  margin-bottom: 1.25rem; /* Space below the title */
+}
+
+/* Specific styling for the search bar placeholder text */
+.search-bar-placeholder {
+  margin-top: 2rem;
+  font-weight: 600;
+  color: #4a5568; /* A slightly lighter text color */
+}
+
+/* Container for the quick link buttons */
+.quicklinks {
+  margin-top: 2rem;
+}
+
+.quicklinks-buttons {
+  display: flex; /* Arrange buttons in a row */
+  gap: 1rem; /* Add space between the buttons */
+}
+
+/* Styling for the Quick Links buttons */
+.quicklinks-buttons button {
+  background-color: #ffffff; /* White background */
+  border: 1px solid #d1d5db; /* Light grey border */
+  color: #2d3748; /* Dark text color */
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px; /* Slightly rounded corners */
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+}
+
+/* Add a subtle shadow and lift effect on hover */
+.quicklinks-buttons button:hover {
+  border-color: #a0aec0;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+/* Styling for the "Preview of Dorms" section */
+.preview {
+  margin-top: 3rem;
+}
+
+/* Ensure Links from react-router-dom don't have default text decoration */
+a {
+  text-decoration: none;
+}

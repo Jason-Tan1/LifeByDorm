@@ -1,0 +1,45 @@
+.search-bar-container {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  max-width: 600px; /* Adjust the max width as needed */
+  margin: 2rem 0; /* Add space above and below the search bar */
+  background-color: #ffffff;
+  border-radius: 50px; /* This creates the pill shape */
+  padding: 5px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+  border: 1px solid #e2e8f0;
+}
+
+.search-input {
+  flex-grow: 1; /* Allows the input to take up most of the space */
+  border: none;
+  outline: none;
+  padding: 0.75rem 1.5rem;
+  font-size: 1rem;
+  background-color: transparent;
+  color: #2d3748;
+}
+
+.search-input::placeholder {
+  color: #a0aec0;
+}
+
+.search-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #6c63ff; /* A vibrant purple, similar to your login button */
+  color: white;
+  border: none;
+  border-radius: 50%; /* Makes the button a perfect circle */
+  width: 45px;
+  height: 45px;
+  cursor: pointer;
+  font-size: 1.1rem;
+  transition: background-color 0.2s ease-in-out;
+}
+
+.search-button:hover {
+  background-color: #5850e0; /* A slightly darker shade for hover */
+}

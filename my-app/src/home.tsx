@@ -1,59 +1,35 @@
 import React from 'react';
 import './Home.css'; // Make sure to import the CSS file
-import './navbar.css';
 import { Link } from 'react-router-dom';
+import NavBar from './navbar.tsx';
+import SearchBar from './searchbar.tsx';
 
 function Home() {
   return (
     <div className="home">
-      <div className="homeContainer">
-         {/* Navigation Bar */}
-        <div className="navbar">
-            {/* Navigation Bar Logo */}
-          <div className="navbar_logo">
-            <Link to ="/">  
-              <a>LifeByDorm</a>
+      <NavBar />
+      <div className="homeContent">
+        {/* Search Bar Placeholder */}
+       <SearchBar />
+        {/* Quick Links to Universities */}
+        <div className="quicklinks">
+          <h2 className="section-title">Quick Links:</h2>
+          <div className="quicklinks-buttons">
+            <Link to="/university">
+              <button>University of Toronto</button>
+            </Link>
+            <Link to="/university">
+              <button>Western University</button>
+            </Link>
+            <Link to="/university">
+              <button>York University</button>
             </Link>
           </div>
-            {/* Navigation Bar Buttons */}
-          <div className="navbar_actions">
-            <div className="navbar_aboutme">
-              <Link to="/aboutme">
-                <button>About Me</button>
-              </Link>
-            </div>
-            <div className="navbar_contactme">
-              <Link to="/contactme"> 
-                <button>Contact Me</button>
-              </Link>
-            </div>
-            <div className="navbar_login">
-              <Link to="/login">
-                <button>Log In</button>
-              </Link>
-            </div>
-          </div>
         </div>
-        {/* Search Bar (Seperate File) */}
-          <h2> (Search Bar Goes Here)</h2>
-        {/* Quick Links to Universities */}
-        <div className = "quicklinks"> 
-          <h2> Quick Links: </h2>
-          <Link to ="/university">  
-            <button>
-              University of Toronto
-            </button>
-            <button>
-              Western University
-            </button>
-            <button>
-              York University
-            </button>
-          </Link>
-        </div>
-        {/* Leaderboard */}
-        <div className="leaderboard">
-          <h2> Leaderboard: </h2>
+
+        {/* Preview of Dorms Placeholder */}
+        <div className="preview">
+          <h2 className="section-title">Preview of Dorms:</h2>
         </div>
       </div>
     </div>

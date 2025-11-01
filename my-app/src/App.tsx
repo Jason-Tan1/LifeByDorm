@@ -1,11 +1,13 @@
 import React from 'react'
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Home from './home.tsx';
-import AboutMe from './pages/aboutme.tsx';
-import ContactMe from './pages/contactme.tsx';
-import Login from './pages/login.tsx';
+import AboutMe from './NavBarPages/aboutme.tsx';
+import ContactMe from './NavBarPages/contactme.tsx';
+import Login from './NavBarPages/login.tsx';
 import University from './universitys.tsx';
 import Dorms from './dorms.tsx';
+import NavBar from './navbar.tsx';
+import SearchBar from './searchbar.tsx';
 
 function App() {
   return (
@@ -17,6 +19,8 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/university" element={<University />} />
         <Route path="/dorms" element={<Dorms />} />
+        <Route path="/navbar" element={<NavBar />} />
+        <Route path="/searchbar" element={<SearchBar />} />
       </Routes>
     </Router>
   )
