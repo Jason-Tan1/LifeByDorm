@@ -1,0 +1,70 @@
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  background-color: #f6f7fe; 
+  margin: 0;
+}
+
+/* Main Navbar Container */
+.navbar {
+  display: flex;
+  justify-content: space-between; 
+  align-items: center;
+  padding: 1rem 2.5rem; 
+  background-color: #ffffff;
+  border-bottom: 1px solid #e0e7ff; 
+  box-sizing: border-box;
+  width: 100%;
+}
+
+/* Logo Styling */
+.navbar_logo a {
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #111827;
+  text-decoration: none;
+}
+
+/* Container for the navigation buttons */
+.navbar_actions {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem; 
+}
+
+/* General Styling for all buttons in the navbar */
+.navbar button {
+  cursor: pointer;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  font-weight: 500;
+  padding: 0.6rem 1.2rem;
+  transition: all 0.2s ease-in-out; 
+}
+
+/* Styling for secondary buttons (About Me, Contact Me) */
+.navbar_aboutme button,
+.navbar_contactme button {
+  background-color: #f6f7fe; 
+  color: #4338ca; 
+  border: 1px solid #e0e7ff;
+}
+
+/* Hover effect for secondary buttons */
+.navbar_aboutme button:hover,
+.navbar_contactme button:hover {
+  background-color: #e0e7ff;
+}
+
+/* Styling for the primary button (Log In) */
+.navbar_login button {
+  background-color: #4f46e5; 
+  color: #ffffff; 
+}
+
+/* Hover effect for the primary button */
+.navbar_login button:hover {
+  background-color: #4338ca;
+}
