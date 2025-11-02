@@ -1,62 +1,81 @@
-/* General styling for the home page */
-.home {
-  /* Use a very light lavender background for the whole page, matching the image */
-  background-color: #f6f7ff;
-  min-height: 100vh;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-}
+/* General body styles */
+  body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    background-color: #ffffff; /* Clean white background */
+    color: #333;
+    overflow-x: hidden; /* --- FIX ADDED: Prevents horizontal scrolling --- */
+  }
 
-/* Container for the main content below the navbar */
-.homeContainer {
-  padding: 2rem 4rem; 
-}
+  /* This is the main container for the entire page from your component */
+  .home {
+    width: 100%; /* --- FIX ADDED: Ensures the div spans the full width --- */
+    /* The background image with a gradient fade on the left */
+    background-image: linear-gradient(to right, #ffffff 40%, transparent 100%),
+      url('./assets/BackgroundCampus.jpg');
+    background-repeat: no-repeat;
+    background-position: right center;
+    background-size: cover; 
 
-/* Styling for the section titles like "Quick Links:" */
-.section-title {
-  color: #1a202c;
-  font-size: 1.75rem; 
-  font-weight: 700; 
-  margin-bottom: 1.25rem; 
-}
+    height: 100vh; 
+    display: flex;
+    flex-direction: column; 
+  }
 
-/* Container for the quick link buttons */
-.quicklinks {
-  margin-top: 2rem;
-  display: flex;
-}
+  /* This container constrains the content's width and centers it */
+  .home-container {
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 4%; 
+    flex-grow: 1;
+    display: flex;
+    align-items: center; 
+  }
 
-.quicklinks-buttons {
-  display: flex; /* Arrange buttons in a row */
-  align-items: center;
-  gap: 1rem; /* Add space between the buttons */
-}
+  /* This div holds the text, search, and quick links */
+  .home-content {
+    max-width: 55%; 
+  }
 
-/* Styling for the Quick Links buttons */
-.quicklinks-buttons button {
-  background-color: #ffffff; /* White background */
-  border: 1px solid #d1d5db; /* Light grey border */
-  color: #2d3748; /* Dark text color */
-  padding: 0.75rem 1.5rem;
-  border-radius: 8px; /* Slightly rounded corners */
-  font-size: 0.9rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.2s ease-in-out;
-}
+  /* --- Hero Section (Heading & Search) --- */
+  .home-section h1 { 
+    font-size: 2.3rem;
+    font-weight: 800; 
+    line-height: 1.15;
+    margin-bottom: 40px;
+    color: #333333;
+  }
 
-/* Add a subtle shadow and lift effect on hover */
-.quicklinks-buttons button:hover {
-  border-color: #a0aec0;
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-}
+  /* --- Quick Links Section --- */
+  .quicklinks-section {
+    margin-top: 50px;
+  }
 
-/* Styling for the "Preview of Dorms" section */
-.preview {
-  margin-top: 3rem;
-}
+  .quicklinks-section h2 {
+    font-size: 1.4rem;
+    font-weight: bold;
+    margin-bottom: 20px;
+  }
 
-/* Ensure Links from react-router-dom don't have default text decoration */
-a {
-  text-decoration: none;
-}
+  .quicklinks-buttons {
+    display: flex;
+    gap: 15px; 
+  }
+
+  .quicklinks-buttons button {
+    background-color: #f0f0f0;
+    color: #333;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 1rem;
+    font-weight: 500;
+    transition: background-color 0.2s ease, transform 0.2s ease;
+  }
+
+  .quicklinks-buttons button:hover {
+    background-color: #e0e0e0; 
+    transform: translateY(-2px); 
+  }
