@@ -8,31 +8,26 @@
 
 /* Container for the main content below the navbar */
 .homeContainer {
-  padding: 2rem 4rem; /* Add some spacing around the content */
+  padding: 2rem 4rem; 
 }
 
 /* Styling for the section titles like "Quick Links:" */
 .section-title {
-  color: #1a202c; /* A dark, near-black color for text */
-  font-size: 1.75rem; /* Make titles larger */
-  font-weight: 700; /* Bold font weight */
-  margin-bottom: 1.25rem; /* Space below the title */
-}
-
-/* Specific styling for the search bar placeholder text */
-.search-bar-placeholder {
-  margin-top: 2rem;
-  font-weight: 600;
-  color: #4a5568; /* A slightly lighter text color */
+  color: #1a202c;
+  font-size: 1.75rem; 
+  font-weight: 700; 
+  margin-bottom: 1.25rem; 
 }
 
 /* Container for the quick link buttons */
 .quicklinks {
   margin-top: 2rem;
+  display: flex;
 }
 
 .quicklinks-buttons {
   display: flex; /* Arrange buttons in a row */
+  align-items: center;
   gap: 1rem; /* Add space between the buttons */
 }
 
