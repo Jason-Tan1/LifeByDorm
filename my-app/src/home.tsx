@@ -10,7 +10,10 @@ function Home() {
       <NavBar />
       <div className="homeContent">
         {/* Search Bar Placeholder */}
-       <SearchBar />
+        <div className = "home_searchbar"> 
+           <h2> Real Canadian University Dorm Reviews from Previous Students!</h2>
+           <SearchBar />
+        </div>
         {/* Quick Links to Universities */}
         <div className="quicklinks">
           <h2 className="section-title">Quick Links:</h2>
@@ -27,10 +30,13 @@ function Home() {
           </div>
         </div>
 
-        {/* Preview of Dorms Placeholder */}
+        {/* Featured Dorms */}
         <div className="preview">
           <h2 className="section-title">Preview of Dorms:</h2>
         </div>
+
+        {/* Footer */}
+
       </div>
     </div>
   );
