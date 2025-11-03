@@ -8,7 +8,6 @@ function contactme() {
         <NavBar />
       </div>
     </div>
-
   )
 }
 

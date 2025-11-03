@@ -9,8 +9,8 @@ function login() {
         <Link to ="/"> 
           <a> LifeByDorm </a>
         </Link>
-        <div className = "login_username"> 
-          <h2> Username: </h2>
+        <div className = "login_email"> 
+          <h2> Email: </h2>
            <input type="text" />
         </div>
         <div className = "login_password">
@@ -20,7 +20,7 @@ function login() {
         <div className  = "login_button">
           <button> Log In </button>
         </div>
-        <div className = "login_singup">
+        <div className = "login_signup">
           <button> Create a new account </button>
         </div>
       </div>
