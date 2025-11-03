@@ -1,8 +1,8 @@
 import React from 'react';
-import './Home.css'; // Make sure to import the CSS file
+import './Home.css'; 
 import { Link } from 'react-router-dom';
-import NavBar from './navbar.tsx'; // Assuming you have this component
-import SearchBar from './searchbar.tsx'; // Assuming you have this component
+import NavBar from './navbar.tsx'; 
+import SearchBar from './searchbar.tsx'; 
 
 function Home() {
   return (
