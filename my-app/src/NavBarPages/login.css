@@ -111,6 +111,21 @@
   box-shadow: 0 5px 15px rgba(108, 117, 125, 0.2);
 }
 
+.login_error {
+  background-color: #fee2e2;
+  border: 1px solid #ef4444;
+  color: #dc2626;
+  padding: 10px;
+  border-radius: 8px;
+  margin-bottom: 15px;
+  text-align: center;
+}
+
+.login_error p {
+  margin: 0;
+  font-size: 0.875rem;
+}
+
 /* Responsive Design */
 @media (max-width: 480px) {
   .login_container {
