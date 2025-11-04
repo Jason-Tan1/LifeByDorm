@@ -5,7 +5,9 @@ can search schools, compare dorms by ratings and reviews, and share their own ex
 
 ## Tech Stack
 - TypeScript
+- Express.js
 - Next.js
 - Node.js
 - MongoDB
 - CSS
+- Vite
