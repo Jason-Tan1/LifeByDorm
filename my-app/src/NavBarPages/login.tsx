@@ -1,10 +1,9 @@
 import React, { useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import axios from 'axios'
 import './login.css'
 
 function login() {
-  const navigate = useNavigate();
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const [isRegistering, setIsRegistering] = useState<boolean>(false);
@@ -24,8 +23,8 @@ function login() {
       if (response.data.token) {
         // Store the token in localStorage
         localStorage.setItem('token', response.data.token);
-        // Redirect to home page
-        navigate('/');
+        // Force a reload to update the navbar state
+        window.location.href = '/';
       }
     } catch (err: any) {
       setError(err.response?.data?.message || 'An error occurred');
