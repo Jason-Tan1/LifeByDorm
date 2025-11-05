@@ -1,14 +1,11 @@
 import React, {useState} from 'react';
 import { Link } from 'react-router-dom';
-import NavBar from './navbar'; 
-import './universitys.css';
-import './navbar.css';
+import NavBar from '../navbar'; 
+import './universityDash.css';
+import '../navbar.css';
+
 
 function University() {
-  const [universityName, setUniversityName] = useState<string>("");
-  const [dorms, setDorms] = useState<Array<{name: string; rating: number; reviews: number}>>([
-    /* Theres gonna be data in here from users (rating, number of reviews)  */
-  ]);
   
   return (
     <div className="university">
@@ -40,6 +37,13 @@ function University() {
       </div>
     </div>
   );
+}
+
+export interface Dorms {
+  name: string;
+  rating: number;
+  reviews: number;
+  id: number;
 }
 
 export default University;

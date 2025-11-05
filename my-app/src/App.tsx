@@ -4,7 +4,7 @@ import Home from './home.tsx';
 import AboutMe from './NavBarPages/aboutme.tsx';
 import ContactMe from './NavBarPages/contactme.tsx';
 import Login from './NavBarPages/login.tsx';
-import University from './universitys.tsx';
+import University from './UniversityPage/universityDash.tsx';
 import Dorms from './dorms.tsx';
 import NavBar from './navbar.tsx';
 import SearchBar from './searchbar.tsx';
