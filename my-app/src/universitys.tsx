@@ -1,41 +1,45 @@
-import React from 'react'
+import React, {useState} from 'react';
 import { Link } from 'react-router-dom';
-import NavBar from './navbar.tsx'; 
-import './universitys.css'
-import './navbar.css'
+import NavBar from './navbar'; 
+import './universitys.css';
+import './navbar.css';
 
-function university() {
+function University() {
+  const [universityName, setUniversityName] = useState<string>("");
+  const [dorms, setDorms] = useState<Array<{name: string; rating: number; reviews: number}>>([
+    /* Theres gonna be data in here from users (rating, number of reviews)  */
+  ]);
+  
   return (
-    <div className = "university">
+    <div className="university">
       {/* University Navbar */}
       <NavBar />
+
       {/* University Header */}
-      <div className = "university_header">
-        <h1> York University </h1>
+      <div className="university_header">
+        <h1>York University</h1>
       </div>
-      {/* Filters for Dorms */}
-      <div className = "university_dormsFilter">
-        <button> A - Z </button>
-        <button> Z - A </button>
-        <button> Highest Rating </button>
-        <button> Lowest Rating </button>
-        <button> Most Reviews </button>
-      </div>
-      {/* List of Dorms (This) */}
-      <div className = "university_dormsList">
-        <Link to ="/dorms">   
-          <h2> Founders Residence </h2>
-        </Link>
-          <h3> Rating </h3>
-          <h3> Reviews</h3>
-        <Link to ="/dorms">   
-          <h2> Stong Residence </h2>
-        </Link>
-          <h3> Rating </h3>
-          <h3> Reviews</h3>
+
+
+      {/* List of Dorms */}
+      <div className="university_dormsList">
+        <div>
+          <Link to="/dorms">   
+            <h2>Founders Residence</h2>
+          </Link>
+          <h3>Rating: 4.3</h3>
+          <h3>Reviews: 120</h3>
+        </div>
+        <div>
+          <Link to="/dorms">   
+            <h2>Stong Residence</h2>
+          </Link>
+          <h3>Rating: 4.0</h3>
+          <h3>Reviews: 95</h3>
+        </div>
       </div>
     </div>
-  )
+  );
 }
 
-export default university
+export default University;
