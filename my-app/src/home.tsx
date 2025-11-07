@@ -12,9 +12,9 @@ function Home() {
         <div className="home-content">
           <div className="home-section">
             <h1>
-              Your Honest Look
+              Honest Reviews
               <br />
-              at Canadian University
+              of Canadian University
               <br />
               Dorms Straight from
               <br />
