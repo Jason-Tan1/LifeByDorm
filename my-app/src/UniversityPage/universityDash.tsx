@@ -121,7 +121,7 @@ function UniversityDash() {
                     </span>
                   </div>
                   <p className="dorm-description">{dorm.description}</p>
-                  <Link to={`/dorms/${dorm.id}`} className="view-dorm-button">
+                  <Link to = '/dorms' className="view-dorm-button">
                     View Details
                   </Link>
                 </div>
