@@ -187,18 +187,39 @@
   line-height: 1.5;
 }
 
-.view-dorm-button {
+.dorm-buttons {
+  display: flex;
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.view-dorm-button, .review-button {
+  flex: 1;
   display: inline-block;
   padding: 10px 20px;
-  background-color: #1976d2;
-  color: white;
   text-decoration: none;
   border-radius: 6px;
-  transition: background-color 0.2s;
+  transition: all 0.2s;
+  text-align: center;
+  font-weight: 500;
+}
+
+.view-dorm-button {
+  background-color: #1976d2;
+  color: white;
 }
 
 .view-dorm-button:hover {
   background-color: #1565c0;
+}
+
+.review-button {
+  background-color: #4caf50;
+  color: white;
+}
+
+.review-button:hover {
+  background-color: #388e3c;
 }
 
 /* Responsive Design */
