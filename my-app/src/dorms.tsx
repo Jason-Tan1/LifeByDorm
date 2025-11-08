@@ -32,7 +32,7 @@ function Dorms() {
       rateBuilding: 3,
       rateAmenities: 4,
       rateLocation: 5,
-      fileImage: "https://www.yorku.ca/housing/wp-content/uploads/sites/57/nggallery/founders-residence/Founders-1.jpg",
+      fileImage: "https://example.com/review1",
       year: 2022,
       roomType: "Single"
     },
@@ -78,6 +78,39 @@ function Dorms() {
               </span>
             </div>
             <p className="dorm-address">{dormData.address}</p>
+          </div>
+
+          {/* Building Details Section */}
+          <div className="dorm-details">
+            <h2>Building Details</h2>
+            <div className="details-grid">
+              <div className="detail-item">
+                <span>Year Built</span>
+                <p>{dormData.details.yearBuilt}</p>
+              </div>
+              <div className="detail-item">
+                <span>Total Floors</span>
+                <p>{dormData.details.totalFloors}</p>
+              </div>
+              <div className="detail-item">
+                <span>Capacity</span>
+                <p>{dormData.details.capacity} students</p>
+              </div>
+              <div className="detail-item">
+                <span>Distance to Campus</span>
+                <p>{dormData.details.distanceToCampus}</p>
+              </div>
+            </div>
+
+            {/* Room Types Section */}
+            <h2>Room Types Available</h2>
+            <div className="room-types">
+              <ul className="room-types-list">
+                {dormData.details.reviewTypes.map((type, index) => (
+                  <li key={index} className="room-type-item">{type}</li>
+                ))}
+              </ul>
+            </div>
           </div>
         </div>
 
