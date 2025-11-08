@@ -21,19 +21,33 @@ function Dorms() {
 
   };
 
+  
   const reviews = [
     {
       id: 1,
       user: "Jason Tan",
+      description: "Blah Blah Blah",
+      rateRoom: 1,
+      rateBathroom: 2,
+      rateBuilding: 3,
+      rateAmenities: 4,
+      rateLocation: 5,
+      fileImage: "https://www.yorku.ca/housing/wp-content/uploads/sites/57/nggallery/founders-residence/Founders-1.jpg",
+      year: 2022,
+      roomType: "Single"
     },
     {
       id: 2,
       user: "John Doe",
-    },
-    {
-      id: 3,
-      user: "Jane Smith",
-    },
+      description: "Great location and amenities, but the rooms could be cleaner.",
+      rateRoom: 3,
+      rateBathroom: 4,
+      rateBuilding: 4,
+      rateAmenities: 5,
+      rateLocation: 5,
+      year: 2023,
+      roomType: "Double"
+    }
   ];
 
   const renderStars = (rating: number) => {
@@ -80,6 +94,38 @@ function Dorms() {
                 <div className="review-info">
                   <h3>{review.user}</h3>
                   <div className="review-details">
+                    {/* Review Description */}
+                    <p className="review-description">{review.description}</p>
+                    
+                    {/* Ratings */}
+                    <div className="review-rating-group">
+                      <div className="review-rating-item">
+                        <span className="review-rating-label">Room</span>
+                        <span className="review-stars">{renderStars(review.rateRoom)}</span>
+                      </div>
+                      <div className="review-rating-item">
+                        <span className="review-rating-label">Bathroom</span>
+                        <span className="review-stars">{renderStars(review.rateBathroom)}</span>
+                      </div>
+                      <div className="review-rating-item">
+                        <span className="review-rating-label">Building</span>
+                        <span className="review-stars">{renderStars(review.rateBuilding)}</span>
+                      </div>
+                      <div className="review-rating-item">
+                        <span className="review-rating-label">Amenities</span>
+                        <span className="review-stars">{renderStars(review.rateAmenities)}</span>
+                      </div>
+                      <div className="review-rating-item">
+                        <span className="review-rating-label">Location</span>
+                        <span className="review-stars">{renderStars(review.rateLocation)}</span>
+                      </div>
+                    </div>
+
+                    {/* Metadata */}
+                    <div className="review-metadata">
+                      <span>Year: {review.year}</span>
+                      <span>Room Type: {review.roomType}</span>
+                    </div>
                   </div>            
                 </div>
               </div>
