@@ -9,7 +9,6 @@ interface Dorm {
   imageUrl: string;
   rating: number;
   reviews: number;
-  description: string;
 }
 
 function UniversityDash() {
@@ -38,7 +37,6 @@ function UniversityDash() {
       imageUrl: "https://www.yorku.ca/housing/wp-content/uploads/sites/57/2022/02/Founders-Exterior-1024x682.jpg",
       rating: 4.3,
       reviews: 21,
-      description: "Traditional-style residence with single and double rooms, perfect for first-year students."
     },
     {
       id: 2,
@@ -46,7 +44,6 @@ function UniversityDash() {
       imageUrl: "https://central.apps01.yorku.ca/maps/wp-content/uploads/2010/06/stong-res-2-copy.jpg",
       rating: 4.0,
       reviews: 34,
-      description: "Modern suite-style residence offering private bathrooms and shared kitchen facilities."
     }
   ];
 
@@ -67,7 +64,7 @@ function UniversityDash() {
             className="university-main-image"
           />
           <h1>{yorkUniversity.name}</h1>
-          <p className="university-description">{yorkUniversity.description}</p>
+          
           
           <div className="university-stats">
             <div className="stat-item">
@@ -120,7 +117,6 @@ function UniversityDash() {
                       {dorm.rating.toFixed(1)} ({dorm.reviews} reviews)
                     </span>
                   </div>
-                  <p className="dorm-description">{dorm.description}</p>
                   <div className="dorm-buttons">
                     <Link to="/dorms" className="view-dorm-button">
                       View Details

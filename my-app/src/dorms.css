@@ -179,7 +179,7 @@
 
 .review-button {
   font-size: 0.9rem;
-  background-color: #1976d2;
+  background-color: #388e3c;
   color: white;
   text-decoration: none;
   padding: 12px 16px;
@@ -191,7 +191,7 @@
 }
 
 .review-button:hover {
-  background-color: #1565c0;
+  background-color: #388e3c;
 }
 
 .reviews-grid {

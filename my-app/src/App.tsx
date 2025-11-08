@@ -8,6 +8,7 @@ import University from './UniversityPage/universityDash.tsx';
 import Dorms from './dorms.tsx';
 import NavBar from './NavBarPages/navbar.tsx';
 import SearchBar from './searchbar.tsx';
+import Review from './review.tsx';
 
 function App() {
   return (
@@ -21,6 +22,7 @@ function App() {
         <Route path="/dorms" element={<Dorms />} />
         <Route path="/navbar" element={<NavBar />} />
         <Route path="/searchbar" element={<SearchBar />} />
+        <Route path ="/review" element={<Review />} /> 
       </Routes>
     </Router>
   )
