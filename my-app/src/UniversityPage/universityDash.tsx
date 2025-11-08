@@ -12,7 +12,7 @@ interface Dorm {
 }
 
 function UniversityDash() {
-  const yorkUniversity = {
+  const university = {
     name: "York University",
     description: "York University is a leading international teaching and research university and a driving force for positive change. York is empowering students, faculty, staff, and alumni to create positive change in their communities and the world.",
     founded: 1959,
@@ -30,6 +30,7 @@ function UniversityDash() {
     ]
   };
 
+  //Hardcoded dorm data for demonstration purposes
   const dorms: Dorm[] = [
     {
       id: 1,
@@ -47,51 +48,52 @@ function UniversityDash() {
     }
   ];
 
+  // Function to render star ratings
   const renderStars = (rating: number) => {
     return "★".repeat(Math.floor(rating)) + "☆".repeat(5 - Math.floor(rating));
   };
 
+  // Main component render
   return (
     <div className="university-dash">
       <NavBar />
-      
       <div className="university-content">
         {/* Left side - University Information */}
         <div className="university-info">
           <img 
-            src={yorkUniversity.imageUrl} 
-            alt={yorkUniversity.name} 
+            src={university.imageUrl} 
+            alt={university.name} 
             className="university-main-image"
           />
-          <h1>{yorkUniversity.name}</h1>
+          <h1>{university.name}</h1>
           
           
           <div className="university-stats">
             <div className="stat-item">
               <span className="stat-label">Founded</span>
-              <span className="stat-value">{yorkUniversity.founded}</span>
+              <span className="stat-value">{university.founded}</span>
             </div>
             <div className="stat-item">
               <span className="stat-label">Total Students</span>
-              <span className="stat-value">{yorkUniversity.totalStudents.toLocaleString()}</span>
+              <span className="stat-value">{university.totalStudents.toLocaleString()}</span>
             </div>
             <div className="stat-item">
               <span className="stat-label">Acceptance Rate</span>
-              <span className="stat-value">{yorkUniversity.acceptanceRate}%</span>
+              <span className="stat-value">{university.acceptanceRate}%</span>
             </div>
           </div>
 
           <div className="university-highlights">
             <h2>University Highlights</h2>
             <ul>
-              {yorkUniversity.highlights.map((highlight, index) => (
+              {university.highlights.map((highlight, index) => (
                 <li key={index}>{highlight}</li>
               ))}
             </ul>
           </div>
 
           <a 
-            href={yorkUniversity.website} 
+            href={university.website} 
             target="_blank" 
             rel="noopener noreferrer" 
             className="university-website-link"

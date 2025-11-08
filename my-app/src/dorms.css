@@ -230,11 +230,50 @@
 }
 
 .review-details {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
   margin-bottom: 16px;
   font-size: 0.9rem;
+}
+
+.review-rating-group {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+  margin-top: 8px;
+}
+
+.review-rating-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.review-rating-label {
+  color: #666;
+  font-size: 0.85rem;
+}
+
+.review-stars {
+  color: #f8c41b;
+  letter-spacing: 1px;
+}
+
+.review-metadata {
+  display: flex;
+  gap: 16px;
+  color: #666;
+  font-size: 0.85rem;
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px solid #eee;
+}
+
+.review-description {
+  color: #444;
+  line-height: 1.5;
+  margin: 12px 0;
 }
 
 .review-price {
