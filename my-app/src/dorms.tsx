@@ -1,16 +1,16 @@
 import React from 'react';
-import NavBar from './navbar.tsx';
+import NavBar from './NavBarPages/navbar.tsx';
 import './dorms.css';
-import './navbar.css';
+import './NavBarPages/navbar.css';
+import { Link } from 'react-router-dom';
 
 function Dorms() {
   const dormData = {
     name: "Founders Residence",
     rating: 4.3,
     reviews: 42,
-    address: "123 Example Road, Toronto, ON M3J 1P3",
-    imageUrl: "/images/founders-main.jpg",
-    description: "Founders Residence is a modern student housing facility offering comfortable living spaces with excellent amenities. Located in the heart of campus, it provides easy access to academic buildings and student facilities.",
+    address: "91 Ottawa R, North York, ON M3J 1P3",
+    imageUrl: "https://central.apps01.yorku.ca/maps/wp-content/uploads/2010/06/founders-res-1-copy.jpg",
     details: {
       yearBuilt: 2015,
       totalFloors: 5,
@@ -25,6 +25,14 @@ function Dorms() {
     {
       id: 1,
       user: "Jason Tan",
+    },
+    {
+      id: 2,
+      user: "John Doe",
+    },
+    {
+      id: 3,
+      user: "Jane Smith",
     },
   ];
 
@@ -57,37 +65,15 @@ function Dorms() {
             </div>
             <p className="dorm-address">{dormData.address}</p>
           </div>
-
-          <div className="dorm-description">
-            <p>{dormData.description}</p>
-          </div>
-
-          <div className="dorm-details">
-            <h2>Building Details</h2>
-            <div className="details-grid">
-              <div className="detail-item">
-                <span>Year Built</span>
-                <p>{dormData.details.yearBuilt}</p>
-              </div>
-              <div className="detail-item">
-                <span>Total Floors</span>
-                <p>{dormData.details.totalFloors}</p>
-              </div>
-              <div className="detail-item">
-                <span>Capacity</span>
-                <p>{dormData.details.capacity} students</p>
-              </div>
-              <div className="detail-item">
-                <span>Distance</span>
-                <p>{dormData.details.distanceToCampus}</p>
-              </div>
-            </div>
-          </div>
         </div>
 
         {/* Right side - Review Listings */}
         <div className="reviews-list">
-          <h2>Student Reviews</h2>
+          <h2>Student Reviews 
+            <Link to="/review" className="review-button">
+              Leave Review
+            </Link>
+          </h2>
           <div className="reviews-grid">
             {reviews.map(review => (
               <div key={review.id} className="review-card">

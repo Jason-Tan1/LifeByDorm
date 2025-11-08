@@ -6,7 +6,7 @@ import ContactMe from './NavBarPages/contactme.tsx';
 import Login from './NavBarPages/login.tsx';
 import University from './UniversityPage/universityDash.tsx';
 import Dorms from './dorms.tsx';
-import NavBar from './navbar.tsx';
+import NavBar from './NavBarPages/navbar.tsx';
 import SearchBar from './searchbar.tsx';
 
 function App() {

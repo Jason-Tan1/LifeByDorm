@@ -1,5 +1,5 @@
 import React from 'react'
-import NavBar from '../navbar.tsx'; 
+import NavBar from './navbar.tsx'; 
 
 function aboutme() {
   return (

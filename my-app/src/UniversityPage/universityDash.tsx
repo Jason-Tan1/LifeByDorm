@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import NavBar from '../navbar';
+import NavBar from '../NavBarPages/navbar';
 import './universityDash.css';
 
 interface Dorm {
@@ -121,9 +121,14 @@ function UniversityDash() {
                     </span>
                   </div>
                   <p className="dorm-description">{dorm.description}</p>
-                  <Link to = '/dorms' className="view-dorm-button">
-                    View Details
-                  </Link>
+                  <div className="dorm-buttons">
+                    <Link to="/dorms" className="view-dorm-button">
+                      View Details
+                    </Link>
+                    <Link to="/review" className="review-button">
+                      Leave Review
+                    </Link>
+                  </div>
                 </div>
               </div>
             ))}
