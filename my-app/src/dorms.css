@@ -61,6 +61,27 @@
 .dorm-address {
   color: #666;
   font-size: 1.1rem;
+  margin-bottom: 32px;
+}
+
+.room-types {
+  margin-top: 16px;
+}
+
+.room-types-list {
+  list-style: none;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.room-type-item {
+  background-color: #e3f2fd;
+  color: #1976d2;
+  padding: 8px 16px;
+  border-radius: 16px;
+  font-size: 0.9rem;
 }
 
 
