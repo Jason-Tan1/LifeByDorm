@@ -6,9 +6,9 @@ import SearchBar from './searchbar.tsx';
 
 
 const universities = [
-  { id: 1, name: 'University of Toronto', urlName: 'uoft' },
-  { id: 2, name: 'Western University', urlName: 'western' },
-  { id: 3, name: 'York University', urlName: 'york' },
+  { id: 1, name: 'University of Toronto', urlName: 'university-of-toronto' },
+  { id: 2, name: 'Western University', urlName: 'western-university' },
+  { id: 3, name: 'York University', urlName: 'york-university' },
 ];
 
 function Home() {
@@ -34,7 +34,7 @@ function Home() {
             <h2>Quick Links:</h2>
             <div className="quicklinks-buttons">
               {universities.map(u => (
-                <Link key={u.id} to={`/university/${u.urlName}`}>
+                <Link key={u.id} to={`/universities/${u.urlName}`}>
                   <button>{u.name}</button>
                 </Link>
               ))}
