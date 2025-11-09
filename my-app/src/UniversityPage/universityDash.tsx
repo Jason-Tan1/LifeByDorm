@@ -1,5 +1,5 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
+import { Link, useParams } from 'react-router-dom';
 import NavBar from '../NavBarPages/navbar';
 import './universityDash.css';
 
@@ -12,9 +12,9 @@ interface Dorm {
 }
 
 function UniversityDash() {
+  // Hardcoded university data for demonstration purposes
   const university = {
     name: "York University",
-    description: "York University is a leading international teaching and research university and a driving force for positive change. York is empowering students, faculty, staff, and alumni to create positive change in their communities and the world.",
     founded: 1959,
     location: "Toronto, Ontario, Canada",
     totalStudents: 55000,

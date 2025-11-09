@@ -4,6 +4,13 @@ import { Link } from 'react-router-dom';
 import NavBar from './NavBarPages/navbar.tsx'; 
 import SearchBar from './searchbar.tsx'; 
 
+
+const universities = [
+  { id: 1, name: 'University of Toronto', urlName: 'uoft' },
+  { id: 2, name: 'Western University', urlName: 'western' },
+  { id: 3, name: 'York University', urlName: 'york' },
+];
+
 function Home() {
   return (
     <div className = "home"> 
@@ -26,15 +33,11 @@ function Home() {
           <div className="quicklinks-section">
             <h2>Quick Links:</h2>
             <div className="quicklinks-buttons">
-              <Link to="/university">
-                <button>University of Toronto</button>
-              </Link>
-              <Link to="/university">
-                <button>Western University</button>
-              </Link>
-              <Link to="/university">
-                <button>York University</button>
-              </Link>
+              {universities.map(u => (
+                <Link key={u.id} to={`/university/${u.urlName}`}>
+                  <button>{u.name}</button>
+                </Link>
+              ))}
             </div>
           </div>
         </div>
