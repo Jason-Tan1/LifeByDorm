@@ -12,23 +12,65 @@ interface Dorm {
 }
 
 function UniversityDash() {
-  // Hardcoded university data for demonstration purposes
-  const university = {
-    name: "York University",
-    founded: 1959,
-    location: "Toronto, Ontario, Canada",
-    totalStudents: 55000,
-    acceptanceRate: 27,
-    imageUrl: "https://www.yorku.ca/yfile/wp-content/uploads/sites/889/2023/08/aerial_ross-east.jpg",
-    website: "https://www.yorku.ca",
-    highlights: [
-      "Over 55,000 students from 178 countries",
-      "11 Faculties offering more than 200 programs",
-      "Modern campus with state-of-the-art facilities",
-      "Located in the heart of the Greater Toronto Area",
-      "Strong focus on research and innovation"
-    ]
+  const { universityName } = useParams();
+  
+  // Add console log to debug the URL parameter
+  console.log('University Name from URL:', universityName);
+  
+  // University data mapping
+  const universities = {
+    'york-university': {
+      name: "York University",
+      founded: 1959,
+      location: "Toronto, Ontario, Canada",
+      totalStudents: 55000,
+      acceptanceRate: 27,
+      imageUrl: "https://www.yorku.ca/yfile/wp-content/uploads/sites/889/2023/08/aerial_ross-east.jpg",
+      website: "https://www.yorku.ca",
+      highlights: [
+        "Over 55,000 students from 178 countries",
+        "11 Faculties offering more than 200 programs",
+        "Modern campus with state-of-the-art facilities",
+        "Located in the heart of the Greater Toronto Area",
+        "Strong focus on research and innovation"
+      ]
+    },
+    'university-of-toronto': {
+      name: "University of Toronto",
+      founded: 1827,
+      location: "Toronto, Ontario, Canada",
+      totalStudents: 93000,
+      acceptanceRate: 43,
+      imageUrl: "https://defygravitycampaign.utoronto.ca/wp-content/uploads/2024/10/landmark_frontcampusaerial-scaled-1.jpg",
+      website: "https://www.utoronto.ca",
+      highlights: [
+        "Ranked #1 in Canada and among top 20 globally",
+        "3 distinct campuses across the Greater Toronto Area",
+        "Over 700 undergraduate programs",
+        "World-renowned research facilities",
+        "Rich history dating back to 1827"
+      ]
+    },
+    'western-university': {
+      name: "Western University",
+      founded: 1878,
+      location: "London, Ontario, Canada",
+      totalStudents: 38000,
+      acceptanceRate: 31,
+      imageUrl: "https://brand.westernu.ca/assets/img/assets/wallpaper/middlesex-wallpaper.jpg",
+      website: "https://www.uwo.ca",
+      highlights: [
+        "Beautiful 481-hectare campus",
+        "12 faculties and schools",
+        "Top-ranked student experience",
+        "Strong research and innovation focus",
+        "Vibrant student community in London, Ontario"
+      ]
+    }
   };
+
+  // Get university data based on URL parameter, default to York if not found
+  const university = universities[universityName as keyof typeof universities] || universities['york-university'];
 
   //Hardcoded dorm data for demonstration purposes
   const dorms: Dorm[] = [
