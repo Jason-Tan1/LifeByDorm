@@ -5,6 +5,7 @@ import jwt, { Secret, JwtPayload } from 'jsonwebtoken';
 import mongoose from 'mongoose'; // MongoDB Connections from Node.js
 import bcrypt from 'bcryptjs'; //Hide Passwords
 import { User, IUser } from './models/User';
+import { UserReview } from './models/UserReview';
 
 dotenv.config();
 console.log('Loaded secret:', process.env.ACCESS_TOKEN_SECRET ? '✅ Loaded' : '❌ Missing');
@@ -198,7 +199,71 @@ function authenticationToken(req: AuthRequest, res: Response, next: NextFunction
 //UNIVERSITY ROUTES AND SET UP
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+// Reviews API: create and fetch reviews
+app.post('/api/reviews', async (req: Request, res: Response) => {
+  try {
+    const {
+      university,
+      dorm,
+      room,
+      bathroom,
+      building,
+      amenities,
+      location,
+      description,
+      year,
+      roomType,
+      fileImage
+    } = req.body;
 
+    const review = new UserReview({
+      university,
+      dorm,
+      room,
+      bathroom,
+      building,
+      amenities,
+      location,
+      description,
+      year,
+      roomType,
+      fileImage
+    });
+
+    const saved = await review.save();
+    res.status(201).json(saved);
+  } catch (err) {
+    console.error('Error saving review', err);
+    // If this is a Mongoose validation error, return 400 with details
+    // err may be any type, so guard properties
+    // @ts-ignore
+    if (err && err.name === 'ValidationError') {
+      // @ts-ignore
+      const details = Object.keys(err.errors || {}).reduce((acc: any, key) => {
+        // @ts-ignore
+        acc[key] = err.errors[key].message;
+        return acc;
+      }, {});
+      return res.status(400).json({ message: 'Validation error', errors: details });
+    }
+
+    res.status(500).json({ message: 'Error saving review' });
+  }
+});
+
+app.get('/api/reviews', async (req: Request, res: Response) => {
+  try {
+    const { university, dorm } = req.query;
+    const filter: any = {};
+    if (university) filter.university = university;
+    if (dorm) filter.dorm = dorm;
+    const reviews = await UserReview.find(filter).sort({ createdAt: -1 }).lean();
+    res.json(reviews);
+  } catch (err) {
+    console.error('Error fetching reviews', err);
+    res.status(500).json({ message: 'Error fetching reviews' });
+  }
+});
 
 // Start server
 const PORT = process.env.PORT || 3000;
