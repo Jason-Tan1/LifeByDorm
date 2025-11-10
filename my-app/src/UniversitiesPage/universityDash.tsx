@@ -24,7 +24,7 @@ function UniversityDash() {
       founded: 1959,
       location: "Toronto, Ontario, Canada",
       totalStudents: 55000,
-      acceptanceRate: 27,
+      acceptanceRate: 47,
       imageUrl: "https://www.yorku.ca/yfile/wp-content/uploads/sites/889/2023/08/aerial_ross-east.jpg",
       website: "https://www.yorku.ca",
       highlights: [
