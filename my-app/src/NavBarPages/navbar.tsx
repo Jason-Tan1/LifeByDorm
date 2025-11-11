@@ -21,9 +21,7 @@ function navbar() {
     <div className="navbar">
         {/* Navigation Bar Logo */}
       <div className="navbar_logo">
-        <Link to ="/">  
-          <a>LifeByDorm</a>
-        </Link>
+        <Link to="/">LifeByDorm</Link>
       </div>
         {/* Navigation Bar Buttons */}
       <div className="navbar_actions">

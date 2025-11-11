@@ -40,9 +40,7 @@ function login() {
     <div className = "login">
       <div className = "login_container">
         <form onSubmit={handleSubmit}> 
-          <Link to ="/"> 
-            <a> LifeByDorm </a>
-          </Link>
+          <Link to="/">LifeByDorm</Link>
           <div className = "login_email"> 
             <h2> Email: </h2>
             <input
