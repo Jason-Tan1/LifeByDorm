@@ -11,7 +11,11 @@ function Reviews() {
     amenities: 0,
     location: 0
   });
+  // Try to read university/dorm from either route params or query string
   const { universityName, dormName } = useParams();
+  const urlSearch = typeof window !== 'undefined' ? new URLSearchParams(window.location.search) : null;
+  const queryUniversity = urlSearch ? urlSearch.get('university') : null;
+  const queryDorm = urlSearch ? urlSearch.get('dorm') : null;
 
   const [description, setDescription] = useState('');
   const [year, setYear] = useState('');
@@ -77,8 +81,9 @@ function Reviews() {
     }
 
     const payload = {
-      university: universityName || null,
-      dorm: dormName || null,
+      // Prefer query params if provided, then route params, otherwise null
+      university: (queryUniversity || universityName) || null,
+      dorm: (queryDorm || dormName) || null,
       room: ratings.room,
       bathroom: ratings.bathrooms,
       building: ratings.building,
