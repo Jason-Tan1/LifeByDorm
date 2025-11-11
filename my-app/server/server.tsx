@@ -235,7 +235,8 @@ app.post('/api/reviews', async (req: Request, res: Response) => {
     });
 
     const saved = await review.save();
-    res.status(201).json(saved);
+  console.log('✅ Saved review to DB:', { id: saved._id, university: saved.university, dorm: saved.dorm });
+  res.status(201).json(saved);
   } catch (err) {
     console.error('Error saving review', err);
     // If this is a Mongoose validation error, return 400 with details
