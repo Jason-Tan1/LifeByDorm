@@ -13,7 +13,11 @@ console.log('Loaded secret:', process.env.ACCESS_TOKEN_SECRET ? '✅ Loaded' : '
 const app = express()
 
 app.use(cors())
-app.use(express.json())
+// Increase JSON body size limit to allow base64 image uploads from the client.
+// The frontend encodes images as data URLs; increase the limit to 10mb.
+app.use(express.json({ limit: '10mb' }))
+// Also parse URL-encoded bodies (forms) with the same limit
+app.use(express.urlencoded({ extended: true, limit: '10mb' }))
 
 // MongoDB Connection
 const connectDB = async () => {

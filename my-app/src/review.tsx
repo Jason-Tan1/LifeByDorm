@@ -17,6 +17,7 @@ function Reviews() {
   const [year, setYear] = useState('');
   const [roomType, setRoomType] = useState('');
   const [fileDataUrl, setFileDataUrl] = useState<string | null>(null);
+  const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10 MB
 
   const handleRatingClick = (category: keyof typeof ratings, value: number) => {
     setRatings(prev => ({
@@ -44,6 +45,12 @@ function Reviews() {
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files && e.target.files[0];
     if (!file) return;
+    if (file.size > MAX_FILE_SIZE) {
+      alert('File too large. Maximum file size is 10 MB.');
+      // clear the file input visually by not setting fileDataUrl
+      setFileDataUrl(null);
+      return;
+    }
     const reader = new FileReader();
     reader.onload = () => {
       setFileDataUrl(reader.result as string);
