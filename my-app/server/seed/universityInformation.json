@@ -1,0 +1,48 @@
+[
+  {
+    "name": "York University",
+    "slug": "york-university",
+    "founded": 1959,
+    "location": "Toronto, Ontario, Canada",
+    "totalStudents": 55000,
+    "acceptanceRate": null,
+    "imageUrl": "https://www.yorku.ca/yfile/wp-content/uploads/sites/889/2023/08/aerial_ross-east.jpg",
+    "website": "https://www.yorku.ca",
+    "highlights": [
+      "Over 55,000 students from 178 countries",
+      "11 Faculties offering more than 200 programs",
+      "Modern campus with state-of-the-art facilities"
+    ]
+  },
+  {
+    "name": "University of Toronto",
+    "slug": "university-of-toronto",
+    "founded": 1827,
+    "location": "Toronto, Ontario, Canada",
+    "totalStudents": 93000,
+    "acceptanceRate": 43,
+    "imageUrl": "https://defygravitycampaign.utoronto.ca/wp-content/uploads/2024/10/landmark_frontcampusaerial-scaled-1.jpg",
+    "website": "https://www.utoronto.ca",
+    "highlights": [
+      "Ranked #1 in Canada and among top 20 globally",
+      "3 distinct campuses across the Greater Toronto Area",
+      "World-renowned research facilities"
+    ]
+  }
+  ,
+  {
+    "name": "Western University",
+    "slug": "western-university",
+    "founded": 1878,
+    "location": "London, Ontario, Canada",
+    "totalStudents": 38000,
+    "acceptanceRate": 31,
+    "imageUrl": "https://brand.westernu.ca/assets/img/assets/wallpaper/middlesex-wallpaper.jpg",
+    "website": "https://www.uwo.ca",
+    "highlights": [
+      "Beautiful 481-hectare campus",
+      "12 faculties and schools",
+      "Top-ranked student experience"
+    ]
+  }
+]
