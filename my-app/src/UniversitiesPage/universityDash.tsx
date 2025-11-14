@@ -3,6 +3,7 @@ import { Link, useParams } from 'react-router-dom';
 import NavBar from '../NavBarPages/navbar';
 import './universityDash.css';
 
+// Define types for University and Dorm data from API
 type APIUniversity = {
   name: string;
   slug: string;
@@ -26,6 +27,7 @@ type APIDorm = {
 
 const API_BASE = (import.meta as any).env?.VITE_API_BASE || 'http://localhost:3000';
 
+// Main component for University Dashboard
 function UniversityDash() {
   const { universityName } = useParams();
 
@@ -34,12 +36,14 @@ function UniversityDash() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  // Fetch university and dorm data when component mounts or universityName changes
   useEffect(() => {
     if (!universityName) return;
     let cancelled = false;
     setLoading(true);
     setError(null);
 
+    // Fetch data from APIs
     async function fetchData() {
       try {
         const [uniRes, dormsRes] = await Promise.all([
@@ -90,6 +94,7 @@ function UniversityDash() {
     );
   }
 
+  // Handle error state
   if (error || !university) {
     return (
       <div className="university-dash">
@@ -101,6 +106,7 @@ function UniversityDash() {
     );
   }
 
+  // Render university dashboard
   return (
     <div className="university-dash">
       <NavBar />

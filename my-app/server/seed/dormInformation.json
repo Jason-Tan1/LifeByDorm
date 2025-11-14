@@ -5,10 +5,47 @@
     "universitySlug": "york-university",
     "imageUrl": "https://www.yorku.ca/housing/wp-content/uploads/sites/57/2022/02/Founders-Exterior-1024x682.jpg",
     "rating": 4.3,
-    "totalReviews": 21,
-    "description": "Traditional residence with a strong community atmosphere",
-    "amenities": ["Common Rooms", "Study Spaces", "Laundry Facilities"],
-    "roomTypes": ["Single", "Double"]
+    "totalReviews": 21
+  },
+  {
+    "name":"Tatham Hall",
+    "slug": "tatham-hall",
+    "universitySlug": "york-university",
+    "imageUrl": null,
+    "rating": 4.1,
+    "totalReviews": 15
+  },
+  {
+    "name":"Vanier Residence",
+    "slug": "vanier-residence",
+    "universitySlug": "york-university",
+    "imageUrl": null,
+    "rating": 4.1,
+    "totalReviews": 15
+  },
+  {
+    "name":"Winters Residence",
+    "slug": "winters-residence",
+    "universitySlug": "york-university",
+    "imageUrl": null,
+    "rating": 4.1,
+    "totalReviews": 15
+  },
+  {
+    "name":"Bethune Residence",
+    "slug": "bethune-residence",
+    "universitySlug": "york-university",
+    "imageUrl": null,
+    "rating": 4.1,
+    "totalReviews": 15
+  },
+  {
+    "name":"Calumet Residence",
+    "slug": "calumet-residence",
+    "universitySlug": "york-university",
+    "imageUrl": null,
+    "rating": 4.1,
+    "totalReviews": 15
   },
   {
     "name": "Stong Residence",
@@ -47,7 +84,7 @@
     "name": "Saugeen-Maitland Hall",
     "slug": "saugeen-maitland-hall",
     "universitySlug": "western-university",
-    "imageUrl": "https://residence.uwo.ca/img/residences/saugeen_exterior.jpg",
+    "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/a/a8/Saugeen-Maitland_Hall.jpg",
     "rating": 4.1,
     "totalReviews": 52,
     "description": "One of the largest residence buildings in Canada",
@@ -58,7 +95,7 @@
     "name": "Delaware Hall",
     "slug": "delaware-hall",
     "universitySlug": "western-university",
-    "imageUrl": "https://residence.uwo.ca/img/residences/delaware_exterior.jpg",
+    "imageUrl": "https://media-cdn.socastsrm.com/wordpress/wp-content/blogs.dir/202/files/2015/09/Photo-2015-09-27-6-45-47-PM.jpg",
     "rating": 4.4,
     "totalReviews": 29,
     "description": "Suite-style residence with modern facilities",
