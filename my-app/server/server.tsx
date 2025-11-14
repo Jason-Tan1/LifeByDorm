@@ -6,6 +6,8 @@ import mongoose from 'mongoose'; // MongoDB Connections from Node.js
 import bcrypt from 'bcryptjs'; //Hide Passwords
 import { User, IUser } from './models/User';
 import { UserReview } from './models/UserReview';
+import { University } from './models/Universities';
+import { Dorm } from './models/Dorm';
 
 dotenv.config();
 console.log('Loaded secret:', process.env.ACCESS_TOKEN_SECRET ? '✅ Loaded' : '❌ Missing');
@@ -202,6 +204,53 @@ function authenticationToken(req: AuthRequest, res: Response, next: NextFunction
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 //UNIVERSITY ROUTES AND SET UP
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+// Get all universities
+app.get('/api/universities', async (req: Request, res: Response) => {
+  try {
+    const universities = await University.find({}).sort({ name: 1 }).lean();
+    res.json(universities);
+  } catch (err) {
+    console.error('Error fetching universities', err);
+    res.status(500).json({ message: 'Error fetching universities' });
+  }
+});
+
+// Get a single university by slug
+app.get('/api/universities/:slug', async (req: Request, res: Response) => {
+  try {
+    const { slug } = req.params;
+    const university = await University.findOne({ slug }).lean();
+    if (!university) return res.status(404).json({ message: 'University not found' });
+    res.json(university);
+  } catch (err) {
+    console.error('Error fetching university', err);
+    res.status(500).json({ message: 'Error fetching university' });
+  }
+});
+
+// Get dorms for a university by university slug
+app.get('/api/universities/:slug/dorms', async (req: Request, res: Response) => {
+  try {
+    const { slug } = req.params;
+    const dorms = await Dorm.find({ universitySlug: slug }).sort({ name: 1 }).lean();
+    res.json(dorms);
+  } catch (err) {
+    console.error('Error fetching dorms for university', err);
+    res.status(500).json({ message: 'Error fetching dorms' });
+  }
+});
+
+// Debug: list all dorms
+app.get('/api/dorms', async (req: Request, res: Response) => {
+  try {
+    const dorms = await Dorm.find({}).sort({ universitySlug: 1, name: 1 }).lean();
+    res.json(dorms);
+  } catch (err) {
+    console.error('Error fetching all dorms', err);
+    res.status(500).json({ message: 'Error fetching dorms' });
+  }
+});
 
 // Reviews API: create and fetch reviews
 app.post('/api/reviews', async (req: Request, res: Response) => {
