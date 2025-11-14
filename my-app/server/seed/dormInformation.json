@@ -1,0 +1,68 @@
+[
+  {
+    "name": "Founders Residence",
+    "slug": "founders-residence",
+    "universitySlug": "york-university",
+    "imageUrl": "https://www.yorku.ca/housing/wp-content/uploads/sites/57/2022/02/Founders-Exterior-1024x682.jpg",
+    "rating": 4.3,
+    "totalReviews": 21,
+    "description": "Traditional residence with a strong community atmosphere",
+    "amenities": ["Common Rooms", "Study Spaces", "Laundry Facilities"],
+    "roomTypes": ["Single", "Double"]
+  },
+  {
+    "name": "Stong Residence",
+    "slug": "stong-residence",
+    "universitySlug": "york-university",
+    "imageUrl": "https://central.apps01.yorku.ca/maps/wp-content/uploads/2010/06/stong-res-2-copy.jpg",
+    "rating": 4.0,
+    "totalReviews": 34,
+    "description": "Modern residence with great amenities and location",
+    "amenities": ["Fitness Room", "Music Practice Rooms", "Study Lounges"],
+    "roomTypes": ["Single", "Double", "Suite"]
+  },
+  {
+    "name": "Chestnut Residence",
+    "slug": "chestnut-residence",
+    "universitySlug": "university-of-toronto",
+    "imageUrl": "https://www.studentlife.utoronto.ca/hs/sites/default/files/styles/large/public/2023-08/Chestnut-exterior.jpg",
+    "rating": 4.5,
+    "totalReviews": 48,
+    "description": "Downtown hotel-style residence with modern amenities",
+    "amenities": ["24/7 Front Desk", "Dining Hall", "Fitness Centre"],
+    "roomTypes": ["Single", "Double", "Suite"]
+  },
+  {
+    "name": "New College Residence",
+    "slug": "new-college-residence",
+    "universitySlug": "university-of-toronto",
+    "imageUrl": "https://www.newcollege.utoronto.ca/wp-content/uploads/2019/08/wilson-hall.jpg",
+    "rating": 4.2,
+    "totalReviews": 36,
+    "description": "Traditional college residence on St. George campus",
+    "amenities": ["Dining Hall", "Common Rooms", "Study Rooms"],
+    "roomTypes": ["Single", "Double"]
+  },
+  {
+    "name": "Saugeen-Maitland Hall",
+    "slug": "saugeen-maitland-hall",
+    "universitySlug": "western-university",
+    "imageUrl": "https://residence.uwo.ca/img/residences/saugeen_exterior.jpg",
+    "rating": 4.1,
+    "totalReviews": 52,
+    "description": "One of the largest residence buildings in Canada",
+    "amenities": ["Dining Hall", "Convenience Store", "Recreation Rooms"],
+    "roomTypes": ["Single", "Double"]
+  },
+  {
+    "name": "Delaware Hall",
+    "slug": "delaware-hall",
+    "universitySlug": "western-university",
+    "imageUrl": "https://residence.uwo.ca/img/residences/delaware_exterior.jpg",
+    "rating": 4.4,
+    "totalReviews": 29,
+    "description": "Suite-style residence with modern facilities",
+    "amenities": ["Suite Kitchen", "Study Lounges", "Laundry Facilities"],
+    "roomTypes": ["Suite", "Single"]
+  }
+]

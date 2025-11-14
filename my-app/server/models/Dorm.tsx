@@ -1,0 +1,34 @@
+import { Schema, model, Document } from 'mongoose';
+
+export interface IDorm extends Document {
+  name: string;
+  slug: string;
+  universitySlug: string;
+  imageUrl?: string;
+  rating?: number;
+  totalReviews?: number;
+  description?: string;
+  amenities?: string[];
+  roomTypes?: string[];
+  createdAt?: Date;
+}
+
+const dormSchema = new Schema<IDorm>({
+  name: { type: String, required: true },
+  slug: { type: String, required: true },
+  universitySlug: { type: String, required: true },
+  imageUrl: { type: String },
+  rating: { type: Number, default: 0 },
+  totalReviews: { type: Number, default: 0 },
+  description: { type: String },
+  amenities: { type: [String], default: [] },
+  roomTypes: { type: [String], default: [] },
+  createdAt: { type: Date, default: Date.now }
+});
+
+// Compound index for universitySlug + slug
+dormSchema.index({ universitySlug: 1, slug: 1 }, { unique: true });
+
+export const Dorm = model<IDorm>('Dorm', dormSchema);
+
+export default Dorm;
