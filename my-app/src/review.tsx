@@ -1,9 +1,10 @@
 import { useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import './review.css';
 import NavBar from './NavBarPages/navbar';
 
 function Reviews() {
+  const navigate = useNavigate();
   const [ratings, setRatings] = useState({
     room: 0,
     bathrooms: 0,
@@ -104,7 +105,7 @@ function Reviews() {
       const data = await res.json();
       if (!res.ok) {
         // If server sent validation errors, show them
-        const serverMessage = data?.message || 'Failed to save review';
+        const serverMessage = data?.message || 'Failed to submit review';
         const serverErrors = data?.errors ? JSON.stringify(data.errors, null, 2) : null;
         alert(serverMessage + (serverErrors ? '\n' + serverErrors : ''));
         throw new Error(serverMessage);
@@ -117,6 +118,14 @@ function Reviews() {
       setFileDataUrl(null);
       alert('Review submitted — thank you!');
       console.log('Saved review:', data);
+      
+      // Navigate back to the dorm page
+      const university = queryUniversity || universityName;
+      if (university && payload.dorm) {
+        // Need to convert dorm name to slug format (lowercase, replace spaces with hyphens)
+        const dormSlug = payload.dorm.toLowerCase().replace(/\s+/g, '-');
+        navigate(`/universities/${encodeURIComponent(university)}/dorms/${dormSlug}`);
+      }
     } catch (err) {
       console.error(err);
       alert('Error submitting review');
@@ -128,7 +137,7 @@ function Reviews() {
       <NavBar />
       <div className='review-container'>
         <h1>User Review</h1>
-  <form className="review-form" onSubmit={handleSubmit}>
+          <form className="review-form" onSubmit={handleSubmit}>
           {/* Rating Groups */}
           <div className="rating-group">
             <label>Rate the Room</label>
