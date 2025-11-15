@@ -216,6 +216,18 @@ app.get('/api/universities', async (req: Request, res: Response) => {
   }
 });
 
+// Get dorms for a university by university slug (must come before /:slug route)
+app.get('/api/universities/:slug/dorms', async (req: Request, res: Response) => {
+  try {
+    const { slug } = req.params;
+    const dorms = await Dorm.find({ universitySlug: slug }).sort({ name: 1 }).lean();
+    res.json(dorms);
+  } catch (err) {
+    console.error('Error fetching dorms for university', err);
+    res.status(500).json({ message: 'Error fetching dorms' });
+  }
+});
+
 // Get a single university by slug
 app.get('/api/universities/:slug', async (req: Request, res: Response) => {
   try {
@@ -226,18 +238,6 @@ app.get('/api/universities/:slug', async (req: Request, res: Response) => {
   } catch (err) {
     console.error('Error fetching university', err);
     res.status(500).json({ message: 'Error fetching university' });
-  }
-});
-
-// Get dorms for a university by university slug
-app.get('/api/universities/:slug/dorms', async (req: Request, res: Response) => {
-  try {
-    const { slug } = req.params;
-    const dorms = await Dorm.find({ universitySlug: slug }).sort({ name: 1 }).lean();
-    res.json(dorms);
-  } catch (err) {
-    console.error('Error fetching dorms for university', err);
-    res.status(500).json({ message: 'Error fetching dorms' });
   }
 });
 

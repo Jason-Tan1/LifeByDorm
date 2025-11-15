@@ -11,7 +11,7 @@
     "name":"Tatham Hall",
     "slug": "tatham-hall",
     "universitySlug": "york-university",
-    "imageUrl": null,
+    "imageUrl": "https://www.yorku.ca/conference/wp-content/uploads/sites/191/2021/01/DSC_2434_5_6-scaled.jpg",
     "rating": 4.1,
     "totalReviews": 15
   },
@@ -19,7 +19,7 @@
     "name":"Vanier Residence",
     "slug": "vanier-residence",
     "universitySlug": "york-university",
-    "imageUrl": null,
+    "imageUrl": "https://www.yorku.ca/conference/wp-content/uploads/sites/191/2022/11/DSC_2710_1_2-scaled.jpg",
     "rating": 4.1,
     "totalReviews": 15
   },
@@ -27,7 +27,7 @@
     "name":"Winters Residence",
     "slug": "winters-residence",
     "universitySlug": "york-university",
-    "imageUrl": null,
+    "imageUrl": "https://www.acotoronto.ca/images/buildings/Large/o524k7cSPY.jpg",
     "rating": 4.1,
     "totalReviews": 15
   },
@@ -35,7 +35,7 @@
     "name":"Bethune Residence",
     "slug": "bethune-residence",
     "universitySlug": "york-university",
-    "imageUrl": null,
+    "imageUrl": "https://www.yorku.ca/housing/wp-content/uploads/sites/57/2020/10/DSC_3598_599_600-1024x682.jpg",
     "rating": 4.1,
     "totalReviews": 15
   },
@@ -43,7 +43,7 @@
     "name":"Calumet Residence",
     "slug": "calumet-residence",
     "universitySlug": "york-university",
-    "imageUrl": null,
+    "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/8/89/CalumetResidence.jpg",
     "rating": 4.1,
     "totalReviews": 15
   },
@@ -64,27 +64,176 @@
     "universitySlug": "university-of-toronto",
     "imageUrl": "https://www.studentlife.utoronto.ca/hs/sites/default/files/styles/large/public/2023-08/Chestnut-exterior.jpg",
     "rating": 4.5,
-    "totalReviews": 48,
-    "description": "Downtown hotel-style residence with modern amenities",
-    "amenities": ["24/7 Front Desk", "Dining Hall", "Fitness Centre"],
-    "roomTypes": ["Single", "Double", "Suite"]
+    "totalReviews": 48
   },
   {
     "name": "New College Residence",
     "slug": "new-college-residence",
     "universitySlug": "university-of-toronto",
-    "imageUrl": "https://www.newcollege.utoronto.ca/wp-content/uploads/2019/08/wilson-hall.jpg",
+    "imageUrl": null,
     "rating": 4.2,
-    "totalReviews": 36,
-    "description": "Traditional college residence on St. George campus",
-    "amenities": ["Dining Hall", "Common Rooms", "Study Rooms"],
-    "roomTypes": ["Single", "Double"]
+    "totalReviews": 36
+  },
+  {
+    "name": "Innis Residence",
+    "slug": "innis-residence",
+    "universitySlug": "university-of-toronto",
+    "imageUrl": null,
+    "rating": 4.3,
+    "totalReviews": 42
+  },
+  {
+    "name": "University College Residence",
+    "slug": "university-college-residence",
+    "universitySlug": "university-of-toronto",
+    "imageUrl": null,
+    "rating": 4.4,
+    "totalReviews": 38
+  },
+  {
+    "name": "Woodsworth Residence",
+    "slug": "woodsworth-residence",
+    "universitySlug": "university-of-toronto",
+    "imageUrl": null,
+    "rating": 4.1,
+    "totalReviews": 31
+  },
+  {
+    "name": "Trinity College Residence",
+    "slug": "trinity-college-residence",
+    "universitySlug": "university-of-toronto",
+    "imageUrl": null,
+    "rating": 4.6,
+    "totalReviews": 45
+  },
+  {
+    "name": "Victoria College Residence",
+    "slug": "victoria-college-residence",
+    "universitySlug": "university-of-toronto",
+    "imageUrl": null,
+    "rating": 4.5,
+    "totalReviews": 52
+  },
+  {
+    "name": "St. Michael's College Residence",
+    "slug": "st-michaels-college-residence",
+    "universitySlug": "university-of-toronto",
+    "imageUrl": null,
+    "rating": 4.3,
+    "totalReviews": 40
+  },
+  {
+    "name": "Graduate House",
+    "slug": "graduate-house",
+    "universitySlug": "university-of-toronto",
+    "imageUrl": null,
+    "rating": 4.2,
+    "totalReviews": 28
   },
   {
     "name": "Saugeen-Maitland Hall",
     "slug": "saugeen-maitland-hall",
     "universitySlug": "western-university",
     "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/a/a8/Saugeen-Maitland_Hall.jpg",
+    "rating": 4.1,
+    "totalReviews": 52,
+    "description": "One of the largest residence buildings in Canada",
+    "amenities": ["Dining Hall", "Convenience Store", "Recreation Rooms"],
+    "roomTypes": ["Single", "Double"]
+  },
+  {
+    "name": "Bayfield Hall",
+    "slug": "bayfield-hall",
+    "universitySlug": "western-university",
+    "imageUrl": "",
+    "rating": 4.1,
+    "totalReviews": 52,
+    "description": "One of the largest residence buildings in Canada",
+    "amenities": ["Dining Hall", "Convenience Store", "Recreation Rooms"],
+    "roomTypes": ["Single", "Double"]
+  },
+  {
+    "name": "Clare Hall",
+    "slug": "clare-hall",
+    "universitySlug": "western-university",
+    "imageUrl": "",
+    "rating": 4.1,
+    "totalReviews": 52,
+    "description": "One of the largest residence buildings in Canada",
+    "amenities": ["Dining Hall", "Convenience Store", "Recreation Rooms"],
+    "roomTypes": ["Single", "Double"]
+  },
+  {
+    "name": "Ontario Hall",
+    "slug": "ontario-hall",
+    "universitySlug": "western-university",
+    "imageUrl": "",
+    "rating": 4.1,
+    "totalReviews": 52,
+    "description": "One of the largest residence buildings in Canada",
+    "amenities": ["Dining Hall", "Convenience Store", "Recreation Rooms"],
+    "roomTypes": ["Single", "Double"]
+  },
+  {
+    "name": "Perth Hall",
+    "slug": "perth-hall",
+    "universitySlug": "western-university",
+    "imageUrl": "",
+    "rating": 4.1,
+    "totalReviews": 52,
+    "description": "One of the largest residence buildings in Canada",
+    "amenities": ["Dining Hall", "Convenience Store", "Recreation Rooms"],
+    "roomTypes": ["Single", "Double"]
+  },
+  {
+    "name": "Alumni House",
+    "slug": "alumni-house",
+    "universitySlug": "western-university",
+    "imageUrl": "",
+    "rating": 4.1,
+    "totalReviews": 52,
+    "description": "One of the largest residence buildings in Canada",
+    "amenities": ["Dining Hall", "Convenience Store", "Recreation Rooms"],
+    "roomTypes": ["Single", "Double"]
+  },
+  {
+    "name": "Elgin Hall",
+    "slug": "elgin-hall",
+    "universitySlug": "western-university",
+    "imageUrl": "",
+    "rating": 4.1,
+    "totalReviews": 52,
+    "description": "One of the largest residence buildings in Canada",
+    "amenities": ["Dining Hall", "Convenience Store", "Recreation Rooms"],
+    "roomTypes": ["Single", "Double"]
+  },
+  {
+    "name": "Essex Hall",
+    "slug": "essex-hall",
+    "universitySlug": "western-university",
+    "imageUrl": "",
+    "rating": 4.1,
+    "totalReviews": 52,
+    "description": "One of the largest residence buildings in Canada",
+    "amenities": ["Dining Hall", "Convenience Store", "Recreation Rooms"],
+    "roomTypes": ["Single", "Double"]
+  },
+  {
+    "name": "Lambton Hall",
+    "slug": "lambton-hall",
+    "universitySlug": "western-university",
+    "imageUrl": "",
+    "rating": 4.1,
+    "totalReviews": 52,
+    "description": "One of the largest residence buildings in Canada",
+    "amenities": ["Dining Hall", "Convenience Store", "Recreation Rooms"],
+    "roomTypes": ["Single", "Double"]
+  },
+  {
+    "name": "London Hall",
+    "slug": "london-hall",
+    "universitySlug": "western-university",
+    "imageUrl": "",
     "rating": 4.1,
     "totalReviews": 52,
     "description": "One of the largest residence buildings in Canada",
