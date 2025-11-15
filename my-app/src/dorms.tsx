@@ -1,25 +1,56 @@
-import React from 'react';
+import { useEffect, useState } from 'react';
 import NavBar from './NavBarPages/navbar.tsx';
 import './dorms.css';
 import './NavBarPages/navbar.css';
-import { Link } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
+
+type APIDorm = {
+  name: string;
+  slug: string;
+  universitySlug: string;
+  imageUrl?: string;
+  rating?: number;
+  totalReviews?: number;
+  description?: string;
+  amenities?: string[];
+  roomTypes?: string[];
+};
+
+const API_BASE = (import.meta as any).env?.VITE_API_BASE || 'http://localhost:3000';
 
 function Dorms() {
-  const dormData = {
-    name: "Founders Residence",
-    rating: 4.3,
-    reviews: 42,
-    address: "91 Ottawa R, North York, ON M3J 1P3",
-    imageUrl: "https://central.apps01.yorku.ca/maps/wp-content/uploads/2010/06/founders-res-1-copy.jpg",
-    details: {
-      yearBuilt: 2015,
-      totalFloors: 5,
-      capacity: 350,
-      reviewTypes: ["Single", "Double", "Suite"],
-      distanceToCampus: "5 minutes walking"
-    },
+  const { universityName, dormSlug } = useParams();
+  const [dorm, setDorm] = useState<APIDorm | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  };
+  useEffect(() => {
+    if (!universityName || !dormSlug) return;
+    
+    async function fetchDorm() {
+      try {
+        setLoading(true);
+        setError(null);
+        
+        // Fetch all dorms for this university and find the matching one
+        const response = await fetch(`${API_BASE}/api/universities/${encodeURIComponent(universityName!)}/dorms`);
+        if (!response.ok) throw new Error('Failed to fetch dorm data');
+        
+        const dorms: APIDorm[] = await response.json();
+        const matchedDorm = dorms.find(d => d.slug === dormSlug);
+        
+        if (!matchedDorm) throw new Error('Dorm not found');
+        
+        setDorm(matchedDorm);
+      } catch (e: any) {
+        setError(e?.message || 'Failed to load dorm');
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    fetchDorm();
+  }, [universityName, dormSlug]);
 
   
   const reviews = [
@@ -54,6 +85,28 @@ function Dorms() {
     return "★".repeat(Math.floor(rating)) + "☆".repeat(5 - Math.floor(rating));
   };
 
+  if (loading) {
+    return (
+      <div className="dorm-page">
+        <NavBar />
+        <div className="dorm-content">
+          <p>Loading dorm details...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (error || !dorm) {
+    return (
+      <div className="dorm-page">
+        <NavBar />
+        <div className="dorm-content">
+          <p>{error || 'Dorm not found'}</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="dorm-page">
       <NavBar />
@@ -62,62 +115,60 @@ function Dorms() {
         {/* Left side - Dorm Information */}
         <div className="dorm-info">
           <img 
-            src={dormData.imageUrl} 
-            alt={dormData.name} 
+            src={dorm.imageUrl || ''} 
+            alt={dorm.name} 
             className="dorm-main-image"
           />
           
           <div className="dorm-header">
-            <h1>{dormData.name}</h1>
+            <h1>{dorm.name}</h1>
             <div className="dorm-rating">
-              <div className="stars" title={dormData.rating.toString()}>
-                {renderStars(dormData.rating)}
+              <div className="stars" title={(dorm.rating ?? 0).toString()}>
+                {renderStars(dorm.rating ?? 0)}
               </div>
               <span className="rating-number">
-                {dormData.rating.toFixed(1)} ({dormData.reviews} reviews)
+                {(dorm.rating ?? 0).toFixed(1)} ({dorm.totalReviews ?? 0} reviews)
               </span>
             </div>
-            <p className="dorm-address">{dormData.address}</p>
           </div>
 
-          {/* Building Details Section */}
-          <div className="dorm-details">
-            <h2>Building Details</h2>
-            <div className="details-grid">
-              <div className="detail-item">
-                <span>Year Built</span>
-                <p>{dormData.details.yearBuilt}</p>
-              </div>
-              <div className="detail-item">
-                <span>Total Floors</span>
-                <p>{dormData.details.totalFloors}</p>
-              </div>
-              <div className="detail-item">
-                <span>Capacity</span>
-                <p>{dormData.details.capacity} students</p>
-              </div>
-              <div className="detail-item">
-                <span>Distance to Campus</span>
-                <p>{dormData.details.distanceToCampus}</p>
-              </div>
+          {/* Description Section */}
+          {dorm.description && (
+            <div className="dorm-details">
+              <h2>About</h2>
+              <p>{dorm.description}</p>
             </div>
+          )}
 
-            {/* Room Types Section */}
-            <h2>Room Types Available</h2>
-            <div className="room-types">
+          {/* Amenities Section */}
+          {dorm.amenities && dorm.amenities.length > 0 && (
+            <div className="dorm-details">
+              <h2>Amenities</h2>
               <ul className="room-types-list">
-                {dormData.details.reviewTypes.map((type, index) => (
+                {dorm.amenities.map((amenity, index) => (
+                  <li key={index} className="room-type-item">{amenity}</li>
+                ))}
+              </ul>
+            </div>
+          )}
+
+          {/* Room Types Section */}
+          {dorm.roomTypes && dorm.roomTypes.length > 0 && (
+            <div className="dorm-details">
+              <h2>Room Types Available</h2>
+              <ul className="room-types-list">
+                {dorm.roomTypes.map((type, index) => (
                   <li key={index} className="room-type-item">{type}</li>
                 ))}
               </ul>
             </div>
-          </div>
+          )}
         </div>
 
         {/* Right side - Review Listings */}
         <div className="reviews-list">
           <h2>Student Reviews 
-            <Link to="/review" className="review-button">
+            <Link to={`/review?university=${encodeURIComponent(universityName || '')}&dorm=${encodeURIComponent(dorm.name)}`} className="review-button">
               Leave Review
             </Link>
           </h2>

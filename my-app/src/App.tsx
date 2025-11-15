@@ -19,6 +19,7 @@ function App() {
         <Route path="/contactme" element={<ContactMe />} />
         <Route path="/login" element={<Login />} />
         <Route path="/universities/:universityName" element={<University />} />
+        <Route path="/universities/:universityName/dorms/:dormSlug" element={<Dorms />} />
         <Route path="/dorms" element={<Dorms />} />
         <Route path="/navbar" element={<NavBar />} />
         <Route path="/searchbar" element={<SearchBar />} />

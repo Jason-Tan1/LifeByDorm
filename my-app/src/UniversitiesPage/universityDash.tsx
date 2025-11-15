@@ -173,7 +173,7 @@ function UniversityDash() {
                     </span>
                   </div>
                   <div className="dorm-buttons">
-                    <Link to="/dorms" className="view-dorm-button">
+                    <Link to={`/universities/${universityName}/dorms/${dorm.slug}`} className="view-dorm-button">
                       View Details
                     </Link>
                     <Link to={`/review?university=${encodeURIComponent(universityName || '')}&dorm=${encodeURIComponent(dorm.name)}`} className="review-button">
