@@ -5,7 +5,9 @@
     "universitySlug": "york-university",
     "imageUrl": "https://www.yorku.ca/housing/wp-content/uploads/sites/57/2022/02/Founders-Exterior-1024x682.jpg",
     "rating": 4.3,
-    "totalReviews": 21
+    "totalReviews": 21,
+    "amenities": [null],
+    "roomTypes": [null]
   },
   {
     "name":"Tatham Hall",
@@ -13,7 +15,9 @@
     "universitySlug": "york-university",
     "imageUrl": "https://www.yorku.ca/conference/wp-content/uploads/sites/191/2021/01/DSC_2434_5_6-scaled.jpg",
     "rating": 4.1,
-    "totalReviews": 15
+    "totalReviews": 15,
+    "amenities": [null],
+    "roomTypes": [null]
   },
   {
     "name":"Vanier Residence",
@@ -21,7 +25,9 @@
     "universitySlug": "york-university",
     "imageUrl": "https://www.yorku.ca/conference/wp-content/uploads/sites/191/2022/11/DSC_2710_1_2-scaled.jpg",
     "rating": 4.1,
-    "totalReviews": 15
+    "totalReviews": 15,
+    "amenities": [null],
+    "roomTypes": [null]
   },
   {
     "name":"Winters Residence",
@@ -29,7 +35,9 @@
     "universitySlug": "york-university",
     "imageUrl": "https://www.acotoronto.ca/images/buildings/Large/o524k7cSPY.jpg",
     "rating": 4.1,
-    "totalReviews": 15
+    "totalReviews": 15,
+    "amenities": [null],
+    "roomTypes": [null]
   },
   {
     "name":"Bethune Residence",
@@ -37,7 +45,9 @@
     "universitySlug": "york-university",
     "imageUrl": "https://www.yorku.ca/housing/wp-content/uploads/sites/57/2020/10/DSC_3598_599_600-1024x682.jpg",
     "rating": 4.1,
-    "totalReviews": 15
+    "totalReviews": 15,
+    "amenities": [null],
+    "roomTypes": [null]
   },
   {
     "name":"Calumet Residence",
@@ -45,7 +55,9 @@
     "universitySlug": "york-university",
     "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/8/89/CalumetResidence.jpg",
     "rating": 4.1,
-    "totalReviews": 15
+    "totalReviews": 15,
+    "amenities": [null],
+    "roomTypes": [null]
   },
   {
     "name": "Stong Residence",
@@ -64,7 +76,9 @@
     "universitySlug": "university-of-toronto",
     "imageUrl": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTVlZ23bT_U6axLADKln3QZ5lvr3jPROs-XRg&s",
     "rating": 4.5,
-    "totalReviews": 48
+    "totalReviews": 48,
+    "amenities": [null],
+    "roomTypes": [null]
   },
   {
     "name": "New College Residence",
@@ -72,7 +86,9 @@
     "universitySlug": "university-of-toronto",
     "imageUrl": "https://www.newcollege.utoronto.ca/wp-content/uploads/2022/03/wilson.jpg?x52235",
     "rating": 4.2,
-    "totalReviews": 36
+    "totalReviews": 36,
+    "amenities": [null],
+    "roomTypes": [null]
   },
   {
     "name": "Innis Residence",
@@ -80,7 +96,9 @@
     "universitySlug": "university-of-toronto",
     "imageUrl": "https://innis.utoronto.ca/wp-content/uploads/About-the-Residence-Feature-image.jpg",
     "rating": 4.3,
-    "totalReviews": 42
+    "totalReviews": 42,
+    "amenities": [null],
+    "roomTypes": [null]
   },
   {
     "name": "University College Residence",
@@ -88,7 +106,9 @@
     "universitySlug": "university-of-toronto",
     "imageUrl": "https://www.uc.utoronto.ca/sites/default/files/styles/scale_width_650/public/assets/images/IMG_0677.jpg?itok=NVHENE_1",
     "rating": 4.4,
-    "totalReviews": 38
+    "totalReviews": 38,
+    "amenities": [null],
+    "roomTypes": [null]
   },
   {
     "name": "Woodsworth Residence",
@@ -96,7 +116,9 @@
     "universitySlug": "university-of-toronto",
     "imageUrl": "https://images.squarespace-cdn.com/content/v1/58811ba703596e4e5107e3a4/1559942356251-2RD9Q9N4UZ6GQK9E9V0Q/gh3-Woodsworth-Corner.jpg",
     "rating": 4.1,
-    "totalReviews": 31
+    "totalReviews": 31,
+    "amenities": [null],
+    "roomTypes": [null]
   },
   {
     "name": "Trinity College Residence",
@@ -104,7 +126,9 @@
     "universitySlug": "university-of-toronto",
     "imageUrl": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRX3CL2EPbUwtSAtSKkQ4vo1sHviqIQafhb_g&s",
     "rating": 4.6,
-    "totalReviews": 45
+    "totalReviews": 45,
+    "amenities": [null],
+    "roomTypes": [null]
   },
   {
     "name": "Victoria College Residence",
@@ -112,7 +136,9 @@
     "universitySlug": "university-of-toronto",
     "imageUrl": "https://vic.utoronto.ca/assets/Images/Vic-Registrar/photo-slider-3.jpg",
     "rating": 4.5,
-    "totalReviews": 52
+    "totalReviews": 52,
+    "amenities": [null],
+    "roomTypes": [null]
   },
   {
     "name": "St. Michael's College Residence",
@@ -120,7 +146,9 @@
     "universitySlug": "university-of-toronto",
     "imageUrl": "https://stmikes.utoronto.ca/wp-content/uploads/2020/10/Boiler-Plant-Clock-in-Spring-scaled-1.jpg",
     "rating": 4.3,
-    "totalReviews": 40
+    "totalReviews": 40,
+    "amenities": [null],
+    "roomTypes": [null]
   },
   {
     "name": "Graduate House",
@@ -128,7 +156,9 @@
     "universitySlug": "university-of-toronto",
     "imageUrl": "https://gradhouse.utoronto.ca/wp-content/uploads/uoft-gradhouse-1-1024x683.jpg",
     "rating": 4.2,
-    "totalReviews": 28
+    "totalReviews": 28,
+    "amenities": [null],
+    "roomTypes": [null]
   },
   {
     "name": "Saugeen-Maitland Hall",

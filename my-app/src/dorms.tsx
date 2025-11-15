@@ -4,6 +4,7 @@ import './dorms.css';
 import './NavBarPages/navbar.css';
 import { Link, useParams } from 'react-router-dom';
 
+//Define types for Dorm data from API (IMPORTANT)
 type APIDorm = {
   name: string;
   slug: string;
@@ -16,8 +17,10 @@ type APIDorm = {
   roomTypes?: string[];
 };
 
+//Base URL for API requests
 const API_BASE = (import.meta as any).env?.VITE_API_BASE || 'http://localhost:3000';
 
+// Main component for Dorm Page
 function Dorms() {
   const { universityName, dormSlug } = useParams();
   const [dorm, setDorm] = useState<APIDorm | null>(null);
@@ -52,34 +55,33 @@ function Dorms() {
     fetchDorm();
   }, [universityName, dormSlug]);
 
-  
-  const reviews = [
-    {
-      id: 1,
-      user: "Jason Tan",
-      description: "Blah Blah Blah",
-      rateRoom: 1,
-      rateBathroom: 2,
-      rateBuilding: 3,
-      rateAmenities: 4,
-      rateLocation: 5,
-      fileImage: "https://example.com/review1",
-      year: 2022,
-      roomType: "Single"
-    },
-    {
-      id: 2,
-      user: "John Doe",
-      description: "Great location and amenities, but the rooms could be cleaner.",
-      rateRoom: 3,
-      rateBathroom: 4,
-      rateBuilding: 4,
-      rateAmenities: 5,
-      rateLocation: 5,
-      year: 2023,
-      roomType: "Double"
+  const [reviews, setReviews] = useState<any[]>([]);
+  const [reviewsLoading, setReviewsLoading] = useState(false);
+
+  // Fetch reviews for this dorm
+  useEffect(() => {
+    if (!universityName || !dorm) return;
+    
+    const dormName = dorm.name; // Capture the name before async function
+    
+    async function fetchReviews() {
+      try {
+        setReviewsLoading(true);
+        const response = await fetch(`${API_BASE}/api/reviews?university=${encodeURIComponent(universityName!)}&dorm=${encodeURIComponent(dormName)}`);
+        if (!response.ok) throw new Error('Failed to fetch reviews');
+        
+        const data = await response.json();
+        setReviews(data);
+      } catch (e) {
+        console.error('Error fetching reviews:', e);
+        setReviews([]);
+      } finally {
+        setReviewsLoading(false);
+      }
     }
-  ];
+
+    fetchReviews();
+  }, [universityName, dorm]);
 
   const renderStars = (rating: number) => {
     return "★".repeat(Math.floor(rating)) + "☆".repeat(5 - Math.floor(rating));
@@ -172,49 +174,55 @@ function Dorms() {
               Leave Review
             </Link>
           </h2>
-          <div className="reviews-grid">
-            {reviews.map(review => (
-              <div key={review.id} className="review-card">
-                <div className="review-info">
-                  <h3>{review.user}</h3>
-                  <div className="review-details">
-                    {/* Review Description */}
-                    <p className="review-description">{review.description}</p>
-                    
-                    {/* Ratings */}
-                    <div className="review-rating-group">
-                      <div className="review-rating-item">
-                        <span className="review-rating-label">Room</span>
-                        <span className="review-stars">{renderStars(review.rateRoom)}</span>
+          {reviewsLoading ? (
+            <p>Loading reviews...</p>
+          ) : reviews.length === 0 ? (
+            <p>No reviews yet. Be the first to leave a review!</p>
+          ) : (
+            <div className="reviews-grid">
+              {reviews.map(review => (
+                <div key={review._id} className="review-card">
+                  <div className="review-info">
+                    <h3>{review.user || 'Anonymous'}</h3>
+                    <div className="review-details">
+                      {/* Review Description */}
+                      <p className="review-description">{review.description}</p>
+                      
+                      {/* Ratings */}
+                      <div className="review-rating-group">
+                        <div className="review-rating-item">
+                          <span className="review-rating-label">Room</span>
+                          <span className="review-stars">{renderStars(review.room)}</span>
+                        </div>
+                        <div className="review-rating-item">
+                          <span className="review-rating-label">Bathroom</span>
+                          <span className="review-stars">{renderStars(review.bathroom)}</span>
+                        </div>
+                        <div className="review-rating-item">
+                          <span className="review-rating-label">Building</span>
+                          <span className="review-stars">{renderStars(review.building)}</span>
+                        </div>
+                        <div className="review-rating-item">
+                          <span className="review-rating-label">Amenities</span>
+                          <span className="review-stars">{renderStars(review.amenities)}</span>
+                        </div>
+                        <div className="review-rating-item">
+                          <span className="review-rating-label">Location</span>
+                          <span className="review-stars">{renderStars(review.location)}</span>
+                        </div>
                       </div>
-                      <div className="review-rating-item">
-                        <span className="review-rating-label">Bathroom</span>
-                        <span className="review-stars">{renderStars(review.rateBathroom)}</span>
-                      </div>
-                      <div className="review-rating-item">
-                        <span className="review-rating-label">Building</span>
-                        <span className="review-stars">{renderStars(review.rateBuilding)}</span>
-                      </div>
-                      <div className="review-rating-item">
-                        <span className="review-rating-label">Amenities</span>
-                        <span className="review-stars">{renderStars(review.rateAmenities)}</span>
-                      </div>
-                      <div className="review-rating-item">
-                        <span className="review-rating-label">Location</span>
-                        <span className="review-stars">{renderStars(review.rateLocation)}</span>
-                      </div>
-                    </div>
 
-                    {/* Metadata */}
-                    <div className="review-metadata">
-                      <span>Year: {review.year}</span>
-                      <span>Room Type: {review.roomType}</span>
-                    </div>
-                  </div>            
+                      {/* Metadata */}
+                      <div className="review-metadata">
+                        <span>Year: {review.year}</span>
+                        <span>Room Type: {review.roomType}</span>
+                      </div>
+                    </div>            
+                  </div>
                 </div>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          )}
         </div>
       </div>
     </div>
