@@ -1,9 +1,14 @@
+.search-bar-wrapper {
+  position: relative;
+  width: 100%;
+  max-width: 600px;
+  margin: 2rem auto;
+}
+
 .search-bar-container {
   display: flex;
   align-items: center;
   width: 100%;
-  max-width: 600px; /* Adjust the max width as needed */
-  margin: 2rem auto; /* Add space above and below the search bar and center it */
   background-color: #ffffff;
   border-radius: 50px; /* This creates the pill shape */
   padding: 5px;
@@ -42,4 +47,33 @@
 
 .search-button:hover {
   background-color: #5850e0; /* A slightly darker shade for hover */
+}
+
+.search-dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background-color: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+  margin-top: 8px;
+  max-height: 300px;
+  overflow-y: auto;
+  z-index: 1000;
+}
+
+.search-dropdown-item {
+  padding: 1rem 1.5rem;
+  cursor: pointer;
+  border-bottom: 1px solid #f0f0f0;
+  transition: background-color 0.2s ease;
+}
+
+.search-dropdown-item:hover {
+  background-color: #f8f9fa;
+}
+
+.search-dropdown-item:last-child {
+  border-bottom: none;
 }

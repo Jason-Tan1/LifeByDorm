@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
-import NavBar from '../NavBarPages/navbar';
+import NavBar from '../navbarpages/navbar';
 import './universityDash.css';
 
 // Define types for University and Dorm data from API

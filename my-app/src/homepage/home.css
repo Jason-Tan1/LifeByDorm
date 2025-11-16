@@ -12,9 +12,9 @@
     width: 100%; /* --- FIX ADDED: Ensures the div spans the full width --- */
     /* The background image with opacity overlay */
     background-image: linear-gradient(rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.2)),
-      url('./assets/BackgroundCampus.jpg');
+      url('../assets/BackgroundCampus.jpg');
     background-size: cover;
-    height: 100vh; 
+    height: 125vh; 
     display: flex;
     flex-direction: column; 
   }
@@ -63,7 +63,7 @@
     background-color: transparent;
     padding: 140px 0;
     width: 100%;
-    margin-top: 10vh;
+    margin-top: 35vh;
   }
 
   .featured-container {
