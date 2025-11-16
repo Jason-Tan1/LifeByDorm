@@ -51,7 +51,7 @@
     "location": "Montreal, Quebec, Canada",
     "totalStudents": 40000,
     "acceptanceRate": 46,
-    "imageUrl": "https://www.mcgill.ca/student-services/files/student-services/styles/hd/public/mcgill_arts_building.jpg",
+    "imageUrl": "https://reporter.mcgill.ca/wp-content/uploads/2018/10/McGill-fall-2018-web.jpg",
     "website": "https://www.mcgill.ca",
     "highlights": [
       "Canada's most international university",
@@ -66,7 +66,7 @@
     "location": "Vancouver, British Columbia, Canada",
     "totalStudents": 71000,
     "acceptanceRate": 52,
-    "imageUrl": "https://www.ubc.ca/brand/assets/downloads/ubc-aerial.jpg",
+    "imageUrl": "https://images.unsplash.com/photo-1635295852796-f6867d868156?ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8dWJjfGVufDB8fDB8fHww&fm=jpg&q=60&w=3000",
     "website": "https://www.ubc.ca",
     "highlights": [
       "Stunning campus on the Pacific Ocean",
@@ -81,7 +81,7 @@
     "location": "Hamilton, Ontario, Canada",
     "totalStudents": 36000,
     "acceptanceRate": 58,
-    "imageUrl": "https://mcmaster.ca/images/default-source/default-album/mcmaster-university-aerial.jpg",
+    "imageUrl": "https://hamiltoncitymagazine.ca/app/uploads/2025/05/McMaster-campus-4-1024x576.jpeg",
     "website": "https://www.mcmaster.ca",
     "highlights": [
       "Home of the McMaster Nuclear Reactor",
@@ -96,7 +96,7 @@
     "location": "Edmonton, Alberta, Canada",
     "totalStudents": 40000,
     "acceptanceRate": 58,
-    "imageUrl": "https://www.ualberta.ca/en/media-library/communications-marketing/brand/photos/general-campus/20191018-campus-aerial-004.jpg",
+    "imageUrl": "https://abroadin.com/blog/wp-content/uploads/2023/01/about-us-campus-aerial.jpg",
     "website": "https://www.ualberta.ca",
     "highlights": [
       "One of Canada's top research universities",
@@ -111,7 +111,7 @@
     "location": "Montreal, Quebec, Canada",
     "totalStudents": 67000,
     "acceptanceRate": 57,
-    "imageUrl": "https://www.umontreal.ca/en/about-us/images/campus-pavillon-principal.jpg",
+    "imageUrl": "https://www.umontreal.ca/public/www/_processed_/4/d/csm_udem_montagne-22_c8f730627c.jpg",
     "website": "https://www.umontreal.ca",
     "highlights": [
       "Largest French-language university in the Americas",
@@ -126,7 +126,7 @@
     "location": "Waterloo, Ontario, Canada",
     "totalStudents": 42000,
     "acceptanceRate": 53,
-    "imageUrl": "https://uwaterloo.ca/about/sites/default/files/styles/wide-body-750px-wide/public/uploads/images/campus-aerial-2.jpg",
+    "imageUrl": "https://educationontario.com/app/uploads/2022/03/Waterloo_sign_1000x700.jpg",
     "website": "https://uwaterloo.ca",
     "highlights": [
       "World's largest co-op program",
@@ -141,7 +141,7 @@
     "location": "Ottawa, Ontario, Canada",
     "totalStudents": 50000,
     "acceptanceRate": 70,
-    "imageUrl": "https://www.uottawa.ca/about-us/sites/g/files/bhrskd351/files/styles/full_width_820/public/2022-03/campus-aerial.jpg",
+    "imageUrl": "https://www.uottawa.ca/campus-life/sites/g/files/bhrskd281/files/styles/max_width_l_1470px/public/2022-11/Picture2_0.png?itok=Mu_P8PiY",
     "website": "https://www.uottawa.ca",
     "highlights": [
       "Canada's largest bilingual university",
@@ -156,7 +156,7 @@
     "location": "Calgary, Alberta, Canada",
     "totalStudents": 35000,
     "acceptanceRate": 55,
-    "imageUrl": "https://www.ucalgary.ca/sites/default/files/styles/ucws_image_desktop/public/2019-09/campus-aerial-fall.jpg",
+    "imageUrl": "https://www.ucalgary.ca/live-uc-ucalgary-site/sites/default/files/styles/ucws_image_desktop/public/2022-06/DJI_0780-Pano-No%20Crane%20%281%29.jpg?itok=8D-SWe6R",
     "website": "https://www.ucalgary.ca",
     "highlights": [
       "Young, entrepreneurial research university",
@@ -171,7 +171,7 @@
     "location": "Kingston, Ontario, Canada",
     "totalStudents": 25000,
     "acceptanceRate": 40,
-    "imageUrl": "https://www.queensu.ca/gazette/sites/default/files/assets/story/queens-campus-aerial-view.jpg",
+    "imageUrl": "https://www.timeshighereducation.com/cms-academic/sites/default/files/styles/profile_gallery_image/public/2024-08/01.%20queens_university_campus_1.jpg?itok=7KK7Heug",
     "website": "https://www.queensu.ca",
     "highlights": [
       "Historic limestone campus",

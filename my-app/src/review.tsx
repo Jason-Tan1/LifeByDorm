@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import './review.css';
-import NavBar from './NavBarPages/navbar';
+import NavBar from './navbarpages/navbar';
 
 function Reviews() {
   const navigate = useNavigate();
