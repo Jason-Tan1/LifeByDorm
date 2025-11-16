@@ -28,8 +28,7 @@
       "3 distinct campuses across the Greater Toronto Area",
       "World-renowned research facilities"
     ]
-  }
-  ,
+  },
   {
     "name": "Western University",
     "slug": "western-university",
@@ -43,6 +42,141 @@
       "Beautiful 481-hectare campus",
       "12 faculties and schools",
       "Top-ranked student experience"
+    ]
+  },
+  {
+    "name": "McGill University",
+    "slug": "mcgill-university",
+    "founded": 1821,
+    "location": "Montreal, Quebec, Canada",
+    "totalStudents": 40000,
+    "acceptanceRate": 46,
+    "imageUrl": "https://www.mcgill.ca/student-services/files/student-services/styles/hd/public/mcgill_arts_building.jpg",
+    "website": "https://www.mcgill.ca",
+    "highlights": [
+      "Canada's most international university",
+      "Located in the heart of Montreal",
+      "Consistently ranked among top 50 universities worldwide"
+    ]
+  },
+  {
+    "name": "University of British Columbia",
+    "slug": "university-of-british-columbia",
+    "founded": 1908,
+    "location": "Vancouver, British Columbia, Canada",
+    "totalStudents": 71000,
+    "acceptanceRate": 52,
+    "imageUrl": "https://www.ubc.ca/brand/assets/downloads/ubc-aerial.jpg",
+    "website": "https://www.ubc.ca",
+    "highlights": [
+      "Stunning campus on the Pacific Ocean",
+      "World-class research facilities",
+      "Two major campuses: Vancouver and Okanagan"
+    ]
+  },
+  {
+    "name": "McMaster University",
+    "slug": "mcmaster-university",
+    "founded": 1887,
+    "location": "Hamilton, Ontario, Canada",
+    "totalStudents": 36000,
+    "acceptanceRate": 58,
+    "imageUrl": "https://mcmaster.ca/images/default-source/default-album/mcmaster-university-aerial.jpg",
+    "website": "https://www.mcmaster.ca",
+    "highlights": [
+      "Home of the McMaster Nuclear Reactor",
+      "Innovative problem-based learning approach",
+      "Strong focus on health sciences and engineering"
+    ]
+  },
+  {
+    "name": "University of Alberta",
+    "slug": "university-of-alberta",
+    "founded": 1908,
+    "location": "Edmonton, Alberta, Canada",
+    "totalStudents": 40000,
+    "acceptanceRate": 58,
+    "imageUrl": "https://www.ualberta.ca/en/media-library/communications-marketing/brand/photos/general-campus/20191018-campus-aerial-004.jpg",
+    "website": "https://www.ualberta.ca",
+    "highlights": [
+      "One of Canada's top research universities",
+      "Beautiful North Saskatchewan River valley campus",
+      "Strong in sciences, engineering, and business"
+    ]
+  },
+  {
+    "name": "Université de Montréal",
+    "slug": "universite-de-montreal",
+    "founded": 1878,
+    "location": "Montreal, Quebec, Canada",
+    "totalStudents": 67000,
+    "acceptanceRate": 57,
+    "imageUrl": "https://www.umontreal.ca/en/about-us/images/campus-pavillon-principal.jpg",
+    "website": "https://www.umontreal.ca",
+    "highlights": [
+      "Largest French-language university in the Americas",
+      "Renowned for health sciences and technology",
+      "Beautiful mountain-side campus"
+    ]
+  },
+  {
+    "name": "University of Waterloo",
+    "slug": "university-of-waterloo",
+    "founded": 1957,
+    "location": "Waterloo, Ontario, Canada",
+    "totalStudents": 42000,
+    "acceptanceRate": 53,
+    "imageUrl": "https://uwaterloo.ca/about/sites/default/files/styles/wide-body-750px-wide/public/uploads/images/campus-aerial-2.jpg",
+    "website": "https://uwaterloo.ca",
+    "highlights": [
+      "World's largest co-op program",
+      "Leading in engineering, mathematics, and computer science",
+      "Strong connections to tech industry"
+    ]
+  },
+  {
+    "name": "University of Ottawa",
+    "slug": "university-of-ottawa",
+    "founded": 1848,
+    "location": "Ottawa, Ontario, Canada",
+    "totalStudents": 50000,
+    "acceptanceRate": 70,
+    "imageUrl": "https://www.uottawa.ca/about-us/sites/g/files/bhrskd351/files/styles/full_width_820/public/2022-03/campus-aerial.jpg",
+    "website": "https://www.uottawa.ca",
+    "highlights": [
+      "Canada's largest bilingual university",
+      "Located in the nation's capital",
+      "Strong programs in law, health sciences, and public affairs"
+    ]
+  },
+  {
+    "name": "University of Calgary",
+    "slug": "university-of-calgary",
+    "founded": 1966,
+    "location": "Calgary, Alberta, Canada",
+    "totalStudents": 35000,
+    "acceptanceRate": 55,
+    "imageUrl": "https://www.ucalgary.ca/sites/default/files/styles/ucws_image_desktop/public/2019-09/campus-aerial-fall.jpg",
+    "website": "https://www.ucalgary.ca",
+    "highlights": [
+      "Young, entrepreneurial research university",
+      "Strong in energy, health, and veterinary medicine",
+      "Modern campus with excellent facilities"
+    ]
+  },
+  {
+    "name": "Queen's University",
+    "slug": "queens-university",
+    "founded": 1841,
+    "location": "Kingston, Ontario, Canada",
+    "totalStudents": 25000,
+    "acceptanceRate": 40,
+    "imageUrl": "https://www.queensu.ca/gazette/sites/default/files/assets/story/queens-campus-aerial-view.jpg",
+    "website": "https://www.queensu.ca",
+    "highlights": [
+      "Historic limestone campus",
+      "Strong sense of community and tradition",
+      "Excellence in business, engineering, and health sciences"
     ]
   }
 ]
