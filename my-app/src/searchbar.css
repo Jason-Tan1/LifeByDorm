@@ -3,7 +3,7 @@
   align-items: center;
   width: 100%;
   max-width: 600px; /* Adjust the max width as needed */
-  margin: 2rem 0; /* Add space above and below the search bar */
+  margin: 2rem auto; /* Add space above and below the search bar and center it */
   background-color: #ffffff;
   border-radius: 50px; /* This creates the pill shape */
   padding: 5px;
