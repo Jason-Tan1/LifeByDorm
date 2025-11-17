@@ -197,12 +197,9 @@ function Dorms() {
               {reviews.map(review => (
                 <div key={review._id} className="review-card">
                   <div className="review-info">
-                    <div className="review-header">
-                      <h3>{review.user || 'Anonymous'}</h3>
-                      <div className="review-overall-rating">
-                        <span className="overall-rating-number">{calculateOverallRating(review).toFixed(1)}</span>
-                        <span className="review-stars">{renderStars(calculateOverallRating(review))}</span>
-                      </div>
+                    <div className="review-overall-rating">
+                      <span className="overall-rating-number">{calculateOverallRating(review).toFixed(1)}</span>
+                      <span className="review-stars">{renderStars(calculateOverallRating(review))}</span>
                     </div>
                     <div className="review-details">
                       <p className="review-description">{review.description}</p>
@@ -212,6 +209,9 @@ function Dorms() {
                       </div>
                     </div>            
                   </div>
+                  {review.fileImage && (
+                    <img src={review.fileImage} alt="Dorm" className="review-image" />
+                  )}
                 </div>
               ))}
             </div>

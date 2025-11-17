@@ -90,6 +90,9 @@
   min-height: 120px;
   resize: vertical;
   font-family: inherit;
+  word-wrap: break-word;
+  white-space: pre-wrap;
+  overflow-wrap: break-word;
 }
 
 .form-group select {
