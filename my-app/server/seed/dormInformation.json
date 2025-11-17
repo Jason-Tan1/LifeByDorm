@@ -4,8 +4,6 @@
     "slug": "founders-residence",
     "universitySlug": "york-university",
     "imageUrl": "https://www.yorku.ca/housing/wp-content/uploads/sites/57/2022/02/Founders-Exterior-1024x682.jpg",
-    "rating": 4.3,
-    "totalReviews": 21,
     "amenities": [null],
     "roomTypes": [null]
   },
@@ -14,8 +12,6 @@
     "slug": "tatham-hall",
     "universitySlug": "york-university",
     "imageUrl": "https://www.yorku.ca/conference/wp-content/uploads/sites/191/2021/01/DSC_2434_5_6-scaled.jpg",
-    "rating": 4.1,
-    "totalReviews": 15,
     "amenities": [null],
     "roomTypes": [null]
   },
@@ -24,8 +20,6 @@
     "slug": "vanier-residence",
     "universitySlug": "york-university",
     "imageUrl": "https://www.yorku.ca/conference/wp-content/uploads/sites/191/2022/11/DSC_2710_1_2-scaled.jpg",
-    "rating": 4.1,
-    "totalReviews": 15,
     "amenities": [null],
     "roomTypes": [null]
   },
@@ -34,8 +28,6 @@
     "slug": "winters-residence",
     "universitySlug": "york-university",
     "imageUrl": "https://www.acotoronto.ca/images/buildings/Large/o524k7cSPY.jpg",
-    "rating": 4.1,
-    "totalReviews": 15,
     "amenities": [null],
     "roomTypes": [null]
   },
@@ -44,8 +36,6 @@
     "slug": "bethune-residence",
     "universitySlug": "york-university",
     "imageUrl": "https://www.yorku.ca/housing/wp-content/uploads/sites/57/2020/10/DSC_3598_599_600-1024x682.jpg",
-    "rating": 4.1,
-    "totalReviews": 15,
     "amenities": [null],
     "roomTypes": [null]
   },
@@ -54,8 +44,6 @@
     "slug": "calumet-residence",
     "universitySlug": "york-university",
     "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/8/89/CalumetResidence.jpg",
-    "rating": 4.1,
-    "totalReviews": 15,
     "amenities": [null],
     "roomTypes": [null]
   },
@@ -64,9 +52,6 @@
     "slug": "stong-residence",
     "universitySlug": "york-university",
     "imageUrl": "https://central.apps01.yorku.ca/maps/wp-content/uploads/2010/06/stong-res-2-copy.jpg",
-    "rating": 4.0,
-    "totalReviews": 34,
-    "description": "Modern residence with great amenities and location",
     "amenities": ["Fitness Room", "Music Practice Rooms", "Study Lounges"],
     "roomTypes": ["Single", "Double", "Suite"]
   },
@@ -75,8 +60,6 @@
     "slug": "chestnut-residence",
     "universitySlug": "university-of-toronto",
     "imageUrl": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTVlZ23bT_U6axLADKln3QZ5lvr3jPROs-XRg&s",
-    "rating": 4.5,
-    "totalReviews": 48,
     "amenities": [null],
     "roomTypes": [null]
   },
@@ -85,8 +68,6 @@
     "slug": "new-college-residence",
     "universitySlug": "university-of-toronto",
     "imageUrl": "https://www.newcollege.utoronto.ca/wp-content/uploads/2022/03/wilson.jpg?x52235",
-    "rating": 4.2,
-    "totalReviews": 36,
     "amenities": [null],
     "roomTypes": [null]
   },
@@ -95,8 +76,6 @@
     "slug": "innis-residence",
     "universitySlug": "university-of-toronto",
     "imageUrl": "https://innis.utoronto.ca/wp-content/uploads/About-the-Residence-Feature-image.jpg",
-    "rating": 4.3,
-    "totalReviews": 42,
     "amenities": [null],
     "roomTypes": [null]
   },
@@ -105,8 +84,6 @@
     "slug": "university-college-residence",
     "universitySlug": "university-of-toronto",
     "imageUrl": "https://www.uc.utoronto.ca/sites/default/files/styles/scale_width_650/public/assets/images/IMG_0677.jpg?itok=NVHENE_1",
-    "rating": 4.4,
-    "totalReviews": 38,
     "amenities": [null],
     "roomTypes": [null]
   },
@@ -115,8 +92,6 @@
     "slug": "woodsworth-residence",
     "universitySlug": "university-of-toronto",
     "imageUrl": "https://images.squarespace-cdn.com/content/v1/58811ba703596e4e5107e3a4/1559942356251-2RD9Q9N4UZ6GQK9E9V0Q/gh3-Woodsworth-Corner.jpg",
-    "rating": 4.1,
-    "totalReviews": 31,
     "amenities": [null],
     "roomTypes": [null]
   },
@@ -125,8 +100,6 @@
     "slug": "trinity-college-residence",
     "universitySlug": "university-of-toronto",
     "imageUrl": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRX3CL2EPbUwtSAtSKkQ4vo1sHviqIQafhb_g&s",
-    "rating": 4.6,
-    "totalReviews": 45,
     "amenities": [null],
     "roomTypes": [null]
   },
@@ -135,8 +108,6 @@
     "slug": "victoria-college-residence",
     "universitySlug": "university-of-toronto",
     "imageUrl": "https://vic.utoronto.ca/assets/Images/Vic-Registrar/photo-slider-3.jpg",
-    "rating": 4.5,
-    "totalReviews": 52,
     "amenities": [null],
     "roomTypes": [null]
   },
@@ -145,8 +116,6 @@
     "slug": "st-michaels-college-residence",
     "universitySlug": "university-of-toronto",
     "imageUrl": "https://stmikes.utoronto.ca/wp-content/uploads/2020/10/Boiler-Plant-Clock-in-Spring-scaled-1.jpg",
-    "rating": 4.3,
-    "totalReviews": 40,
     "amenities": [null],
     "roomTypes": [null]
   },
@@ -155,8 +124,6 @@
     "slug": "graduate-house",
     "universitySlug": "university-of-toronto",
     "imageUrl": "https://gradhouse.utoronto.ca/wp-content/uploads/uoft-gradhouse-1-1024x683.jpg",
-    "rating": 4.2,
-    "totalReviews": 28,
     "amenities": [null],
     "roomTypes": [null]
   },
@@ -165,9 +132,6 @@
     "slug": "saugeen-maitland-hall",
     "universitySlug": "western-university",
     "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/a/a8/Saugeen-Maitland_Hall.jpg",
-    "rating": 4.1,
-    "totalReviews": 52,
-    "description": "One of the largest residence buildings in Canada",
     "amenities": ["Dining Hall", "Convenience Store", "Recreation Rooms"],
     "roomTypes": ["Single", "Double"]
   },
@@ -176,9 +140,6 @@
     "slug": "bayfield-hall",
     "universitySlug": "western-university",
     "imageUrl": "https://lh3.googleusercontent.com/gps-cs-s/AG0ilSyaQepaddQNTZHCey77O0UXX4MS7vG64BRexw1fiQWPSC2AN5Zjq0JkFziG0O-9cQSLaE1Zlc62Gyagi9bd8j3P5fy4ed7GojqTI8C7Rgj35aoaA5nHFrfK37OZ0Nzf5bdvz3NYyg=s1360-w1360-h1020-rw",
-    "rating": 4.1,
-    "totalReviews": 52,
-    "description": "One of the largest residence buildings in Canada",
     "amenities": ["Dining Hall", "Convenience Store", "Recreation Rooms"],
     "roomTypes": ["Single", "Double"]
   },
@@ -187,9 +148,6 @@
     "slug": "clare-hall",
     "universitySlug": "western-university",
     "imageUrl": "https://media-cdn.tripadvisor.com/media/photo-s/0c/f9/71/95/brescia-clare-hall-residence.jpg",
-    "rating": 4.1,
-    "totalReviews": 52,
-    "description": "One of the largest residence buildings in Canada",
     "amenities": ["Dining Hall", "Convenience Store", "Recreation Rooms"],
     "roomTypes": ["Single", "Double"]
   },
@@ -198,9 +156,6 @@
     "slug": "ontario-hall",
     "universitySlug": "western-university",
     "imageUrl": "https://atrr.ca/wp-content/uploads/2024/03/WU-Ontario-Hall10.jpg",
-    "rating": 4.1,
-    "totalReviews": 52,
-    "description": "One of the largest residence buildings in Canada",
     "amenities": ["Dining Hall", "Convenience Store", "Recreation Rooms"],
     "roomTypes": ["Single", "Double"]
   },
@@ -209,9 +164,6 @@
     "slug": "perth-hall",
     "universitySlug": "western-university",
     "imageUrl": "https://www.southsidegroup.ca/wp-content/uploads/2024/10/Perth-Hall-Student-Residence-Western-University-London-Ontario_small-e1446135666296.jpg",
-    "rating": 4.1,
-    "totalReviews": 52,
-    "description": "One of the largest residence buildings in Canada",
     "amenities": ["Dining Hall", "Convenience Store", "Recreation Rooms"],
     "roomTypes": ["Single", "Double"]
   },
@@ -220,9 +172,6 @@
     "slug": "alumni-house",
     "universitySlug": "western-university",
     "imageUrl": "https://lh3.googleusercontent.com/gps-cs-s/AG0ilSz5l437vItgHZh8SsKnzuggC3sElkLolSNrm88ZE1VCy29Oe9SGG8kCj0Lwd_n8qd41Hx2TiOLFpHNTQeEsy_O_vrqNRaz7kFmYn-GbZj9OgrwQURCuYtMGqiYrGAY9oDJ8ejzH=s1360-w1360-h1020-rw",
-    "rating": 4.1,
-    "totalReviews": 52,
-    "description": "One of the largest residence buildings in Canada",
     "amenities": ["Dining Hall", "Convenience Store", "Recreation Rooms"],
     "roomTypes": ["Single", "Double"]
   },
@@ -231,9 +180,6 @@
     "slug": "elgin-hall",
     "universitySlug": "western-university",
     "imageUrl": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTgjdhs78rlFMw89zbiAVr56dXQWt8ZMj7wQg&s",
-    "rating": 4.1,
-    "totalReviews": 52,
-    "description": "One of the largest residence buildings in Canada",
     "amenities": ["Dining Hall", "Convenience Store", "Recreation Rooms"],
     "roomTypes": ["Single", "Double"]
   },
@@ -242,9 +188,6 @@
     "slug": "essex-hall",
     "universitySlug": "western-university",
     "imageUrl": "https://www.southsidegroup.ca/wp-content/uploads/2024/10/Essex-Hall-Student-Residence-Western-University-London-Ontario_small-e1446135680149-1.jpg.webp",
-    "rating": 4.1,
-    "totalReviews": 52,
-    "description": "One of the largest residence buildings in Canada",
     "amenities": ["Dining Hall", "Convenience Store", "Recreation Rooms"],
     "roomTypes": ["Single", "Double"]
   },
@@ -253,9 +196,6 @@
     "slug": "lambton-hall",
     "universitySlug": "western-university",
     "imageUrl": "https://bloximages.newyork1.vip.townnews.com/westerngazette.ca/content/tncms/assets/v3/editorial/2/f1/2f115128-7abb-11eb-bec7-6b1bae8727bf/603d311c995fe.image.jpg?resize=1200%2C800",
-    "rating": 4.1,
-    "totalReviews": 52,
-    "description": "One of the largest residence buildings in Canada",
     "amenities": ["Dining Hall", "Convenience Store", "Recreation Rooms"],
     "roomTypes": ["Single", "Double"]
   },
@@ -264,9 +204,6 @@
     "slug": "london-hall",
     "universitySlug": "western-university",
     "imageUrl": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRt3sVt67CthNV90fw11kaDIuAZVuHc2usAeA&s",
-    "rating": 4.1,
-    "totalReviews": 52,
-    "description": "One of the largest residence buildings in Canada",
     "amenities": ["Dining Hall", "Convenience Store", "Recreation Rooms"],
     "roomTypes": ["Single", "Double"]
   },
@@ -275,10 +212,73 @@
     "slug": "delaware-hall",
     "universitySlug": "western-university",
     "imageUrl": "https://media-cdn.socastsrm.com/wordpress/wp-content/blogs.dir/202/files/2015/09/Photo-2015-09-27-6-45-47-PM.jpg",
-    "rating": 4.4,
-    "totalReviews": 29,
-    "description": "Suite-style residence with modern facilities",
     "amenities": ["Suite Kitchen", "Study Lounges", "Laundry Facilities"],
     "roomTypes": ["Suite", "Single"]
+  },
+  {
+    "name": "Bates Residence",
+    "slug": "bates-residence",
+    "universitySlug": "mcmaster-university",
+    "imageUrl": null
+  },
+  {
+    "name": "Brandon Hall",
+    "slug": "brandon-hall",
+    "universitySlug": "mcmaster-university",
+    "imageUrl": null
+  },
+  {
+    "name": "Edwards Hall",
+    "slug": "edwards-hall",
+    "universitySlug": "mcmaster-university",
+    "imageUrl": null
+  },
+  {
+    "name": "Hedden Hall",
+    "slug": "hedden-hall",
+    "universitySlug": "mcmaster-university",
+    "imageUrl": null
+  },
+  {
+    "name": "Les Prince Hall",
+    "slug": "les-prince-hall",
+    "universitySlug": "mcmaster-university",
+    "imageUrl": null
+  },
+  {
+    "name": "Matthews Hall",
+    "slug": "matthews-hall",
+    "universitySlug": "mcmaster-university",
+    "imageUrl": null
+  },
+  {
+    "name": "McKay Hall",
+    "slug": "mckay-hall",
+    "universitySlug": "mcmaster-university",
+    "imageUrl": null
+  },
+  {
+    "name": "Moulton Hall",
+    "slug": "moulton-hall",
+    "universitySlug": "mcmaster-university",
+    "imageUrl": null
+  },
+  {
+    "name": "Wallingford Hall",
+    "slug": "wallingford-hall",
+    "universitySlug": "mcmaster-university",
+    "imageUrl": null
+  },
+  {
+    "name": "Whidden Hall",
+    "slug": "whidden-hall",
+    "universitySlug": "mcmaster-university",
+    "imageUrl": null
+  },
+  {
+    "name": "Woodstock Hall",
+    "slug": "woodstock-hall",
+    "universitySlug": "mcmaster-university",
+    "imageUrl": null
   }
 ]
