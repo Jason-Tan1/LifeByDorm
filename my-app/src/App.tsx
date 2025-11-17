@@ -1,12 +1,12 @@
 import React from 'react'
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Home from './homepage/home.tsx';
-import AboutMe from './navbarpages/aboutme.tsx';
-import ContactMe from './navbarpages/contactme.tsx';
-import Login from './navbarpages/login.tsx';
-import University from './universitypage/universityDash.tsx';
+import AboutMe from './NavBarPages/aboutme.tsx';
+import ContactMe from './NavBarPages/contactme.tsx';
+import Login from './NavBarPages/login.tsx';
+import University from './UniversitiesPage/universityDash.tsx';
 import Dorms from './dorms.tsx';
-import NavBar from './navbarpages/navbar.tsx';
+import NavBar from './NavBarPages/navbar.tsx';
 import SearchBar from './homepage/searchbar.tsx';
 import Review from './review.tsx';
 

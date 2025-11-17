@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
-import NavBar from '../navbarpages/navbar';
+import NavBar from '../NavBarPages/navbar';
 import './universityDash.css';
 
 // Define types for University and Dorm data from API
@@ -20,7 +20,7 @@ type APIDorm = {
   name: string;
   slug: string;
   universitySlug: string;
-  imageUrl?: string;
+  imageUrl?: string | null;
   rating?: number;
   totalReviews?: number;
   reviewCount?: number; // Add actual review count
@@ -203,7 +203,7 @@ function UniversityDash() {
           <div className="dorms-grid">
             {dorms.map(dorm => (
               <div key={`${dorm.universitySlug}-${dorm.slug}`} className="dorm-card">
-                <img src={dorm.imageUrl || ''} alt={dorm.name} className="dorm-image" />
+                <img src={(dorm.imageUrl && dorm.imageUrl !== '' && dorm.imageUrl !== 'null') ? dorm.imageUrl : 'https://thumbs.dreamstime.com/b/college-dorm-ai-generated-stock-image-college-dorm-bunk-bed-bed-above-desk-window-generated-276344540.jpg'} alt={dorm.name} className="dorm-image" />
                 <div className="dorm-info">
                   <h3>{dorm.name}</h3>
                   <div className="dorm-rating">

@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import NavBar from './navbarpages/navbar.tsx';
+import NavBar from './NavBarPages/navbar.tsx';
 import './dorms.css';
 import './NavBarPages/navbar.css';
 import { Link, useParams } from 'react-router-dom';
@@ -131,7 +131,7 @@ function Dorms() {
         {/* Left side - Dorm Information */}
         <div className="dorm-info">
           <img 
-            src={dorm.imageUrl || ''} 
+            src={dorm.imageUrl && dorm.imageUrl.trim() !== '' ? dorm.imageUrl : 'https://thumbs.dreamstime.com/b/college-dorm-ai-generated-stock-image-college-dorm-bunk-bed-bed-above-desk-window-generated-276344540.jpg'} 
             alt={dorm.name} 
             className="dorm-main-image"
           />
