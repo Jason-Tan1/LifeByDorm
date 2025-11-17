@@ -84,7 +84,21 @@ function Dorms() {
   }, [universityName, dorm]);
 
   const renderStars = (rating: number) => {
-    return "★".repeat(Math.floor(rating)) + "☆".repeat(5 - Math.floor(rating));
+    const fullStars = Math.floor(rating);
+    const hasHalfStar = rating - fullStars >= 0.5;
+    const emptyStars = 5 - fullStars - (hasHalfStar ? 1 : 0);
+    return "★".repeat(fullStars) + (hasHalfStar ? "⯨" : "") + "☆".repeat(emptyStars);
+  };
+
+  const calculateOverallRating = (review: any) => {
+    const ratings = [review.room, review.bathroom, review.building, review.amenities, review.location];
+    return ratings.reduce((acc, rating) => acc + rating, 0) / ratings.length;
+  };
+
+  const calculateAverageRating = () => {
+    if (reviews.length === 0) return 0;
+    const totalRating = reviews.reduce((sum, review) => sum + calculateOverallRating(review), 0);
+    return totalRating / reviews.length;
   };
 
   if (loading) {
@@ -125,11 +139,11 @@ function Dorms() {
           <div className="dorm-header">
             <h1>{dorm.name}</h1>
             <div className="dorm-rating">
-              <div className="stars" title={(dorm.rating ?? 0).toString()}>
-                {renderStars(dorm.rating ?? 0)}
+              <div className="stars" title={calculateAverageRating().toString()}>
+                {renderStars(calculateAverageRating())}
               </div>
               <span className="rating-number">
-                {(dorm.rating ?? 0).toFixed(1)} ({reviews.length} reviews)
+                {calculateAverageRating().toFixed(1)} ({reviews.length} reviews)
               </span>
             </div>
           </div>
@@ -183,36 +197,15 @@ function Dorms() {
               {reviews.map(review => (
                 <div key={review._id} className="review-card">
                   <div className="review-info">
-                    <h3>{review.user || 'Anonymous'}</h3>
-                    <div className="review-details">
-                      {/* Review Description */}
-                      <p className="review-description">{review.description}</p>
-                      
-                      {/* Ratings */}
-                      <div className="review-rating-group">
-                        <div className="review-rating-item">
-                          <span className="review-rating-label">Room</span>
-                          <span className="review-stars">{renderStars(review.room)}</span>
-                        </div>
-                        <div className="review-rating-item">
-                          <span className="review-rating-label">Bathroom</span>
-                          <span className="review-stars">{renderStars(review.bathroom)}</span>
-                        </div>
-                        <div className="review-rating-item">
-                          <span className="review-rating-label">Building</span>
-                          <span className="review-stars">{renderStars(review.building)}</span>
-                        </div>
-                        <div className="review-rating-item">
-                          <span className="review-rating-label">Amenities</span>
-                          <span className="review-stars">{renderStars(review.amenities)}</span>
-                        </div>
-                        <div className="review-rating-item">
-                          <span className="review-rating-label">Location</span>
-                          <span className="review-stars">{renderStars(review.location)}</span>
-                        </div>
+                    <div className="review-header">
+                      <h3>{review.user || 'Anonymous'}</h3>
+                      <div className="review-overall-rating">
+                        <span className="overall-rating-number">{calculateOverallRating(review).toFixed(1)}</span>
+                        <span className="review-stars">{renderStars(calculateOverallRating(review))}</span>
                       </div>
-
-                      {/* Metadata */}
+                    </div>
+                    <div className="review-details">
+                      <p className="review-description">{review.description}</p>
                       <div className="review-metadata">
                         <span>Year: {review.year}</span>
                         <span>Room Type: {review.roomType}</span>

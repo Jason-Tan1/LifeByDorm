@@ -35,6 +35,7 @@ function UniversityDash() {
   const [university, setUniversity] = useState<APIUniversity | null>(null);
   const [dorms, setDorms] = useState<APIDorm[]>([]);
   const [reviewCounts, setReviewCounts] = useState<{ [dormName: string]: number }>({});
+  const [dormRatings, setDormRatings] = useState<{ [dormName: string]: number }>({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -66,8 +67,9 @@ function UniversityDash() {
           setUniversity(uniData);
           setDorms(dormsData);
           
-          // Fetch review counts for each dorm
+          // Fetch review counts and ratings for each dorm
           const counts: { [dormName: string]: number } = {};
+          const ratings: { [dormName: string]: number } = {};
           await Promise.all(
             dormsData.map(async (dorm) => {
               try {
@@ -77,14 +79,24 @@ function UniversityDash() {
                 if (reviewRes.ok) {
                   const reviews = await reviewRes.json();
                   counts[dorm.name] = reviews.length;
+                  if (reviews.length > 0) {
+                    const totalRating = reviews.reduce((sum: number, review: any) => {
+                      return sum + calculateOverallRating(review);
+                    }, 0);
+                    ratings[dorm.name] = totalRating / reviews.length;
+                  } else {
+                    ratings[dorm.name] = 0;
+                  }
                 }
               } catch (e) {
                 console.error(`Failed to fetch reviews for ${dorm.name}`, e);
                 counts[dorm.name] = 0;
+                ratings[dorm.name] = 0;
               }
             })
           );
           setReviewCounts(counts);
+          setDormRatings(ratings);
         }
       } catch (e: any) {
         if (!cancelled) setError(e?.message || 'Failed to load data');
@@ -101,7 +113,15 @@ function UniversityDash() {
 
   // Function to render star ratings
   const renderStars = (rating: number) => {
-    return "★".repeat(Math.floor(rating)) + "☆".repeat(5 - Math.floor(rating));
+    const fullStars = Math.floor(rating);
+    const hasHalfStar = rating - fullStars >= 0.5;
+    const emptyStars = 5 - fullStars - (hasHalfStar ? 1 : 0);
+    return "★".repeat(fullStars) + (hasHalfStar ? "⯨" : "") + "☆".repeat(emptyStars);
+  };
+
+  const calculateOverallRating = (review: any) => {
+    const ratings = [review.room, review.bathroom, review.building, review.amenities, review.location];
+    return ratings.reduce((acc, rating) => acc + rating, 0) / ratings.length;
   };
 
   // Main component render
@@ -187,11 +207,11 @@ function UniversityDash() {
                 <div className="dorm-info">
                   <h3>{dorm.name}</h3>
                   <div className="dorm-rating">
-                    <div className="stars" title={(dorm.rating ?? 0).toString()}>
-                      {renderStars(dorm.rating ?? 0)}
+                    <div className="stars" title={(dormRatings[dorm.name] ?? 0).toString()}>
+                      {renderStars(dormRatings[dorm.name] ?? 0)}
                     </div>
                     <span className="rating-number">
-                      {(dorm.rating ?? 0).toFixed(1)} ({reviewCounts[dorm.name] ?? 0} reviews)
+                      {(dormRatings[dorm.name] ?? 0).toFixed(1)} ({reviewCounts[dorm.name] ?? 0} reviews)
                     </span>
                   </div>
                   <div className="dorm-buttons">
