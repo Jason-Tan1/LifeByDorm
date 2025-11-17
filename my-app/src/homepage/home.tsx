@@ -1,9 +1,11 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import './Home.css'; 
 import { Link } from 'react-router-dom';
 import NavBar from '../navbarpages/navbar.tsx'; 
 import SearchBar from './searchbar.tsx'; 
-import Footer from './footer.tsx'; 
+import Footer from './footer.tsx';
+
+const API_BASE = (import.meta as any).env?.VITE_API_BASE || 'http://localhost:3000'; 
 
 
 const featuredUniversities = [
@@ -12,7 +14,7 @@ const featuredUniversities = [
     name: 'York University',
     slug: 'york-university',
     location: 'Toronto, ON',
-    imageUrl: 'https://miro.medium.com/0*-mSi2pTfWKkJpVf9'
+    imageUrl: 'https://cdn.prod.website-files.com/5fc4462337773c2fc7fcbcfb/62bd296b4a3a37ee3d8050c2_york-university-skedda-2.jpeg'
   },
   {
     id: 2,
@@ -37,7 +39,6 @@ const featuredDorms = [
     slug: 'founders-residence', 
     university: 'York University',
     universitySlug: 'york-university',
-    rating: 4.0,
     imageUrl: 'https://www.yorku.ca/housing/wp-content/uploads/sites/57/2022/02/Founders-Exterior-1024x682.jpg'
   },
   {
@@ -46,7 +47,6 @@ const featuredDorms = [
     slug: 'graduate-house',
     university: 'University of Toronto',
     universitySlug: 'university-of-toronto',
-    rating: 4.5,
     imageUrl: 'https://gradhouse.utoronto.ca/wp-content/uploads/uoft-gradhouse-1-1024x683.jpg'
   },
   {
@@ -55,12 +55,52 @@ const featuredDorms = [
     slug: 'saugeen-maitland-hall',
     university: 'Western University',
     universitySlug: 'western-university',
-    rating: 4.1,
     imageUrl: 'https://upload.wikimedia.org/wikipedia/commons/a/a8/Saugeen-Maitland_Hall.jpg'
   }
 ];
 
 function Home() {
+  const [dormRatings, setDormRatings] = useState<{ [dormName: string]: number }>({});
+
+  const calculateOverallRating = (review: any) => {
+    const ratings = [review.room, review.bathroom, review.building, review.amenities, review.location];
+    return ratings.reduce((acc, rating) => acc + rating, 0) / ratings.length;
+  };
+
+  useEffect(() => {
+    const fetchDormRatings = async () => {
+      const ratings: { [dormName: string]: number } = {};
+      await Promise.all(
+        featuredDorms.map(async (dorm) => {
+          try {
+            console.log(`Fetching reviews for: ${dorm.name} at ${dorm.universitySlug}`);
+            const reviewRes = await fetch(`${API_BASE}/api/reviews?university=${encodeURIComponent(dorm.universitySlug)}&dorm=${encodeURIComponent(dorm.name)}`);
+            if (reviewRes.ok) {
+              const reviews = await reviewRes.json();
+              console.log(`Reviews for ${dorm.name}:`, reviews);
+              if (reviews.length > 0) {
+                const totalRating = reviews.reduce((sum: number, review: any) => sum + calculateOverallRating(review), 0);
+                ratings[dorm.name] = totalRating / reviews.length;
+                console.log(`Calculated rating for ${dorm.name}: ${ratings[dorm.name]}`);
+              } else {
+                ratings[dorm.name] = 0;
+                console.log(`No reviews found for ${dorm.name}`);
+              }
+            } else {
+              console.error(`Failed to fetch reviews for ${dorm.name}, status: ${reviewRes.status}`);
+            }
+          } catch (e) {
+            console.error(`Failed to fetch reviews for ${dorm.name}`, e);
+            ratings[dorm.name] = 0;
+          }
+        })
+      );
+      console.log('All ratings:', ratings);
+      setDormRatings(ratings);
+    };
+    fetchDormRatings();
+  }, []);
+
   return (
     <div className = "home"> 
       <NavBar />
@@ -123,7 +163,7 @@ function Home() {
                     <span className="icon">🏫</span> {dorm.university}
                   </p>
                   <p className="featured-location">
-                    <span className="icon">⭐</span> {dorm.rating.toFixed(1)} rating
+                    <span className="icon">⭐</span> {(dormRatings[dorm.name] ?? 0).toFixed(1)}
                   </p>
                 </div>
               </Link>
