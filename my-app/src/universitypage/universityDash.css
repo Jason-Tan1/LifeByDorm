@@ -15,7 +15,7 @@
 /* Left side - University Information */
 .university-info {
   flex: 1;
-  max-width: 600px;
+  max-width: 500px;
   background: white;
   border-radius: 12px;
   padding: 24px;
@@ -136,25 +136,31 @@
 }
 
 .dorm-card {
+  display: flex;
   background: white;
   border-radius: 12px;
   overflow: hidden;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  transition: transform 0.2s;
+  transition: transform 0.2s, box-shadow 0.2s;
 }
 
 .dorm-card:hover {
   transform: translateY(-4px);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
 }
 
 .dorm-image {
-  width: 100%;
-  height: 225px;
+  width: 280px;
+  min-width: 280px;
+  height: 200px;
   object-fit: cover;
 }
 
 .dorm-info {
-  padding: 16px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
 }
 
 .dorm-info h3 {
@@ -162,13 +168,14 @@
   color: #1a1a1a;
   margin-top: 0;
   margin-bottom: 12px;
+  font-weight: 600;
 }
 
 .dorm-rating {
   display: flex;
   align-items: center;
   gap: 12px;
-  margin-bottom: 12px;
+  margin-bottom: 16px;
 }
 
 .stars {
@@ -179,7 +186,7 @@
 
 .rating-number {
   color: #666;
-  font-size: 0.9rem;
+  font-size: 0.95rem;
 }
 
 .dorm-description {
@@ -191,7 +198,8 @@
 .dorm-buttons {
   display: flex;
   gap: 12px;
-  margin-top: 16px;
+  margin-top: auto; 
+
 }
 
 .view-dorm-button, .review-button {
@@ -203,6 +211,7 @@
   transition: all 0.2s;
   text-align: center;
   font-weight: 500;
+  line-height: 1.4;
 }
 
 .view-dorm-button {
@@ -217,6 +226,9 @@
 .review-button {
   background-color: #4caf50;
   color: white;
+  margin-top: auto;
+  margin-left: auto;
+  
 }
 
 .review-button:hover {
@@ -250,7 +262,17 @@
     font-size: 2rem;
   }
 
+  .dorm-card {
+    flex-direction: column;
+  }
+
   .dorm-image {
+    width: 100%;
+    min-width: 100%;
     height: 200px;
+  }
+
+  .dorm-buttons {
+    flex-direction: column;
   }
 }

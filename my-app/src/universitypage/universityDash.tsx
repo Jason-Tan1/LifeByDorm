@@ -219,7 +219,7 @@ function UniversityDash() {
                       View Details
                     </Link>
                     <Link to={`/review?university=${encodeURIComponent(universityName || '')}&dorm=${encodeURIComponent(dorm.name)}`} className="review-button">
-                      Leave Review
+                      Leave <br/> Review
                     </Link>
                   </div>
                 </div>
