@@ -23,6 +23,7 @@ type APIDorm = {
   imageUrl?: string;
   rating?: number;
   totalReviews?: number;
+  reviewCount?: number; // Add actual review count
 };
 
 const API_BASE = (import.meta as any).env?.VITE_API_BASE || 'http://localhost:3000';
@@ -33,6 +34,7 @@ function UniversityDash() {
 
   const [university, setUniversity] = useState<APIUniversity | null>(null);
   const [dorms, setDorms] = useState<APIDorm[]>([]);
+  const [reviewCounts, setReviewCounts] = useState<{ [dormName: string]: number }>({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -63,6 +65,26 @@ function UniversityDash() {
         if (!cancelled) {
           setUniversity(uniData);
           setDorms(dormsData);
+          
+          // Fetch review counts for each dorm
+          const counts: { [dormName: string]: number } = {};
+          await Promise.all(
+            dormsData.map(async (dorm) => {
+              try {
+                const reviewRes = await fetch(
+                  `${API_BASE}/api/reviews?university=${encodeURIComponent(universityName!)}&dorm=${encodeURIComponent(dorm.name)}`
+                );
+                if (reviewRes.ok) {
+                  const reviews = await reviewRes.json();
+                  counts[dorm.name] = reviews.length;
+                }
+              } catch (e) {
+                console.error(`Failed to fetch reviews for ${dorm.name}`, e);
+                counts[dorm.name] = 0;
+              }
+            })
+          );
+          setReviewCounts(counts);
         }
       } catch (e: any) {
         if (!cancelled) setError(e?.message || 'Failed to load data');
@@ -169,7 +191,7 @@ function UniversityDash() {
                       {renderStars(dorm.rating ?? 0)}
                     </div>
                     <span className="rating-number">
-                      {(dorm.rating ?? 0).toFixed(1)} ({dorm.totalReviews ?? 0} reviews)
+                      {(dorm.rating ?? 0).toFixed(1)} ({reviewCounts[dorm.name] ?? 0} reviews)
                     </span>
                   </div>
                   <div className="dorm-buttons">

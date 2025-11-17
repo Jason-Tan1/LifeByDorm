@@ -129,7 +129,7 @@ function Dorms() {
                 {renderStars(dorm.rating ?? 0)}
               </div>
               <span className="rating-number">
-                {(dorm.rating ?? 0).toFixed(1)} ({dorm.totalReviews ?? 0} reviews)
+                {(dorm.rating ?? 0).toFixed(1)} ({reviews.length} reviews)
               </span>
             </div>
           </div>
