@@ -108,9 +108,7 @@ function Home() {
         <div className="home-content">
           <div className="home-section">
             <h1>
-              Honest Reviews of Canadian University Dorms
-              <br />
-              Straight from Real Students
+              Honest Dorm Reviews from Students Across Canada
             </h1>
             <SearchBar />
           </div>

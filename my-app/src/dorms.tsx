@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import NavBar from './NavBarPages/navbar.tsx';
+import Footer from './homepage/footer';
 import './dorms.css';
 import './NavBarPages/navbar.css';
 import { Link, useParams } from 'react-router-dom';
@@ -108,6 +109,7 @@ function Dorms() {
         <div className="dorm-content">
           <p>Loading dorm details...</p>
         </div>
+        <Footer />
       </div>
     );
   }
@@ -119,6 +121,7 @@ function Dorms() {
         <div className="dorm-content">
           <p>{error || 'Dorm not found'}</p>
         </div>
+        <Footer />
       </div>
     );
   }
@@ -231,6 +234,7 @@ function Dorms() {
           )}
         </div>
       </div>
+      <Footer />
     </div>
   );
 }

@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import NavBar from '../NavBarPages/navbar';
+import Footer from '../homepage/footer';
 import './universityDash.css';
 
 // Define types for University and Dorm data from API
@@ -228,6 +229,7 @@ function UniversityDash() {
           </div>
         </div>
       </div>
+      <Footer />
     </div>
   );
 }

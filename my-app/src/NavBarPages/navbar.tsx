@@ -25,16 +25,6 @@ function navbar() {
       </div>
         {/* Navigation Bar Buttons */}
       <div className="navbar_actions">
-        <div className="navbar_aboutme">
-          <Link to="/aboutme">
-            <button>About Me</button>
-          </Link>
-        </div>
-        <div className="navbar_contactme">
-          <Link to="/contactme"> 
-            <button>Contact Me</button>
-          </Link>
-        </div>
         <div className="navbar_login">
           {isLoggedIn ? (
             <button onClick={handleLogout}>Log Out</button>
