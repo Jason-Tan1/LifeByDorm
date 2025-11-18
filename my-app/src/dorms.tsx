@@ -61,6 +61,8 @@ function Dorms() {
 
   const [reviews, setReviews] = useState<any[]>([]);
   const [reviewsLoading, setReviewsLoading] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const reviewsPerPage = 10;
 
   // Fetch reviews for this dorm
   useEffect(() => {
@@ -103,6 +105,51 @@ function Dorms() {
     if (reviews.length === 0) return 0;
     const totalRating = reviews.reduce((sum, review) => sum + calculateOverallRating(review), 0);
     return totalRating / reviews.length;
+  };
+
+  // Pagination logic
+  const indexOfLastReview = currentPage * reviewsPerPage;
+  const indexOfFirstReview = indexOfLastReview - reviewsPerPage;
+  const currentReviews = reviews.slice(indexOfFirstReview, indexOfLastReview);
+  const totalPages = Math.ceil(reviews.length / reviewsPerPage);
+
+  const handleNextPage = () => {
+    if (currentPage < totalPages) {
+      setCurrentPage(currentPage + 1);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  };
+
+  const handlePrevPage = () => {
+    if (currentPage > 1) {
+      setCurrentPage(currentPage - 1);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  };
+
+  const handlePageClick = (pageNumber: number) => {
+    setCurrentPage(pageNumber);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const getPageNumbers = () => {
+    const pages = [];
+    const maxPagesToShow = 10;
+    
+    if (totalPages <= maxPagesToShow) {
+      // Show all pages if total is 10 or less
+      for (let i = 1; i <= totalPages; i++) {
+        pages.push(i);
+      }
+    } else {
+      // Show first 10 pages, then "Next" button
+      const endPage = Math.min(currentPage + 9, totalPages);
+      for (let i = currentPage; i <= endPage && pages.length < maxPagesToShow; i++) {
+        pages.push(i);
+      }
+    }
+    
+    return pages;
   };
 
   const openLightbox = (images: string[], index: number) => {
@@ -224,7 +271,7 @@ function Dorms() {
             <p>No reviews yet. Be the first to leave a review!</p>
           ) : (
             <div className="reviews-grid">
-              {reviews.map(review => (
+              {currentReviews.map(review => (
                 <div key={review._id} className="review-card">
                   <div className="review-info">
                     <div className="review-overall-rating">
@@ -266,6 +313,48 @@ function Dorms() {
                   ) : null}
                 </div>
               ))}
+            </div>
+          )}
+          
+          {/* Pagination Controls */}
+          {reviews.length > reviewsPerPage && (
+            <div className="pagination-controls">
+              <button 
+                className="pagination-button" 
+                onClick={handlePrevPage}
+                disabled={currentPage === 1}
+              >
+                Previous
+              </button>
+              
+              <div className="pagination-numbers">
+                {getPageNumbers().map(pageNum => (
+                  <button
+                    key={pageNum}
+                    className={`pagination-number ${currentPage === pageNum ? 'active' : ''}`}
+                    onClick={() => handlePageClick(pageNum)}
+                  >
+                    {pageNum}
+                  </button>
+                ))}
+                {totalPages > 10 && currentPage + 9 < totalPages && (
+                  <button 
+                    className="pagination-button" 
+                    onClick={handleNextPage}
+                  >
+                    Next
+                  </button>
+                )}
+              </div>
+              
+              <button 
+                className="pagination-button" 
+                onClick={handleNextPage}
+                disabled={currentPage === totalPages}
+                style={{ visibility: totalPages > 10 && currentPage + 9 < totalPages ? 'hidden' : 'visible' }}
+              >
+                Next
+              </button>
             </div>
           )}
         </div>
