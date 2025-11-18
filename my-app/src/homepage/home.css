@@ -7,6 +7,23 @@
     overflow-x: hidden; 
   }
 
+  /* Prevent text selection outline */
+  * {
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    outline: none;
+  }
+
+  /* Allow text selection in input fields and textareas */
+  input, textarea {
+    -webkit-user-select: text;
+    -moz-user-select: text;
+    -ms-user-select: text;
+    user-select: text;
+  }
+
   /* This is the main container for the entire page from your component */
   .home {
     width: 100%; /* --- FIX ADDED: Ensures the div spans the full width --- */
@@ -63,7 +80,7 @@
     background-color: transparent;
     padding: 140px 0;
     width: 100%;
-    margin-top: 35vh;
+    margin-top: 40vh; /* Changing this constantly*/
   }
 
   .featured-container {
