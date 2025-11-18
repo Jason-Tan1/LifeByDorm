@@ -211,8 +211,15 @@ function Dorms() {
                   </div>
                   {review.images && review.images.length > 0 ? (
                     <div className="review-images-gallery">
-                      {review.images.map((img: string, idx: number) => (
-                        <img key={idx} src={img} alt={`Dorm ${idx + 1}`} className="review-gallery-image" />
+                      {review.images.slice(0, 3).map((img: string, idx: number) => (
+                        <div key={idx} className="review-gallery-image-wrapper">
+                          <img src={img} alt={`Dorm ${idx + 1}`} className="review-gallery-image" />
+                          {idx === 2 && review.images.length > 3 && (
+                            <div className="review-image-overlay">
+                              +{review.images.length - 3} more
+                            </div>
+                          )}
+                        </div>
                       ))}
                     </div>
                   ) : review.fileImage ? (
