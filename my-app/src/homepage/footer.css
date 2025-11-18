@@ -13,8 +13,32 @@
   text-align: center;
 }
 
+.footer-links {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.footer-link {
+  color: #000000;
+  text-decoration: none;
+  font-size: 1rem;
+  transition: color 0.3s ease;
+}
+
+.footer-separator {
+  color: #000000;
+  font-size: 1rem;
+}
+
+.footer-link:hover {
+  text-decoration: underline;
+}
+
 .footer-content p {
   margin: 0;
   font-size: 0.9rem;
-  color: #666666;
+  color: #000000;
 }
