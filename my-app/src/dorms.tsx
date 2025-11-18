@@ -209,9 +209,15 @@ function Dorms() {
                       </div>
                     </div>            
                   </div>
-                  {review.fileImage && (
+                  {review.images && review.images.length > 0 ? (
+                    <div className="review-images-gallery">
+                      {review.images.map((img: string, idx: number) => (
+                        <img key={idx} src={img} alt={`Dorm ${idx + 1}`} className="review-gallery-image" />
+                      ))}
+                    </div>
+                  ) : review.fileImage ? (
                     <img src={review.fileImage} alt="Dorm" className="review-image" />
-                  )}
+                  ) : null}
                 </div>
               ))}
             </div>

@@ -5,6 +5,7 @@ export interface IDorm extends Document {
   slug: string;
   universitySlug: string;
   imageUrl?: string;
+  images?: string[];
   rating?: number;
   totalReviews?: number;
   description?: string;
@@ -18,6 +19,7 @@ const dormSchema = new Schema<IDorm>({
   slug: { type: String, required: true },
   universitySlug: { type: String, required: true },
   imageUrl: { type: String },
+  images: { type: [String], default: [] },
   rating: { type: Number, default: 0 },
   totalReviews: { type: Number, default: 0 },
   description: { type: String },

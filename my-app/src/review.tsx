@@ -21,8 +21,9 @@ function Reviews() {
   const [description, setDescription] = useState('');
   const [year, setYear] = useState('');
   const [roomType, setRoomType] = useState('');
-  const [fileDataUrl, setFileDataUrl] = useState<string | null>(null);
+  const [fileDataUrls, setFileDataUrls] = useState<string[]>([]);
   const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10 MB
+  const MAX_FILES = 5; // Maximum 5 images
 
   const handleRatingClick = (category: keyof typeof ratings, value: number) => {
     setRatings(prev => ({
@@ -48,19 +49,41 @@ function Reviews() {
   };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files && e.target.files[0];
-    if (!file) return;
-    if (file.size > MAX_FILE_SIZE) {
-      alert('File too large. Maximum file size is 10 MB.');
-      // clear the file input visually by not setting fileDataUrl
-      setFileDataUrl(null);
+    const files = e.target.files;
+    if (!files || files.length === 0) return;
+    
+    if (files.length > MAX_FILES) {
+      alert(`You can only upload up to ${MAX_FILES} images.`);
+      e.target.value = ''; // Reset input
       return;
     }
-    const reader = new FileReader();
-    reader.onload = () => {
-      setFileDataUrl(reader.result as string);
-    };
-    reader.readAsDataURL(file);
+    
+    const newFileDataUrls: string[] = [];
+    let filesProcessed = 0;
+    
+    Array.from(files).forEach((file) => {
+      if (file.size > MAX_FILE_SIZE) {
+        alert(`File "${file.name}" is too large. Maximum file size is 10 MB.`);
+        filesProcessed++;
+        return;
+      }
+      
+      const reader = new FileReader();
+      reader.onload = () => {
+        newFileDataUrls.push(reader.result as string);
+        filesProcessed++;
+        
+        if (filesProcessed === files.length) {
+          setFileDataUrls(prev => [...prev, ...newFileDataUrls]);
+          e.target.value = ''; // Reset input after processing
+        }
+      };
+      reader.readAsDataURL(file);
+    });
+  };
+
+  const removeImage = (index: number) => {
+    setFileDataUrls(prev => prev.filter((_, i) => i !== index));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -93,7 +116,8 @@ function Reviews() {
       description,
       year: year ? Number(year) : null,
       roomType,
-      fileImage: fileDataUrl
+      fileImage: fileDataUrls.length > 0 ? fileDataUrls[0] : null,
+      images: fileDataUrls
     };
 
     try {
@@ -115,7 +139,7 @@ function Reviews() {
       setDescription('');
       setYear('');
       setRoomType('');
-      setFileDataUrl(null);
+      setFileDataUrls([]);
       alert('Review submitted — thank you!');
       console.log('Saved review:', data);
       
@@ -176,15 +200,39 @@ function Reviews() {
 
           {/* Photo Upload */}
           <div className="file-input-group">
-            <label>Photo of Dorm</label>
+            <label>Photos of Dorm (up to {MAX_FILES})</label>
             <div className="file-input-wrapper">
-              <input type="file" accept="image/*" onChange={handleFileChange} />
+              <input type="file" accept="image/*" multiple onChange={handleFileChange} />
               <p className="file-input-text">Click to upload or drag and drop</p>
-              <p className="file-input-text">PNG, JPG up to 10MB</p>
+              <p className="file-input-text">PNG, JPG up to 10MB each</p>
             </div>
-            {fileDataUrl && (
-              <div style={{ marginTop: 10 }}>
-                <img src={fileDataUrl} alt="preview" style={{ maxWidth: '100%', borderRadius: 8 }} />
+            {fileDataUrls.length > 0 && (
+              <div style={{ marginTop: 10, display: 'flex', flexWrap: 'wrap', gap: '10px' }}>
+                {fileDataUrls.map((url, index) => (
+                  <div key={index} style={{ position: 'relative', display: 'inline-block' }}>
+                    <img src={url} alt={`preview ${index + 1}`} style={{ maxWidth: '150px', height: '150px', objectFit: 'cover', borderRadius: 8 }} />
+                    <button
+                      type="button"
+                      onClick={() => removeImage(index)}
+                      style={{
+                        position: 'absolute',
+                        top: '5px',
+                        right: '5px',
+                        background: 'red',
+                        color: 'white',
+                        border: 'none',
+                        borderRadius: '50%',
+                        width: '24px',
+                        height: '24px',
+                        cursor: 'pointer',
+                        fontSize: '14px',
+                        fontWeight: 'bold'
+                      }}
+                    >
+                      ×
+                    </button>
+                  </div>
+                ))}
               </div>
             )}
           </div>
