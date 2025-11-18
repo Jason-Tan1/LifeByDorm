@@ -27,6 +27,9 @@ function Dorms() {
   const [dorm, setDorm] = useState<APIDorm | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [lightboxOpen, setLightboxOpen] = useState(false);
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [currentImages, setCurrentImages] = useState<string[]>([]);
 
   useEffect(() => {
     if (!universityName || !dormSlug) return;
@@ -100,6 +103,30 @@ function Dorms() {
     if (reviews.length === 0) return 0;
     const totalRating = reviews.reduce((sum, review) => sum + calculateOverallRating(review), 0);
     return totalRating / reviews.length;
+  };
+
+  const openLightbox = (images: string[], index: number) => {
+    setCurrentImages(images);
+    setCurrentImageIndex(index);
+    setLightboxOpen(true);
+  };
+
+  const closeLightbox = () => {
+    setLightboxOpen(false);
+  };
+
+  const nextImage = () => {
+    setCurrentImageIndex((prev) => (prev + 1) % currentImages.length);
+  };
+
+  const prevImage = () => {
+    setCurrentImageIndex((prev) => (prev - 1 + currentImages.length) % currentImages.length);
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'ArrowRight') nextImage();
+    if (e.key === 'ArrowLeft') prevImage();
+    if (e.key === 'Escape') closeLightbox();
   };
 
   if (loading) {
@@ -215,7 +242,11 @@ function Dorms() {
                   {review.images && review.images.length > 0 ? (
                     <div className="review-images-gallery">
                       {review.images.slice(0, 3).map((img: string, idx: number) => (
-                        <div key={idx} className="review-gallery-image-wrapper">
+                        <div 
+                          key={idx} 
+                          className="review-gallery-image-wrapper"
+                          onClick={() => openLightbox(review.images, idx)}
+                        >
                           <img src={img} alt={`Dorm ${idx + 1}`} className="review-gallery-image" />
                           {idx === 2 && review.images.length > 3 && (
                             <div className="review-image-overlay">
@@ -226,7 +257,12 @@ function Dorms() {
                       ))}
                     </div>
                   ) : review.fileImage ? (
-                    <img src={review.fileImage} alt="Dorm" className="review-image" />
+                    <img 
+                      src={review.fileImage} 
+                      alt="Dorm" 
+                      className="review-image"
+                      onClick={() => openLightbox([review.fileImage], 0)}
+                    />
                   ) : null}
                 </div>
               ))}
@@ -234,6 +270,28 @@ function Dorms() {
           )}
         </div>
       </div>
+
+      {/* Lightbox Modal */}
+      {lightboxOpen && (
+        <div 
+          className="lightbox-overlay" 
+          onClick={closeLightbox}
+          onKeyDown={handleKeyDown}
+          tabIndex={0}
+        >
+          <button className="lightbox-close" onClick={closeLightbox}>×</button>
+          <button className="lightbox-arrow lightbox-arrow-left" onClick={(e) => { e.stopPropagation(); prevImage(); }}>‹</button>
+          <img 
+            src={currentImages[currentImageIndex]} 
+            alt="Full size" 
+            className="lightbox-image"
+            onClick={(e) => e.stopPropagation()}
+          />
+          <button className="lightbox-arrow lightbox-arrow-right" onClick={(e) => { e.stopPropagation(); nextImage(); }}>›</button>
+          <div className="lightbox-counter">{currentImageIndex + 1} / {currentImages.length}</div>
+        </div>
+      )}
+
       <Footer />
     </div>
   );
