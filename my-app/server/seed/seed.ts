@@ -51,11 +51,21 @@ async function main() {
 
     for (const dorm of dorms) {
       const slug = dorm.slug || (dorm.name && dorm.name.toLowerCase().replace(/[^a-z0-9]+/g, '-'));
+      
+      // Handle both single imageUrl and multiple images
+      let images: string[] = [];
+      if (Array.isArray(dorm.images)) {
+        images = dorm.images.filter((img: any) => img);
+      } else if (dorm.imageUrl) {
+        images = [dorm.imageUrl];
+      }
+      
       const doc = {
         name: dorm.name,
         slug,
         universitySlug: dorm.universitySlug,
         imageUrl: dorm.imageUrl || null,
+        images: images,
         rating: dorm.rating || 0,
         totalReviews: dorm.totalReviews || 0,
         description: dorm.description || null,

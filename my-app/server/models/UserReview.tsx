@@ -14,6 +14,7 @@ export interface IReview extends Document {
   year: number;
   roomType: string;
   fileImage?: string;
+  images?: string[];
   createdAt?: Date;
   user?: string;
 }
@@ -30,6 +31,7 @@ const reviewSchema = new Schema<IReview>({
   year: { type: Number, required: true },
   roomType: { type: String, required: true },
   fileImage: { type: String },
+  images: { type: [String], default: [] },
   createdAt: { type: Date, default: Date.now },
   user: { type: String }
 });

@@ -266,8 +266,14 @@ app.post('/api/reviews', async (req: Request, res: Response) => {
       description,
       year,
       roomType,
-      fileImage
+      fileImage,
+      images
     } = req.body;
+
+    console.log('📥 Received review data:');
+    console.log('  - fileImage:', fileImage ? 'EXISTS' : 'NONE');
+    console.log('  - images:', images);
+    console.log('  - images length:', images ? images.length : 0);
 
     const review = new UserReview({
       university,
@@ -280,11 +286,17 @@ app.post('/api/reviews', async (req: Request, res: Response) => {
       description,
       year,
       roomType,
-      fileImage
+      fileImage,
+      images
     });
 
     const saved = await review.save();
-  console.log('✅ Saved review to DB:', { id: saved._id, university: saved.university, dorm: saved.dorm });
+    console.log('✅ Saved review to DB:', { 
+      id: saved._id, 
+      university: saved.university, 
+      dorm: saved.dorm,
+      imagesLength: saved.images ? saved.images.length : 0 
+    });
   res.status(201).json(saved);
   } catch (err) {
     console.error('Error saving review', err);
