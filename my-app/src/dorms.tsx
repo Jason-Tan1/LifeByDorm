@@ -4,6 +4,10 @@ import Footer from './homepage/footer';
 import './dorms.css';
 import './NavBarPages/navbar.css';
 import { Link, useParams } from 'react-router-dom';
+import Star from '@mui/icons-material/Star';
+import StarHalf from '@mui/icons-material/StarHalf';
+import StarBorder from '@mui/icons-material/StarBorder';
+
 
 //Define types for Dorm data from API (IMPORTANT)
 type APIDorm = {
@@ -93,7 +97,14 @@ function Dorms() {
     const fullStars = Math.floor(rating);
     const hasHalfStar = rating - fullStars >= 0.5;
     const emptyStars = 5 - fullStars - (hasHalfStar ? 1 : 0);
-    return "★".repeat(fullStars) + (hasHalfStar ? "⯨" : "") + "☆".repeat(emptyStars);
+    
+    return (
+      <>
+        {[...Array(fullStars)].map((_, i) => <Star key={`full-${i}`} />)}
+        {hasHalfStar && <StarHalf key="half" />}
+        {[...Array(emptyStars)].map((_, i) => <StarBorder key={`empty-${i}`} />)}
+      </>
+    );
   };
 
   const calculateOverallRating = (review: any) => {
