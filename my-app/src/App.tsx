@@ -9,6 +9,7 @@ import Dorms from './dorms.tsx';
 import NavBar from './NavBarPages/navbar.tsx';
 import SearchBar from './homepage/searchbar.tsx';
 import Review from './review.tsx';
+import AllUniversities from './allUniversities.tsx';
 
 function App() {
   return (
@@ -18,6 +19,7 @@ function App() {
         <Route path="/aboutme" element={<AboutMe />} />
         <Route path="/contactme" element={<ContactMe />} />
         <Route path="/login" element={<Login />} />
+        <Route path="/universities" element={<AllUniversities />} />
         <Route path="/universities/:universityName" element={<University />} />
         <Route path="/universities/:universityName/dorms/:dormSlug" element={<Dorms />} />
         <Route path="/dorms" element={<Dorms />} />
