@@ -157,7 +157,7 @@ function UniversityDash() {
         {/* Left side - University Information */}
         <div className="university-info">
           <img
-            src={university.imageUrl || ''}
+            src={university.imageUrl || 'https://i0.wp.com/wpu.ac.pg/wp-content/uploads/2022/09/placeholder-72.png?fit=1200%2C800&ssl=1'}
             alt={university.name}
             className="university-main-image"
           />
@@ -200,7 +200,7 @@ function UniversityDash() {
 
         {/* Right side - Dorms List */}
         <div className="dorms-list">
-          <h2>Available Residences</h2>
+          <h2>Browse {dorms.length} {dorms.length === 1 ? 'Dorm' : 'Dorms'}</h2>
           <div className="dorms-grid">
             {dorms.map(dorm => (
               <Link 
