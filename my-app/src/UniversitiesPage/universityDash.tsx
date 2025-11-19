@@ -203,7 +203,12 @@ function UniversityDash() {
           <h2>Available Residences</h2>
           <div className="dorms-grid">
             {dorms.map(dorm => (
-              <div key={`${dorm.universitySlug}-${dorm.slug}`} className="dorm-card">
+              <Link 
+                key={`${dorm.universitySlug}-${dorm.slug}`} 
+                to={`/universities/${universityName}/dorms/${dorm.slug}`}
+                className="dorm-card"
+                style={{ textDecoration: 'none', color: 'inherit' }}
+              >
                 <img src={(dorm.imageUrl && dorm.imageUrl !== '' && dorm.imageUrl !== 'null') ? dorm.imageUrl : 'https://thumbs.dreamstime.com/b/college-dorm-ai-generated-stock-image-college-dorm-bunk-bed-bed-above-desk-window-generated-276344540.jpg'} alt={dorm.name} className="dorm-image" />
                 <div className="dorm-info">
                   <h3>{dorm.name}</h3>
@@ -216,15 +221,16 @@ function UniversityDash() {
                     </span>
                   </div>
                   <div className="dorm-buttons">
-                    <Link to={`/universities/${universityName}/dorms/${dorm.slug}`} className="view-dorm-button">
-                      View Details
-                    </Link>
-                    <Link to={`/review?university=${encodeURIComponent(universityName || '')}&dorm=${encodeURIComponent(dorm.name)}`} className="review-button">
-                      Leave <br/> Review
+                    <Link 
+                      to={`/review?university=${encodeURIComponent(universityName || '')}&dorm=${encodeURIComponent(dorm.name)}`} 
+                      className="review-button"
+                      onClick={(e) => e.stopPropagation()}
+                    >
+                      Leave Review
                     </Link>
                   </div>
                 </div>
-              </div>
+              </Link>
             ))}
           </div>
         </div>
