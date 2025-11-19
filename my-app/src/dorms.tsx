@@ -107,6 +107,35 @@ function Dorms() {
     return totalRating / reviews.length;
   };
 
+  const calculateCategoryAverages = () => {
+    if (reviews.length === 0) {
+      return {
+        room: 0,
+        bathroom: 0,
+        building: 0,
+        amenities: 0,
+        location: 0
+      };
+    }
+
+    const totals = reviews.reduce((acc, review) => {
+      acc.room += review.room || 0;
+      acc.bathroom += review.bathroom || 0;
+      acc.building += review.building || 0;
+      acc.amenities += review.amenities || 0;
+      acc.location += review.location || 0;
+      return acc;
+    }, { room: 0, bathroom: 0, building: 0, amenities: 0, location: 0 });
+
+    return {
+      room: totals.room / reviews.length,
+      bathroom: totals.bathroom / reviews.length,
+      building: totals.building / reviews.length,
+      amenities: totals.amenities / reviews.length,
+      location: totals.location / reviews.length
+    };
+  };
+
   // Pagination logic
   const indexOfLastReview = currentPage * reviewsPerPage;
   const indexOfFirstReview = indexOfLastReview - reviewsPerPage;
@@ -233,27 +262,47 @@ function Dorms() {
             </div>
           )}
 
-          {/* Amenities Section */}
-          {dorm.amenities && dorm.amenities.length > 0 && (
+          {/* Average Ratings by Category */}
+          {reviews.length > 0 && (
             <div className="dorm-details">
-              <h2>Amenities</h2>
-              <ul className="room-types-list">
-                {dorm.amenities.map((amenity, index) => (
-                  <li key={index} className="room-type-item">{amenity}</li>
-                ))}
-              </ul>
-            </div>
-          )}
-
-          {/* Room Types Section */}
-          {dorm.roomTypes && dorm.roomTypes.length > 0 && (
-            <div className="dorm-details">
-              <h2>Room Types Available</h2>
-              <ul className="room-types-list">
-                {dorm.roomTypes.map((type, index) => (
-                  <li key={index} className="room-type-item">{type}</li>
-                ))}
-              </ul>
+              <h2>Average Ratings</h2>
+              <div className="category-ratings">
+                <div className="category-rating-item">
+                  <span className="category-label">Room</span>
+                  <div className="category-rating-bar">
+                    <div className="category-rating-fill" style={{ width: `${(calculateCategoryAverages().room / 5) * 100}%` }}></div>
+                  </div>
+                  <span className="category-rating-value">{calculateCategoryAverages().room.toFixed(1)}</span>
+                </div>
+                <div className="category-rating-item">
+                  <span className="category-label">Bathroom</span>
+                  <div className="category-rating-bar">
+                    <div className="category-rating-fill" style={{ width: `${(calculateCategoryAverages().bathroom / 5) * 100}%` }}></div>
+                  </div>
+                  <span className="category-rating-value">{calculateCategoryAverages().bathroom.toFixed(1)}</span>
+                </div>
+                <div className="category-rating-item">
+                  <span className="category-label">Building</span>
+                  <div className="category-rating-bar">
+                    <div className="category-rating-fill" style={{ width: `${(calculateCategoryAverages().building / 5) * 100}%` }}></div>
+                  </div>
+                  <span className="category-rating-value">{calculateCategoryAverages().building.toFixed(1)}</span>
+                </div>
+                <div className="category-rating-item">
+                  <span className="category-label">Amenities</span>
+                  <div className="category-rating-bar">
+                    <div className="category-rating-fill" style={{ width: `${(calculateCategoryAverages().amenities / 5) * 100}%` }}></div>
+                  </div>
+                  <span className="category-rating-value">{calculateCategoryAverages().amenities.toFixed(1)}</span>
+                </div>
+                <div className="category-rating-item">
+                  <span className="category-label">Location</span>
+                  <div className="category-rating-bar">
+                    <div className="category-rating-fill" style={{ width: `${(calculateCategoryAverages().location / 5) * 100}%` }}></div>
+                  </div>
+                  <span className="category-rating-value">{calculateCategoryAverages().location.toFixed(1)}</span>
+                </div>
+              </div>
             </div>
           )}
         </div>
