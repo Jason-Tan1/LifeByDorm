@@ -397,6 +397,11 @@
   margin-top: 8px;
 }
 
+.review-time {
+  color: #888;
+  font-style: italic;
+}
+
 .review-description {
   color: #444;
   line-height: 1.4;

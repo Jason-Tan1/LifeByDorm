@@ -101,6 +101,27 @@ function Dorms() {
     return ratings.reduce((acc, rating) => acc + rating, 0) / ratings.length;
   };
 
+  //Time formatting function
+  const formatReviewTime = (timestamp: string) => {
+    const date = new Date(timestamp);
+    const now = new Date();
+    const diffInSeconds = Math.floor((now.getTime() - date.getTime()) / 1000);
+    
+    if (diffInSeconds < 60) return 'Just now';
+    const minutes = Math.floor(diffInSeconds / 60);
+    if (diffInSeconds < 3600) return `${minutes} ${minutes === 1 ? 'minute' : 'minutes'} ago`;
+    const hours = Math.floor(diffInSeconds / 3600);
+    if (diffInSeconds < 86400) return `${hours} ${hours === 1 ? 'hour' : 'hours'} ago`;
+    const days = Math.floor(diffInSeconds / 86400);
+    if (diffInSeconds < 604800) return `${days} ${days === 1 ? 'day' : 'days'} ago`;
+    const weeks = Math.floor(diffInSeconds / 604800);
+    if (diffInSeconds < 2592000) return `${weeks} ${weeks === 1 ? 'week' : 'weeks'} ago`;
+    const months = Math.floor(diffInSeconds / 2592000);
+    if (diffInSeconds < 31536000) return `${months} ${months === 1 ? 'month' : 'months'} ago`;
+    const years = Math.floor(diffInSeconds / 31536000);
+    return `${years} ${years === 1 ? 'year' : 'years'} ago`;
+  };
+
   const calculateAverageRating = () => {
     if (reviews.length === 0) return 0;
     const totalRating = reviews.reduce((sum, review) => sum + calculateOverallRating(review), 0);
@@ -332,6 +353,7 @@ function Dorms() {
                       <div className="review-metadata">
                         <span>Year: {review.year}</span>
                         <span>Room Type: {review.roomType}</span>
+                        {review.createdAt && <span className="review-time">{formatReviewTime(review.createdAt)}</span>}
                       </div>
                     </div>            
                   </div>
