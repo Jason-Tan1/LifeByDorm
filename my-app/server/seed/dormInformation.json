@@ -3,217 +3,163 @@
     "name": "Founders Residence",
     "slug": "founders-residence",
     "universitySlug": "york-university",
-    "imageUrl": "https://www.yorku.ca/housing/wp-content/uploads/sites/57/2022/02/Founders-Exterior-1024x682.jpg",
-    "amenities": [null],
-    "roomTypes": [null]
+    "imageUrl": "https://www.yorku.ca/housing/wp-content/uploads/sites/57/2022/02/Founders-Exterior-1024x682.jpg"
   },
   {
     "name":"Tatham Hall",
     "slug": "tatham-hall",
     "universitySlug": "york-university",
-    "imageUrl": "https://www.yorku.ca/conference/wp-content/uploads/sites/191/2021/01/DSC_2434_5_6-scaled.jpg",
-    "amenities": [null],
-    "roomTypes": [null]
+    "imageUrl": "https://www.yorku.ca/conference/wp-content/uploads/sites/191/2021/01/DSC_2434_5_6-scaled.jpg"
   },
   {
     "name":"Vanier Residence",
     "slug": "vanier-residence",
     "universitySlug": "york-university",
-    "imageUrl": "https://www.yorku.ca/conference/wp-content/uploads/sites/191/2022/11/DSC_2710_1_2-scaled.jpg",
-    "amenities": [null],
-    "roomTypes": [null]
+    "imageUrl": "https://www.yorku.ca/conference/wp-content/uploads/sites/191/2022/11/DSC_2710_1_2-scaled.jpg"
   },
   {
     "name":"Winters Residence",
     "slug": "winters-residence",
     "universitySlug": "york-university",
-    "imageUrl": "https://www.acotoronto.ca/images/buildings/Large/o524k7cSPY.jpg",
-    "amenities": [null],
-    "roomTypes": [null]
+    "imageUrl": "https://www.acotoronto.ca/images/buildings/Large/o524k7cSPY.jpg"
   },
   {
     "name":"Bethune Residence",
     "slug": "bethune-residence",
     "universitySlug": "york-university",
-    "imageUrl": "https://www.yorku.ca/housing/wp-content/uploads/sites/57/2020/10/DSC_3598_599_600-1024x682.jpg",
-    "amenities": [null],
-    "roomTypes": [null]
+    "imageUrl": "https://www.yorku.ca/housing/wp-content/uploads/sites/57/2020/10/DSC_3598_599_600-1024x682.jpg"
   },
   {
     "name":"Calumet Residence",
     "slug": "calumet-residence",
     "universitySlug": "york-university",
-    "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/8/89/CalumetResidence.jpg",
-    "amenities": [null],
-    "roomTypes": [null]
+    "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/8/89/CalumetResidence.jpg"
   },
   {
     "name": "Stong Residence",
     "slug": "stong-residence",
     "universitySlug": "york-university",
-    "imageUrl": "https://central.apps01.yorku.ca/maps/wp-content/uploads/2010/06/stong-res-2-copy.jpg",
-    "amenities": ["Fitness Room", "Music Practice Rooms", "Study Lounges"],
-    "roomTypes": ["Single", "Double", "Suite"]
+    "imageUrl": "https://central.apps01.yorku.ca/maps/wp-content/uploads/2010/06/stong-res-2-copy.jpg"
   },
   {
     "name": "Chestnut Residence",
     "slug": "chestnut-residence",
     "universitySlug": "university-of-toronto",
-    "imageUrl": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTVlZ23bT_U6axLADKln3QZ5lvr3jPROs-XRg&s",
-    "amenities": [null],
-    "roomTypes": [null]
+    "imageUrl": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTVlZ23bT_U6axLADKln3QZ5lvr3jPROs-XRg&s"
   },
   {
     "name": "New College Residence",
     "slug": "new-college-residence",
     "universitySlug": "university-of-toronto",
-    "imageUrl": "https://www.newcollege.utoronto.ca/wp-content/uploads/2022/03/wilson.jpg?x52235",
-    "amenities": [null],
-    "roomTypes": [null]
+    "imageUrl": "https://www.newcollege.utoronto.ca/wp-content/uploads/2022/03/wilson.jpg?x52235"
   },
   {
     "name": "Innis Residence",
     "slug": "innis-residence",
     "universitySlug": "university-of-toronto",
-    "imageUrl": "https://innis.utoronto.ca/wp-content/uploads/About-the-Residence-Feature-image.jpg",
-    "amenities": [null],
-    "roomTypes": [null]
+    "imageUrl": "https://innis.utoronto.ca/wp-content/uploads/About-the-Residence-Feature-image.jpg"
   },
   {
     "name": "University College Residence",
     "slug": "university-college-residence",
     "universitySlug": "university-of-toronto",
-    "imageUrl": "https://www.uc.utoronto.ca/sites/default/files/styles/scale_width_650/public/assets/images/IMG_0677.jpg?itok=NVHENE_1",
-    "amenities": [null],
-    "roomTypes": [null]
+    "imageUrl": "https://www.uc.utoronto.ca/sites/default/files/styles/scale_width_650/public/assets/images/IMG_0677.jpg?itok=NVHENE_1"
   },
   {
     "name": "Woodsworth Residence",
     "slug": "woodsworth-residence",
     "universitySlug": "university-of-toronto",
-    "imageUrl": "https://images.squarespace-cdn.com/content/v1/58811ba703596e4e5107e3a4/1559942356251-2RD9Q9N4UZ6GQK9E9V0Q/gh3-Woodsworth-Corner.jpg",
-    "amenities": [null],
-    "roomTypes": [null]
+    "imageUrl": "https://images.squarespace-cdn.com/content/v1/58811ba703596e4e5107e3a4/1559942356251-2RD9Q9N4UZ6GQK9E9V0Q/gh3-Woodsworth-Corner.jpg"
   },
   {
     "name": "Trinity College Residence",
     "slug": "trinity-college-residence",
     "universitySlug": "university-of-toronto",
-    "imageUrl": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRX3CL2EPbUwtSAtSKkQ4vo1sHviqIQafhb_g&s",
-    "amenities": [null],
-    "roomTypes": [null]
+    "imageUrl": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRX3CL2EPbUwtSAtSKkQ4vo1sHviqIQafhb_g&s"
   },
   {
     "name": "Victoria College Residence",
     "slug": "victoria-college-residence",
     "universitySlug": "university-of-toronto",
-    "imageUrl": "https://vic.utoronto.ca/assets/Images/Vic-Registrar/photo-slider-3.jpg",
-    "amenities": [null],
-    "roomTypes": [null]
+    "imageUrl": "https://vic.utoronto.ca/assets/Images/Vic-Registrar/photo-slider-3.jpg"
   },
   {
     "name": "St. Michael's College Residence",
     "slug": "st-michaels-college-residence",
     "universitySlug": "university-of-toronto",
-    "imageUrl": "https://stmikes.utoronto.ca/wp-content/uploads/2020/10/Boiler-Plant-Clock-in-Spring-scaled-1.jpg",
-    "amenities": [null],
-    "roomTypes": [null]
+    "imageUrl": "https://stmikes.utoronto.ca/wp-content/uploads/2020/10/Boiler-Plant-Clock-in-Spring-scaled-1.jpg"
   },
   {
     "name": "Graduate House",
     "slug": "graduate-house",
     "universitySlug": "university-of-toronto",
-    "imageUrl": "https://gradhouse.utoronto.ca/wp-content/uploads/uoft-gradhouse-1-1024x683.jpg",
-    "amenities": [null],
-    "roomTypes": [null]
+    "imageUrl": "https://gradhouse.utoronto.ca/wp-content/uploads/uoft-gradhouse-1-1024x683.jpg"
   },
   {
     "name": "Saugeen-Maitland Hall",
     "slug": "saugeen-maitland-hall",
     "universitySlug": "western-university",
-    "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/a/a8/Saugeen-Maitland_Hall.jpg",
-    "amenities": ["Dining Hall", "Convenience Store", "Recreation Rooms"],
-    "roomTypes": ["Single", "Double"]
+    "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/a/a8/Saugeen-Maitland_Hall.jpg"
   },
   {
     "name": "Bayfield Hall",
     "slug": "bayfield-hall",
     "universitySlug": "western-university",
-    "imageUrl": "https://lh3.googleusercontent.com/gps-cs-s/AG0ilSyaQepaddQNTZHCey77O0UXX4MS7vG64BRexw1fiQWPSC2AN5Zjq0JkFziG0O-9cQSLaE1Zlc62Gyagi9bd8j3P5fy4ed7GojqTI8C7Rgj35aoaA5nHFrfK37OZ0Nzf5bdvz3NYyg=s1360-w1360-h1020-rw",
-    "amenities": ["Dining Hall", "Convenience Store", "Recreation Rooms"],
-    "roomTypes": ["Single", "Double"]
+    "imageUrl": "https://lh3.googleusercontent.com/gps-cs-s/AG0ilSyaQepaddQNTZHCey77O0UXX4MS7vG64BRexw1fiQWPSC2AN5Zjq0JkFziG0O-9cQSLaE1Zlc62Gyagi9bd8j3P5fy4ed7GojqTI8C7Rgj35aoaA5nHFrfK37OZ0Nzf5bdvz3NYyg=s1360-w1360-h1020-rw"
   },
   {
     "name": "Clare Hall",
     "slug": "clare-hall",
     "universitySlug": "western-university",
-    "imageUrl": "https://media-cdn.tripadvisor.com/media/photo-s/0c/f9/71/95/brescia-clare-hall-residence.jpg",
-    "amenities": ["Dining Hall", "Convenience Store", "Recreation Rooms"],
-    "roomTypes": ["Single", "Double"]
+    "imageUrl": "https://media-cdn.tripadvisor.com/media/photo-s/0c/f9/71/95/brescia-clare-hall-residence.jpg"
   },
   {
     "name": "Ontario Hall",
     "slug": "ontario-hall",
     "universitySlug": "western-university",
-    "imageUrl": "https://atrr.ca/wp-content/uploads/2024/03/WU-Ontario-Hall10.jpg",
-    "amenities": ["Dining Hall", "Convenience Store", "Recreation Rooms"],
-    "roomTypes": ["Single", "Double"]
+    "imageUrl": "https://atrr.ca/wp-content/uploads/2024/03/WU-Ontario-Hall10.jpg"
   },
   {
     "name": "Perth Hall",
     "slug": "perth-hall",
     "universitySlug": "western-university",
-    "imageUrl": "https://www.southsidegroup.ca/wp-content/uploads/2024/10/Perth-Hall-Student-Residence-Western-University-London-Ontario_small-e1446135666296.jpg",
-    "amenities": ["Dining Hall", "Convenience Store", "Recreation Rooms"],
-    "roomTypes": ["Single", "Double"]
+    "imageUrl": "https://www.southsidegroup.ca/wp-content/uploads/2024/10/Perth-Hall-Student-Residence-Western-University-London-Ontario_small-e1446135666296.jpg"
   },
   {
     "name": "Alumni House",
     "slug": "alumni-house",
     "universitySlug": "western-university",
-    "imageUrl": "https://lh3.googleusercontent.com/gps-cs-s/AG0ilSz5l437vItgHZh8SsKnzuggC3sElkLolSNrm88ZE1VCy29Oe9SGG8kCj0Lwd_n8qd41Hx2TiOLFpHNTQeEsy_O_vrqNRaz7kFmYn-GbZj9OgrwQURCuYtMGqiYrGAY9oDJ8ejzH=s1360-w1360-h1020-rw",
-    "amenities": ["Dining Hall", "Convenience Store", "Recreation Rooms"],
-    "roomTypes": ["Single", "Double"]
+    "imageUrl": "https://lh3.googleusercontent.com/gps-cs-s/AG0ilSz5l437vItgHZh8SsKnzuggC3sElkLolSNrm88ZE1VCy29Oe9SGG8kCj0Lwd_n8qd41Hx2TiOLFpHNTQeEsy_O_vrqNRaz7kFmYn-GbZj9OgrwQURCuYtMGqiYrGAY9oDJ8ejzH=s1360-w1360-h1020-rw"
   },
   {
     "name": "Elgin Hall",
     "slug": "elgin-hall",
     "universitySlug": "western-university",
-    "imageUrl": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTgjdhs78rlFMw89zbiAVr56dXQWt8ZMj7wQg&s",
-    "amenities": ["Dining Hall", "Convenience Store", "Recreation Rooms"],
-    "roomTypes": ["Single", "Double"]
+    "imageUrl": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTgjdhs78rlFMw89zbiAVr56dXQWt8ZMj7wQg&s"
   },
   {
     "name": "Essex Hall",
     "slug": "essex-hall",
     "universitySlug": "western-university",
-    "imageUrl": "https://www.southsidegroup.ca/wp-content/uploads/2024/10/Essex-Hall-Student-Residence-Western-University-London-Ontario_small-e1446135680149-1.jpg.webp",
-    "amenities": ["Dining Hall", "Convenience Store", "Recreation Rooms"],
-    "roomTypes": ["Single", "Double"]
+    "imageUrl": "https://www.southsidegroup.ca/wp-content/uploads/2024/10/Essex-Hall-Student-Residence-Western-University-London-Ontario_small-e1446135680149-1.jpg.webp"
   },
   {
     "name": "Lambton Hall",
     "slug": "lambton-hall",
     "universitySlug": "western-university",
-    "imageUrl": "https://bloximages.newyork1.vip.townnews.com/westerngazette.ca/content/tncms/assets/v3/editorial/2/f1/2f115128-7abb-11eb-bec7-6b1bae8727bf/603d311c995fe.image.jpg?resize=1200%2C800",
-    "amenities": ["Dining Hall", "Convenience Store", "Recreation Rooms"],
-    "roomTypes": ["Single", "Double"]
+    "imageUrl": "https://bloximages.newyork1.vip.townnews.com/westerngazette.ca/content/tncms/assets/v3/editorial/2/f1/2f115128-7abb-11eb-bec7-6b1bae8727bf/603d311c995fe.image.jpg?resize=1200%2C800"
   },
   {
     "name": "London Hall",
     "slug": "london-hall",
     "universitySlug": "western-university",
-    "imageUrl": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRt3sVt67CthNV90fw11kaDIuAZVuHc2usAeA&s",
-    "amenities": ["Dining Hall", "Convenience Store", "Recreation Rooms"],
-    "roomTypes": ["Single", "Double"]
+    "imageUrl": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRt3sVt67CthNV90fw11kaDIuAZVuHc2usAeA&s"
   },
   {
     "name": "Delaware Hall",
     "slug": "delaware-hall",
     "universitySlug": "western-university",
-    "imageUrl": "https://media-cdn.socastsrm.com/wordpress/wp-content/blogs.dir/202/files/2015/09/Photo-2015-09-27-6-45-47-PM.jpg",
-    "amenities": ["Suite Kitchen", "Study Lounges", "Laundry Facilities"],
-    "roomTypes": ["Suite", "Single"]
+    "imageUrl": "https://media-cdn.socastsrm.com/wordpress/wp-content/blogs.dir/202/files/2015/09/Photo-2015-09-27-6-45-47-PM.jpg"
   },
   {
     "name": "Bates Residence",

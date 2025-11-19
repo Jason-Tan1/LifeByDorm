@@ -120,7 +120,7 @@
 /* Right side - Dorms List */
 .dorms-list {
   flex: 1;
-  max-width: 700px;
+  max-width: 850px;
 }
 
 .dorms-list h2 {
@@ -150,10 +150,11 @@
 }
 
 .dorm-image {
-  width: 280px;
-  min-width: 280px;
+  width: 220px;
+  min-width: 220px;
   height: 200px;
   object-fit: cover;
+  border-radius: 12px 0 0 12px;
 }
 
 .dorm-info {
@@ -161,6 +162,9 @@
   display: flex;
   flex-direction: column;
   flex: 1;
+  min-width: 0;
+  max-width: 100%;
+  box-sizing: border-box;
 }
 
 .dorm-info h3 {
@@ -197,21 +201,30 @@
 
 .dorm-buttons {
   display: flex;
-  gap: 12px;
-  margin-top: auto; 
-
+  gap: 10px;
+  margin-top: auto;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .view-dorm-button, .review-button {
-  flex: 1;
-  display: inline-block;
-  padding: 10px 20px;
+  flex: 1 1 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 10px;
   text-decoration: none;
   border-radius: 6px;
   transition: all 0.2s;
   text-align: center;
   font-weight: 500;
-  line-height: 1.4;
+  line-height: 1.2;
+  min-height: 38px;
+  white-space: nowrap;
+  font-size: 0.85rem;
+  box-sizing: border-box;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .view-dorm-button {
@@ -226,9 +239,7 @@
 .review-button {
   background-color: #4caf50;
   color: white;
-  margin-top: auto;
-  margin-left: auto;
-  
+  border: 3px solid red !important;
 }
 
 .review-button:hover {

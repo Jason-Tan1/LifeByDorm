@@ -91,6 +91,50 @@
   margin-bottom: 32px;
 }
 
+.category-ratings {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-top: 16px;
+}
+
+.category-rating-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.category-label {
+  min-width: 80px;
+  font-size: 0.9rem;
+  color: #666;
+  font-weight: 500;
+}
+
+.category-rating-bar {
+  flex: 1;
+  height: 8px;
+  background-color: #e0e0e0;
+  border-radius: 4px;
+  overflow: hidden;
+  position: relative;
+}
+
+.category-rating-fill {
+  height: 100%;
+  background-color: #1976d2;
+  border-radius: 4px;
+  transition: width 0.3s ease;
+}
+
+.category-rating-value {
+  min-width: 35px;
+  text-align: right;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #1a1a1a;
+}
+
 .details-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
