@@ -132,7 +132,7 @@
 .dorms-grid {
   display: flex;
   flex-direction: column;
-  gap: 24px;
+  gap: 12px;
 }
 
 .dorm-card {
@@ -142,6 +142,8 @@
   overflow: hidden;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   transition: transform 0.2s, box-shadow 0.2s;
+  cursor: pointer;
+  height: 140px;
 }
 
 .dorm-card:hover {
@@ -150,44 +152,44 @@
 }
 
 .dorm-image {
-  width: 220px;
-  min-width: 220px;
-  height: 200px;
+  width: 150px;
+  min-width: 150px;
+  height: 100%;
   object-fit: cover;
-  border-radius: 12px 0 0 12px;
+  object-position: center;
 }
 
 .dorm-info {
-  padding: 20px;
+  padding: 12px 14px;
   display: flex;
   flex-direction: column;
   flex: 1;
 }
 
 .dorm-info h3 {
-  font-size: 1.5rem;
+  font-size: 1.1rem;
   color: #1a1a1a;
   margin-top: 0;
-  margin-bottom: 12px;
+  margin-bottom: 6px;
   font-weight: 600;
 }
 
 .dorm-rating {
   display: flex;
   align-items: center;
-  gap: 12px;
-  margin-bottom: 16px;
+  gap: 8px;
+  margin-bottom: 8px;
 }
 
 .stars {
   color: #f8c41b;
-  letter-spacing: 2px;
-  font-size: 1.2rem;
+  letter-spacing: 1px;
+  font-size: 0.9rem;
 }
 
 .rating-number {
   color: #666;
-  font-size: 0.95rem;
+  font-size: 0.8rem;
 }
 
 .dorm-description {
@@ -209,16 +211,16 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  padding: 8px 10px;
+  padding: 6px 12px;
   text-decoration: none;
   border-radius: 6px;
   transition: all 0.2s;
   text-align: center;
   font-weight: 500;
   line-height: 1.2;
-  min-height: 38px;
+  min-height: 32px;
   white-space: nowrap;
-  font-size: 0.85rem;
+  font-size: 0.8rem;
   box-sizing: border-box;
 }
 
