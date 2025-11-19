@@ -49,7 +49,6 @@ function AllUniversities() {
                 <Link to={`/universities/${uni.slug}`}>
                   {uni.name}
                   {uni.location && <span className="location"> - {uni.location}</span>}
-                  {uni.totalStudents && <span className="students"> ({uni.totalStudents.toLocaleString()} students)</span>}
                 </Link>
               </li>
             ))}
