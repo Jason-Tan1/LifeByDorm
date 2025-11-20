@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import NavBar from './NavBarPages/navbar';
-import Footer from './homepage/footer';
+import NavBar from '../NavBarPages/navbar';
+import Footer from '../homepage/footer';
 import './allUniversities.css';
 
 type University = {
