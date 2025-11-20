@@ -1,12 +1,11 @@
 import { useEffect, useState } from 'react';
 import NavBar from '../NavBarPages/navbar.tsx';
 import Footer from '../homepage/footer.tsx';
+import DormInfo from './DormInfo.tsx';
+import ReviewsList from './ReviewsList.tsx';
 import './dorms.css';
 import '../NavBarPages/navbar.css';
-import { Link, useParams } from 'react-router-dom';
-import Star from '@mui/icons-material/Star';
-import StarHalf from '@mui/icons-material/StarHalf';
-import StarBorder from '@mui/icons-material/StarBorder';
+import { useParams } from 'react-router-dom';
 
 
 //Define types for Dorm data from API (IMPORTANT)
@@ -92,20 +91,6 @@ function Dorms() {
 
     fetchReviews();
   }, [universityName, dorm]);
-
-  const renderStars = (rating: number) => {
-    const fullStars = Math.floor(rating);
-    const hasHalfStar = rating - fullStars >= 0.5;
-    const emptyStars = 5 - fullStars - (hasHalfStar ? 1 : 0);
-    
-    return (
-      <>
-        {[...Array(fullStars)].map((_, i) => <Star key={`full-${i}`} />)}
-        {hasHalfStar && <StarHalf key="half" />}
-        {[...Array(emptyStars)].map((_, i) => <StarBorder key={`empty-${i}`} />)}
-      </>
-    );
-  };
 
   const calculateOverallRating = (review: any) => {
     const ratings = [review.room, review.bathroom, review.building, review.amenities, review.location];
@@ -273,181 +258,32 @@ function Dorms() {
       
       <div className="dorm-content">
         {/* Left side - Dorm Information */}
-        <div className="dorm-info">
-          <img 
-            src={dorm.imageUrl && dorm.imageUrl.trim() !== '' ? dorm.imageUrl : 'https://thumbs.dreamstime.com/b/college-dorm-ai-generated-stock-image-college-dorm-bunk-bed-bed-above-desk-window-generated-276344540.jpg'} 
-            alt={dorm.name} 
-            className="dorm-main-image"
-          />
-          
-          <div className="dorm-header">
-            <h1>{dorm.name}</h1>
-            <div className="dorm-rating">
-              <div className="stars" title={calculateAverageRating().toString()}>
-                {renderStars(calculateAverageRating())}
-              </div>
-              <span className="rating-number">
-                {calculateAverageRating().toFixed(1)} ({reviews.length} reviews)
-              </span>
-            </div>
-          </div>
-
-          {/* Description Section */}
-          {dorm.description && (
-            <div className="dorm-details">
-              <h2>About</h2>
-              <p>{dorm.description}</p>
-            </div>
-          )}
-
-          {/* Average Ratings by Category */}
-          {reviews.length > 0 && (
-            <div className="dorm-details">
-              <h2>Average Ratings</h2>
-              <div className="category-ratings">
-                <div className="category-rating-item">
-                  <span className="category-label">Room</span>
-                  <div className="category-rating-bar">
-                    <div className="category-rating-fill" style={{ width: `${(calculateCategoryAverages().room / 5) * 100}%` }}></div>
-                  </div>
-                  <span className="category-rating-value">{calculateCategoryAverages().room.toFixed(1)}</span>
-                </div>
-                <div className="category-rating-item">
-                  <span className="category-label">Bathroom</span>
-                  <div className="category-rating-bar">
-                    <div className="category-rating-fill" style={{ width: `${(calculateCategoryAverages().bathroom / 5) * 100}%` }}></div>
-                  </div>
-                  <span className="category-rating-value">{calculateCategoryAverages().bathroom.toFixed(1)}</span>
-                </div>
-                <div className="category-rating-item">
-                  <span className="category-label">Building</span>
-                  <div className="category-rating-bar">
-                    <div className="category-rating-fill" style={{ width: `${(calculateCategoryAverages().building / 5) * 100}%` }}></div>
-                  </div>
-                  <span className="category-rating-value">{calculateCategoryAverages().building.toFixed(1)}</span>
-                </div>
-                <div className="category-rating-item">
-                  <span className="category-label">Amenities</span>
-                  <div className="category-rating-bar">
-                    <div className="category-rating-fill" style={{ width: `${(calculateCategoryAverages().amenities / 5) * 100}%` }}></div>
-                  </div>
-                  <span className="category-rating-value">{calculateCategoryAverages().amenities.toFixed(1)}</span>
-                </div>
-                <div className="category-rating-item">
-                  <span className="category-label">Location</span>
-                  <div className="category-rating-bar">
-                    <div className="category-rating-fill" style={{ width: `${(calculateCategoryAverages().location / 5) * 100}%` }}></div>
-                  </div>
-                  <span className="category-rating-value">{calculateCategoryAverages().location.toFixed(1)}</span>
-                </div>
-              </div>
-            </div>
-          )}
-        </div>
+        <DormInfo 
+          dorm={dorm}
+          reviews={reviews}
+          calculateAverageRating={calculateAverageRating}
+          calculateCategoryAverages={calculateCategoryAverages}
+        />
 
         {/* Right side - Review Listings */}
-        <div className="reviews-list">
-          <h2>Student Reviews 
-            <Link to={`/review?university=${encodeURIComponent(universityName || '')}&dorm=${encodeURIComponent(dorm.name)}`} className="review-button">
-              Leave Review
-            </Link>
-          </h2>
-          {reviewsLoading ? (
-            <p>Loading reviews...</p>
-          ) : reviews.length === 0 ? (
-            <p>No reviews yet. Be the first to leave a review!</p>
-          ) : (
-            <div className="reviews-grid">
-              {currentReviews.map(review => (
-                <div key={review._id} className="review-card">
-                  <div className="review-info">
-                    <div className="review-overall-rating">
-                      <span className={`overall-rating-number ${getRatingClass(calculateOverallRating(review))}`}>
-                        {calculateOverallRating(review).toFixed(1)}
-                      </span>
-                      <span className="rating-label">RATING</span>
-                    </div>
-                    <div className="review-details">
-                      <p className="review-description">{review.description}</p>
-                      <div className="review-metadata">
-                        <span>Year: {review.year}</span>
-                        <span>Room Type: {review.roomType}</span>
-                        {review.createdAt && <span className="review-time">{formatReviewTime(review.createdAt)}</span>}
-                      </div>
-                    </div>            
-                  </div>
-                  {review.images && review.images.length > 0 ? (
-                    <div className="review-images-gallery">
-                      {review.images.slice(0, 3).map((img: string, idx: number) => (
-                        <div 
-                          key={idx} 
-                          className="review-gallery-image-wrapper"
-                          onClick={() => openLightbox(review.images, idx)}
-                        >
-                          <img src={img} alt={`Dorm ${idx + 1}`} className="review-gallery-image" />
-                          {idx === 2 && review.images.length > 3 && (
-                            <div className="review-image-overlay">
-                              +{review.images.length - 3} more
-                            </div>
-                          )}
-                        </div>
-                      ))}
-                    </div>
-                  ) : review.fileImage ? (
-                    <img 
-                      src={review.fileImage} 
-                      alt="Dorm" 
-                      className="review-image"
-                      onClick={() => openLightbox([review.fileImage], 0)}
-                    />
-                  ) : null}
-                </div>
-              ))}
-            </div>
-          )}
-          
-          {/* Pagination Controls */}
-          {reviews.length > reviewsPerPage && (
-            <div className="pagination-controls">
-              <button 
-                className="pagination-button" 
-                onClick={handlePrevPage}
-                disabled={currentPage === 1}
-              >
-                Previous
-              </button>
-              
-              <div className="pagination-numbers">
-                {getPageNumbers().map(pageNum => (
-                  <button
-                    key={pageNum}
-                    className={`pagination-number ${currentPage === pageNum ? 'active' : ''}`}
-                    onClick={() => handlePageClick(pageNum)}
-                  >
-                    {pageNum}
-                  </button>
-                ))}
-                {totalPages > 10 && currentPage + 9 < totalPages && (
-                  <button 
-                    className="pagination-button" 
-                    onClick={handleNextPage}
-                  >
-                    Next
-                  </button>
-                )}
-              </div>
-              
-              <button 
-                className="pagination-button" 
-                onClick={handleNextPage}
-                disabled={currentPage === totalPages}
-                style={{ visibility: totalPages > 10 && currentPage + 9 < totalPages ? 'hidden' : 'visible' }}
-              >
-                Next
-              </button>
-            </div>
-          )}
-        </div>
+        <ReviewsList 
+          universityName={universityName}
+          dorm={dorm}
+          reviews={reviews}
+          reviewsLoading={reviewsLoading}
+          currentReviews={currentReviews}
+          currentPage={currentPage}
+          totalPages={totalPages}
+          reviewsPerPage={reviewsPerPage}
+          calculateOverallRating={calculateOverallRating}
+          getRatingClass={getRatingClass}
+          formatReviewTime={formatReviewTime}
+          openLightbox={openLightbox}
+          handlePrevPage={handlePrevPage}
+          handleNextPage={handleNextPage}
+          handlePageClick={handlePageClick}
+          getPageNumbers={getPageNumbers}
+        />
       </div>
 
       {/* Lightbox Modal */}
