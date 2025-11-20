@@ -5,11 +5,11 @@ import AboutMe from './NavBarPages/aboutme.tsx';
 import ContactMe from './NavBarPages/contactme.tsx';
 import Login from './NavBarPages/login.tsx';
 import University from './UniversitiesPage/universityDash.tsx';
-import Dorms from './dorms.tsx';
+import Dorms from './dorms/dorms.tsx';
 import NavBar from './NavBarPages/navbar.tsx';
 import SearchBar from './homepage/searchbar.tsx';
-import Review from './review.tsx';
-import AllUniversities from './allUniversities.tsx';
+import Review from './dorms/review.tsx';
+import AllUniversities from './footer/allUniversities.tsx';
 
 function App() {
   return (

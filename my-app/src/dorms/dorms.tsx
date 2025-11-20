@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react';
-import NavBar from './NavBarPages/navbar.tsx';
-import Footer from './homepage/footer';
+import NavBar from '../NavBarPages/navbar.tsx';
+import Footer from '../homepage/footer.tsx';
 import './dorms.css';
-import './NavBarPages/navbar.css';
+import '../NavBarPages/navbar.css';
 import { Link, useParams } from 'react-router-dom';
 import Star from '@mui/icons-material/Star';
 import StarHalf from '@mui/icons-material/StarHalf';
@@ -223,6 +223,12 @@ function Dorms() {
     setLightboxOpen(false);
   };
 
+  const getRatingClass = (rating: number): string => {
+    if (rating >= 4.0) return 'rating-high';
+    if (rating >= 3.0) return 'rating-medium';
+    return 'rating-low';
+  };
+
   const nextImage = () => {
     setCurrentImageIndex((prev) => (prev + 1) % currentImages.length);
   };
@@ -356,8 +362,10 @@ function Dorms() {
                 <div key={review._id} className="review-card">
                   <div className="review-info">
                     <div className="review-overall-rating">
-                      <span className="overall-rating-number">{calculateOverallRating(review).toFixed(1)}</span>
-                      <span className="review-stars">{renderStars(calculateOverallRating(review))}</span>
+                      <span className={`overall-rating-number ${getRatingClass(calculateOverallRating(review))}`}>
+                        {calculateOverallRating(review).toFixed(1)}
+                      </span>
+                      <span className="rating-label">RATING</span>
                     </div>
                     <div className="review-details">
                       <p className="review-description">{review.description}</p>

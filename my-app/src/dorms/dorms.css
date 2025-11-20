@@ -347,15 +347,44 @@
 
 .review-overall-rating {
   display: flex;
+  flex-direction: column-reverse;
   align-items: center;
-  gap: 12px;
+  gap: 4px;
   margin-bottom: 12px;
+  width: 120px;
 }
 
 .overall-rating-number {
   font-size: 2rem;
   font-weight: bold;
-  color: #1a1a1a;
+  color: #000;
+  padding: 4px 6px;
+  border-radius: 12px;
+  width: 75px;
+  height: 70px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.overall-rating-number.rating-high {
+  background-color: #90EE90;
+}
+
+.overall-rating-number.rating-medium {
+  background-color: #FFD700;
+}
+
+.overall-rating-number.rating-low {
+  background-color: #FF6B6B;
+}
+
+.rating-label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: #000;
 }
 
 .review-stars {
