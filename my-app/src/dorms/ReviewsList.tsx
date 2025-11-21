@@ -72,9 +72,15 @@ function ReviewsList({
                   <span className="rating-label">RATING</span>
                 </div>
                 <div className="review-metadata">
-                  <span>Year: {review.year}</span>
-                  <span>Room Type: {review.roomType.charAt(0).toUpperCase() + review.roomType.slice(1)}</span>
-                  {review.createdAt && <span className="review-time">{formatReviewTime(review.createdAt)}</span>}
+                  <div className="review-metadata-row">
+                    <span className="verified-badge">✓ Verified Student</span>
+                    {review.createdAt && <span className="review-time">{formatReviewTime(review.createdAt)}</span>}
+                  </div>
+                  <div className="review-metadata-row">
+                    <span>Year: {review.year}</span>
+                    <span>Room Type: {review.roomType.charAt(0).toUpperCase() + review.roomType.slice(1)}</span>
+                    <span>Would Dorm Again: {review.wouldDormAgain ? 'Yes' : 'No'}</span>
+                  </div>
                 </div>
               </div>
               <div className="review-content">
