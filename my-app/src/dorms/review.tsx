@@ -2,6 +2,8 @@ import { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import './review.css';
 import NavBar from '../NavBarPages/navbar';
+import Star from '@mui/icons-material/Star';
+import StarBorder from '@mui/icons-material/StarBorder';
 
 function Reviews() {
   const navigate = useNavigate();
@@ -43,7 +45,7 @@ function Reviews() {
             type="button"
             onClick={() => handleRatingClick(category, star)}
           >
-            {star <= ratings[category] ? '★' : '☆'}
+            {star <= ratings[category] ? <Star /> : <StarBorder />}
           </button>
         ))}
       </div>
@@ -268,35 +270,104 @@ function Reviews() {
               <h2> Details </h2>
               <div className="form-group">
                 <label>Year you are in</label>
-                <select value={year} onChange={e => setYear(e.target.value)}>
-                  <option value="">Select your year</option>
-                  <option value="1">First Year</option>
-                  <option value="2">Second Year</option>
-                  <option value="3">Third Year</option>
-                  <option value="4">Fourth Year</option>
-                  <option value="5">Fifth Year or Above</option>
-                </select>
+                <div className="option-boxes">
+                  <button
+                    type="button"
+                    className={`option-box ${year === '1' ? 'selected' : ''}`}
+                    onClick={() => setYear('1')}
+                  >
+                    First Year
+                  </button>
+                  <button
+                    type="button"
+                    className={`option-box ${year === '2' ? 'selected' : ''}`}
+                    onClick={() => setYear('2')}
+                  >
+                    Second Year
+                  </button>
+                  <button
+                    type="button"
+                    className={`option-box ${year === '3' ? 'selected' : ''}`}
+                    onClick={() => setYear('3')}
+                  >
+                    Third Year
+                  </button>
+                  <button
+                    type="button"
+                    className={`option-box ${year === '4' ? 'selected' : ''}`}
+                    onClick={() => setYear('4')}
+                  >
+                    Fourth Year
+                  </button>
+                  <button
+                    type="button"
+                    className={`option-box ${year === '5' ? 'selected' : ''}`}
+                    onClick={() => setYear('5')}
+                  >
+                    Fifth Year or Above
+                  </button>
+                </div>
               </div>
 
               <div className="form-group">
                 <label>Type of Room</label>
-                <select value={roomType} onChange={e => setRoomType(e.target.value)}>
-                  <option value="">Select room type</option>
-                  <option value="single">Single Room</option>
-                  <option value="double">Double Room</option>
-                  <option value="triple">Triple Room</option>
-                  <option value="suite">Suite</option>
-                  <option value="apartment">Apartment Style</option>
-                </select>
+                <div className="option-boxes">
+                  <button
+                    type="button"
+                    className={`option-box ${roomType === 'single' ? 'selected' : ''}`}
+                    onClick={() => setRoomType('single')}
+                  >
+                    Single Room
+                  </button>
+                  <button
+                    type="button"
+                    className={`option-box ${roomType === 'double' ? 'selected' : ''}`}
+                    onClick={() => setRoomType('double')}
+                  >
+                    Double Room
+                  </button>
+                  <button
+                    type="button"
+                    className={`option-box ${roomType === 'triple' ? 'selected' : ''}`}
+                    onClick={() => setRoomType('triple')}
+                  >
+                    Triple Room
+                  </button>
+                  <button
+                    type="button"
+                    className={`option-box ${roomType === 'suite' ? 'selected' : ''}`}
+                    onClick={() => setRoomType('suite')}
+                  >
+                    Suite
+                  </button>
+                  <button
+                    type="button"
+                    className={`option-box ${roomType === 'apartment' ? 'selected' : ''}`}
+                    onClick={() => setRoomType('apartment')}
+                  >
+                    Apartment Style
+                  </button>
+                </div>
               </div>
 
               <div className="form-group">
                 <label>Would you dorm here again?</label>
-                <select value={wouldDormAgain} onChange={e => setWouldDormAgain(e.target.value)}>
-                  <option value="">Select an option</option>
-                  <option value="yes">Yes</option>
-                  <option value="no">No</option>
-                </select>
+                <div className="option-boxes">
+                  <button
+                    type="button"
+                    className={`option-box ${wouldDormAgain === 'yes' ? 'selected' : ''}`}
+                    onClick={() => setWouldDormAgain('yes')}
+                  >
+                    Yes
+                  </button>
+                  <button
+                    type="button"
+                    className={`option-box ${wouldDormAgain === 'no' ? 'selected' : ''}`}
+                    onClick={() => setWouldDormAgain('no')}
+                  >
+                    No
+                  </button>
+                </div>
               </div>
             </div>
           )}
@@ -364,23 +435,43 @@ function Reviews() {
                 <div className="summary-ratings">
                   <div className="summary-item">
                     <span>Room:</span>
-                    <span>{'★'.repeat(ratings.room)}{'☆'.repeat(5 - ratings.room)} ({ratings.room}/5)</span>
+                    <span className="summary-stars">
+                      {[...Array(ratings.room)].map((_, i) => <Star key={`room-${i}`} />)}
+                      {[...Array(5 - ratings.room)].map((_, i) => <StarBorder key={`room-empty-${i}`} />)}
+                      ({ratings.room}/5)
+                    </span>
                   </div>
                   <div className="summary-item">
                     <span>Bathrooms:</span>
-                    <span>{'★'.repeat(ratings.bathrooms)}{'☆'.repeat(5 - ratings.bathrooms)} ({ratings.bathrooms}/5)</span>
+                    <span className="summary-stars">
+                      {[...Array(ratings.bathrooms)].map((_, i) => <Star key={`bath-${i}`} />)}
+                      {[...Array(5 - ratings.bathrooms)].map((_, i) => <StarBorder key={`bath-empty-${i}`} />)}
+                      ({ratings.bathrooms}/5)
+                    </span>
                   </div>
                   <div className="summary-item">
                     <span>Building:</span>
-                    <span>{'★'.repeat(ratings.building)}{'☆'.repeat(5 - ratings.building)} ({ratings.building}/5)</span>
+                    <span className="summary-stars">
+                      {[...Array(ratings.building)].map((_, i) => <Star key={`build-${i}`} />)}
+                      {[...Array(5 - ratings.building)].map((_, i) => <StarBorder key={`build-empty-${i}`} />)}
+                      ({ratings.building}/5)
+                    </span>
                   </div>
                   <div className="summary-item">
                     <span>Amenities:</span>
-                    <span>{'★'.repeat(ratings.amenities)}{'☆'.repeat(5 - ratings.amenities)} ({ratings.amenities}/5)</span>
+                    <span className="summary-stars">
+                      {[...Array(ratings.amenities)].map((_, i) => <Star key={`amen-${i}`} />)}
+                      {[...Array(5 - ratings.amenities)].map((_, i) => <StarBorder key={`amen-empty-${i}`} />)}
+                      ({ratings.amenities}/5)
+                    </span>
                   </div>
                   <div className="summary-item">
                     <span>Location:</span>
-                    <span>{'★'.repeat(ratings.location)}{'☆'.repeat(5 - ratings.location)} ({ratings.location}/5)</span>
+                    <span className="summary-stars">
+                      {[...Array(ratings.location)].map((_, i) => <Star key={`loc-${i}`} />)}
+                      {[...Array(5 - ratings.location)].map((_, i) => <StarBorder key={`loc-empty-${i}`} />)}
+                      ({ratings.location}/5)
+                    </span>
                   </div>
                 </div>
               </div>
