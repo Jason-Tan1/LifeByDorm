@@ -64,10 +64,11 @@
 }
 
 .form-page h2 {
-  font-size: 1.8rem;
+  font-size: 2.2rem;
   color: #1a1a1a;
-  margin-bottom: 24px;
+  margin-bottom: 32px;
   text-align: center;
+  font-weight: 600;
 }
 
 @keyframes fadeIn {
@@ -126,6 +127,19 @@
   color: #1a1a1a;
 }
 
+.summary-stars {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.summary-stars svg {
+  font-size: 1.4rem;
+  width: 1.4rem;
+  height: 1.4rem;
+  color: #f8c41b;
+}
+
 .summary-description {
   color: #444;
   line-height: 1.6;
@@ -182,11 +196,11 @@
   justify-content: space-between;
   align-items: center;
   gap: 16px;
-  padding: 12px 0;
+  padding: 16px 0;
 }
 
 .rating-group label {
-  font-size: 1.1rem;
+  font-size: 1.8rem;
   color: #1a1a1a;
   font-weight: 500;
   flex: 1;
@@ -205,6 +219,15 @@
   cursor: pointer;
   transition: transform 0.2s;
   padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.star-rating button svg {
+  font-size: 2.5rem;
+  width: 2.5rem;
+  height: 2.5rem;
 }
 
 .star-rating button:hover {
@@ -214,13 +237,15 @@
 .form-group {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 12px;
+  margin-bottom: 24px;
 }
 
 .form-group label {
-  font-size: 1.1rem;
+  font-size: 1.5rem;
   color: #1a1a1a;
-  font-weight: 500;
+  font-weight: 600;
+  text-align: center;
 }
 
 .form-group textarea {
@@ -242,6 +267,45 @@
   border-radius: 6px;
   font-size: 1rem;
   background-color: white;
+}
+
+.option-boxes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-top: 12px;
+  justify-content: center;
+}
+
+.option-box {
+  padding: 16px 28px;
+  border: 2px solid #ddd;
+  border-radius: 10px;
+  background-color: white;
+  color: #1a1a1a;
+  font-size: 1.15rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  flex: 1 1 auto;
+  min-width: 140px;
+  text-align: center;
+}
+
+.option-box:hover {
+  border-color: #1976d2;
+  background-color: #f0f7ff;
+}
+
+.option-box.selected {
+  border-color: #1976d2;
+  background-color: #1976d2;
+  color: white;
+}
+
+.option-box.selected:hover {
+  background-color: #1565c0;
+  border-color: #1565c0;
 }
 
 .file-input-group {
