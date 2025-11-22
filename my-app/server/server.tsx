@@ -266,6 +266,7 @@ app.post('/api/reviews', async (req: Request, res: Response) => {
       description,
       year,
       roomType,
+      wouldDormAgain,
       fileImage,
       images
     } = req.body;
@@ -286,6 +287,7 @@ app.post('/api/reviews', async (req: Request, res: Response) => {
       description,
       year,
       roomType,
+      wouldDormAgain,
       fileImage,
       images
     });
