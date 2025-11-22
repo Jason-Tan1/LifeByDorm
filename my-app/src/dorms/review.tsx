@@ -21,6 +21,7 @@ function Reviews() {
   const [description, setDescription] = useState('');
   const [year, setYear] = useState('');
   const [roomType, setRoomType] = useState('');
+  const [wouldDormAgain, setWouldDormAgain] = useState('');
   const [fileDataUrls, setFileDataUrls] = useState<string[]>([]);
   const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10 MB
   const MAX_FILES = 5; // Maximum 5 images
@@ -86,6 +87,15 @@ function Reviews() {
     setFileDataUrls(prev => prev.filter((_, i) => i !== index));
   };
 
+  const formatName = (name: string) => {
+    // Replace dashes/hyphens with spaces and capitalize each word
+    return name
+      .replace(/-/g, ' ')
+      .split(' ')
+      .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+      .join(' ');
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     // Basic client-side validation to avoid server-side validation errors
@@ -93,6 +103,7 @@ function Reviews() {
     if (!description || description.trim().length < 5) missing.push('Comments (min 5 chars)');
     if (!year) missing.push('Year');
     if (!roomType) missing.push('Room type');
+    if (!wouldDormAgain) missing.push('Would Dorm Again');
     if (ratings.room <= 0) missing.push('Room rating');
     if (ratings.bathrooms <= 0) missing.push('Bathroom rating');
     if (ratings.building <= 0) missing.push('Building rating');
@@ -116,6 +127,7 @@ function Reviews() {
       description,
       year: year ? Number(year) : null,
       roomType,
+      wouldDormAgain: wouldDormAgain === 'yes',
       fileImage: fileDataUrls.length > 0 ? fileDataUrls[0] : null,
       images: fileDataUrls
     };
@@ -139,6 +151,7 @@ function Reviews() {
       setDescription('');
       setYear('');
       setRoomType('');
+      setWouldDormAgain('');
       setFileDataUrls([]);
       alert('Review submitted — thank you!');
       console.log('Saved review:', data);
@@ -160,7 +173,7 @@ function Reviews() {
     <div className='Review'>
       <NavBar />
       <div className='review-container'>
-        <h1>User Review</h1>
+        <h1>Rating {formatName(queryDorm || dormName || 'Dorm')} at {formatName(queryUniversity || universityName || 'University')}</h1>
           <form className="review-form" onSubmit={handleSubmit}>
           {/* Rating Groups */}
           <div className="rating-group">
@@ -260,6 +273,16 @@ function Reviews() {
               <option value="triple">Triple Room</option>
               <option value="suite">Suite</option>
               <option value="apartment">Apartment Style</option>
+            </select>
+          </div>
+
+          {/* Would Dorm Again */}
+          <div className="form-group">
+            <label>Would you dorm here again?</label>
+            <select value={wouldDormAgain} onChange={e => setWouldDormAgain(e.target.value)}>
+              <option value="">Select an option</option>
+              <option value="yes">Yes</option>
+              <option value="no">No</option>
             </select>
           </div>
 

@@ -82,6 +82,16 @@ function ReviewsList({
                     <span>Would Dorm Again: {review.wouldDormAgain ? 'Yes' : 'No'}</span>
                   </div>
                 </div>
+                <div className="review-votes">
+                  <button className="vote-button upvote">
+                    <span className="vote-icon">▲</span>
+                    <span className="vote-count">0</span>
+                  </button>
+                  <button className="vote-button downvote">
+                    <span className="vote-icon">▼</span>
+                    <span className="vote-count">0</span>
+                  </button>
+                </div>
               </div>
               <div className="review-content">
                 <p className="review-description">{review.description}</p>
