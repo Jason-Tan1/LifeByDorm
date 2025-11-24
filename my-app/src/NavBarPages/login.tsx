@@ -1,9 +1,10 @@
 import React, { useState } from 'react'
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios'
 import './login.css'
 
 function login() {
+  const navigate = useNavigate();
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const [isRegistering, setIsRegistering] = useState<boolean>(false);
@@ -41,7 +42,17 @@ function login() {
       <div className = "login_container">
         <form onSubmit={handleSubmit}> 
           <Link to="/">LifeByDorm</Link>
-          <Link to="/admin" className="admin-button">Admin</Link>
+          <button
+            type="button"
+            className="admin-button"
+            onClick={() => {
+              // mark this browser as admin for UI purposes and go home
+              localStorage.setItem('isAdmin', 'true');
+              navigate('/');
+            }}
+          >
+            Admin
+          </button>
           <div className = "login_email"> 
             <h2> Email: </h2>
             <input

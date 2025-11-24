@@ -4,16 +4,20 @@ import './navbar.css'
 
 function navbar() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
     // Check if user is logged in
     const token = localStorage.getItem('token');
     setIsLoggedIn(!!token);
+    const adminFlag = localStorage.getItem('isAdmin');
+    setIsAdmin(adminFlag === 'true');
   }, []);
 
   const handleLogout = () => {
     localStorage.removeItem('token');
+    localStorage.removeItem('isAdmin');
     setIsLoggedIn(false);
     navigate('/');
   };
@@ -25,6 +29,13 @@ function navbar() {
       </div>
         {/* Navigation Bar Buttons */}
       <div className="navbar_actions">
+        {isAdmin && (
+          <div className="navbar_dashboard">
+            <Link to="/admin/dashboard">
+              <button>Dashboard</button>
+            </Link>
+          </div>
+        )}
         <div className="navbar_login">
           {isLoggedIn ? (
             <button onClick={handleLogout}>Log Out</button>
