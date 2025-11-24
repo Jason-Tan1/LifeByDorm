@@ -19,6 +19,7 @@ function App() {
         <Route path="/aboutme" element={<AboutMe />} />
         <Route path="/contactme" element={<ContactMe />} />
         <Route path="/login" element={<Login />} />
+        <Route path="/admin" element={<Home />} />
         <Route path="/universities" element={<AllUniversities />} />
         <Route path="/universities/:universityName" element={<University />} />
         <Route path="/universities/:universityName/dorms/:dormSlug" element={<Dorms />} />

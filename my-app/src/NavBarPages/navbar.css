@@ -33,6 +33,19 @@ body {
   gap: 0.75rem; 
 }
 
+/* Dashboard button styling when visible for admins */
+.navbar_dashboard button {
+  background-color: #f6f7fe;
+  color: #4338ca;
+  border: 1px solid #e0e7ff;
+  padding: 0.5rem 0.9rem;
+  border-radius: 8px;
+}
+
+.navbar_dashboard button:hover {
+  background-color: #e0e7ff;
+}
+
 /* General Styling for all buttons in the navbar */
 .navbar button {
   cursor: pointer;

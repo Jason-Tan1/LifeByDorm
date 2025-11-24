@@ -119,7 +119,7 @@ function Home() {
       <div className="featured-section">
         {/* Featured Universities Section */}
         <div className="featured-container">
-          <h2 className="featured-title">Featured Universities</h2>
+          <h2 className="featured-title">Most Rated Universities</h2>
           <p className="featured-subtitle">Explore top universities and their housing options.</p>
           
           <div className="featured-grid">
@@ -142,9 +142,9 @@ function Home() {
         </div>
             
 
-        {/* Featured Dorms Section */}
+        {/* Top Rated Dorms Section */}
         <div className="featured-container" style={{ marginTop: '40px' }}>
-          <h2 className="featured-title">Featured Dorms</h2>
+          <h2 className="featured-title">Most Rated Dorms</h2>
           <p className="featured-subtitle">Check out highly-rated residences across campuses.</p>
           
           <div className="featured-grid">
