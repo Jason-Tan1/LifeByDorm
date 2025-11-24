@@ -222,8 +222,6 @@ function Reviews() {
     <div className='Review'>
       <NavBar />
       <div className='review-container'>
-        <h1>Rating {formatName(queryDorm || dormName || 'Dorm')} at {formatName(queryUniversity || universityName || 'University')}</h1>
-        
         {/* Progress Indicator */}
         <div className="progress-indicator">
           <div className={`progress-step ${currentPage >= 1 ? 'active' : ''}`}>1. Ratings</div>

@@ -41,6 +41,7 @@ function login() {
       <div className = "login_container">
         <form onSubmit={handleSubmit}> 
           <Link to="/">LifeByDorm</Link>
+          <Link to="/admin" className="admin-button">Admin</Link>
           <div className = "login_email"> 
             <h2> Email: </h2>
             <input
