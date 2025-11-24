@@ -18,6 +18,7 @@
   width: 100%;
   max-width: 400px;
   text-align: center;
+  position: relative;
 }
 
 .login_container a {
@@ -68,6 +69,28 @@
 
 .login_button {
   margin-bottom: 15px;
+}
+
+/* Small admin button */
+.admin-button {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  padding: 6px 10px;
+  font-size: 0.85rem;
+  background: transparent;
+  border: 1px solid #e5e7eb;
+  color: #374151;
+  border-radius: 6px;
+  text-decoration: none;
+  display: inline-block;
+  transition: background-color 0.15s ease, color 0.15s ease, transform 0.12s ease;
+}
+
+.admin-button:hover {
+  background: #f3f4f6;
+  color: #111827;
+  transform: translateY(-1px);
 }
 
 .login_button button {
