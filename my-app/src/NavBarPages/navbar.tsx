@@ -8,16 +8,26 @@ function navbar() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Check if user is logged in
+    // Check token and determine login/admin status from JWT role claim
     const token = localStorage.getItem('token');
-    setIsLoggedIn(!!token);
-    const adminFlag = localStorage.getItem('isAdmin');
-    setIsAdmin(adminFlag === 'true');
+    if (token) {
+      try {
+        const payloadJson = token.split('.')[1];
+        const decoded = JSON.parse(atob(payloadJson));
+        setIsLoggedIn(true);
+        setIsAdmin(decoded?.role === 'admin');
+      } catch (err) {
+        setIsLoggedIn(false);
+        setIsAdmin(false);
+      }
+    } else {
+      setIsLoggedIn(false);
+      setIsAdmin(false);
+    }
   }, []);
 
   const handleLogout = () => {
     localStorage.removeItem('token');
-    localStorage.removeItem('isAdmin');
     setIsLoggedIn(false);
     navigate('/');
   };

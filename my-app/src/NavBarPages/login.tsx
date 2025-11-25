@@ -1,14 +1,15 @@
 import React, { useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import axios from 'axios'
 import './login.css'
 
 function login() {
-  const navigate = useNavigate();
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const [isRegistering, setIsRegistering] = useState<boolean>(false);
   const [error, setError] = useState<string>("");
+  const location = useLocation();
+  const [isAdminFlow, setIsAdminFlow] = useState<boolean>(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -37,22 +38,22 @@ function login() {
     setError("");
   }
 
+  React.useEffect(() => {
+    const qs = new URLSearchParams(location.search);
+    setIsAdminFlow(qs.get('admin') === 'true');
+  }, [location.search]);
+
   return (
     <div className = "login">
       <div className = "login_container">
         <form onSubmit={handleSubmit}> 
           <Link to="/">LifeByDorm</Link>
-          <button
-            type="button"
-            className="admin-button"
-            onClick={() => {
-              // mark this browser as admin for UI purposes and go home
-              localStorage.setItem('isAdmin', 'true');
-              navigate('/');
-            }}
-          >
-            Admin
-          </button>
+          <Link to="/login?admin=true" className="admin-button">Admin</Link>
+          {isAdminFlow && (
+            <div style={{ marginTop: 8, color: '#b45309', fontWeight: 600 }}>
+              Admin login — please sign in with an admin account
+            </div>
+          )}
           <div className = "login_email"> 
             <h2> Email: </h2>
             <input

@@ -10,6 +10,7 @@ import NavBar from './NavBarPages/navbar.tsx';
 import SearchBar from './homepage/searchbar.tsx';
 import Review from './dorms/review.tsx';
 import AllUniversities from './footer/allUniversities.tsx';
+import AdminDashboard from './admin/dashboard';
 
 function App() {
   return (
@@ -20,6 +21,7 @@ function App() {
         <Route path="/contactme" element={<ContactMe />} />
         <Route path="/login" element={<Login />} />
         <Route path="/admin" element={<Home />} />
+        <Route path="/admin/dashboard" element={<AdminDashboard />} />
         <Route path="/universities" element={<AllUniversities />} />
         <Route path="/universities/:universityName" element={<University />} />
         <Route path="/universities/:universityName/dorms/:dormSlug" element={<Dorms />} />
