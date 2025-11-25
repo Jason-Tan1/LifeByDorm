@@ -12,6 +12,10 @@ import { Dorm } from './models/Dorm';
 dotenv.config();
 console.log('Loaded secret:', process.env.ACCESS_TOKEN_SECRET ? '✅ Loaded' : '❌ Missing');
 
+// Admin emails (comma-separated) read from env, e.g. ADMIN_EMAILS=admin@example.com,alice@org.com
+const ADMIN_EMAILS: string[] = (process.env.ADMIN_EMAILS || '').split(',').map(s => s.trim()).filter(Boolean);
+console.log('Admin emails:', ADMIN_EMAILS.length ? ADMIN_EMAILS : 'none');
+
 const app = express()
 
 app.use(cors())
@@ -159,9 +163,10 @@ app.post('/login', async (req, res) => {
       throw new Error('ACCESS_TOKEN_SECRET is not defined');
     }
 
-    // Create token
+    // Create token and include role claim for admin users
+    const isAdmin = ADMIN_EMAILS.includes(user.email);
     const token = jwt.sign(
-      { userId: user._id, name: user.email },
+      { userId: user._id, name: user.email, role: isAdmin ? 'admin' : 'user' },
       process.env.ACCESS_TOKEN_SECRET as Secret,
       { expiresIn: '24h' }
     );
