@@ -4,6 +4,8 @@ import path from 'path';
 import fs from 'fs';
 import { University } from '../models/Universities';
 import { Dorm } from '../models/Dorm';
+import { User } from '../models/User';
+import bcrypt from 'bcryptjs';
 
 dotenv.config();
 
@@ -82,6 +84,42 @@ async function main() {
     }
   } else {
     console.log('No dorm seed file found, skipping dorms');
+  }
+
+  // Seed admin users from admins.json (optional)
+  const adminFilePath = path.resolve(__dirname, 'admins.json');
+  if (fs.existsSync(adminFilePath)) {
+    try {
+      const adminRaw = fs.readFileSync(adminFilePath, 'utf8');
+      const adminEmails = JSON.parse(adminRaw) as string[];
+      console.log(`Found ${adminEmails.length} admin emails in seed file`);
+
+      const defaultAdminPassword = process.env.ADMIN_DEFAULT_PASSWORD || 'Admin123!';
+
+      for (const email of adminEmails) {
+        if (!email || typeof email !== 'string') continue;
+        const existing = await User.findOne({ email });
+        if (!existing) {
+          const hashed = await bcrypt.hash(defaultAdminPassword, 10);
+          const u = new User({ email, password: hashed, role: 'admin' });
+          await u.save();
+          console.log('Created admin user:', email);
+        } else {
+          if ((existing as any).role !== 'admin') {
+            (existing as any).role = 'admin';
+            await existing.save();
+            console.log('Updated existing user to admin:', email);
+          } else {
+            console.log('Admin already exists:', email);
+          }
+        }
+      }
+      console.log('Admin seeding complete');
+    } catch (err) {
+      console.error('Failed to seed admins:', err);
+    }
+  } else {
+    console.log('No admins seed file found, skipping admin seeding');
   }
 
   console.log('Seeding complete');
