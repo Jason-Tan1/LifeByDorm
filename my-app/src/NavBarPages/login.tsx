@@ -43,11 +43,13 @@ function login() {
     setIsAdminFlow(qs.get('admin') === 'true');
   }, [location.search]);
 
+  //Login Container
   return (
     <div className = "login">
       <div className = "login_container">
         <form onSubmit={handleSubmit}> 
           <Link to="/">LifeByDorm</Link>
+          {/* Admin Login Link   */}
           <Link to="/login?admin=true" className="admin-button">Admin</Link>
           {isAdminFlow && (
             <div style={{ marginTop: 8, color: '#b45309', fontWeight: 600 }}>

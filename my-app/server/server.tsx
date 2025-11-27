@@ -163,8 +163,9 @@ app.post('/login', async (req, res) => {
       throw new Error('ACCESS_TOKEN_SECRET is not defined');
     }
 
-    // Create token and include role claim for admin users
-    const isAdmin = ADMIN_EMAILS.includes(user.email);
+    // Determine role from DB if present, otherwise fall back to ADMIN_EMAILS env
+    const dbRole = (user as any).role as string | undefined;
+    const isAdmin = (dbRole === 'admin') || ADMIN_EMAILS.includes(user.email);
     const token = jwt.sign(
       { userId: user._id, name: user.email, role: isAdmin ? 'admin' : 'user' },
       process.env.ACCESS_TOKEN_SECRET as Secret,
