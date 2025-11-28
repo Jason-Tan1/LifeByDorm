@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import NavBar from '../NavBarPages/navbar';
 
 function AdminDashboard() {
   const navigate = useNavigate();
@@ -22,10 +23,13 @@ function AdminDashboard() {
   }, [navigate]);
 
   return (
-    <div style={{ padding: 24, maxWidth: 1000, margin: '0 auto' }}>
-      <h1>Admin Dashboard</h1>
-      <p>Welcome — you are signed in as an admin.</p>
-      <p>This is a placeholder dashboard. Add admin controls here.</p>
+    <div>
+      <NavBar />
+      <main style={{ padding: 24, maxWidth: 1000, margin: '0 auto' }}>
+        <h1>Admin Dashboard</h1>
+        <p>Welcome — you are signed in as an admin.</p>
+        <p>This is a placeholder dashboard. Add admin controls here.</p>
+      </main>
     </div>
   );
 }
