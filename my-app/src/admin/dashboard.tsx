@@ -39,7 +39,7 @@ function AdminDashboard() {
       }
     }
     if (!isAdmin) {
-      navigate('/login?admin=true');
+      navigate('/login');
       return;
     }
 
