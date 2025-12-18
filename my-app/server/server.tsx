@@ -203,6 +203,14 @@ function authenticationToken(req: AuthRequest, res: Response, next: NextFunction
     }
   }
 }
+
+// Middleware to check if user is admin
+function requireAdmin(req: AuthRequest, res: Response, next: NextFunction) {
+  if (!req.user || req.user.role !== 'admin') {
+    return res.status(403).json({ message: 'Admin access required' });
+  }
+  next();
+}
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 //END OF USER AUTHENTICATION ROUTES AND SET UP
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -328,7 +336,13 @@ app.post('/api/reviews', async (req: Request, res: Response) => {
 app.get('/api/reviews', async (req: Request, res: Response) => {
   try {
     const { university, dorm } = req.query;
-    const filter: any = {};
+    // Show approved reviews OR reviews without a status field (legacy reviews)
+    const filter: any = { 
+      $or: [
+        { status: 'approved' },
+        { status: { $exists: false } }
+      ]
+    };
     if (university) filter.university = university;
     if (dorm) filter.dorm = dorm;
     const reviews = await UserReview.find(filter).sort({ createdAt: -1 }).lean();
@@ -338,6 +352,89 @@ app.get('/api/reviews', async (req: Request, res: Response) => {
     res.status(500).json({ message: 'Error fetching reviews' });
   }
 });
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+// ADMIN ROUTES - Review Management
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+// Get all pending reviews (admin only)
+app.get('/api/admin/reviews/pending', authenticationToken, requireAdmin, async (req: AuthRequest, res: Response) => {
+  try {
+    const pendingReviews = await UserReview.find({ status: 'pending' }).sort({ createdAt: -1 }).lean();
+    res.json(pendingReviews);
+  } catch (err) {
+    console.error('Error fetching pending reviews', err);
+    res.status(500).json({ message: 'Error fetching pending reviews' });
+  }
+});
+
+// Get all reviews with any status (admin only)
+app.get('/api/admin/reviews/all', authenticationToken, requireAdmin, async (req: AuthRequest, res: Response) => {
+  try {
+    const allReviews = await UserReview.find({}).sort({ createdAt: -1 }).lean();
+    res.json(allReviews);
+  } catch (err) {
+    console.error('Error fetching all reviews', err);
+    res.status(500).json({ message: 'Error fetching all reviews' });
+  }
+});
+
+// Approve a review (admin only)
+app.patch('/api/admin/reviews/:id/approve', authenticationToken, requireAdmin, async (req: AuthRequest, res: Response) => {
+  try {
+    const { id } = req.params;
+    const review = await UserReview.findByIdAndUpdate(
+      id,
+      { status: 'approved' },
+      { new: true }
+    );
+    if (!review) {
+      return res.status(404).json({ message: 'Review not found' });
+    }
+    res.json({ message: 'Review approved', review });
+  } catch (err) {
+    console.error('Error approving review', err);
+    res.status(500).json({ message: 'Error approving review' });
+  }
+});
+
+// Decline a review (admin only)
+app.patch('/api/admin/reviews/:id/decline', authenticationToken, requireAdmin, async (req: AuthRequest, res: Response) => {
+  try {
+    const { id } = req.params;
+    const review = await UserReview.findByIdAndUpdate(
+      id,
+      { status: 'declined' },
+      { new: true }
+    );
+    if (!review) {
+      return res.status(404).json({ message: 'Review not found' });
+    }
+    res.json({ message: 'Review declined', review });
+  } catch (err) {
+    console.error('Error declining review', err);
+    res.status(500).json({ message: 'Error declining review' });
+  }
+});
+
+// Delete a review permanently (admin only)
+app.delete('/api/admin/reviews/:id', authenticationToken, requireAdmin, async (req: AuthRequest, res: Response) => {
+  try {
+    const { id } = req.params;
+    const review = await UserReview.findByIdAndDelete(id);
+    if (!review) {
+      return res.status(404).json({ message: 'Review not found' });
+    }
+    res.json({ message: 'Review deleted permanently' });
+  } catch (err) {
+    console.error('Error deleting review', err);
+    res.status(500).json({ message: 'Error deleting review' });
+  }
+});
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+// END ADMIN ROUTES
+////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 // Start server
 const PORT = process.env.PORT || 3000;

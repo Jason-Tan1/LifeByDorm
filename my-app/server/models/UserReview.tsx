@@ -18,6 +18,7 @@ export interface IReview extends Document {
   images?: string[];
   createdAt?: Date;
   user?: string;
+  status?: string;
 }
 
 const reviewSchema = new Schema<IReview>({
@@ -35,7 +36,8 @@ const reviewSchema = new Schema<IReview>({
   fileImage: { type: String },
   images: { type: [String], default: [] },
   createdAt: { type: Date, default: Date.now },
-  user: { type: String }
+  user: { type: String },
+  status: { type: String, enum: ['pending', 'approved', 'declined'], default: 'pending' }
 });
 
 export const UserReview = model<IReview>('UserReview', reviewSchema);

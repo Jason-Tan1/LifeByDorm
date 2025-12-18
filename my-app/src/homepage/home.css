@@ -31,7 +31,9 @@
     background-image: linear-gradient(rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.2)),
       url('../assets/BackgroundCampus.jpg');
     background-size: cover;
-    height: 125vh; 
+    min-height: 750px;
+    height: 70vh; 
+    max-height: 900px;
     display: flex;
     flex-direction: column; 
   }
@@ -80,7 +82,7 @@
     background-color: transparent;
     padding: 140px 0;
     width: 100%;
-    margin-top: 40vh; /* Changing this constantly*/
+    margin-top: 30vh;
   }
 
   .featured-container {
