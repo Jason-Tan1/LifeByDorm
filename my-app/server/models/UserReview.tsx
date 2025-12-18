@@ -40,4 +40,5 @@ const reviewSchema = new Schema<IReview>({
   status: { type: String, enum: ['pending', 'approved', 'declined'], default: 'pending' }
 });
 
-export const UserReview = model<IReview>('UserReview', reviewSchema);
+export const UserReview = model<IReview>('userreview', reviewSchema);
+export const userreview = UserReview;

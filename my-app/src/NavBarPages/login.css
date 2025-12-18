@@ -1,5 +1,83 @@
 /* login.css */
 
+/* Modal Overlay */
+.login_modal_overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(4px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  padding: 20px;
+  font-family: 'Arial', sans-serif;
+}
+
+/* Modal Container */
+.login_modal_container {
+  background: white;
+  padding: 40px;
+  border-radius: 15px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+  width: 100%;
+  max-width: 400px;
+  text-align: center;
+  position: relative;
+  animation: modalFadeIn 0.3s ease;
+}
+
+@keyframes modalFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Close Button */
+.login_modal_close {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  background: transparent;
+  border: none;
+  font-size: 2rem;
+  color: #666;
+  cursor: pointer;
+  width: 35px;
+  height: 35px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: all 0.2s ease;
+  padding: 0;
+  line-height: 1;
+}
+
+.login_modal_close:hover {
+  background: #f3f4f6;
+  color: #000;
+  transform: rotate(90deg);
+}
+
+.login_modal_container h1 {
+  text-decoration: none;
+  color: #000000;
+  font-size: 2rem;
+  font-weight: bold;
+  margin-bottom: 30px;
+  display: block;
+}
+
+/* Keep old styles for backward compatibility if login page route still exists */
 .login {
   display: flex;
   justify-content: center;
