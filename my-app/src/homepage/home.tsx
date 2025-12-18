@@ -61,6 +61,8 @@ const featuredDorms = [
 
 function Home() {
   const [dormRatings, setDormRatings] = useState<{ [dormName: string]: number }>({});
+  const [dormReviewCounts, setDormReviewCounts] = useState<{ [dormName: string]: number }>({});
+  const [universityReviewCounts, setUniversityReviewCounts] = useState<{ [universitySlug: string]: number }>({});
 
   const calculateOverallRating = (review: any) => {
     const ratings = [review.room, review.bathroom, review.building, review.amenities, review.location];
@@ -70,6 +72,7 @@ function Home() {
   useEffect(() => {
     const fetchDormRatings = async () => {
       const ratings: { [dormName: string]: number } = {};
+      const counts: { [dormName: string]: number } = {};
       await Promise.all(
         featuredDorms.map(async (dorm) => {
           try {
@@ -78,6 +81,7 @@ function Home() {
             if (reviewRes.ok) {
               const reviews = await reviewRes.json();
               console.log(`Reviews for ${dorm.name}:`, reviews);
+              counts[dorm.name] = reviews.length;
               if (reviews.length > 0) {
                 const totalRating = reviews.reduce((sum: number, review: any) => sum + calculateOverallRating(review), 0);
                 ratings[dorm.name] = totalRating / reviews.length;
@@ -92,13 +96,37 @@ function Home() {
           } catch (e) {
             console.error(`Failed to fetch reviews for ${dorm.name}`, e);
             ratings[dorm.name] = 0;
+            counts[dorm.name] = 0;
           }
         })
       );
       console.log('All ratings:', ratings);
       setDormRatings(ratings);
+      setDormReviewCounts(counts);
     };
     fetchDormRatings();
+
+    const fetchUniversityReviewCounts = async () => {
+      const uniCounts: { [universitySlug: string]: number } = {};
+      await Promise.all(
+        featuredUniversities.map(async (uni) => {
+          try {
+            const reviewRes = await fetch(`${API_BASE}/api/reviews?university=${encodeURIComponent(uni.slug)}`);
+            if (reviewRes.ok) {
+              const reviews = await reviewRes.json();
+              uniCounts[uni.slug] = reviews.length;
+            } else {
+              uniCounts[uni.slug] = 0;
+            }
+          } catch (e) {
+            console.error(`Failed to fetch reviews for ${uni.name}`, e);
+            uniCounts[uni.slug] = 0;
+          }
+        })
+      );
+      setUniversityReviewCounts(uniCounts);
+    };
+    fetchUniversityReviewCounts();
   }, []);
 
   return (
@@ -135,6 +163,9 @@ function Home() {
                   <p className="featured-location">
                     <span className="icon">📍</span> {uni.location}
                   </p>
+                  <p className="featured-location">
+                    <span className="icon">💬</span> {universityReviewCounts[uni.slug] ?? 0} {universityReviewCounts[uni.slug] === 1 ? 'review' : 'reviews'}
+                  </p>
                 </div>
               </Link>
             ))}
@@ -161,7 +192,7 @@ function Home() {
                     <span className="icon">🏫</span> {dorm.university}
                   </p>
                   <p className="featured-location">
-                    <span className="icon">⭐</span> {(dormRatings[dorm.name] ?? 0).toFixed(1)}
+                    <span className="icon">⭐</span> {(dormRatings[dorm.name] ?? 0).toFixed(1)} ({dormReviewCounts[dorm.name] ?? 0} {dormReviewCounts[dorm.name] === 1 ? 'review' : 'reviews'})
                   </p>
                 </div>
               </Link>

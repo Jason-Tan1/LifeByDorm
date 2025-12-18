@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom';
+import { FaThumbsUp, FaThumbsDown } from "react-icons/fa";
 
 type APIDorm = {
   name: string;
@@ -84,11 +85,11 @@ function ReviewsList({
                 </div>
                 <div className="review-votes">
                   <button className="vote-button upvote">
-                    <span className="vote-icon">▲</span>
+                    <FaThumbsUp className="vote-icon" />
                     <span className="vote-count">0</span>
                   </button>
                   <button className="vote-button downvote">
-                    <span className="vote-icon">▼</span>
+                    <FaThumbsDown className="vote-icon" />
                     <span className="vote-count">0</span>
                   </button>
                 </div>
