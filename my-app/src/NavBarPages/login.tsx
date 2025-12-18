@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { Link, useLocation } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import axios from 'axios'
 import './login.css'
 
@@ -8,8 +8,6 @@ function login() {
   const [password, setPassword] = useState<string>("");
   const [isRegistering, setIsRegistering] = useState<boolean>(false);
   const [error, setError] = useState<string>("");
-  const location = useLocation();
-  const [isAdminFlow, setIsAdminFlow] = useState<boolean>(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -38,24 +36,12 @@ function login() {
     setError("");
   }
 
-  React.useEffect(() => {
-    const qs = new URLSearchParams(location.search);
-    setIsAdminFlow(qs.get('admin') === 'true');
-  }, [location.search]);
-
   //Login Container
   return (
     <div className = "login">
       <div className = "login_container">
         <form onSubmit={handleSubmit}> 
           <Link to="/">LifeByDorm</Link>
-          {/* Admin Login Link   */}
-          <Link to="/login?admin=true" className="admin-button">Admin</Link>
-          {isAdminFlow && (
-            <div style={{ marginTop: 8, color: '#b45309', fontWeight: 600 }}>
-              Admin login — please sign in with an admin account
-            </div>
-          )}
           <div className = "login_email"> 
             <h2> Email: </h2>
             <input
