@@ -27,4 +27,5 @@ const universitySchema = new Schema<IUniversity>({
 });
 
 export const University = model<IUniversity>('University', universitySchema);
+export const university = University;
 export default University;

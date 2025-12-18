@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom';
+import LoginModal from './login';
 import './navbar.css'
 
 function navbar() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
+  const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -29,6 +31,7 @@ function navbar() {
   const handleLogout = () => {
     localStorage.removeItem('token');
     setIsLoggedIn(false);
+    setIsAdmin(false);
     navigate('/');
   };
   return (
@@ -50,12 +53,11 @@ function navbar() {
           {isLoggedIn ? (
             <button onClick={handleLogout}>Log Out</button>
           ) : (
-            <Link to="/login">
-              <button>Log In</button>
-            </Link>
+            <button onClick={() => setIsLoginModalOpen(true)}>Log In</button>
           )}
         </div>
       </div>
+      <LoginModal isOpen={isLoginModalOpen} onClose={() => setIsLoginModalOpen(false)} />
     </div>
   )
 }

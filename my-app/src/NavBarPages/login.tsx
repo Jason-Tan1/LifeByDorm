@@ -3,11 +3,18 @@ import { Link } from 'react-router-dom';
 import axios from 'axios'
 import './login.css'
 
-function login() {
+interface LoginModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+}
+
+function login({ isOpen, onClose }: LoginModalProps) {
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const [isRegistering, setIsRegistering] = useState<boolean>(false);
   const [error, setError] = useState<string>("");
+
+  if (!isOpen) return null;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -23,8 +30,9 @@ function login() {
       if (response.data.token) {
         // Store the token in localStorage
         localStorage.setItem('token', response.data.token);
-        // Force a reload to update the navbar state
-        window.location.href = '/';
+        // Close modal and reload to update navbar state
+        onClose();
+        window.location.reload();
       }
     } catch (err: any) {
       setError(err.response?.data?.message || 'An error occurred');
@@ -36,12 +44,13 @@ function login() {
     setError("");
   }
 
-  //Login Container
+  //Login Modal
   return (
-    <div className = "login">
-      <div className = "login_container">
+    <div className="login_modal_overlay" onClick={onClose}>
+      <div className="login_modal_container" onClick={(e) => e.stopPropagation()}>
+        <button className="login_modal_close" onClick={onClose}>×</button>
         <form onSubmit={handleSubmit}> 
-          <Link to="/">LifeByDorm</Link>
+          <h1>LifeByDorm</h1>
           <div className = "login_email"> 
             <h2> Email: </h2>
             <input

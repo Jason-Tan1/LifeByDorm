@@ -60,6 +60,8 @@ const featuredDorms = [
 ];
 
 function Home() {
+  const [topUniversities, setTopUniversities] = useState<any[]>([]);
+  const [topDorms, setTopDorms] = useState<any[]>([]);
   const [dormRatings, setDormRatings] = useState<{ [dormName: string]: number }>({});
   const [dormReviewCounts, setDormReviewCounts] = useState<{ [dormName: string]: number }>({});
   const [universityReviewCounts, setUniversityReviewCounts] = useState<{ [universitySlug: string]: number }>({});
@@ -70,63 +72,130 @@ function Home() {
   };
 
   useEffect(() => {
-    const fetchDormRatings = async () => {
-      const ratings: { [dormName: string]: number } = {};
-      const counts: { [dormName: string]: number } = {};
-      await Promise.all(
-        featuredDorms.map(async (dorm) => {
-          try {
-            console.log(`Fetching reviews for: ${dorm.name} at ${dorm.universitySlug}`);
-            const reviewRes = await fetch(`${API_BASE}/api/reviews?university=${encodeURIComponent(dorm.universitySlug)}&dorm=${encodeURIComponent(dorm.name)}`);
-            if (reviewRes.ok) {
-              const reviews = await reviewRes.json();
-              console.log(`Reviews for ${dorm.name}:`, reviews);
-              counts[dorm.name] = reviews.length;
-              if (reviews.length > 0) {
-                const totalRating = reviews.reduce((sum: number, review: any) => sum + calculateOverallRating(review), 0);
-                ratings[dorm.name] = totalRating / reviews.length;
-                console.log(`Calculated rating for ${dorm.name}: ${ratings[dorm.name]}`);
-              } else {
-                ratings[dorm.name] = 0;
-                console.log(`No reviews found for ${dorm.name}`);
+    // Fetch all universities and find top 3 by review count
+    const fetchTopUniversities = async () => {
+      try {
+        const response = await fetch(`${API_BASE}/api/universities`);
+        if (response.ok) {
+          const allUniversities = await response.json();
+          
+          // Get review counts for all universities
+          const universityData = await Promise.all(
+            allUniversities.map(async (uni: any) => {
+              try {
+                const reviewRes = await fetch(`${API_BASE}/api/reviews?university=${encodeURIComponent(uni.slug)}`);
+                if (reviewRes.ok) {
+                  const reviews = await reviewRes.json();
+                  return { ...uni, reviewCount: reviews.length };
+                }
+              } catch (e) {
+                console.error(`Failed to fetch reviews for ${uni.name}`, e);
               }
-            } else {
-              console.error(`Failed to fetch reviews for ${dorm.name}, status: ${reviewRes.status}`);
-            }
-          } catch (e) {
-            console.error(`Failed to fetch reviews for ${dorm.name}`, e);
-            ratings[dorm.name] = 0;
-            counts[dorm.name] = 0;
-          }
-        })
-      );
-      console.log('All ratings:', ratings);
-      setDormRatings(ratings);
-      setDormReviewCounts(counts);
-    };
-    fetchDormRatings();
+              return { ...uni, reviewCount: 0 };
+            })
+          );
 
-    const fetchUniversityReviewCounts = async () => {
-      const uniCounts: { [universitySlug: string]: number } = {};
-      await Promise.all(
-        featuredUniversities.map(async (uni) => {
-          try {
-            const reviewRes = await fetch(`${API_BASE}/api/reviews?university=${encodeURIComponent(uni.slug)}`);
-            if (reviewRes.ok) {
-              const reviews = await reviewRes.json();
-              uniCounts[uni.slug] = reviews.length;
-            } else {
-              uniCounts[uni.slug] = 0;
-            }
-          } catch (e) {
-            console.error(`Failed to fetch reviews for ${uni.name}`, e);
-            uniCounts[uni.slug] = 0;
-          }
-        })
-      );
-      setUniversityReviewCounts(uniCounts);
+          // Sort by review count and take top 3
+          const top3 = universityData
+            .sort((a, b) => b.reviewCount - a.reviewCount)
+            .slice(0, 3);
+          
+          setTopUniversities(top3);
+          
+          // Set review counts for display
+          const counts: { [slug: string]: number } = {};
+          top3.forEach(uni => {
+            counts[uni.slug] = uni.reviewCount;
+          });
+          setUniversityReviewCounts(counts);
+        }
+      } catch (e) {
+        console.error('Failed to fetch universities', e);
+      }
     };
-    fetchUniversityReviewCounts();
+
+    // Fetch all dorms and find top 3 by rating
+    const fetchTopDorms = async () => {
+      try {
+        const allUniversitiesRes = await fetch(`${API_BASE}/api/universities`);
+        if (!allUniversitiesRes.ok) return;
+        
+        const allUniversities = await allUniversitiesRes.json();
+        const allDorms: any[] = [];
+        
+        // Fetch dorms for all universities
+        await Promise.all(
+          allUniversities.map(async (uni: any) => {
+            try {
+              const dormsRes = await fetch(`${API_BASE}/api/universities/${encodeURIComponent(uni.slug)}/dorms`);
+              if (dormsRes.ok) {
+                const dorms = await dormsRes.json();
+                dorms.forEach((dorm: any) => {
+                  allDorms.push({
+                    ...dorm,
+                    university: uni.name,
+                    universitySlug: uni.slug
+                  });
+                });
+              }
+            } catch (e) {
+              console.error(`Failed to fetch dorms for ${uni.name}`, e);
+            }
+          })
+        );
+
+        // Get ratings and review counts for all dorms
+        const dormData = await Promise.all(
+          allDorms.map(async (dorm) => {
+            try {
+              const reviewRes = await fetch(`${API_BASE}/api/reviews?university=${encodeURIComponent(dorm.universitySlug)}&dorm=${encodeURIComponent(dorm.name)}`);
+              if (reviewRes.ok) {
+                const reviews = await reviewRes.json();
+                const reviewCount = reviews.length;
+                let avgRating = 0;
+                
+                if (reviews.length > 0) {
+                  const totalRating = reviews.reduce((sum: number, review: any) => sum + calculateOverallRating(review), 0);
+                  avgRating = totalRating / reviews.length;
+                }
+                
+                return { ...dorm, avgRating, reviewCount };
+              }
+            } catch (e) {
+              console.error(`Failed to fetch reviews for ${dorm.name}`, e);
+            }
+            return { ...dorm, avgRating: 0, reviewCount: 0 };
+          })
+        );
+
+        // Sort by average rating (then by review count as tiebreaker) and take top 3
+        const top3 = dormData
+          .sort((a, b) => {
+            if (b.avgRating === a.avgRating) {
+              return b.reviewCount - a.reviewCount;
+            }
+            return b.avgRating - a.avgRating;
+          })
+          .slice(0, 3);
+
+        setTopDorms(top3);
+        
+        // Set ratings and counts for display
+        const ratings: { [name: string]: number } = {};
+        const counts: { [name: string]: number } = {};
+        top3.forEach(dorm => {
+          ratings[dorm.name] = dorm.avgRating;
+          counts[dorm.name] = dorm.reviewCount;
+        });
+        setDormRatings(ratings);
+        setDormReviewCounts(counts);
+      } catch (e) {
+        console.error('Failed to fetch dorms', e);
+      }
+    };
+
+    fetchTopUniversities();
+    fetchTopDorms();
   }, []);
 
   return (
@@ -151,17 +220,17 @@ function Home() {
           <p className="featured-subtitle">Explore top universities and their housing options.</p>
           
           <div className="featured-grid">
-            {featuredUniversities.map(uni => (
-              <Link key={uni.id} to={`/universities/${uni.slug}`} className="featured-card">
+            {topUniversities.map(uni => (
+              <Link key={uni.slug} to={`/universities/${uni.slug}`} className="featured-card">
                 <div className="featured-image-container">
-                  <img src={uni.imageUrl} alt={uni.name} className="featured-image" />
+                  <img src={uni.imageUrl || 'https://i0.wp.com/wpu.ac.pg/wp-content/uploads/2022/09/placeholder-72.png?fit=1200%2C800&ssl=1'} alt={uni.name} className="featured-image" />
                 </div>
                 <div className="featured-info">
                   <h3 className="featured-university-name">
                     <span className="icon">🏛️</span> {uni.name}
                   </h3>
                   <p className="featured-location">
-                    <span className="icon">📍</span> {uni.location}
+                    <span className="icon">📍</span> {uni.location || 'Location N/A'}
                   </p>
                   <p className="featured-location">
                     <span className="icon">💬</span> {universityReviewCounts[uni.slug] ?? 0} {universityReviewCounts[uni.slug] === 1 ? 'review' : 'reviews'}
@@ -175,14 +244,14 @@ function Home() {
 
         {/* Top Rated Dorms Section */}
         <div className="featured-container" style={{ marginTop: '40px' }}>
-          <h2 className="featured-title">Most Rated Dorms</h2>
+          <h2 className="featured-title">Top Rated Dorms</h2>
           <p className="featured-subtitle">Check out highly-rated residences across campuses.</p>
           
           <div className="featured-grid">
-            {featuredDorms.map(dorm => (
-              <Link key={dorm.id} to={`/universities/${dorm.universitySlug}/dorms/${dorm.slug}`} className="featured-card">
+            {topDorms.map(dorm => (
+              <Link key={`${dorm.universitySlug}-${dorm.slug}`} to={`/universities/${dorm.universitySlug}/dorms/${dorm.slug}`} className="featured-card">
                 <div className="featured-image-container">
-                  <img src={dorm.imageUrl} alt={dorm.name} className="featured-image" />
+                  <img src={dorm.imageUrl || 'https://thumbs.dreamstime.com/b/college-dorm-ai-generated-stock-image-college-dorm-bunk-bed-bed-above-desk-window-generated-276344540.jpg'} alt={dorm.name} className="featured-image" />
                 </div>
                 <div className="featured-info">
                   <h3 className="featured-university-name">

@@ -32,5 +32,6 @@ const dormSchema = new Schema<IDorm>({
 dormSchema.index({ universitySlug: 1, slug: 1 }, { unique: true });
 
 export const Dorm = model<IDorm>('Dorm', dormSchema);
+export const dorm = Dorm;
 
 export default Dorm;
