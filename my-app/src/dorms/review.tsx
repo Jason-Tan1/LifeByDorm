@@ -234,7 +234,6 @@ function Reviews() {
           {/* Page 1: Ratings */}
           {currentPage === 1 && (
             <div className="form-page">
-              <h2>Rate Your Experience</h2>
               <div className="rating-group">
                 <label>Rate the Room</label>
                 {renderStars('room')}
@@ -265,7 +264,6 @@ function Reviews() {
           {/* Page 2: Personal Details */}
           {currentPage === 2 && (
             <div className="form-page">
-              <h2>Details</h2>
               
               <div className="details-row">
                 <label className="details-label">What class year(s) did you live here?</label>
@@ -394,7 +392,6 @@ function Reviews() {
           {/* Page 3: Comments and Photos */}
           {currentPage === 3 && (
             <div className="form-page">
-              <h2>Share Your Experience</h2>
               <div className="form-group">
                 <label>Comments about the dorm</label>
                 <textarea
@@ -446,9 +443,7 @@ function Reviews() {
 
           {/* Page 4: Summary and Submit */}
           {currentPage === 4 && (
-            <div className="form-page summary-page">
-              <h2>Review Summary</h2>
-              
+            <div className="form-page summary-page">         
               <div className="summary-section">
                 <h3>Ratings</h3>
                 <div className="summary-ratings">

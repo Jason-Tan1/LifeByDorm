@@ -3,7 +3,6 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Home from './homepage/home.tsx';
 import AboutMe from './NavBarPages/aboutme.tsx';
 import ContactMe from './NavBarPages/contactme.tsx';
-import Login from './NavBarPages/login.tsx';
 import University from './UniversitiesPage/universityDash.tsx';
 import Dorms from './dorms/dorms.tsx';
 import NavBar from './NavBarPages/navbar.tsx';
@@ -19,7 +18,6 @@ function App() {
         <Route path="/" element={<Home />} />
         <Route path="/aboutme" element={<AboutMe />} />
         <Route path="/contactme" element={<ContactMe />} />
-        <Route path="/login" element={<Login />} />
         <Route path="/admin" element={<Home />} />
         <Route path="/admin/dashboard" element={<AdminDashboard />} />
         <Route path="/universities" element={<AllUniversities />} />
