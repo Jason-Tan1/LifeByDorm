@@ -4,10 +4,10 @@ import cors from 'cors';
 import jwt, { Secret, JwtPayload } from 'jsonwebtoken';
 import mongoose from 'mongoose'; // MongoDB Connections from Node.js
 import bcrypt from 'bcryptjs'; //Hide Passwords
-import { User, IUser } from './models/User';
-import { UserReview } from './models/UserReview';
-import { University } from './models/Universities';
-import { Dorm } from './models/Dorm';
+import { User, IUser } from './models/user';
+import { UserReview } from './models/userreview';
+import { University } from './models/universities';
+import { Dorm } from './models/dorm';
 
 dotenv.config();
 console.log('Loaded secret:', process.env.ACCESS_TOKEN_SECRET ? '✅ Loaded' : '❌ Missing');
