@@ -87,8 +87,8 @@ function ReviewsList({
                     {isLoggedIn && <span className="verified-badge">✓ Verified Student</span>}
                   </div>
                   <div className="review-metadata-row">
-                    <span>Year: {review.year}</span>
-                    <span>Room Type: {review.roomType.charAt(0).toUpperCase() + review.roomType.slice(1)}</span>
+                    <span>Year: {Array.isArray(review.year) ? review.year.map((y: number) => ['', 'Freshman', 'Sophomore', 'Junior', 'Senior', 'Graduate Student'][y]).join(', ') : review.year}</span>
+                    <span>Room Type: {Array.isArray(review.roomType) ? review.roomType.map((r: string) => r.charAt(0).toUpperCase() + r.slice(1)).join(', ') : (review.roomType?.charAt(0).toUpperCase() + review.roomType?.slice(1))}</span>
                     <span>Would Dorm Again: {review.wouldDormAgain ? 'Yes' : 'No'}</span>
                   </div>
                 </div>

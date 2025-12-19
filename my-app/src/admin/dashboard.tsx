@@ -12,8 +12,8 @@ interface Review {
   amenities: number;
   location: number;
   description: string;
-  year: number;
-  roomType: string;
+  year: number[] | number;
+  roomType: string[] | string;
   wouldDormAgain?: boolean;
   fileImage?: string;
   images?: string[];
@@ -117,6 +117,20 @@ function AdminDashboard() {
     return ((review.room + review.bathroom + review.building + review.amenities + review.location) / 5).toFixed(1);
   };
 
+  const formatYears = (year: number[] | number) => {
+    if (Array.isArray(year)) {
+      return year.map(y => ['', 'Freshman', 'Sophomore', 'Junior', 'Senior', 'Graduate Student'][y]).join(', ');
+    }
+    return ['', 'Freshman', 'Sophomore', 'Junior', 'Senior', 'Graduate Student'][year] || 'N/A';
+  };
+
+  const formatRoomTypes = (roomType: string[] | string) => {
+    if (Array.isArray(roomType)) {
+      return roomType.map(r => r.charAt(0).toUpperCase() + r.slice(1)).join(', ');
+    }
+    return roomType ? roomType.charAt(0).toUpperCase() + roomType.slice(1) : 'N/A';
+  };
+
   return (
     <div>
       <NavBar />
@@ -154,7 +168,8 @@ function AdminDashboard() {
                       <strong>Overall Rating:</strong> {calculateOverallRating(review)} / 5.0
                     </p>
                     <p style={{ margin: '4px 0', color: '#666' }}>
-                      <strong>Room Type:</strong> {review.roomType} | <strong>Year:</strong> {review.year} | 
+                      <strong>Room Type:</strong> {formatRoomTypes(review.roomType)} | 
+                      <strong> Year:</strong> {formatYears(review.year)} | 
                       <strong> Would Dorm Again:</strong> {review.wouldDormAgain ? 'Yes' : 'No'}
                     </p>
                     <div style={{ marginTop: '12px' }}>

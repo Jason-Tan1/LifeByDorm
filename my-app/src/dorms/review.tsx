@@ -22,8 +22,8 @@ function Reviews() {
   const queryDorm = urlSearch ? urlSearch.get('dorm') : null;
 
   const [description, setDescription] = useState('');
-  const [year, setYear] = useState('');
-  const [roomType, setRoomType] = useState('');
+  const [year, setYear] = useState<string[]>([]);
+  const [roomType, setRoomType] = useState<string[]>([]);
   const [wouldDormAgain, setWouldDormAgain] = useState('');
   const [fileDataUrls, setFileDataUrls] = useState<string[]>([]);
   const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10 MB
@@ -115,8 +115,8 @@ function Reviews() {
       }
     } else if (currentPage === 2) {
       const missing: string[] = [];
-      if (!year) missing.push('Year');
-      if (!roomType) missing.push('Room type');
+      if (year.length === 0) missing.push('Year');
+      if (roomType.length === 0) missing.push('Room type');
       if (!wouldDormAgain) missing.push('Would Dorm Again');
       
       if (missing.length > 0) {
@@ -150,8 +150,8 @@ function Reviews() {
     // Basic client-side validation to avoid server-side validation errors
     const missing: string[] = [];
     if (!description || description.trim().length < 5) missing.push('Comments (min 5 chars)');
-    if (!year) missing.push('Year');
-    if (!roomType) missing.push('Room type');
+    if (year.length === 0) missing.push('Year');
+    if (roomType.length === 0) missing.push('Room type');
     if (!wouldDormAgain) missing.push('Would Dorm Again');
     if (ratings.room <= 0) missing.push('Room rating');
     if (ratings.bathrooms <= 0) missing.push('Bathroom rating');
@@ -174,8 +174,8 @@ function Reviews() {
       amenities: ratings.amenities,
       location: ratings.location,
       description,
-      year: year ? Number(year) : null,
-      roomType,
+      year: year.length > 0 ? year.map(y => Number(y)) : [],
+      roomType: roomType,
       wouldDormAgain: wouldDormAgain === 'yes',
       fileImage: fileDataUrls.length > 0 ? fileDataUrls[0] : null,
       images: fileDataUrls
@@ -198,8 +198,8 @@ function Reviews() {
       // Clear form after success
       setRatings({ room: 0, bathrooms: 0, building: 0, amenities: 0, location: 0 });
       setDescription('');
-      setYear('');
-      setRoomType('');
+      setYear([]);
+      setRoomType([]);
       setWouldDormAgain('');
       setFileDataUrls([]);
       alert('Review submitted — thank you!');
@@ -265,106 +265,127 @@ function Reviews() {
           {/* Page 2: Personal Details */}
           {currentPage === 2 && (
             <div className="form-page">
-              <h2> Details </h2>
-              <div className="form-group">
-                <label>Year you are in</label>
-                <div className="option-boxes">
-                  <button
-                    type="button"
-                    className={`option-box ${year === '1' ? 'selected' : ''}`}
-                    onClick={() => setYear('1')}
-                  >
-                    First Year
-                  </button>
-                  <button
-                    type="button"
-                    className={`option-box ${year === '2' ? 'selected' : ''}`}
-                    onClick={() => setYear('2')}
-                  >
-                    Second Year
-                  </button>
-                  <button
-                    type="button"
-                    className={`option-box ${year === '3' ? 'selected' : ''}`}
-                    onClick={() => setYear('3')}
-                  >
-                    Third Year
-                  </button>
-                  <button
-                    type="button"
-                    className={`option-box ${year === '4' ? 'selected' : ''}`}
-                    onClick={() => setYear('4')}
-                  >
-                    Fourth Year
-                  </button>
-                  <button
-                    type="button"
-                    className={`option-box ${year === '5' ? 'selected' : ''}`}
-                    onClick={() => setYear('5')}
-                  >
-                    Fifth Year or Above
-                  </button>
+              <h2>Details</h2>
+              
+              <div className="details-row">
+                <label className="details-label">What class year(s) did you live here?</label>
+                <div className="details-options">
+                  <label className="checkbox-option">
+                    <input
+                      type="checkbox"
+                      checked={year.includes('1')}
+                      onChange={() => setYear(prev => prev.includes('1') ? prev.filter(y => y !== '1') : [...prev, '1'])}
+                    />
+                    <span>Freshman</span>
+                  </label>
+                  <label className="checkbox-option">
+                    <input
+                      type="checkbox"
+                      checked={year.includes('2')}
+                      onChange={() => setYear(prev => prev.includes('2') ? prev.filter(y => y !== '2') : [...prev, '2'])}
+                    />
+                    <span>Sophomore</span>
+                  </label>
+                  <label className="checkbox-option">
+                    <input
+                      type="checkbox"
+                      checked={year.includes('3')}
+                      onChange={() => setYear(prev => prev.includes('3') ? prev.filter(y => y !== '3') : [...prev, '3'])}
+                    />
+                    <span>Junior</span>
+                  </label>
+                  <label className="checkbox-option">
+                    <input
+                      type="checkbox"
+                      checked={year.includes('4')}
+                      onChange={() => setYear(prev => prev.includes('4') ? prev.filter(y => y !== '4') : [...prev, '4'])}
+                    />
+                    <span>Senior</span>
+                  </label>
+                  <label className="checkbox-option">
+                    <input
+                      type="checkbox"
+                      checked={year.includes('5')}
+                      onChange={() => setYear(prev => prev.includes('5') ? prev.filter(y => y !== '5') : [...prev, '5'])}
+                    />
+                    <span>Graduate Student</span>
+                  </label>
                 </div>
               </div>
 
-              <div className="form-group">
-                <label>Type of Room</label>
-                <div className="option-boxes">
-                  <button
-                    type="button"
-                    className={`option-box ${roomType === 'single' ? 'selected' : ''}`}
-                    onClick={() => setRoomType('single')}
-                  >
-                    Single Room
-                  </button>
-                  <button
-                    type="button"
-                    className={`option-box ${roomType === 'double' ? 'selected' : ''}`}
-                    onClick={() => setRoomType('double')}
-                  >
-                    Double Room
-                  </button>
-                  <button
-                    type="button"
-                    className={`option-box ${roomType === 'triple' ? 'selected' : ''}`}
-                    onClick={() => setRoomType('triple')}
-                  >
-                    Triple Room
-                  </button>
-                  <button
-                    type="button"
-                    className={`option-box ${roomType === 'suite' ? 'selected' : ''}`}
-                    onClick={() => setRoomType('suite')}
-                  >
-                    Suite
-                  </button>
-                  <button
-                    type="button"
-                    className={`option-box ${roomType === 'apartment' ? 'selected' : ''}`}
-                    onClick={() => setRoomType('apartment')}
-                  >
-                    Apartment Style
-                  </button>
+              <div className="details-row">
+                <label className="details-label">What type of room(s) did you have?</label>
+                <div className="details-options">
+                  <label className="checkbox-option">
+                    <input
+                      type="checkbox"
+                      checked={roomType.includes('single')}
+                      onChange={() => setRoomType(prev => prev.includes('single') ? prev.filter(r => r !== 'single') : [...prev, 'single'])}
+                    />
+                    <span>Single</span>
+                  </label>
+                  <label className="checkbox-option">
+                    <input
+                      type="checkbox"
+                      checked={roomType.includes('double')}
+                      onChange={() => setRoomType(prev => prev.includes('double') ? prev.filter(r => r !== 'double') : [...prev, 'double'])}
+                    />
+                    <span>Double</span>
+                  </label>
+                  <label className="checkbox-option">
+                    <input
+                      type="checkbox"
+                      checked={roomType.includes('triple')}
+                      onChange={() => setRoomType(prev => prev.includes('triple') ? prev.filter(r => r !== 'triple') : [...prev, 'triple'])}
+                    />
+                    <span>Triple</span>
+                  </label>
+                  <label className="checkbox-option">
+                    <input
+                      type="checkbox"
+                      checked={roomType.includes('quad')}
+                      onChange={() => setRoomType(prev => prev.includes('quad') ? prev.filter(r => r !== 'quad') : [...prev, 'quad'])}
+                    />
+                    <span>Quad</span>
+                  </label>
+                  <label className="checkbox-option">
+                    <input
+                      type="checkbox"
+                      checked={roomType.includes('suite')}
+                      onChange={() => setRoomType(prev => prev.includes('suite') ? prev.filter(r => r !== 'suite') : [...prev, 'suite'])}
+                    />
+                    <span>Suite</span>
+                  </label>
+                  <label className="checkbox-option">
+                    <input
+                      type="checkbox"
+                      checked={roomType.includes('other')}
+                      onChange={() => setRoomType(prev => prev.includes('other') ? prev.filter(r => r !== 'other') : [...prev, 'other'])}
+                    />
+                    <span>Other</span>
+                  </label>
                 </div>
               </div>
 
-              <div className="form-group">
-                <label>Would you dorm here again?</label>
-                <div className="option-boxes">
-                  <button
-                    type="button"
-                    className={`option-box ${wouldDormAgain === 'yes' ? 'selected' : ''}`}
-                    onClick={() => setWouldDormAgain('yes')}
-                  >
-                    Yes
-                  </button>
-                  <button
-                    type="button"
-                    className={`option-box ${wouldDormAgain === 'no' ? 'selected' : ''}`}
-                    onClick={() => setWouldDormAgain('no')}
-                  >
-                    No
-                  </button>
+              <div className="details-row">
+                <label className="details-label">Would you dorm here again?</label>
+                <div className="details-options">
+                  <label className="checkbox-option">
+                    <input
+                      type="checkbox"
+                      checked={wouldDormAgain === 'yes'}
+                      onChange={() => setWouldDormAgain(wouldDormAgain === 'yes' ? '' : 'yes')}
+                    />
+                    <span>Yes</span>
+                  </label>
+                  <label className="checkbox-option">
+                    <input
+                      type="checkbox"
+                      checked={wouldDormAgain === 'no'}
+                      onChange={() => setWouldDormAgain(wouldDormAgain === 'no' ? '' : 'no')}
+                    />
+                    <span>No</span>
+                  </label>
                 </div>
               </div>
             </div>
@@ -478,11 +499,11 @@ function Reviews() {
                 <h3>Details</h3>
                 <div className="summary-item">
                   <span>Year:</span>
-                  <span>{['', 'First Year', 'Second Year', 'Third Year', 'Fourth Year', 'Fifth Year or Above'][Number(year)]}</span>
+                  <span>{year.map(y => ['', 'Freshman', 'Sophomore', 'Junior', 'Senior', 'Graduate Student'][Number(y)]).join(', ')}</span>
                 </div>
                 <div className="summary-item">
                   <span>Room Type:</span>
-                  <span>{roomType.charAt(0).toUpperCase() + roomType.slice(1)}</span>
+                  <span>{roomType.map(r => r.charAt(0).toUpperCase() + r.slice(1)).join(', ')}</span>
                 </div>
                 <div className="summary-item">
                   <span>Would Dorm Again:</span>

@@ -11,8 +11,8 @@ export interface IReview extends Document {
   amenities: number;
   location: number;
   description: string;
-  year: number;
-  roomType: string;
+  year: number[];
+  roomType: string[];
   wouldDormAgain?: boolean;
   fileImage?: string;
   images?: string[];
@@ -30,8 +30,8 @@ const reviewSchema = new Schema<IReview>({
   amenities: { type: Number, required: true },
   location: { type: Number, required: true },
   description: { type: String, required: true },
-  year: { type: Number, required: true },
-  roomType: { type: String, required: true },
+  year: { type: [Number], required: true },
+  roomType: { type: [String], required: true },
   wouldDormAgain: { type: Boolean, default: false },
   fileImage: { type: String },
   images: { type: [String], default: [] },

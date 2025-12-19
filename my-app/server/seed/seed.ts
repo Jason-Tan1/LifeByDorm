@@ -2,9 +2,9 @@ import dotenv from 'dotenv';
 import mongoose from 'mongoose';
 import path from 'path';
 import fs from 'fs';
-import { University } from '../models/Universities';
-import { Dorm } from '../models/Dorm';
-import { User } from '../models/User';
+import { University } from '../models/universities';
+import { Dorm } from '../models/dorm';
+import { User } from '../models/user';
 import bcrypt from 'bcryptjs';
 
 dotenv.config();
