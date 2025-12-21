@@ -191,6 +191,95 @@
     border-bottom: none;
   }
 
+  /* Slider Container */
+  .slider-container {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+  }
+
+  .slider-wrapper {
+    display: flex;
+    gap: 30px;
+    overflow-x: auto;
+    scroll-behavior: smooth;
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* IE and Edge */
+    padding: 10px 0;
+  }
+
+  .slider-wrapper::-webkit-scrollbar {
+    display: none; /* Chrome, Safari, Opera */
+  }
+
+  .slider-card {
+    flex: 0 0 320px;
+    min-width: 320px;
+  }
+
+  @media (min-width: 768px) {
+    .slider-card {
+      flex: 0 0 350px;
+      min-width: 350px;
+    }
+  }
+
+  @media (min-width: 1200px) {
+    .slider-card {
+      flex: 0 0 380px;
+      min-width: 380px;
+    }
+  }
+
+  .slider-button {
+    flex-shrink: 0;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    border: 2px solid #333;
+    background-color: #ffffff;
+    color: #333;
+    font-size: 2rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10;
+  }
+
+  .slider-button:hover:not(:disabled) {
+    background-color: #333;
+    color: #ffffff;
+    transform: scale(1.1);
+  }
+
+  .slider-button:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+  }
+
+  .slider-button-left {
+    margin-right: -10px;
+  }
+
+  .slider-button-right {
+    margin-left: -10px;
+  }
+
+  @media (max-width: 768px) {
+    .slider-button {
+      width: 40px;
+      height: 40px;
+      font-size: 1.5rem;
+    }
+
+    .slider-container {
+      gap: 10px;
+    }
+  }
+
   .featured-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));

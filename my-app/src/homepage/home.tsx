@@ -65,6 +65,8 @@ function Home() {
   const [dormRatings, setDormRatings] = useState<{ [dormName: string]: number }>({});
   const [dormReviewCounts, setDormReviewCounts] = useState<{ [dormName: string]: number }>({});
   const [universityReviewCounts, setUniversityReviewCounts] = useState<{ [universitySlug: string]: number }>({});
+  const [universityScrollPosition, setUniversityScrollPosition] = useState(0);
+  const [dormScrollPosition, setDormScrollPosition] = useState(0);
 
   const calculateOverallRating = (review: any) => {
     const ratings = [review.room, review.bathroom, review.building, review.amenities, review.location];
@@ -95,16 +97,16 @@ function Home() {
             })
           );
 
-          // Sort by review count and take top 3
-          const top3 = universityData
+          // Sort by review count and take top 7
+          const top7 = universityData
             .sort((a, b) => b.reviewCount - a.reviewCount)
-            .slice(0, 3);
+            .slice(0, 7);
           
-          setTopUniversities(top3);
+          setTopUniversities(top7);
           
           // Set review counts for display
           const counts: { [slug: string]: number } = {};
-          top3.forEach(uni => {
+          top7.forEach(uni => {
             counts[uni.slug] = uni.reviewCount;
           });
           setUniversityReviewCounts(counts);
@@ -168,22 +170,22 @@ function Home() {
           })
         );
 
-        // Sort by average rating (then by review count as tiebreaker) and take top 3
-        const top3 = dormData
+        // Sort by average rating (then by review count as tiebreaker) and take top 7
+        const top7 = dormData
           .sort((a, b) => {
             if (b.avgRating === a.avgRating) {
               return b.reviewCount - a.reviewCount;
             }
             return b.avgRating - a.avgRating;
           })
-          .slice(0, 3);
+          .slice(0, 7);
 
-        setTopDorms(top3);
+        setTopDorms(top7);
         
         // Set ratings and counts for display
         const ratings: { [name: string]: number } = {};
         const counts: { [name: string]: number } = {};
-        top3.forEach(dorm => {
+        top7.forEach(dorm => {
           ratings[dorm.name] = dorm.avgRating;
           counts[dorm.name] = dorm.reviewCount;
         });
@@ -197,6 +199,32 @@ function Home() {
     fetchTopUniversities();
     fetchTopDorms();
   }, []);
+
+  const scrollUniversities = (direction: 'left' | 'right') => {
+    const container = document.getElementById('university-slider');
+    if (container) {
+      const scrollAmount = 350;
+      const newPosition = direction === 'left' 
+        ? Math.max(0, universityScrollPosition - scrollAmount)
+        : Math.min(container.scrollWidth - container.clientWidth, universityScrollPosition + scrollAmount);
+      
+      container.scrollTo({ left: newPosition, behavior: 'smooth' });
+      setUniversityScrollPosition(newPosition);
+    }
+  };
+
+  const scrollDorms = (direction: 'left' | 'right') => {
+    const container = document.getElementById('dorm-slider');
+    if (container) {
+      const scrollAmount = 350;
+      const newPosition = direction === 'left' 
+        ? Math.max(0, dormScrollPosition - scrollAmount)
+        : Math.min(container.scrollWidth - container.clientWidth, dormScrollPosition + scrollAmount);
+      
+      container.scrollTo({ left: newPosition, behavior: 'smooth' });
+      setDormScrollPosition(newPosition);
+    }
+  };
 
   return (
     <div className = "home"> 
@@ -219,9 +247,17 @@ function Home() {
           <h2 className="featured-title">Most Rated Universities</h2>
           <p className="featured-subtitle">Explore top universities and their housing options.</p>
           
-          <div className="featured-grid">
-            {topUniversities.map(uni => (
-              <Link key={uni.slug} to={`/universities/${uni.slug}`} className="featured-card">
+          <div className="slider-container">
+            <button 
+              className="slider-button slider-button-left" 
+              onClick={() => scrollUniversities('left')}
+              disabled={universityScrollPosition === 0}
+            >
+              ‹
+            </button>
+            <div className="slider-wrapper" id="university-slider">
+              {topUniversities.map(uni => (
+              <Link key={uni.slug} to={`/universities/${uni.slug}`} className="featured-card slider-card">
                 <div className="featured-image-container">
                   <img src={uni.imageUrl || 'https://i0.wp.com/wpu.ac.pg/wp-content/uploads/2022/09/placeholder-72.png?fit=1200%2C800&ssl=1'} alt={uni.name} className="featured-image" />
                 </div>
@@ -238,6 +274,13 @@ function Home() {
                 </div>
               </Link>
             ))}
+            </div>
+            <button 
+              className="slider-button slider-button-right" 
+              onClick={() => scrollUniversities('right')}
+            >
+              ›
+            </button>
           </div>
         </div>
             
@@ -247,9 +290,17 @@ function Home() {
           <h2 className="featured-title">Top Rated Dorms</h2>
           <p className="featured-subtitle">Check out highly-rated residences across campuses.</p>
           
-          <div className="featured-grid">
-            {topDorms.map(dorm => (
-              <Link key={`${dorm.universitySlug}-${dorm.slug}`} to={`/universities/${dorm.universitySlug}/dorms/${dorm.slug}`} className="featured-card">
+          <div className="slider-container">
+            <button 
+              className="slider-button slider-button-left" 
+              onClick={() => scrollDorms('left')}
+              disabled={dormScrollPosition === 0}
+            >
+              ‹
+            </button>
+            <div className="slider-wrapper" id="dorm-slider">
+              {topDorms.map(dorm => (
+              <Link key={`${dorm.universitySlug}-${dorm.slug}`} to={`/universities/${dorm.universitySlug}/dorms/${dorm.slug}`} className="featured-card slider-card">
                 <div className="featured-image-container">
                   <img src={dorm.imageUrl || 'https://thumbs.dreamstime.com/b/college-dorm-ai-generated-stock-image-college-dorm-bunk-bed-bed-above-desk-window-generated-276344540.jpg'} alt={dorm.name} className="featured-image" />
                 </div>
@@ -266,6 +317,13 @@ function Home() {
                 </div>
               </Link>
             ))}
+            </div>
+            <button 
+              className="slider-button slider-button-right" 
+              onClick={() => scrollDorms('right')}
+            >
+              ›
+            </button>
           </div>
         </div>
 
