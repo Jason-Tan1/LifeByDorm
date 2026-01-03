@@ -8,7 +8,9 @@
     "start": "node dist/server.js",
     "dev": "ts-node server.tsx",
     "devStart": "nodemon --exec ts-node server.tsx",
-    "seed": "ts-node seed/seed.ts"
+    "seed": "ts-node seed/seed.ts",
+    "test": "vitest",
+    "test:run": "vitest run"
   },
   "keywords": [],
   "author": "",
@@ -27,8 +29,11 @@
     "@types/express": "^5.0.5",
     "@types/jsonwebtoken": "^9.0.10",
     "@types/node": "^24.10.0",
+    "@types/supertest": "^6.0.3",
     "nodemon": "^3.1.10",
+    "supertest": "^7.1.4",
     "ts-node": "^10.9.2",
-    "typescript": "^5.9.3"
+    "typescript": "^5.9.3",
+    "vitest": "^4.0.16"
   }
 }

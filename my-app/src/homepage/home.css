@@ -39,8 +39,8 @@
     background-size: cover;
     background-position: center;
     min-height: 550px;
-    height: 70vh; 
-    max-height: 700px
+    height: 85vh; 
+    max-height: 950px
   }
 
   /* This container constrains the content's width and centers it */
@@ -50,40 +50,45 @@
     margin: 0 auto;
     padding: 0 4%; 
     display: flex;
-    align-items: flex-start;
+    align-items: center;
     justify-content: center;
-    padding-top: 25vh;
+    padding-top: 8vh;
   }
 
   @media (min-width: 1600px) {
     .home-container {
       max-width: 1400px;
-      padding: 0 5%;
-      padding-top: 22vh;
+      padding-top: 8vh;
     }
   }
 
   @media (min-width: 1920px) {
     .home-container {
       max-width: 1800px;
-      padding: 0 6%;
-      padding-top: 20vh;
+      padding-top: 10vh;
     }
   }
 
   /* This div holds the text, search, and quick links */
   .home-content {
     width: 100%;
+    max-width: 800px;
     display: flex;
     flex-direction: column;
     align-items: center;
+    justify-content: center;
+    margin: 0 auto;
   }
 
   /* --- Hero Section (Heading & Search) --- */
   .home-section {
+    width: 100%;
     display: flex;
     flex-direction: column;
     align-items: center;
+    justify-content: center;
+    text-align: center;
+    margin-bottom: 20vh;
   }
 
   .home-section h1 { 
