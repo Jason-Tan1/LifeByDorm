@@ -62,10 +62,12 @@ const featuredDorms = [
 function Home() {
   const [topUniversities, setTopUniversities] = useState<any[]>([]);
   const [topDorms, setTopDorms] = useState<any[]>([]);
+  const [mostRatedDorms, setMostRatedDorms] = useState<any[]>([]);
   const [dormRatings, setDormRatings] = useState<{ [dormName: string]: number }>({});
   const [dormReviewCounts, setDormReviewCounts] = useState<{ [dormName: string]: number }>({});
   const [universityReviewCounts, setUniversityReviewCounts] = useState<{ [universitySlug: string]: number }>({});
   const [universityScrollPosition, setUniversityScrollPosition] = useState(0);
+  const [mostRatedDormsScrollPosition, setMostRatedDormsScrollPosition] = useState(0);
   const [dormScrollPosition, setDormScrollPosition] = useState(0);
 
   const calculateOverallRating = (review: any) => {
@@ -196,7 +198,73 @@ function Home() {
       }
     };
 
+    // Fetch all dorms and find top 7 by review count
+    const fetchMostRatedDorms = async () => {
+      try {
+        const allUniversitiesRes = await fetch(`${API_BASE}/api/universities`);
+        if (!allUniversitiesRes.ok) return;
+        
+        const allUniversities = await allUniversitiesRes.json();
+        const allDorms: any[] = [];
+        
+        // Fetch dorms for all universities
+        await Promise.all(
+          allUniversities.map(async (uni: any) => {
+            try {
+              const dormsRes = await fetch(`${API_BASE}/api/universities/${encodeURIComponent(uni.slug)}/dorms`);
+              if (dormsRes.ok) {
+                const dorms = await dormsRes.json();
+                dorms.forEach((dorm: any) => {
+                  allDorms.push({
+                    ...dorm,
+                    university: uni.name,
+                    universitySlug: uni.slug
+                  });
+                });
+              }
+            } catch (e) {
+              console.error(`Failed to fetch dorms for ${uni.name}`, e);
+            }
+          })
+        );
+
+        // Get review counts for all dorms
+        const dormData = await Promise.all(
+          allDorms.map(async (dorm) => {
+            try {
+              const reviewRes = await fetch(`${API_BASE}/api/reviews?university=${encodeURIComponent(dorm.universitySlug)}&dorm=${encodeURIComponent(dorm.name)}`);
+              if (reviewRes.ok) {
+                const reviews = await reviewRes.json();
+                const reviewCount = reviews.length;
+                let avgRating = 0;
+                
+                if (reviews.length > 0) {
+                  const totalRating = reviews.reduce((sum: number, review: any) => sum + calculateOverallRating(review), 0);
+                  avgRating = totalRating / reviews.length;
+                }
+                
+                return { ...dorm, avgRating, reviewCount };
+              }
+            } catch (e) {
+              console.error(`Failed to fetch reviews for ${dorm.name}`, e);
+            }
+            return { ...dorm, avgRating: 0, reviewCount: 0 };
+          })
+        );
+
+        // Sort by review count and take top 7
+        const top7 = dormData
+          .sort((a, b) => b.reviewCount - a.reviewCount)
+          .slice(0, 7);
+
+        setMostRatedDorms(top7);
+      } catch (e) {
+        console.error('Failed to fetch most rated dorms', e);
+      }
+    };
+
     fetchTopUniversities();
+    fetchMostRatedDorms();
     fetchTopDorms();
   }, []);
 
@@ -210,6 +278,19 @@ function Home() {
       
       container.scrollTo({ left: newPosition, behavior: 'smooth' });
       setUniversityScrollPosition(newPosition);
+    }
+  };
+
+  const scrollMostRatedDorms = (direction: 'left' | 'right') => {
+    const container = document.getElementById('most-rated-dorms-slider');
+    if (container) {
+      const scrollAmount = 350;
+      const newPosition = direction === 'left' 
+        ? Math.max(0, mostRatedDormsScrollPosition - scrollAmount)
+        : Math.min(container.scrollWidth - container.clientWidth, mostRatedDormsScrollPosition + scrollAmount);
+      
+      container.scrollTo({ left: newPosition, behavior: 'smooth' });
+      setMostRatedDormsScrollPosition(newPosition);
     }
   };
 
@@ -263,13 +344,13 @@ function Home() {
                 </div>
                 <div className="featured-info">
                   <h3 className="featured-university-name">
-                    <span className="icon">🏛️</span> {uni.name}
+                    <span className="icon"></span> {uni.name}
                   </h3>
                   <p className="featured-location">
-                    <span className="icon">📍</span> {uni.location || 'Location N/A'}
+                    <span className="icon"></span> {uni.location || 'Location N/A'}
                   </p>
                   <p className="featured-location">
-                    <span className="icon">💬</span> {universityReviewCounts[uni.slug] ?? 0} {universityReviewCounts[uni.slug] === 1 ? 'review' : 'reviews'}
+                    <span className="icon"></span> {universityReviewCounts[uni.slug] ?? 0} {universityReviewCounts[uni.slug] === 1 ? 'review' : 'reviews'}
                   </p>
                 </div>
               </Link>
@@ -278,6 +359,48 @@ function Home() {
             <button 
               className="slider-button slider-button-right" 
               onClick={() => scrollUniversities('right')}
+            >
+              ›
+            </button>
+          </div>
+        </div>
+
+        {/* Most Rated Dorms Section */}
+        <div className="featured-container" style={{ marginTop: '40px' }}>
+          <h2 className="featured-title">Most Rated Dorms</h2>
+          <p className="featured-subtitle">Discover the most reviewed residences across campuses.</p>
+          
+          <div className="slider-container">
+            <button 
+              className="slider-button slider-button-left" 
+              onClick={() => scrollMostRatedDorms('left')}
+              disabled={mostRatedDormsScrollPosition === 0}
+            >
+              ‹
+            </button>
+            <div className="slider-wrapper" id="most-rated-dorms-slider">
+              {mostRatedDorms.map(dorm => (
+              <Link key={`${dorm.universitySlug}-${dorm.slug}`} to={`/universities/${dorm.universitySlug}/dorms/${dorm.slug}`} className="featured-card slider-card">
+                <div className="featured-image-container">
+                  <img src={dorm.imageUrl || 'https://thumbs.dreamstime.com/b/college-dorm-ai-generated-stock-image-college-dorm-bunk-bed-bed-above-desk-window-generated-276344540.jpg'} alt={dorm.name} className="featured-image" />
+                </div>
+                <div className="featured-info">
+                  <h3 className="featured-university-name">
+                    <span className="icon"></span> {dorm.name}
+                  </h3>
+                  <p className="featured-location">
+                    <span className="icon"></span> {dorm.university}
+                  </p>
+                  <p className="featured-location">
+                    <span className="icon"></span> {dorm.reviewCount ?? 0} {dorm.reviewCount === 1 ? 'review' : 'reviews'}
+                  </p>
+                </div>
+              </Link>
+            ))}
+            </div>
+            <button 
+              className="slider-button slider-button-right" 
+              onClick={() => scrollMostRatedDorms('right')}
             >
               ›
             </button>
@@ -306,13 +429,13 @@ function Home() {
                 </div>
                 <div className="featured-info">
                   <h3 className="featured-university-name">
-                    <span className="icon">🏠</span> {dorm.name}
+                    <span className="icon"></span> {dorm.name}
                   </h3>
                   <p className="featured-location">
-                    <span className="icon">🏫</span> {dorm.university}
+                    <span className="icon"></span> {dorm.university}
                   </p>
                   <p className="featured-location">
-                    <span className="icon">⭐</span> {(dormRatings[dorm.name] ?? 0).toFixed(1)} ({dormReviewCounts[dorm.name] ?? 0} {dormReviewCounts[dorm.name] === 1 ? 'review' : 'reviews'})
+                    <span className="icon"></span> {(dormRatings[dorm.name] ?? 0).toFixed(1)} ({dormReviewCounts[dorm.name] ?? 0} {dormReviewCounts[dorm.name] === 1 ? 'review' : 'reviews'})
                   </p>
                 </div>
               </Link>
