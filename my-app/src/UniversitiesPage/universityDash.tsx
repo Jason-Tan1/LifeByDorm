@@ -35,6 +35,9 @@ function UniversityDash() {
 
   const [university, setUniversity] = useState<APIUniversity | null>(null);
   const [dorms, setDorms] = useState<APIDorm[]>([]);
+  const [filteredDorms, setFilteredDorms] = useState<APIDorm[]>([]);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [filterOption, setFilterOption] = useState('most-reviewed');
   const [reviewCounts, setReviewCounts] = useState<{ [dormName: string]: number }>({});
   const [dormRatings, setDormRatings] = useState<{ [dormName: string]: number }>({});
   const [loading, setLoading] = useState(true);
@@ -111,6 +114,42 @@ function UniversityDash() {
       cancelled = true;
     };
   }, [universityName]);
+
+  // Filter and sort dorms based on search query and filter option
+  useEffect(() => {
+    let result = [...dorms];
+
+    // Apply search filter
+    if (searchQuery.trim()) {
+      result = result.filter(dorm =>
+        dorm.name.toLowerCase().includes(searchQuery.toLowerCase())
+      );
+    }
+
+    // Apply sorting
+    switch (filterOption) {
+      case 'most-reviewed':
+        result.sort((a, b) => (reviewCounts[b.name] || 0) - (reviewCounts[a.name] || 0));
+        break;
+      case 'least-reviewed':
+        result.sort((a, b) => (reviewCounts[a.name] || 0) - (reviewCounts[b.name] || 0));
+        break;
+      case 'highest-rated':
+        result.sort((a, b) => (dormRatings[b.name] || 0) - (dormRatings[a.name] || 0));
+        break;
+      case 'lowest-rated':
+        result.sort((a, b) => (dormRatings[a.name] || 0) - (dormRatings[b.name] || 0));
+        break;
+      case 'a-z':
+        result.sort((a, b) => a.name.localeCompare(b.name));
+        break;
+      case 'z-a':
+        result.sort((a, b) => b.name.localeCompare(a.name));
+        break;
+    }
+
+    setFilteredDorms(result);
+  }, [dorms, searchQuery, filterOption, reviewCounts, dormRatings]);
 
   // Function to render star ratings
   const renderStars = (rating: number) => {
@@ -201,8 +240,41 @@ function UniversityDash() {
         {/* Right side - Dorms List */}
         <div className="dorms-list">
           <h2>Browse {dorms.length} {dorms.length === 1 ? 'Dorm' : 'Dorms'}</h2>
+          
+          <div className="dorms-controls">
+            <div className="search-section">
+              <label htmlFor="dorm-search">Search for dorms:</label>
+              <input
+                id="dorm-search"
+                type="text"
+                className="dorm-search-input"
+                placeholder="Search Bar"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+              />
+            </div>
+            
+            <div className="filter-section">
+              <label htmlFor="filter-select">Filter by:</label>
+              <select
+                id="filter-select"
+                className="filter-select"
+                value={filterOption}
+                onChange={(e) => setFilterOption(e.target.value)}
+              >
+                <option value="most-reviewed">Most Reviewed</option>
+                <option value="least-reviewed">Least Reviewed</option>
+                <option value="highest-rated">Highest Rated</option>
+                <option value="lowest-rated">Lowest Rated</option>
+                <option value="a-z">A - Z</option>
+                <option value="z-a">Z - A</option>
+              </select>
+            </div>
+          </div>
+
           <div className="dorms-grid">
-            {dorms.map(dorm => (
+            {filteredDorms.length > 0 ? (
+              filteredDorms.map(dorm => (
               <Link 
                 key={`${dorm.universitySlug}-${dorm.slug}`} 
                 to={`/universities/${universityName}/dorms/${dorm.slug}`}
@@ -231,7 +303,12 @@ function UniversityDash() {
                   </div>
                 </div>
               </Link>
-            ))}
+              ))
+            ) : (
+              <div className="no-results">
+                <p>No dorms found matching your search.</p>
+              </div>
+            )}
           </div>
         </div>
       </div>
