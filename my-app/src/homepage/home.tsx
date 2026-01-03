@@ -347,7 +347,7 @@ function Home() {
                     <span className="icon"></span> {uni.name}
                   </h3>
                   <p className="featured-location">
-                    <span className="icon"></span> {uni.location || 'Location N/A'}
+                    <span className="icon"></span> {uni.location?.replace(', Canada', '') || 'Location N/A'}
                   </p>
                   <p className="featured-location">
                     <span className="icon"></span> {universityReviewCounts[uni.slug] ?? 0} {universityReviewCounts[uni.slug] === 1 ? 'review' : 'reviews'}
