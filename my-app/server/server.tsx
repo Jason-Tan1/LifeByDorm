@@ -4,6 +4,7 @@ import cors from 'cors';
 import jwt, { Secret, JwtPayload } from 'jsonwebtoken';
 import mongoose from 'mongoose'; // MongoDB Connections from Node.js
 import bcrypt from 'bcryptjs'; //Hide Passwords
+import { OAuth2Client } from 'google-auth-library';
 import { User, IUser } from './models/user';
 import { UserReview } from './models/userreview';
 import { University } from './models/universities';
@@ -177,6 +178,71 @@ app.post('/login', async (req, res) => {
     res.status(500).json({ message: 'Error logging in' });
   }
 });
+
+// Google OAuth login - simplified with ID token verification
+const googleClient = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
+
+app.post('/auth/google', async (req, res) => {
+  try {
+    const { credential } = req.body;
+    
+    if (!credential) {
+      return res.status(400).json({ message: 'Google credential is required' });
+    }
+
+    // Verify the ID token
+    const ticket = await googleClient.verifyIdToken({
+      idToken: credential,
+      audience: process.env.GOOGLE_CLIENT_ID,
+    });
+
+    const payload = ticket.getPayload();
+    if (!payload || !payload.email) {
+      return res.status(400).json({ message: 'Invalid Google token' });
+    }
+
+    const { sub: googleId, email, name, picture } = payload;
+
+    // Find or create user
+    let user = await User.findOne({ email });
+    
+    if (!user) {
+      user = new User({
+        email,
+        password: await bcrypt.hash(Math.random().toString(36), 10),
+        googleId,
+        name,
+        picture,
+      });
+      await user.save();
+      console.log('New Google user created:', email);
+    } else if (!(user as any).googleId) {
+      (user as any).googleId = googleId;
+      (user as any).name = name;
+      (user as any).picture = picture;
+      await user.save();
+    }
+
+    if (!process.env.ACCESS_TOKEN_SECRET) {
+      throw new Error('ACCESS_TOKEN_SECRET is not defined');
+    }
+
+    const dbRole = (user as any).role as string | undefined;
+    const isAdmin = (dbRole === 'admin') || ADMIN_EMAILS.includes(user.email);
+
+    const token = jwt.sign(
+      { userId: user._id, name: user.email, role: isAdmin ? 'admin' : 'user' },
+      process.env.ACCESS_TOKEN_SECRET as Secret,
+      { expiresIn: '24h' }
+    );
+
+    res.json({ token });
+  } catch (error) {
+    console.error('Google auth error:', error);
+    res.status(500).json({ message: 'Error authenticating with Google' });
+  }
+});
+
 
 interface AuthRequest extends Request {
   user?: JwtPayload;

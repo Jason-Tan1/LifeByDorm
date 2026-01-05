@@ -229,6 +229,61 @@
   font-size: 0.875rem;
 }
 
+/* Divider */
+.login_divider {
+  display: flex;
+  align-items: center;
+  margin: 20px 0;
+}
+
+.login_divider::before,
+.login_divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: #e1e1e1;
+}
+
+.login_divider span {
+  padding: 0 15px;
+  color: #6c757d;
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+/* Google Login Button */
+.google_login_button {
+  margin-bottom: 15px;
+}
+
+.google_login_button button {
+  width: 100%;
+  padding: 12px;
+  background: white;
+  color: #333;
+  border: 2px solid #e1e1e1;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  transition: all 0.3s ease;
+}
+
+.google_login_button button:hover {
+  background: #f8f9fa;
+  border-color: #d1d5db;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.google_login_button button svg {
+  flex-shrink: 0;
+}
+
 /* Responsive Design */
 @media (max-width: 480px) {
   .login_container {
