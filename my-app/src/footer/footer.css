@@ -1,9 +1,12 @@
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap');
+
 .footer {
   background-color:  #ffffff;
   color: #000000;
   padding: 2rem 0;
   width: 100%;
   margin-top: auto;
+  font-family: 'DM Sans', sans-serif;
 }
 
 .footer-content {

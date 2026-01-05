@@ -281,7 +281,7 @@ function Reviews() {
                       checked={year.includes('1')}
                       onChange={() => setYear(prev => prev.includes('1') ? prev.filter(y => y !== '1') : [...prev, '1'])}
                     />
-                    <span>Freshman</span>
+                    <span>First Year</span>
                   </label>
                   <label className="checkbox-option">
                     <input
@@ -289,7 +289,7 @@ function Reviews() {
                       checked={year.includes('2')}
                       onChange={() => setYear(prev => prev.includes('2') ? prev.filter(y => y !== '2') : [...prev, '2'])}
                     />
-                    <span>Sophomore</span>
+                    <span>Second Year</span>
                   </label>
                   <label className="checkbox-option">
                     <input
@@ -297,7 +297,7 @@ function Reviews() {
                       checked={year.includes('3')}
                       onChange={() => setYear(prev => prev.includes('3') ? prev.filter(y => y !== '3') : [...prev, '3'])}
                     />
-                    <span>Junior</span>
+                    <span>Third Year</span>
                   </label>
                   <label className="checkbox-option">
                     <input
@@ -305,7 +305,15 @@ function Reviews() {
                       checked={year.includes('4')}
                       onChange={() => setYear(prev => prev.includes('4') ? prev.filter(y => y !== '4') : [...prev, '4'])}
                     />
-                    <span>Senior</span>
+                    <span>Fourth Year</span>
+                  </label>
+                   <label className="checkbox-option">
+                    <input
+                      type="checkbox"
+                      checked={year.includes('5')}
+                      onChange={() => setYear(prev => prev.includes('5') ? prev.filter(y => y !== '5') : [...prev, '5'])}
+                    />
+                    <span>Fifth Year+</span>
                   </label>
                   <label className="checkbox-option">
                     <input
@@ -501,7 +509,7 @@ function Reviews() {
                 <h3>Details</h3>
                 <div className="summary-item">
                   <span>Year:</span>
-                  <span>{year.map(y => ['', 'Freshman', 'Sophomore', 'Junior', 'Senior', 'Graduate Student'][Number(y)]).join(', ')}</span>
+                  <span>{year.map(y => ['', 'First Year', 'Second Year', 'Third Year', 'Fourth Year', 'Graduate Student'][Number(y)]).join(', ')}</span>
                 </div>
                 <div className="summary-item">
                   <span>Room Type:</span>
