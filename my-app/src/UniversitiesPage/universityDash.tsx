@@ -197,7 +197,7 @@ function UniversityDash() {
         {/* Left side - University Information */}
         <div className="university-info">
           <img
-            src={university.imageUrl || 'https://i0.wp.com/wpu.ac.pg/wp-content/uploads/2022/09/placeholder-72.png?fit=1200%2C800&ssl=1'}
+            src={university.imageUrl || '/src/assets/Default_Campus.png'}
             alt={university.name}
             className="university-main-image"
           />
@@ -282,7 +282,7 @@ function UniversityDash() {
                 className="dorm-card"
                 style={{ textDecoration: 'none', color: 'inherit' }}
               >
-                <img src={(dorm.imageUrl && dorm.imageUrl !== '' && dorm.imageUrl !== 'null') ? dorm.imageUrl : 'https://thumbs.dreamstime.com/b/college-dorm-ai-generated-stock-image-college-dorm-bunk-bed-bed-above-desk-window-generated-276344540.jpg'} alt={dorm.name} className="dorm-image" />
+                <img src={(dorm.imageUrl && dorm.imageUrl !== '' && dorm.imageUrl !== 'null') ? dorm.imageUrl : '/src/assets/Default_Dorm.png'} alt={dorm.name} className="dorm-image" />
                 <div className="dorm-info">
                   <h3>{dorm.name}</h3>
                   <div className="dorm-rating" style={{ display: 'flex', alignItems: 'center', gap: '4px', marginTop: '8px' }}>
