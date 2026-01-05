@@ -340,7 +340,7 @@ function Home() {
               {topUniversities.map(uni => (
               <Link key={uni.slug} to={`/universities/${uni.slug}`} className="featured-card slider-card">
                 <div className="featured-image-container">
-                  <img src={uni.imageUrl || 'https://i0.wp.com/wpu.ac.pg/wp-content/uploads/2022/09/placeholder-72.png?fit=1200%2C800&ssl=1'} alt={uni.name} className="featured-image" />
+                  <img src={uni.imageUrl || '/src/assets/Default_Campus.png'} alt={uni.name} className="featured-image" />
                 </div>
                 <div className="featured-info">
                   <h3 className="featured-university-name">
@@ -382,7 +382,7 @@ function Home() {
               {mostRatedDorms.map(dorm => (
               <Link key={`${dorm.universitySlug}-${dorm.slug}`} to={`/universities/${dorm.universitySlug}/dorms/${dorm.slug}`} className="featured-card slider-card">
                 <div className="featured-image-container">
-                  <img src={dorm.imageUrl || 'https://thumbs.dreamstime.com/b/college-dorm-ai-generated-stock-image-college-dorm-bunk-bed-bed-above-desk-window-generated-276344540.jpg'} alt={dorm.name} className="featured-image" />
+                  <img src={dorm.imageUrl || '/src/assets/Default_Dorm.png'} alt={dorm.name} className="featured-image" />
                 </div>
                 <div className="featured-info">
                   <h3 className="featured-university-name">
@@ -425,7 +425,7 @@ function Home() {
               {topDorms.map(dorm => (
               <Link key={`${dorm.universitySlug}-${dorm.slug}`} to={`/universities/${dorm.universitySlug}/dorms/${dorm.slug}`} className="featured-card slider-card">
                 <div className="featured-image-container">
-                  <img src={dorm.imageUrl || 'https://thumbs.dreamstime.com/b/college-dorm-ai-generated-stock-image-college-dorm-bunk-bed-bed-above-desk-window-generated-276344540.jpg'} alt={dorm.name} className="featured-image" />
+                  <img src={dorm.imageUrl || '/src/assets/Default_Dorm.png'} alt={dorm.name} className="featured-image" />
                 </div>
                 <div className="featured-info">
                   <h3 className="featured-university-name">

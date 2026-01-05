@@ -58,7 +58,7 @@ function DormInfo({ dorm, reviews, universityName, calculateAverageRating, calcu
   return (
     <div className="dorm-info">
       <img 
-        src={dorm.imageUrl && dorm.imageUrl.trim() !== '' ? dorm.imageUrl : 'https://thumbs.dreamstime.com/b/college-dorm-ai-generated-stock-image-college-dorm-bunk-bed-bed-above-desk-window-generated-276344540.jpg'} 
+        src={dorm.imageUrl && dorm.imageUrl.trim() !== '' ? dorm.imageUrl : '/src/assets/Default_Dorm.png'} 
         alt={dorm.name} 
         className="dorm-main-image"
       />
