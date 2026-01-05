@@ -261,6 +261,7 @@ function Dorms() {
         <DormInfo 
           dorm={dorm}
           reviews={reviews}
+          universityName={universityName}
           calculateAverageRating={calculateAverageRating}
           calculateCategoryAverages={calculateCategoryAverages}
         />

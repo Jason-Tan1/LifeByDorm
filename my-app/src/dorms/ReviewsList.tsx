@@ -53,11 +53,7 @@ function ReviewsList({
 
   return (
     <div className="reviews-list">
-      <h2>Student Reviews 
-        <Link to={`/review?university=${encodeURIComponent(universityName || '')}&dorm=${encodeURIComponent(dorm.name)}`} className="review-button">
-          Leave Review
-        </Link>
-      </h2>
+      <h2>Student Reviews</h2>
       {reviewsLoading ? (
         <p>Loading reviews...</p>
       ) : reviews.length === 0 ? (

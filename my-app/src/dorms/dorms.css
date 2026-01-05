@@ -36,6 +36,7 @@
 
 .dorm-header {
   margin-bottom: clamp(16px, 3vw, 24px);
+  text-align: center;
 }
 
 .dorm-header h1 {
@@ -96,48 +97,125 @@
   margin-bottom: 32px;
 }
 
-.category-ratings {
+/* New Ratings Container - Two Column Layout */
+.ratings-container {
   display: flex;
-  flex-direction: column;
-  gap: 16px;
-  margin-top: 16px;
+  gap: 30px;
+  background: #f8f9fa;
+  border-radius: 12px;
+  padding: 24px;
 }
 
-.category-rating-item {
+/* Left side - Rating Distribution */
+.rating-distribution {
+  flex: 1;
   display: flex;
-  align-items: center;
+  flex-direction: column;
   gap: 12px;
 }
 
-.category-label {
-  min-width: 80px;
-  font-size: 0.9rem;
-  color: #666;
-  font-weight: 500;
+.distribution-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
 }
 
-.category-rating-bar {
-  flex: 1;
-  height: 8px;
+.distribution-label {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.95rem;
+  color: #333;
+}
+
+.distribution-count {
+  font-weight: 600;
+  color: #1a1a1a;
+}
+
+.distribution-bar {
+  position: relative;
+  height: 20px;
   background-color: #e0e0e0;
   border-radius: 4px;
   overflow: hidden;
-  position: relative;
 }
 
-.category-rating-fill {
+.distribution-fill {
   height: 100%;
   background-color: #1976d2;
   border-radius: 4px;
   transition: width 0.3s ease;
+  min-width: 30px;
 }
 
-.category-rating-value {
-  min-width: 35px;
-  text-align: right;
-  font-size: 0.9rem;
+.distribution-percentage {
+  position: absolute;
+  left: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 0.8rem;
   font-weight: 600;
-  color: #1a1a1a;
+  color: white;
+}
+
+/* Right side - Summary */
+.ratings-summary {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-width: 180px;
+  padding-left: 30px;
+  border-left: 1px solid #e0e0e0;
+}
+
+.would-dorm-again-box {
+  text-align: center;
+  margin-bottom: 24px;
+}
+
+.would-dorm-percentage-large {
+  font-size: 3rem;
+  font-weight: 700;
+  color: #2e7d32;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.checkmark-icon {
+  font-size: 2rem !important;
+  color: #2e7d32;
+}
+
+.would-dorm-text {
+  font-size: 1rem;
+  color: #666;
+  display: block;
+  margin-top: 4px;
+}
+
+.average-rating-box {
+  text-align: center;
+}
+
+.average-rating-label {
+  font-size: 1rem;
+  color: #333;
+}
+
+.average-rating-label strong {
+  font-size: 1.2rem;
+}
+
+.stars-display {
+  margin-top: 8px;
+  color: #FFD700;
+}
+
+.stars-display svg {
+  font-size: 1.5rem;
 }
 
 .details-grid {
@@ -242,26 +320,29 @@
   font-size: 2rem;
   color: #1a1a1a;
   margin-bottom: 24px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+  text-align: center;
 }
 
-.review-button {
-  font-size: 0.9rem;
-  background-color: #388e3c;
+.leave-review-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  background-color: #4CAF50;
   color: white;
   text-decoration: none;
-  padding: 10px 20px;
-  border-radius: 6px;
-  transition: background-color 0.2s;
-  margin-left: 248px;
+  padding: 14px 28px;
+  border-radius: 25px;
+  transition: background-color 0.2s, transform 0.2s;
+  margin-bottom: 30px;
   white-space: nowrap;
-  min-width: fit-content;
 }
 
-.review-button:hover {
+.leave-review-button:hover {
   background-color: #388e3c;
+  transform: scale(1.02);
 }
 
 .reviews-grid {
