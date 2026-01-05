@@ -10,17 +10,19 @@ body {
   display: flex;
   justify-content: space-between; 
   align-items: center;
-  padding: 1rem 2.5rem; 
+  padding: clamp(0.5rem, 2vw, 1rem) clamp(0.75rem, 3vw, 2.5rem); 
   background-color: #ffffff;
   border-bottom: 1px solid #e0e7ff; 
   box-sizing: border-box;
   width: 100%;
+  flex-wrap: wrap;
+  gap: 0.5rem;
 }
 
 /* Logo Styling */
 .navbar_logo a {
   margin: 0;
-  font-size: 1.5rem;
+  font-size: clamp(1.1rem, 3vw, 1.5rem);
   font-weight: 600;
   color: #111827;
   text-decoration: none;
@@ -30,7 +32,8 @@ body {
 .navbar_actions {
   display: flex;
   align-items: center;
-  gap: 0.75rem; 
+  gap: clamp(0.4rem, 1.5vw, 0.75rem);
+  flex-wrap: wrap;
 }
 
 /* Dashboard button styling when visible for admins */
@@ -38,7 +41,7 @@ body {
   background-color: #f6f7fe;
   color: #4338ca;
   border: 1px solid #e0e7ff;
-  padding: 0.5rem 0.9rem;
+  padding: clamp(0.35rem, 1vw, 0.5rem) clamp(0.6rem, 1.5vw, 0.9rem);
   border-radius: 8px;
 }
 
@@ -51,9 +54,9 @@ body {
   cursor: pointer;
   border: none;
   border-radius: 8px;
-  font-size: 0.95rem;
+  font-size: clamp(0.75rem, 2vw, 0.95rem);
   font-weight: 500;
-  padding: 0.6rem 1.2rem;
+  padding: clamp(0.4rem, 1vw, 0.6rem) clamp(0.7rem, 2vw, 1.2rem);
   transition: all 0.2s ease-in-out; 
 }
 
