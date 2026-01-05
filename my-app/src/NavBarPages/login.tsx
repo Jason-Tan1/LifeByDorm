@@ -1,7 +1,10 @@
 import React, { useState } from 'react'
-import { Link } from 'react-router-dom';
+import { GoogleLogin } from '@react-oauth/google'
+import type { CredentialResponse } from '@react-oauth/google'
 import axios from 'axios'
 import './login.css'
+
+const API_BASE = (import.meta as any).env?.VITE_API_BASE || 'http://localhost:3000';
 
 interface LoginModalProps {
   isOpen: boolean;
@@ -15,6 +18,22 @@ function login({ isOpen, onClose }: LoginModalProps) {
   const [error, setError] = useState<string>("");
 
   if (!isOpen) return null;
+
+  const handleGoogleSuccess = async (credentialResponse: CredentialResponse) => {
+    try {
+      const response = await axios.post(`${API_BASE}/auth/google`, {
+        credential: credentialResponse.credential,
+      });
+
+      if (response.data.token) {
+        localStorage.setItem('token', response.data.token);
+        onClose();
+        window.location.reload();
+      }
+    } catch (err: any) {
+      setError(err.response?.data?.message || 'Google sign-in failed');
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -81,6 +100,23 @@ function login({ isOpen, onClose }: LoginModalProps) {
               {isRegistering ? 'Register' : 'Log In'}
             </button>
           </div>
+          
+          <div className="login_divider">
+            <span>or</span>
+          </div>
+          
+          <div className="google_login_button">
+            <GoogleLogin
+              onSuccess={handleGoogleSuccess}
+              onError={() => setError('Google sign-in failed')}
+              useOneTap
+              shape="rectangular"
+              size="large"
+              width="100%"
+              text="continue_with"
+            />
+          </div>
+          
           <div className="login_signup">
             <button type="button" onClick={toggleMode}>
               {isRegistering ? 'Already have an account? Log in' : 'Create a new account'}

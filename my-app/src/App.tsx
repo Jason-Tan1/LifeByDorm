@@ -26,7 +26,7 @@ function App() {
         <Route path="/dorms" element={<Dorms />} />
         <Route path="/navbar" element={<NavBar />} />
         <Route path="/searchbar" element={<SearchBar />} />
-        <Route path ="/review" element={<Review />} /> 
+        <Route path ="/review" element={<Review />} />
       </Routes>
     </Router>
   )
