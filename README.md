@@ -93,7 +93,7 @@ Finding the right dorm can be overwhelming. LifeByDorm bridges the gap by provid
 
 1. **Search Universities** – Use the search bar to find Canadian universities
 2. **Browse Dorms** – Click on a university to see all available residences
-3. **Read Reviews** – View detailed reviews and ratings from current and former residents
+3. **Read Reviews** – View detailed reviews and ratings from current and former residents 
 4. **Write a Review** – Share your own dorm experience by rating categories and adding comments
 5. **Upload Photos** – Add photos to your review to help future students
 

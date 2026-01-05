@@ -285,10 +285,24 @@ app.post('/api/reviews', async (req: Request, res: Response) => {
       images
     } = req.body;
 
+    // Check if user is logged in (verified) via Authorization header
+    let isVerified = false;
+    const authHeader = req.headers.authorization;
+    if (authHeader && authHeader.startsWith('Bearer ')) {
+      const token = authHeader.split(' ')[1];
+      try {
+        jwt.verify(token, process.env.ACCESS_TOKEN_SECRET as Secret);
+        isVerified = true;
+      } catch {
+        isVerified = false;
+      }
+    }
+
     console.log('📥 Received review data:');
     console.log('  - fileImage:', fileImage ? 'EXISTS' : 'NONE');
     console.log('  - images:', images);
     console.log('  - images length:', images ? images.length : 0);
+    console.log('  - verified:', isVerified);
 
     const review = new UserReview({
       university,
@@ -303,7 +317,8 @@ app.post('/api/reviews', async (req: Request, res: Response) => {
       roomType,
       wouldDormAgain,
       fileImage,
-      images
+      images,
+      verified: isVerified
     });
 
     const saved = await review.save();
@@ -311,7 +326,8 @@ app.post('/api/reviews', async (req: Request, res: Response) => {
       id: saved._id, 
       university: saved.university, 
       dorm: saved.dorm,
-      imagesLength: saved.images ? saved.images.length : 0 
+      imagesLength: saved.images ? saved.images.length : 0,
+      verified: saved.verified
     });
   res.status(201).json(saved);
   } catch (err) {

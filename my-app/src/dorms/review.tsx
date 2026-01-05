@@ -182,9 +182,16 @@ function Reviews() {
     };
 
     try {
+      // Include auth token if user is logged in
+      const token = localStorage.getItem('token');
+      const headers: Record<string, string> = { 'Content-Type': 'application/json' };
+      if (token) {
+        headers['Authorization'] = `Bearer ${token}`;
+      }
+
       const res = await fetch('http://localhost:3000/api/reviews', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers,
         body: JSON.stringify(payload)
       });
       const data = await res.json();

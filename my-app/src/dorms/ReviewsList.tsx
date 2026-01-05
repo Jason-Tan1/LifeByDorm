@@ -1,6 +1,5 @@
 import { Link } from 'react-router-dom';
 import { FaThumbsUp, FaThumbsDown } from "react-icons/fa";
-import { useState, useEffect } from 'react';
 
 type APIDorm = {
   name: string;
@@ -51,13 +50,6 @@ function ReviewsList({
   handlePageClick,
   getPageNumbers
 }: ReviewsListProps) {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-
-  useEffect(() => {
-    // Check if user is logged in
-    const token = localStorage.getItem('token');
-    setIsLoggedIn(!!token);
-  }, []);
 
   return (
     <div className="reviews-list">
@@ -84,7 +76,7 @@ function ReviewsList({
                 <div className="review-metadata">
                   <div className="review-metadata-row">
                     {review.createdAt && <span className="review-time">{formatReviewTime(review.createdAt)}</span>}
-                    {isLoggedIn && <span className="verified-badge">✓ Verified Student</span>}
+                    {review.verified && <span className="verified-badge">✓ Verified Student</span>}
                   </div>
                   <div className="review-metadata-row">
                     <span>Year: {Array.isArray(review.year) ? review.year.map((y: number) => ['', 'Freshman', 'Sophomore', 'Junior', 'Senior', 'Graduate Student'][y]).join(', ') : review.year}</span>
