@@ -2,82 +2,77 @@
   position: relative;
   width: 100%;
   max-width: 600px;
-  margin: 2rem auto;
+  margin: clamp(1rem, 3vw, 2rem) auto;
   display: flex;
   flex-direction: column;
   align-items: center;
+  padding: 0 clamp(8px, 2vw, 15px);
+  box-sizing: border-box;
 }
 
 .search-bar-container {
   display: flex;
   align-items: center;
-  justify-content: center;
   width: 100%;
   background-color: #ffffff;
-  border-radius: 50px; /* This creates the pill shape */
-  padding: 5px;
+  border-radius: 50px;
+  padding: clamp(3px, 0.5vw, 5px);
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
   border: 1px solid #e2e8f0;
 }
 
 .search-input {
-  flex-grow: 1; 
+  flex: 1;
   border: none;
   outline: none;
-  padding: 0.75rem 1.5rem;
-  font-size: 1rem;
-  background-color: transparent;
+  padding: clamp(0.5rem, 1.5vw, 0.75rem) clamp(0.8rem, 2vw, 1.5rem);
+  font-size: clamp(0.8rem, 2.5vw, 1rem);
+  background: transparent;
   color: #2d3748;
+  min-width: 0;
 }
 
-.search-input::placeholder {
-  color: #a0aec0;
-}
+.search-input::placeholder { color: #a0aec0; }
 
 .search-button {
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: #6c63ff; /* A vibrant purple, similar to your login button */
+  background-color: #6c63ff;
   color: white;
   border: none;
-  border-radius: 50%; /* Makes the button a perfect circle */
-  width: 45px;
-  height: 45px;
+  border-radius: 50%;
+  width: clamp(32px, 8vw, 45px);
+  height: clamp(32px, 8vw, 45px);
   cursor: pointer;
-  font-size: 1.1rem;
-  transition: background-color 0.2s ease-in-out;
+  font-size: clamp(0.85rem, 2vw, 1.1rem);
+  transition: background-color 0.2s;
+  flex-shrink: 0;
 }
 
-.search-button:hover {
-  background-color: #5850e0; /* A slightly darker shade for hover */
-}
+.search-button:hover { background-color: #5850e0; }
 
 .search-dropdown {
   position: absolute;
   top: 100%;
-  left: 0;
-  right: 0;
+  left: clamp(8px, 2vw, 15px);
+  right: clamp(8px, 2vw, 15px);
   background-color: #ffffff;
   border-radius: 12px;
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
   margin-top: 8px;
-  max-height: 300px;
+  max-height: clamp(200px, 40vh, 300px);
   overflow-y: auto;
   z-index: 1000;
 }
 
 .search-dropdown-item {
-  padding: 1rem 1.5rem;
+  padding: clamp(0.65rem, 1.5vw, 1rem) clamp(0.85rem, 2vw, 1.5rem);
   cursor: pointer;
   border-bottom: 1px solid #f0f0f0;
-  transition: background-color 0.2s ease;
+  font-size: clamp(0.85rem, 2vw, 1rem);
+  transition: background-color 0.2s;
 }
 
-.search-dropdown-item:hover {
-  background-color: #f8f9fa;
-}
-
-.search-dropdown-item:last-child {
-  border-bottom: none;
-}
+.search-dropdown-item:hover { background-color: #f8f9fa; }
+.search-dropdown-item:last-child { border-bottom: none; }

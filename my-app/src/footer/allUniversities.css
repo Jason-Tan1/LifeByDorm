@@ -6,15 +6,15 @@
 .all-universities-content {
   max-width: 1200px;
   margin: 0 auto;
-  padding: 40px 20px;
+  padding: clamp(15px, 4vw, 40px) clamp(10px, 2vw, 20px);
   background: white;
   min-height: 60vh;
 }
 
 .all-universities-content h1 {
-  font-size: 2.5rem;
+  font-size: clamp(1.4rem, 5vw, 2.5rem);
   color: #1a1a1a;
-  margin-bottom: 30px;
+  margin-bottom: clamp(15px, 3vw, 30px);
   border-bottom: 2px solid #1976d2;
   padding-bottom: 10px;
 }
@@ -26,38 +26,35 @@
 }
 
 .university-list li {
-  margin-bottom: 15px;
-  padding: 15px;
+  margin-bottom: clamp(10px, 2vw, 15px);
+  padding: clamp(10px, 2vw, 15px);
   background: #f8f9fa;
   border-radius: 8px;
   transition: background-color 0.2s;
 }
 
-.university-list li:hover {
-  background: #e9ecef;
-}
+.university-list li:hover { background: #e9ecef; }
 
 .university-list a {
   text-decoration: none;
   color: #1976d2;
-  font-size: 1.1rem;
+  font-size: clamp(0.9rem, 2.5vw, 1.1rem);
   font-weight: 500;
   display: block;
 }
 
-.university-list a:hover {
-  color: #1565c0;
-}
+.university-list a:hover { color: #1565c0; }
 
 .university-list .location {
   color: #666;
   font-weight: normal;
-  font-size: 0.95rem;
+  font-size: clamp(0.8rem, 2vw, 0.95rem);
 }
 
 .university-list .students {
   color: #888;
   font-weight: normal;
-  font-size: 0.9rem;
+  font-size: clamp(0.75rem, 1.8vw, 0.9rem);
   font-style: italic;
 }
+

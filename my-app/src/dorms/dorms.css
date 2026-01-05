@@ -6,38 +6,38 @@
 
 .dorm-content {
   display: flex;
+  flex-wrap: wrap;
   max-width: 1400px;
   margin: 0 auto;
-  padding: 20px;
-  gap: 40px;
+  padding: clamp(10px, 2vw, 20px);
+  gap: clamp(16px, 3vw, 40px);
 }
 
 /* Left side - Dorm Information */
 .dorm-info {
-  flex: 1;
+  flex: 1 1 320px;
   max-width: 500px;
   background: white;
   border-radius: 12px;
-  padding: 24px;
+  padding: clamp(14px, 3vw, 24px);
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  top: 20px;
-  align-self: flex-start;
+  height: fit-content;
 }
 
 .dorm-main-image {
   width: 100%;
-  height: 300px;
+  aspect-ratio: 16 / 10;
   object-fit: cover;
   border-radius: 8px;
-  margin-bottom: 20px;
+  margin-bottom: clamp(14px, 2vw, 20px);
 }
 
 .dorm-header {
-  margin-bottom: 24px;
+  margin-bottom: clamp(16px, 3vw, 24px);
 }
 
 .dorm-header h1 {
-  font-size: 2.4rem;
+  font-size: clamp(1.4rem, 4vw, 2.4rem);
   color: #1a1a1a;
   margin-bottom: 12px;
 }
@@ -45,25 +45,26 @@
 .dorm-rating {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: clamp(8px, 1.5vw, 12px);
   margin-bottom: 12px;
+  flex-wrap: wrap;
 }
 
 .stars {
   color: #f8c41b;
   letter-spacing: 2px;
-  font-size: 1.2rem;
+  font-size: clamp(1rem, 2vw, 1.2rem);
 }
 
 .rating-number {
   color: #666;
-  font-size: 0.9rem;
+  font-size: clamp(0.8rem, 1.8vw, 0.9rem);
 }
 
 .dorm-address {
   color: #666;
-  font-size: 1.1rem;
-  margin-bottom: 32px;
+  font-size: clamp(0.95rem, 2vw, 1.1rem);
+  margin-bottom: clamp(20px, 4vw, 32px);
 }
 
 .room-types {
@@ -558,44 +559,26 @@
 
 /* Section Headers */
 h2 {
-  font-size: 1.5rem;
+  font-size: clamp(1.2rem, 2.5vw, 1.5rem);
   color: #1a1a1a;
   margin-bottom: 16px;
   padding-bottom: 8px;
   border-bottom: 2px solid #eee;
 }
 
-/* Responsive Design */
-@media (max-width: 1200px) {
-  .dorm-content {
-    flex-direction: column;
-    align-items: center;
-  }
-
-  .dorm-info,
-  .reviews-list {
-    max-width: 100%;
-    width: 100%;
-  }
+/* Responsive Design - Only 2 breakpoints */
+@media (max-width: 900px) {
+  .dorm-content { flex-direction: column; align-items: center; }
+  .dorm-info, .reviews-list { max-width: 100%; width: 100%; }
+  .details-grid { grid-template-columns: 1fr; }
 }
 
-@media (max-width: 768px) {
-  .dorm-content {
-    padding: 12px;
-  }
-
-  .dorm-header h1 {
-    font-size: 2rem;
-  }
-
-  .details-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .amenities-grid {
-    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-  }
-
+@media (max-width: 600px) {
+  .review-header { flex-direction: column; gap: 12px; }
+  .review-overall-rating { width: 100%; flex-direction: row; justify-content: flex-start; }
+  .review-metadata-row { flex-direction: column; align-items: flex-start; gap: 8px; }
+  .review-votes { margin-left: 0; }
+  .amenities-grid { grid-template-columns: repeat(2, 1fr); }
   .review-image {
     height: 200px;
   }
@@ -682,69 +665,52 @@ h2 {
 /* Pagination Styles */
 .pagination-controls {
   display: flex;
+  flex-wrap: wrap;
   justify-content: space-between;
   align-items: center;
-  margin-top: 32px;
-  padding: 20px 0;
-  gap: 16px;
+  margin-top: clamp(20px, 4vw, 32px);
+  padding: clamp(12px, 2vw, 20px) 0;
+  gap: clamp(10px, 2vw, 16px);
 }
 
 .pagination-numbers {
   display: flex;
-  gap: 8px;
+  gap: clamp(4px, 1vw, 8px);
   align-items: center;
   flex-wrap: wrap;
   justify-content: center;
 }
 
 .pagination-button {
-  padding: 10px 20px;
+  padding: clamp(6px, 1.5vw, 10px) clamp(12px, 2.5vw, 20px);
   background-color: #1976d2;
   color: white;
   border: none;
   border-radius: 6px;
-  font-size: 1rem;
+  font-size: clamp(0.85rem, 2vw, 1rem);
   cursor: pointer;
   transition: background-color 0.2s;
 }
 
-.pagination-button:hover:not(:disabled) {
-  background-color: #1976d2;
-}
-
-.pagination-button:disabled {
-  background-color: #ccc;
-  cursor: not-allowed;
-}
+.pagination-button:hover:not(:disabled) { background-color: #1565c0; }
+.pagination-button:disabled { background-color: #ccc; cursor: not-allowed; }
 
 .pagination-number {
-  padding: 8px 12px;
+  padding: clamp(5px, 1vw, 8px) clamp(8px, 1.5vw, 12px);
   background-color: white;
   color: #1976d2;
   border: 1px solid #1976d2;
   border-radius: 6px;
-  font-size: 0.9rem;
+  font-size: clamp(0.8rem, 1.8vw, 0.9rem);
   cursor: pointer;
   transition: all 0.2s;
-  min-width: 40px;
+  min-width: clamp(30px, 5vw, 40px);
 }
 
-.pagination-number:hover {
-  background-color: #e3f2fd;
-}
+.pagination-number:hover { background-color: #e3f2fd; }
+.pagination-number.active { background-color: #1976d2; color: white; }
 
-.pagination-number.active {
-  background-color: #1976d2;
-  color: white;
-}
-
-@media (max-width: 768px) {
-  .pagination-controls {
-    flex-direction: column;
-    gap: 12px;
-  }
-  
-  .pagination-numbers {
-    order: -1;
-  }
+@media (max-width: 600px) {
+  .pagination-controls { flex-direction: column; }
+  .pagination-numbers { order: -1; }
 }
