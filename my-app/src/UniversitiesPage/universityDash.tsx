@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import NavBar from '../NavBarPages/navbar';
 import Footer from '../homepage/footer';
+import Star from '@mui/icons-material/Star';
 import './universityDash.css';
 
 // Define types for University and Dorm data from API
@@ -239,7 +240,7 @@ function UniversityDash() {
 
         {/* Right side - Dorms List */}
         <div className="dorms-list">
-          <h2>Browse {dorms.length} {dorms.length === 1 ? 'Dorm' : 'Dorms'}</h2>
+          <h2 style={{ textAlign: 'center' }}>Browse {dorms.length} {dorms.length === 1 ? 'Dorm' : 'Dorms'}</h2>
           
           <div className="dorms-controls">
             <div className="search-section">
@@ -284,10 +285,8 @@ function UniversityDash() {
                 <img src={(dorm.imageUrl && dorm.imageUrl !== '' && dorm.imageUrl !== 'null') ? dorm.imageUrl : 'https://thumbs.dreamstime.com/b/college-dorm-ai-generated-stock-image-college-dorm-bunk-bed-bed-above-desk-window-generated-276344540.jpg'} alt={dorm.name} className="dorm-image" />
                 <div className="dorm-info">
                   <h3>{dorm.name}</h3>
-                  <div className="dorm-rating">
-                    <div className="stars" title={(dormRatings[dorm.name] ?? 0).toString()}>
-                      {renderStars(dormRatings[dorm.name] ?? 0)}
-                    </div>
+                  <div className="dorm-rating" style={{ display: 'flex', alignItems: 'center', gap: '4px', marginTop: '8px' }}>
+                    <Star style={{ fontSize: '1.15rem', color: '#FFD700' }} />
                     <span className="rating-number">
                       {(dormRatings[dorm.name] ?? 0).toFixed(1)} ({reviewCounts[dorm.name] ?? 0} reviews)
                     </span>

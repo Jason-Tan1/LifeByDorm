@@ -1,7 +1,9 @@
 /* login.css */
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap');
 
 /* Modal Overlay */
 .login_modal_overlay {
+  font-family: 'DM Sans', sans-serif;
   position: fixed;
   top: 0;
   left: 0;

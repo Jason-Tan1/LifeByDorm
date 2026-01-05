@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap');
+
 .search-bar-wrapper {
   position: relative;
   width: 100%;
@@ -8,6 +10,7 @@
   align-items: center;
   padding: 0 clamp(8px, 2vw, 15px);
   box-sizing: border-box;
+  font-family: 'DM Sans', sans-serif;
 }
 
 .search-bar-container {
