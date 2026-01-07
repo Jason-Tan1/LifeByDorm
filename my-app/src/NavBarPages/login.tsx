@@ -118,9 +118,9 @@ function login({ isOpen, onClose }: LoginModalProps) {
           </div>
           
           <div className="login_signup">
-            <button type="button" onClick={toggleMode}>
-              {isRegistering ? 'Already have an account? Log in' : 'Create a new account'}
-            </button>
+            <p onClick={toggleMode}>
+              {isRegistering ? 'Already have an account? Log in' : "Don't have an account? Create one!"}
+            </p>
           </div>
         </form>
       </div>
