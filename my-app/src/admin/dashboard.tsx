@@ -1,6 +1,8 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import NavBar from '../NavBarPages/navbar';
+
+const API_BASE = (import.meta as any).env?.VITE_API_BASE || 'http://localhost:3000';
 
 interface Review {
   _id: string;
@@ -49,7 +51,7 @@ function AdminDashboard() {
   const fetchPendingReviews = async () => {
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch('http://localhost:3000/api/admin/reviews/pending', {
+      const response = await fetch(`${API_BASE}/api/admin/reviews/pending`, {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -72,7 +74,7 @@ function AdminDashboard() {
   const handleApprove = async (reviewId: string) => {
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch(`http://localhost:3000/api/admin/reviews/${reviewId}/approve`, {
+      const response = await fetch(`${API_BASE}/api/admin/reviews/${reviewId}/approve`, {
         method: 'PATCH',
         headers: {
           'Authorization': `Bearer ${token}`
@@ -94,7 +96,7 @@ function AdminDashboard() {
   const handleDecline = async (reviewId: string) => {
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch(`http://localhost:3000/api/admin/reviews/${reviewId}/decline`, {
+      const response = await fetch(`${API_BASE}/api/admin/reviews/${reviewId}/decline`, {
         method: 'PATCH',
         headers: {
           'Authorization': `Bearer ${token}`

@@ -40,7 +40,7 @@ function login({ isOpen, onClose }: LoginModalProps) {
     setError("");
     
     try {
-      const endpoint = isRegistering ? 'http://localhost:3000/register' : 'http://localhost:3000/login';
+      const endpoint = isRegistering ? `${API_BASE}/register` : `${API_BASE}/login`;
       const response = await axios.post(endpoint, {
         email,
         password

@@ -5,6 +5,8 @@ import NavBar from '../NavBarPages/navbar';
 import Star from '@mui/icons-material/Star';
 import StarBorder from '@mui/icons-material/StarBorder';
 
+const API_BASE = (import.meta as any).env?.VITE_API_BASE || 'http://localhost:3000';
+
 function Reviews() {
   const navigate = useNavigate();
   const [currentPage, setCurrentPage] = useState(1);
@@ -189,7 +191,7 @@ function Reviews() {
         headers['Authorization'] = `Bearer ${token}`;
       }
 
-      const res = await fetch('http://localhost:3000/api/reviews', {
+      const res = await fetch(`${API_BASE}/api/reviews`, {
         method: 'POST',
         headers,
         body: JSON.stringify(payload)
