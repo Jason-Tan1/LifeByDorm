@@ -5,6 +5,7 @@ import jwt, { Secret, JwtPayload } from 'jsonwebtoken';
 import mongoose from 'mongoose'; // MongoDB Connections from Node.js
 import bcrypt from 'bcryptjs'; //Hide Passwords
 import { OAuth2Client } from 'google-auth-library';
+import rateLimit from 'express-rate-limit';
 import { User, IUser } from './models/user';
 import { UserReview } from './models/userreview';
 import { University } from './models/universities';
@@ -13,11 +14,34 @@ import { Dorm } from './models/dorm';
 dotenv.config();
 console.log('Loaded secret:', process.env.ACCESS_TOKEN_SECRET ? '✅ Loaded' : '❌ Missing');
 
+// Validate required environment variables
+if (!process.env.ACCESS_TOKEN_SECRET) {
+  console.error('❌ CRITICAL: ACCESS_TOKEN_SECRET is not defined in .env file');
+  process.exit(1);
+}
+
 // Admin emails (comma-separated) read from env, e.g. ADMIN_EMAILS=admin@example.com,alice@org.com
 const ADMIN_EMAILS: string[] = (process.env.ADMIN_EMAILS || '').split(',').map(s => s.trim()).filter(Boolean);
 console.log('Admin emails:', ADMIN_EMAILS.length ? ADMIN_EMAILS : 'none');
 
 const app = express()
+
+// Rate limiting configuration
+const authLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 10, // Limit each IP to 10 requests per windowMs
+  message: { message: 'Too many authentication attempts, please try again after 15 minutes' },
+  standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
+  legacyHeaders: false, // Disable the `X-RateLimit-*` headers
+});
+
+const apiLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 100, // Limit each IP to 100 requests per windowMs
+  message: { message: 'Too many requests, please try again later' },
+  standardHeaders: true,
+  legacyHeaders: false,
+});
 
 app.use(cors())
 // Increase JSON body size limit to allow base64 image uploads from the client.
@@ -49,6 +73,9 @@ const connectDB = async () => {
 
 // Connect to MongoDB
 connectDB();
+
+// Apply general API rate limiting to all /api routes
+app.use('/api/', apiLimiter);
 
 // Test route to check MongoDB connection
 app.get('/api/test', async (req: Request, res: Response) => {
@@ -100,7 +127,7 @@ app.get('/posts', authenticationToken, (req: AuthRequest, res: Response) => {
 })
 
 // Register new user
-app.post('/register', async (req, res) => {
+app.post('/register', authLimiter, async (req, res) => {
   try {
     console.log('Received registration request:', req.body);
     const { email, password } = req.body;
@@ -144,7 +171,7 @@ app.post('/register', async (req, res) => {
 });
 
 // Login user
-app.post('/login', async (req, res) => {
+app.post('/login', authLimiter, async (req, res) => {
   try {
     const { email, password } = req.body;
     
@@ -182,7 +209,7 @@ app.post('/login', async (req, res) => {
 // Google OAuth login - simplified with ID token verification
 const googleClient = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
-app.post('/auth/google', async (req, res) => {
+app.post('/auth/google', authLimiter, async (req, res) => {
   try {
     const { credential } = req.body;
     
