@@ -43,7 +43,30 @@ const apiLimiter = rateLimit({
   legacyHeaders: false,
 });
 
-app.use(cors())
+// CORS configuration - restrict to trusted origins
+const ALLOWED_ORIGINS = process.env.NODE_ENV === 'production'
+  ? [process.env.FRONTEND_URL || 'https://yourdomain.com'] // Production: only your domain
+  : ['http://localhost:5173', 'http://localhost:3000', 'http://127.0.0.1:5173']; // Development: local URLs
+
+app.use(cors({
+  origin: (origin, callback) => {
+    // Allow requests with no origin (like mobile apps, curl, Postman)
+    if (!origin) return callback(null, true);
+    
+    if (ALLOWED_ORIGINS.indexOf(origin) !== -1) {
+      callback(null, true);
+    } else {
+      console.warn(`🚫 Blocked CORS request from unauthorized origin: ${origin}`);
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  credentials: true, // Allow cookies and authorization headers
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  exposedHeaders: ['RateLimit-Limit', 'RateLimit-Remaining', 'RateLimit-Reset'],
+  maxAge: 86400, // Cache preflight requests for 24 hours
+}));
+
 // Increase JSON body size limit to allow base64 image uploads from the client.
 // The frontend encodes images as data URLs; increase the limit to 10mb.
 app.use(express.json({ limit: '10mb' }))
