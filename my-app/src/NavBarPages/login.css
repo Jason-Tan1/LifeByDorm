@@ -194,24 +194,22 @@
   transform: translateY(0);
 }
 
-.login_signup button {
-  width: 100%;
-  padding: 12px;
-  background: transparent;
-  color: #495057;
-  border: 2px solid #6c757d;
-  border-radius: 8px;
-  font-size: 1rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.3s ease;
+.login_signup {
+  margin-top: 20px;
+  text-align: center;
 }
 
-.login_signup button:hover {
-  background: #6c757d;
-  color: white;
-  transform: translateY(-2px);
-  box-shadow: 0 5px 15px rgba(108, 117, 125, 0.2);
+.login_signup p {
+  color: #6c757d;
+  font-size: 0.875rem;
+  cursor: pointer;
+  margin: 0;
+  transition: color 0.2s ease;
+}
+
+.login_signup p:hover {
+  color: #495057;
+  text-decoration: underline;
 }
 
 .login_error {
