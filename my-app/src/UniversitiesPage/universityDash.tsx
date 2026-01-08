@@ -4,6 +4,8 @@ import NavBar from '../NavBarPages/navbar';
 import Footer from '../homepage/footer';
 import Star from '@mui/icons-material/Star';
 import './universityDash.css';
+import '../homepage/searchbar.css';
+import { FaSearch } from 'react-icons/fa';
 
 // Define types for University and Dorm data from API
 type APIUniversity = {
@@ -244,15 +246,20 @@ function UniversityDash() {
           
           <div className="dorms-controls">
             <div className="search-section">
-              <label htmlFor="dorm-search">Search for dorms:</label>
-              <input
-                id="dorm-search"
-                type="text"
-                className="dorm-search-input"
-                placeholder="Search Bar"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-              />
+              <label htmlFor="dorm-search">Search Dorms: </label>
+              <div className="search-bar-container">
+                <input
+                  id="dorm-search"
+                  type="text"
+                  className="search-input"
+                  placeholder="Search for dorms..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                />
+                <button className="search-button">
+                  <FaSearch />
+                </button>
+              </div>
             </div>
             
             <div className="filter-section">
