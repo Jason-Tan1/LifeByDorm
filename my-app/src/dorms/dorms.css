@@ -798,3 +798,62 @@ h2 {
   .pagination-controls { flex-direction: column; }
   .pagination-numbers { order: -1; }
 }
+
+/* Location Map Styles */
+.location-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.location-header h2 {
+  margin: 0;
+  font-size: 1.5rem; /* Match existing h2 size if any, or general styling */
+  border-bottom: none;
+}
+
+.view-location-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.9rem;
+  font-weight: 600;
+  background-color: #1976d2; 
+  color: white;
+  border: none;
+  cursor: pointer;
+  padding: 8px 16px;
+  border-radius: 20px;
+  transition: background-color 0.2s, transform 0.2s;
+}
+
+.view-location-btn:hover {
+  background-color: #1565c0;
+  transform: scale(1.02);
+}
+
+.map-container {
+  margin-top: 10px;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  background-color: #eee;
+  min-height: 300px; /* Ensure space is reserved */
+}
+
+.map-placeholder {
+  width: 100%;
+  height: 300px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #e0e0e0;
+  background-image: repeating-linear-gradient(
+    45deg,
+    #e0e0e0,
+    #e0e0e0 10px,
+    #e5e5e5 10px,
+    #e5e5e5 20px
+  );
+}

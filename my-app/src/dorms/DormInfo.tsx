@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom';
+import { useState } from 'react';
 import Star from '@mui/icons-material/Star';
 import StarHalf from '@mui/icons-material/StarHalf';
 import StarBorder from '@mui/icons-material/StarBorder';
@@ -31,6 +32,8 @@ interface DormInfoProps {
 }
 
 function DormInfo({ dorm, reviews, universityName, calculateAverageRating, calculateCategoryAverages }: DormInfoProps) {
+  const [showMap, setShowMap] = useState(false);
+
   const renderStars = (rating: number) => {
     const fullStars = Math.floor(rating);
     const hasHalfStar = rating - fullStars >= 0.5;
@@ -134,6 +137,43 @@ function DormInfo({ dorm, reviews, universityName, calculateAverageRating, calcu
           </div>
         </div>
       )}
+      {/* Location Section */}
+      <div className="dorm-details">
+        <div className="location-header">
+          <h2>Location</h2>
+        </div>
+        
+        <div className="map-container">
+          {!showMap ? (
+            <div className="map-placeholder">
+              <button 
+                onClick={() => setShowMap(true)} 
+                className="view-location-btn"
+              >
+                View Location
+              </button>
+            </div>
+          ) : (
+            <>
+              <iframe
+                width="100%"
+                height="300"
+                style={{ border: 0, borderRadius: '8px' }}
+                loading="lazy"
+                allowFullScreen
+                referrerPolicy="no-referrer-when-downgrade"
+                src={`https://www.google.com/maps/embed/v1/place?key=${import.meta.env.VITE_GOOGLE_MAPS_API_KEY || ''}&q=${encodeURIComponent((dorm.name || '') + ', ' + (universityName || ''))}`}
+              ></iframe>
+              {!import.meta.env.VITE_GOOGLE_MAPS_API_KEY && (
+                 <p style={{fontSize: '0.8em', color: '#666', marginTop: '8px'}}>
+                   Note: Map requires VITE_GOOGLE_MAPS_API_KEY in .env
+                 </p>
+              )}
+            </>
+          )}
+        </div>
+      </div>
+
     </div>
   );
 }
