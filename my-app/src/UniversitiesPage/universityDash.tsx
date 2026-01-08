@@ -283,18 +283,20 @@ function UniversityDash() {
                 style={{ textDecoration: 'none', color: 'inherit' }}
               >
                 <img src={(dorm.imageUrl && dorm.imageUrl !== '' && dorm.imageUrl !== 'null') ? dorm.imageUrl : '/src/assets/Default_Dorm.png'} alt={dorm.name} className="dorm-image" />
-                <div className="dorm-info">
-                  <h3>{dorm.name}</h3>
-                  <div className="dorm-rating" style={{ display: 'flex', alignItems: 'center', gap: '4px', marginTop: '8px' }}>
-                    <Star style={{ fontSize: '1.15rem', color: '#FFD700' }} />
-                    <span className="rating-number">
-                      {(dormRatings[dorm.name] ?? 0).toFixed(1)} ({reviewCounts[dorm.name] ?? 0} reviews)
-                    </span>
+                <div className="dorm-card-info">
+                  <div className="dorm-text-content">
+                    <h3>{dorm.name}</h3>
+                    <div className="dorm-rating" style={{ display: 'flex', alignItems: 'center', gap: '4px', marginTop: '8px' }}>
+                      <Star style={{ fontSize: '1.15rem', color: '#FFD700' }} />
+                      <span className="rating-number">
+                        {(dormRatings[dorm.name] ?? 0).toFixed(1)} ({reviewCounts[dorm.name] ?? 0} reviews)
+                      </span>
+                    </div>
                   </div>
-                  <div className="dorm-buttons">
-                    <Link 
-                      to={`/review?university=${encodeURIComponent(universityName || '')}&dorm=${encodeURIComponent(dorm.name)}`} 
-                      className="review-button"
+                  <div className="dorm-action-area">
+                    <Link
+                      to={`/review?university=${encodeURIComponent(universityName || '')}&dorm=${encodeURIComponent(dorm.name)}`}
+                      className="leave-review-btn-small"
                       onClick={(e) => e.stopPropagation()}
                     >
                       Leave Review

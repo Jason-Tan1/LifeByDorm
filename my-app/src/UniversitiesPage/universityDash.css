@@ -221,16 +221,24 @@
   object-fit: cover;
 }
 
-.dorm-info {
+.dorm-card-info {
   padding: clamp(10px, 2vw, 16px);
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
+  align-items: center;
   flex: 1;
   justify-content: space-between;
   min-width: 0;
+  gap: 16px;
 }
 
-.dorm-info h3 {
+.dorm-text-content {
+  display: flex;
+  flex-direction: column;
+  min-width: 0; /* Enables truncation if needed */
+}
+
+.dorm-card-info h3 {
   font-size: clamp(0.9rem, 2.5vw, 1.15rem);
   color: #1a1a1a;
   margin: 0 0 6px;
@@ -247,28 +255,24 @@
 .stars { color: #f8c41b; font-size: clamp(0.8rem, 2vw, 0.9rem); }
 .rating-number { color: #666; font-size: clamp(0.7rem, 1.8vw, 0.8rem); }
 
-.dorm-buttons {
-  display: flex;
-  gap: clamp(6px, 1.5vw, 10px);
-  margin-top: auto;
-  padding-top: 8px;
-}
-
-.view-dorm-button, .review-button {
-  flex: 1;
-  padding: clamp(6px, 1.2vw, 10px) clamp(8px, 1.5vw, 14px);
+.leave-review-btn-small {
+  display: inline-block;
+  padding: 8px 16px;
+  background-color: white;
+  color: #4CAF50;
+  border: 1px solid #4CAF50;
+  border-radius: 20px;
+  font-size: 0.9rem;
+  font-weight: 600;
   text-decoration: none;
-  border-radius: 6px;
-  text-align: center;
-  font-weight: 500;
-  font-size: clamp(0.7rem, 1.8vw, 0.85rem);
-  transition: background-color 0.2s;
+  white-space: nowrap;
+  transition: all 0.2s ease;
 }
 
-.view-dorm-button { background-color: #1976d2; color: white; }
-.view-dorm-button:hover { background-color: #1565c0; }
-.review-button { background-color: #4caf50; color: white; }
-.review-button:hover { background-color: #388e3c; }
+.leave-review-btn-small:hover {
+  background-color: #4CAF50;
+  color: white;
+}
 
 /* Only 2 breakpoints for major layout changes */
 @media (max-width: 768px) {
@@ -283,4 +287,22 @@
   .dorm-card { flex-direction: column; }
   .dorm-image { width: 100%; min-width: 100%; aspect-ratio: 16 / 9; }
   .university-website-link { width: 100%; text-align: center; box-sizing: border-box; }
+  
+  .dorm-card-info {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+  
+  .dorm-action-area {
+    width: 100%;
+    margin-top: 4px;
+  }
+  
+  .leave-review-btn-small {
+    display: block;
+    text-align: center;
+    width: 100%;
+    box-sizing: border-box; 
+  }
 }
