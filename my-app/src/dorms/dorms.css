@@ -373,23 +373,28 @@
 .reviews-grid {
   display: flex;
   flex-direction: column;
-  gap: 24px;
+  gap: 0;
 }
 
 .review-card {
   display: flex;
   flex-direction: column;
-  background: white;
-  border-radius: 12px;
+  background: transparent;
+  border-radius: 0;
   overflow: hidden;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  transition: transform 0.2s, box-shadow 0.2s;
+  box-shadow: none;
+  transition: none;
+  border-bottom: 1px solid #e0e0e0;
+  padding: 24px 0;
 }
 
+.review-card:last-child {
+  border-bottom: none;
+}
 
 .review-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+  transform: none;
+  box-shadow: none;
 }
 
 .review-image {
