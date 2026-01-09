@@ -85,3 +85,66 @@ body {
 .navbar_login button:hover {
   background-color: #4338ca;
 }
+/* Dropdown Container */
+.navbar_account_dropdown {
+  position: relative;
+  display: inline-block;
+}
+
+/* My Account Button (matches Login button style) */
+.navbar_account_dropdown .account_btn {
+  background-color: #ffffff;
+  color: #333333;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 12px; /* Adjusted padding for icon */
+  box-shadow: none; /* Ensure no shadow either if present elsewhere */
+}
+
+.navbar_account_dropdown .account_btn:hover {
+  background-color: #f3f4f6;
+}
+
+/* Dropdown Content (Hidden by default) */
+.account_dropdown_content {
+  display: none;
+  position: absolute;
+  right: 0;
+  background-color: #ffffff;
+  min-width: 140px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  z-index: 1000;
+  border-radius: 8px;
+  overflow: hidden;
+  margin-top: 4px;
+  border: 1px solid #e0e7ff;
+}
+
+/* Links inside the dropdown */
+.account_dropdown_content button {
+  color: #374151;
+  padding: 10px 16px;
+  text-decoration: none;
+  display: block;
+  background-color: transparent;
+  width: 100%;
+  text-align: left;
+  border-radius: 0;
+  font-size: 0.9rem;
+  border: none;
+}
+
+/* Change color of dropdown links on hover */
+.account_dropdown_content button:hover {
+  background-color: #f3f4f6;
+  color: #111827;
+}
+
+/* Hover effect removed - controlled by click in component
+.navbar_account_dropdown:hover .account_dropdown_content {
+  display: block;
+}
+*/
+

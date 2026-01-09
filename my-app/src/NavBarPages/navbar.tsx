@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom';
+import MenuIcon from '@mui/icons-material/Menu';
 import LoginModal from './login';
 import './navbar.css'
 
@@ -7,6 +8,7 @@ function navbar() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -51,7 +53,17 @@ function navbar() {
         )}
         <div className="navbar_login">
           {isLoggedIn ? (
-            <button onClick={handleLogout}>Log Out</button>
+            <div className="navbar_account_dropdown">
+              <button className="account_btn icon_btn" onClick={() => setIsDropdownOpen(!isDropdownOpen)}>
+                <MenuIcon />
+              </button>
+              {isDropdownOpen && (
+                <div className="account_dropdown_content" style={{ display: 'block' }}>
+                  <button onClick={() => { navigate('/profile'); setIsDropdownOpen(false); }}>My Account</button>
+                  <button onClick={handleLogout}>Log Out</button>
+                </div>
+              )}
+            </div>
           ) : (
             <button onClick={() => setIsLoginModalOpen(true)}>Log In</button>
           )}
