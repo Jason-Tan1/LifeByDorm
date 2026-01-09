@@ -140,7 +140,6 @@ function DormInfo({ dorm, reviews, universityName, calculateAverageRating, calcu
       {/* Location Section */}
       <div className="dorm-details">
         <div className="location-header">
-          <h2>Location</h2>
         </div>
         
         <div className="map-container">

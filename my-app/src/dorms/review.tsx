@@ -22,6 +22,7 @@ function Reviews() {
   const urlSearch = typeof window !== 'undefined' ? new URLSearchParams(window.location.search) : null;
   const queryUniversity = urlSearch ? urlSearch.get('university') : null;
   const queryDorm = urlSearch ? urlSearch.get('dorm') : null;
+  const [hoverRatings, setHoverRatings] = useState<{ category: string | null, value: number }>({ category: null, value: 0 });
 
   const [description, setDescription] = useState('');
   const [year, setYear] = useState<string[]>([]);
@@ -38,16 +39,40 @@ function Reviews() {
     }));
   };
 
+  const handleMouseEnter = (category: string, value: number) => {
+    setHoverRatings({ category, value });
+  };
+
+  const handleMouseLeave = () => {
+    setHoverRatings({ category: null, value: 0 });
+  };
+
   const renderStars = (category: keyof typeof ratings) => {
+    // Current locked-in rating
+    const currentRating = ratings[category];
+    
+    // Determine which value to show
+    let effectiveValue = currentRating;
+    
+    // Only update based on hover if we are hovering this exact category
+    if (hoverRatings.category === category && hoverRatings.value > 0) {
+      // If we are hovering a value HIGHER than the current rating, show the hover state (preview increase)
+      // Otherwise, keep the current rating fixed (don't show preview decrease)
+      if (hoverRatings.value > currentRating) {
+        effectiveValue = hoverRatings.value;
+      }
+    }
+
     return (
-      <div className="star-rating">
+      <div className="star-rating" onMouseLeave={handleMouseLeave}>
         {[1, 2, 3, 4, 5].map((star) => (
           <button
             key={star}
             type="button"
             onClick={() => handleRatingClick(category, star)}
+            onMouseEnter={() => handleMouseEnter(category, star)}
           >
-            {star <= ratings[category] ? <Star /> : <StarBorder />}
+            {star <= effectiveValue ? <Star /> : <StarBorder />}
           </button>
         ))}
       </div>
@@ -231,14 +256,13 @@ function Reviews() {
     <div className='Review'>
       <NavBar />
       <div className='review-container'>
-        {/* Progress Indicator */}
-        <div className="progress-indicator">
-          <div className={`progress-step ${currentPage >= 1 ? 'active' : ''}`}>1. Ratings</div>
-          <div className={`progress-step ${currentPage >= 2 ? 'active' : ''}`}>2. Details</div>
-          <div className={`progress-step ${currentPage >= 3 ? 'active' : ''}`}>3. Comments</div>
-          <div className={`progress-step ${currentPage >= 4 ? 'active' : ''}`}>4. Review</div>
-        </div>
-
+        {(currentPage === 1 || currentPage === 2) && (
+          <div className="typing-wrapper">
+            <div className={`typing-demo ${currentPage === 2 ? 'no-animation' : ''}`}>
+              How was your experience?
+            </div>
+          </div>
+        )}
         <div className="review-form">
           {/* Page 1: Ratings */}
           {currentPage === 1 && (
@@ -272,6 +296,7 @@ function Reviews() {
 
           {/* Page 2: Personal Details */}
           {currentPage === 2 && (
+
             <div className="form-page">
               
               <div className="details-row">
@@ -409,6 +434,7 @@ function Reviews() {
           {/* Page 3: Comments and Photos */}
           {currentPage === 3 && (
             <div className="form-page">
+              <h2>Tell us more about the experience?</h2>
               <div className="form-group">
                 <label>Comments about the dorm</label>
                 <textarea

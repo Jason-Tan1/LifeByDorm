@@ -32,6 +32,41 @@
   text-align: center;
 }
 
+.typing-wrapper {
+  display: grid;
+  place-items: center;
+  margin-bottom: 30px;
+  width: 100%;
+}
+
+.typing-demo {
+  /* Use clip-path for reveal so text stays centered without shifting */
+  width: fit-content;
+  animation: typing 1.5s steps(40, end);
+  white-space: nowrap;
+  font-family: 'DM Sans', sans-serif;
+  font-weight: 700;
+  font-size: clamp(1.2rem, 3vw, 2em);
+  color: #1a1a1a;
+  margin: 0 auto;
+  clip-path: inset(0 0 0 0);
+}
+
+.typing-demo.no-animation {
+  animation: none;
+}
+
+@keyframes typing {
+  from {
+    clip-path: inset(0 100% 0 0);
+  }
+  to {
+    clip-path: inset(0 0 0 0);
+  }
+}
+
+/* Remove blink animation as it's no longer used */
+
 /* Progress Indicator */
 .progress-indicator {
   display: flex;
@@ -154,11 +189,13 @@
   display: flex;
   gap: 16px;
   margin-top: 32px;
-  justify-content: space-between;
+  justify-content: center;
 }
 
 .nav-button {
-  flex: 1;
+  align-items: center;
+  min-width: 120px;
+  max-width: 200px;
   padding: 12px 24px;
   font-size: 1.1rem;
   border: none;
@@ -166,6 +203,7 @@
   cursor: pointer;
   transition: all 0.2s;
   font-weight: 500;
+  
 }
 
 .back-button {
