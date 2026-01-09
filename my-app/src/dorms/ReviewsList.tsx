@@ -1,5 +1,4 @@
 import { Link } from 'react-router-dom';
-import { FaThumbsUp, FaThumbsDown } from "react-icons/fa";
 
 type APIDorm = {
   name: string;
@@ -53,7 +52,6 @@ function ReviewsList({
 
   return (
     <div className="reviews-list">
-      <h2>Student Reviews</h2>
       {reviewsLoading ? (
         <p>Loading reviews...</p>
       ) : reviews.length === 0 ? (
@@ -79,16 +77,6 @@ function ReviewsList({
                     <span>Room Type: {Array.isArray(review.roomType) ? review.roomType.map((r: string) => r.charAt(0).toUpperCase() + r.slice(1)).join(', ') : (review.roomType?.charAt(0).toUpperCase() + review.roomType?.slice(1))}</span>
                     <span>Would Dorm Again: {review.wouldDormAgain ? 'Yes' : 'No'}</span>
                   </div>
-                </div>
-                <div className="review-votes">
-                  <button className="vote-button upvote">
-                    <FaThumbsUp className="vote-icon" />
-                    <span className="vote-count">0</span>
-                  </button>
-                  <button className="vote-button downvote">
-                    <FaThumbsDown className="vote-icon" />
-                    <span className="vote-count">0</span>
-                  </button>
                 </div>
               </div>
               <div className="review-content">
