@@ -4,6 +4,7 @@ import Star from '@mui/icons-material/Star';
 import StarHalf from '@mui/icons-material/StarHalf';
 import StarBorder from '@mui/icons-material/StarBorder';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import HomeIcon from '@mui/icons-material/Home';
 
 type APIDorm = {
   name: string;
@@ -65,6 +66,19 @@ function DormInfo({ dorm, reviews, universityName, calculateAverageRating, calcu
         alt={dorm.name} 
         className="dorm-main-image"
       />
+      
+      {/* Breadcrumbs */}
+      <div className="dorm-breadcrumbs">
+        <Link to="/" className="breadcrumb-home">
+          <HomeIcon style={{ fontSize: '1.1rem' }} />
+        </Link>
+        <span className="breadcrumb-separator">›</span>
+        <Link to={`/universities/${universityName}`}>
+          {universityName?.split('-').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ')} Dorms
+        </Link>
+        <span className="breadcrumb-separator">›</span>
+        <span className="breadcrumb-current">{dorm.name}</span>
+      </div>
       
       <div className="dorm-header">
         <h1>{dorm.name}</h1>

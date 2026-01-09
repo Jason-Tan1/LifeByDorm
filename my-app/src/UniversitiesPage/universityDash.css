@@ -20,10 +20,9 @@
 .university-info {
   flex: 1 1 320px;
   max-width: 500px;
-  background: white;
-  border-radius: 12px;
-  padding: clamp(12px, 3vw, 24px);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  background: transparent;
+  padding: 0;
+  box-shadow: none;
   height: fit-content;
 }
 
