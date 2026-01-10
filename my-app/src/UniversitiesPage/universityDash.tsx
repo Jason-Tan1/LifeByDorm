@@ -4,6 +4,7 @@ import NavBar from '../NavBarPages/navbar';
 import Footer from '../homepage/footer';
 import Star from '@mui/icons-material/Star';
 import HomeIcon from '@mui/icons-material/Home';
+import AddDorm from './AddDorm';
 import './universityDash.css';
 import '../homepage/searchbar.css';
 import { FaSearch } from 'react-icons/fa';
@@ -249,6 +250,16 @@ function UniversityDash() {
           >
             Visit University Website
           </a>
+
+          {/* Add Dorm Section */}
+          <AddDorm 
+            universitySlug={universityName || ''} 
+            universityName={university.name}
+            onDormSubmitted={() => {
+              // Optionally refresh dorms list (though pending dorms won't show)
+              console.log('Dorm submitted successfully');
+            }}
+          />
         </div>
 
         {/* Right side - Dorms List */}
