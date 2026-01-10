@@ -36,21 +36,21 @@ function Dorms() {
 
   useEffect(() => {
     if (!universityName || !dormSlug) return;
-    
+
     async function fetchDorm() {
       try {
         setLoading(true);
         setError(null);
-        
+
         // Fetch all dorms for this university and find the matching one
         const response = await fetch(`${API_BASE}/api/universities/${encodeURIComponent(universityName!)}/dorms`);
         if (!response.ok) throw new Error('Failed to fetch dorm data');
-        
+
         const dorms: APIDorm[] = await response.json();
         const matchedDorm = dorms.find(d => d.slug === dormSlug);
-        
+
         if (!matchedDorm) throw new Error('Dorm not found');
-        
+
         setDorm(matchedDorm);
       } catch (e: any) {
         setError(e?.message || 'Failed to load dorm');
@@ -64,21 +64,21 @@ function Dorms() {
 
   const [reviews, setReviews] = useState<any[]>([]);
   const [reviewsLoading, setReviewsLoading] = useState(false);
-  const [currentPage, setCurrentPage] = useState(1);
-  const reviewsPerPage = 10;
+  const [visibleCount, setVisibleCount] = useState(10);
+  const reviewsPerLoad = 10;
 
   // Fetch reviews for this dorm
   useEffect(() => {
     if (!universityName || !dorm) return;
-    
+
     const dormName = dorm.name; // Capture the name before async function
-    
+
     async function fetchReviews() {
       try {
         setReviewsLoading(true);
         const response = await fetch(`${API_BASE}/api/reviews?university=${encodeURIComponent(universityName!)}&dorm=${encodeURIComponent(dormName)}`);
         if (!response.ok) throw new Error('Failed to fetch reviews');
-        
+
         const data = await response.json();
         setReviews(data);
       } catch (e) {
@@ -100,22 +100,23 @@ function Dorms() {
   //Time formatting function
   const formatReviewTime = (timestamp: string) => {
     const date = new Date(timestamp);
-    const now = new Date();
-    const diffInSeconds = Math.floor((now.getTime() - date.getTime()) / 1000);
-    
-    if (diffInSeconds < 60) return 'Just now';
-    const minutes = Math.floor(diffInSeconds / 60);
-    if (diffInSeconds < 3600) return `${minutes} ${minutes === 1 ? 'minute' : 'minutes'} ago`;
-    const hours = Math.floor(diffInSeconds / 3600);
-    if (diffInSeconds < 86400) return `${hours} ${hours === 1 ? 'hour' : 'hours'} ago`;
-    const days = Math.floor(diffInSeconds / 86400);
-    if (diffInSeconds < 604800) return `${days} ${days === 1 ? 'day' : 'days'} ago`;
-    const weeks = Math.floor(diffInSeconds / 604800);
-    if (diffInSeconds < 2592000) return `${weeks} ${weeks === 1 ? 'week' : 'weeks'} ago`;
-    const months = Math.floor(diffInSeconds / 2592000);
-    if (diffInSeconds < 31536000) return `${months} ${months === 1 ? 'month' : 'months'} ago`;
-    const years = Math.floor(diffInSeconds / 31536000);
-    return `${years} ${years === 1 ? 'year' : 'years'} ago`;
+    const monthNames = [
+      'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+      'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
+    ];
+    const day = date.getDate();
+    const daySuffix = (d: number) => {
+      if (d > 3 && d < 21) return 'th';
+      switch (d % 10) {
+        case 1: return 'st';
+        case 2: return 'nd';
+        case 3: return 'rd';
+        default: return 'th';
+      }
+    };
+    const month = monthNames[date.getMonth()];
+    const year = date.getFullYear();
+    return `${month} ${day}${daySuffix(day)}, ${year}`;
   };
 
   const calculateAverageRating = () => {
@@ -153,49 +154,11 @@ function Dorms() {
     };
   };
 
-  // Pagination logic
-  const indexOfLastReview = currentPage * reviewsPerPage;
-  const indexOfFirstReview = indexOfLastReview - reviewsPerPage;
-  const currentReviews = reviews.slice(indexOfFirstReview, indexOfLastReview);
-  const totalPages = Math.ceil(reviews.length / reviewsPerPage);
+  // Load More logic - simple slice of reviews
+  const visibleReviews = reviews.slice(0, visibleCount);
 
-  const handleNextPage = () => {
-    if (currentPage < totalPages) {
-      setCurrentPage(currentPage + 1);
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    }
-  };
-
-  const handlePrevPage = () => {
-    if (currentPage > 1) {
-      setCurrentPage(currentPage - 1);
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    }
-  };
-
-  const handlePageClick = (pageNumber: number) => {
-    setCurrentPage(pageNumber);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  };
-
-  const getPageNumbers = () => {
-    const pages = [];
-    const maxPagesToShow = 10;
-    
-    if (totalPages <= maxPagesToShow) {
-      // Show all pages if total is 10 or less
-      for (let i = 1; i <= totalPages; i++) {
-        pages.push(i);
-      }
-    } else {
-      // Show first 10 pages, then "Next" button
-      const endPage = Math.min(currentPage + 9, totalPages);
-      for (let i = currentPage; i <= endPage && pages.length < maxPagesToShow; i++) {
-        pages.push(i);
-      }
-    }
-    
-    return pages;
+  const handleLoadMore = () => {
+    setVisibleCount(prev => Math.min(prev + reviewsPerLoad, reviews.length));
   };
 
   const openLightbox = (images: string[], index: number) => {
@@ -255,10 +218,10 @@ function Dorms() {
   return (
     <div className="dorm-page">
       <NavBar />
-      
+
       <div className="dorm-content">
         {/* Left side - Dorm Information */}
-        <DormInfo 
+        <DormInfo
           dorm={dorm}
           reviews={reviews}
           universityName={universityName}
@@ -267,39 +230,35 @@ function Dorms() {
         />
 
         {/* Right side - Review Listings */}
-        <ReviewsList 
+        <ReviewsList
           universityName={universityName}
           dorm={dorm}
           reviews={reviews}
           reviewsLoading={reviewsLoading}
-          currentReviews={currentReviews}
-          currentPage={currentPage}
-          totalPages={totalPages}
-          reviewsPerPage={reviewsPerPage}
+          visibleReviews={visibleReviews}
+          visibleCount={visibleCount}
+          reviewsPerLoad={reviewsPerLoad}
           calculateOverallRating={calculateOverallRating}
           getRatingClass={getRatingClass}
           formatReviewTime={formatReviewTime}
           openLightbox={openLightbox}
-          handlePrevPage={handlePrevPage}
-          handleNextPage={handleNextPage}
-          handlePageClick={handlePageClick}
-          getPageNumbers={getPageNumbers}
+          handleLoadMore={handleLoadMore}
         />
       </div>
 
       {/* Lightbox Modal */}
       {lightboxOpen && (
-        <div 
-          className="lightbox-overlay" 
+        <div
+          className="lightbox-overlay"
           onClick={closeLightbox}
           onKeyDown={handleKeyDown}
           tabIndex={0}
         >
           <button className="lightbox-close" onClick={closeLightbox}>×</button>
           <button className="lightbox-arrow lightbox-arrow-left" onClick={(e) => { e.stopPropagation(); prevImage(); }}>‹</button>
-          <img 
-            src={currentImages[currentImageIndex]} 
-            alt="Full size" 
+          <img
+            src={currentImages[currentImageIndex]}
+            alt="Full size"
             className="lightbox-image"
             onClick={(e) => e.stopPropagation()}
           />

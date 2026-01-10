@@ -2,8 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './searchbar.css';
 import { FaSearch } from 'react-icons/fa';
-
-const API_BASE = (import.meta as any).env?.VITE_API_BASE || 'http://localhost:3000';
+import { useUniversityData } from '../context/UniversityDataContext';
 
 type University = {
   name: string;
@@ -12,26 +11,12 @@ type University = {
 
 function SearchBar() {
   const [query, setQuery] = useState('');
-  const [universities, setUniversities] = useState<University[]>([]);
   const [filteredResults, setFilteredResults] = useState<University[]>([]);
   const [showDropdown, setShowDropdown] = useState(false);
   const navigate = useNavigate();
 
-  // Fetch universities on component mount
-  useEffect(() => {
-    async function fetchUniversities() {
-      try {
-        const response = await fetch(`${API_BASE}/api/universities`);
-        if (response.ok) {
-          const data = await response.json();
-          setUniversities(data);
-        }
-      } catch (error) {
-        console.error('Error fetching universities:', error);
-      }
-    }
-    fetchUniversities();
-  }, []);
+  // Use shared context for universities - no duplicate fetch!
+  const { universities } = useUniversityData();
 
   // Filter universities based on query
   useEffect(() => {
@@ -83,7 +68,7 @@ function SearchBar() {
           <FaSearch />
         </button>
       </div>
-      
+
       {showDropdown && (
         <div className="search-dropdown">
           {filteredResults.map(uni => (
