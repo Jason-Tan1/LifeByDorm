@@ -144,7 +144,7 @@ function login({ isOpen, onClose }: LoginModalProps) {
           // Email Form (replicates screenshot layout)
           <form onSubmit={handleSubmit} className="email_screen">
             <div className="email_header">
-              <h1>Welcome back.</h1>
+              <h1>{isRegistering ? "Create an account" : "Welcome back."}</h1>
             </div>
 
             <div className="field_group">
@@ -192,17 +192,23 @@ function login({ isOpen, onClose }: LoginModalProps) {
             )}
 
             <div className="primary_action">
-              <button type="submit" className="primary_button">Sign in</button>
+              <button type="submit" className="primary_button">{isRegistering ? "Create account" : "Sign in"}</button>
             </div>
 
             <div className="member_separator">
               <span className="line" />
-              <span className="member_text">Not a member?</span>
+              <span className="member_text">{isRegistering ? "Already a member?" : "Not a member?"}</span>
               <span className="line" />
             </div>
 
             <div className="join_row">
-              <a className="join_link" href="#">Join to unlock the best of LifeByDorm.</a>
+              <a 
+                className="join_link" 
+                href="#" 
+                onClick={(e) => { e.preventDefault(); toggleMode(); }}
+              >
+                {isRegistering ? "Sign in to LifeByDorm" : "Join to unlock the best of LifeByDorm."}
+              </a>
             </div>
 
             <div className="login_footer_small">
