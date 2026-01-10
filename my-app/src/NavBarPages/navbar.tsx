@@ -4,6 +4,8 @@ import MenuIcon from '@mui/icons-material/Menu';
 import LoginModal from './login';
 import './navbar.css'
 
+import LBDLogo from '../assets/LBDLogo-removebg-preview.png';
+
 function navbar() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
@@ -38,11 +40,13 @@ function navbar() {
   };
   return (
     <div className="navbar">
-        {/* Navigation Bar Logo */}
+      {/* Navigation Bar Logo */}
       <div className="navbar_logo">
-        <Link to="/">LifeByDorm</Link>
+        <Link to="/">
+          <img src={LBDLogo} alt="LifeByDorm Logo" />
+        </Link>
       </div>
-        {/* Navigation Bar Buttons */}
+      {/* Navigation Bar Buttons */}
       <div className="navbar_actions">
         {isAdmin && (
           <div className="navbar_dashboard">
