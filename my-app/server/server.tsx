@@ -234,24 +234,51 @@ const googleClient = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
 app.post('/auth/google', authLimiter, async (req, res) => {
   try {
-    const { credential } = req.body;
+    const { credential, access_token } = req.body;
     
-    if (!credential) {
-      return res.status(400).json({ message: 'Google credential is required' });
+    if (!credential && !access_token) {
+      return res.status(400).json({ message: 'Google credential or access_token is required' });
     }
 
-    // Verify the ID token
-    const ticket = await googleClient.verifyIdToken({
-      idToken: credential,
-      audience: process.env.GOOGLE_CLIENT_ID,
-    });
+    let googleId, email, name, picture;
 
-    const payload = ticket.getPayload();
-    if (!payload || !payload.email) {
-      return res.status(400).json({ message: 'Invalid Google token' });
+    if (credential) {
+      // Verify the ID token
+      const ticket = await googleClient.verifyIdToken({
+        idToken: credential,
+        audience: process.env.GOOGLE_CLIENT_ID,
+      });
+
+      const payload = ticket.getPayload();
+      if (!payload || !payload.email) {
+        return res.status(400).json({ message: 'Invalid Google token' });
+      }
+
+      email = payload.email;
+      googleId = payload.sub;
+      name = payload.name;
+      picture = payload.picture;
+    } else if (access_token) {
+      // Verify using Access Token via Google UserInfo API
+      try {
+        const response = await fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
+          headers: { Authorization: `Bearer ${access_token}` },
+        });
+
+        if (!response.ok) {
+           throw new Error('Failed to fetch user info');
+        }
+
+        const data = await response.json() as any;
+        email = data.email;
+        googleId = data.sub;
+        name = data.name;
+        picture = data.picture;
+      } catch (err) {
+        console.error('Google UserInfo fetch error:', err);
+        return res.status(400).json({ message: 'Invalid Google access token' });
+      }
     }
-
-    const { sub: googleId, email, name, picture } = payload;
 
     // Find or create user
     let user = await User.findOne({ email });
@@ -259,7 +286,7 @@ app.post('/auth/google', authLimiter, async (req, res) => {
     if (!user) {
       user = new User({
         email,
-        password: await bcrypt.hash(Math.random().toString(36), 10),
+        password: await bcrypt.hash(Math.random().toString(36), 10), // Random password for OAuth users
         googleId,
         name,
         picture,
