@@ -81,10 +81,11 @@ body {
   background-color: #e0e7ff;
 }
 
-/* Styling for the primary button (Log In) */
+/* Styling for the primary button (Sign In) */
 .navbar_login button {
   background-color: #4f46e5;
   color: #ffffff;
+  border-radius: 25px;
 }
 
 /* Hover effect for the primary button */

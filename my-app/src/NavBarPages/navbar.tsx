@@ -69,7 +69,7 @@ function navbar() {
               )}
             </div>
           ) : (
-            <button onClick={() => setIsLoginModalOpen(true)}>Log In</button>
+            <button onClick={() => setIsLoginModalOpen(true)}>Sign In</button>
           )}
         </div>
       </div>
