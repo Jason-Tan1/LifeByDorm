@@ -211,6 +211,9 @@ function Reviews() {
     try {
       // Include auth token if user is logged in
       const token = localStorage.getItem('token');
+      console.log('🔐 Submitting review - Token present:', !!token);
+      console.log('🔐 Token length:', token?.length || 0);
+      
       const headers: Record<string, string> = { 'Content-Type': 'application/json' };
       if (token) {
         headers['Authorization'] = `Bearer ${token}`;
