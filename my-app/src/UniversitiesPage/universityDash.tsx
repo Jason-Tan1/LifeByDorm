@@ -19,7 +19,6 @@ type APIUniversity = {
   acceptanceRate?: number | null;
   imageUrl?: string | null;
   website?: string | null;
-  highlights?: string[];
 };
 
 type APIDorm = {
@@ -216,40 +215,19 @@ function UniversityDash() {
           </div>
 
           <h1>{university.name}</h1>
-          
-          
-          <div className="university-stats">
-            <div className="stat-item">
-              <span className="stat-label">Founded</span>
-              <span className="stat-value">{university.founded ?? '—'}</span>
-            </div>
-            <div className="stat-item">
-              <span className="stat-label">Total Students</span>
-              <span className="stat-value">{university.totalStudents ? university.totalStudents.toLocaleString() : '—'}</span>
-            </div>
-            <div className="stat-item">
-              <span className="stat-label">Acceptance Rate</span>
-              <span className="stat-value">{typeof university.acceptanceRate === 'number' ? `${university.acceptanceRate}%` : '—'}</span>
-            </div>
-          </div>
 
-          <div className="university-highlights">
-            <h2>University Highlights</h2>
-            <ul>
-              {(university.highlights || []).map((highlight, index) => (
-                <li key={index}>{highlight}</li>
-              ))}
-            </ul>
+          <div className="university-website-card">
+            <h2>Need more information?</h2>
+            <p>Visit the {university.name} website to learn more</p>
+            <a 
+              href={university.website || '#'}
+              target="_blank" 
+              rel="noopener noreferrer" 
+              className="university-website-btn"
+            >
+              Visit University Website
+            </a>
           </div>
-
-          <a 
-            href={university.website || '#'}
-            target="_blank" 
-            rel="noopener noreferrer" 
-            className="university-website-link"
-          >
-            Visit University Website
-          </a>
 
           {/* Add Dorm Section */}
           <AddDorm 
