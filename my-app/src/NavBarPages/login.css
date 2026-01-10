@@ -21,12 +21,12 @@
 /* Modal Container */
 .login_modal_container {
   background: white;
-  padding: 40px;
-  border-radius: 15px;
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+  padding: 50px 40px;
+  border-radius: 20px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
   width: 100%;
-  max-width: 400px;
-  text-align: center;
+  max-width: 440px;
+  text-align: left;
   position: relative;
   animation: modalFadeIn 0.3s ease;
 }
@@ -34,8 +34,9 @@
 @keyframes modalFadeIn {
   from {
     opacity: 0;
-    transform: translateY(-20px);
+    transform: translateY(-10px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -45,251 +46,265 @@
 /* Close Button */
 .login_modal_close {
   position: absolute;
-  top: 15px;
-  right: 15px;
+  top: 20px;
+  right: 20px;
   background: transparent;
   border: none;
-  font-size: 2rem;
+  font-size: 1.8rem;
   color: #666;
   cursor: pointer;
-  width: 35px;
-  height: 35px;
+  width: 40px;
+  height: 40px;
   display: flex;
   align-items: center;
   justify-content: center;
   border-radius: 50%;
   transition: all 0.2s ease;
-  padding: 0;
   line-height: 1;
 }
 
 .login_modal_close:hover {
   background: #f3f4f6;
-  color: #000;
-  transform: rotate(90deg);
+  color: #1a1a1a;
 }
 
-.login_modal_container h1 {
-  text-decoration: none;
-  color: #000000;
-  font-size: 2rem;
-  font-weight: bold;
+.login_logo {
+  text-align: left;
   margin-bottom: 30px;
-  display: block;
 }
 
-/* Keep old styles for backward compatibility if login page route still exists */
-.login {
+.login_logo img {
+  height: 48px;
+  width: auto;
+  object-fit: contain;
+}
+
+/* Welcome Screen */
+.login_welcome {
+  padding: 0;
+  text-align: left;
+}
+
+.login_tagline {
+  font-size: 2.2rem;
+  font-weight: 700;
+  color: #1e1b4b;
+  /* Deep Indigo for a premium feel */
+  text-align: left;
+  margin-bottom: 45px;
+  line-height: 1.2;
+  border-bottom: none;
+  font-family: 'DM Sans', sans-serif;
+  letter-spacing: -0.02em;
+}
+
+.login_options {
   display: flex;
-  justify-content: center;
-  align-items: center;
-  min-height: 100vh;
-  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-  padding: 20px;
-  font-family: 'Arial', sans-serif;
+  flex-direction: column;
+  gap: 16px;
+  margin-bottom: 40px;
 }
 
-.login_container {
-  background: white;
-  padding: 40px;
-  border-radius: 15px;
-  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+.google_login_button_wrapper {
   width: 100%;
-  max-width: 400px;
-  text-align: center;
+}
+
+/* Custom Buttons Styling */
+.google_custom_button,
+.email_option_button {
+  width: 100%;
+  height: 56px;
+  padding: 0 24px;
+  background: white;
+  color: #1e1b4b;
+  border: 1px solid #511ec7 !important;
+  border-radius: 25px;
+  font-size: 1.05rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
   position: relative;
+  font-family: 'DM Sans', sans-serif;
+  box-sizing: border-box;
 }
 
-.login_container a {
-  text-decoration: none;
-  color: #000000;
-  font-size: 2rem;
-  font-weight: bold;
-  margin-bottom: 30px;
-  display: block;
-  transition: color 0.3s ease;
+/* Hover Effects */
+.google_custom_button:hover,
+.email_option_button:hover {
+  background: #f8fafc;
+  border-color: #4f46e5;
+  color: #4f46e5;
+  box-shadow: 0 4px 12px rgba(30, 27, 75, 0.08);
 }
 
-.login_container a:hover {
-  color: #333333;
+/* Icons Positioning */
+.google_icon,
+.email_icon {
+  position: absolute;
+  left: 24px;
 }
 
-.login_email,
-.login_password {
+.google_icon {
+  height: 24px;
+  width: 24px;
+  object-fit: contain;
+}
+
+.email_icon {
+  font-size: 1.5rem !important;
+  color: #4f46e5;
+}
+
+/* Footer Group */
+.login_footer {
+  margin-top: 40px;
+  padding-top: 20px;
+  text-align: center;
+}
+
+.login_footer p {
+  color: #666;
+  font-size: 0.825rem;
+  line-height: 1.6;
+  margin: 0;
+}
+
+.footer_link {
+  color: #666;
+  text-decoration: underline;
+  cursor: pointer;
+  font-weight: 500;
+}
+
+.footer_link:hover {
+  color: #1a1a1a;
+}
+
+/* Back Button */
+.back_button {
+  background: transparent;
+  border: none;
+  color: #1a1a1a;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 8px 0;
   margin-bottom: 25px;
   text-align: left;
+  width: auto;
+  transition: color 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.back_button:hover {
+  color: #4f46e5;
+}
+
+/* Form Title */
+.login_form_title {
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: #1a1a1a;
+  text-align: left;
+  margin-bottom: 30px;
+  border-bottom: none;
+}
+
+/* Email Form Specific Styles */
+.login_email,
+.login_password {
+  margin-bottom: 24px;
 }
 
 .login_email h2,
 .login_password h2 {
-  margin: 0 0 8px 0;
-  color: #333;
-  font-size: 1rem;
+  font-size: 0.95rem;
   font-weight: 600;
-  border-bottom: none;
+  color: #4b5563;
+  margin-bottom: 8px;
 }
 
-.login_email input,
-.login_password input {
+.login_typing {
   width: 100%;
-  padding: 12px 15px;
-  border: 2px solid #e1e1e1;
-  border-radius: 8px;
+  padding: 14px 18px;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 12px;
   font-size: 1rem;
-  transition: border-color 0.3s ease;
+  transition: all 0.2s ease;
+  font-family: inherit;
   box-sizing: border-box;
 }
 
-.login_email input:focus,
-.login_password input:focus {
+.login_typing:focus {
   outline: none;
-  border-color: #6c757d;
+  border-color: #4f46e5;
+  box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.1);
+}
+
+.login_error {
+  background: #fef2f2;
+  color: #dc2626;
+  padding: 12px 16px;
+  border-radius: 12px;
+  margin-bottom: 24px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  border: 1px solid #fee2e2;
 }
 
 .login_button {
-  margin-bottom: 15px;
-}
-
-/* Small admin button */
-.admin-button {
-  position: absolute;
-  top: 14px;
-  right: 14px;
-  padding: 6px 10px;
-  font-size: 0.85rem;
-  background: transparent;
-  border: 1px solid #e5e7eb;
-  color: #374151;
-  border-radius: 6px;
-  text-decoration: none;
-  display: inline-block;
-  transition: background-color 0.15s ease, color 0.15s ease, transform 0.12s ease;
-}
-
-.admin-button:hover {
-  background: #f3f4f6;
-  color: #111827;
-  transform: translateY(-1px);
+  margin-top: 32px;
 }
 
 .login_button button {
   width: 100%;
-  padding: 12px;
-  background: #4f46e5; 
+  height: 56px;
+  background: #1e1b4b;
   color: white;
   border: none;
-  border-radius: 8px;
-  font-size: 1rem;
+  border-radius: 25px;
+  font-size: 1.1rem;
   font-weight: 600;
   cursor: pointer;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  transition: all 0.2s ease;
 }
 
 .login_button button:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 5px 15px rgba(108, 117, 125, 0.3);
-}
-
-.login_button button:active {
-  transform: translateY(0);
+  background: #312e81;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(30, 27, 75, 0.2);
 }
 
 .login_signup {
-  margin-top: 20px;
+  margin-top: 24px;
   text-align: center;
 }
 
 .login_signup p {
-  color: #6c757d;
-  font-size: 0.875rem;
+  color: #666;
+  font-size: 0.95rem;
   cursor: pointer;
-  margin: 0;
   transition: color 0.2s ease;
 }
 
 .login_signup p:hover {
-  color: #495057;
+  color: #1e1b4b;
   text-decoration: underline;
 }
 
-.login_error {
-  background-color: #fee2e2;
-  border: 1px solid #ef4444;
-  color: #dc2626;
-  padding: 10px;
-  border-radius: 8px;
-  margin-bottom: 15px;
-  text-align: center;
+/* Modal specific overrides */
+.login_modal_container h1 {
+  text-decoration: none;
+  color: #1e1b4b;
+  font-size: 2.2rem;
+  font-weight: 700;
+  margin-bottom: 30px;
+  display: block;
 }
 
-.login_error p {
-  margin: 0;
-  font-size: 0.875rem;
-}
-
-/* Divider */
-.login_divider {
-  display: flex;
-  align-items: center;
-  margin: 20px 0;
-}
-
-.login_divider::before,
-.login_divider::after {
-  content: '';
-  flex: 1;
-  height: 1px;
-  background: #e1e1e1;
-}
-
-.login_divider span {
-  padding: 0 15px;
-  color: #6c757d;
-  font-size: 0.9rem;
-  font-weight: 500;
-}
-
-/* Google Login Button */
-.google_login_button {
-  margin-bottom: 15px;
-}
-
-.google_login_button button {
-  width: 100%;
-  padding: 12px;
-  background: white;
-  color: #333;
-  border: 2px solid #e1e1e1;
-  border-radius: 8px;
-  font-size: 1rem;
-  font-weight: 600;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
-  transition: all 0.3s ease;
-}
-
-.google_login_button button:hover {
-  background: #f8f9fa;
-  border-color: #d1d5db;
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-}
-
-.google_login_button button svg {
-  flex-shrink: 0;
-}
-
-/* Responsive Design */
-@media (max-width: 480px) {
-  .login_container {
-    padding: 30px 25px;
-    margin: 20px;
-  }
-  
-  .login_container a {
-    font-size: 1.7rem;
-  }
-}
+/* End of Login Modal Styles */
