@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import AddIcon from '@mui/icons-material/Add';
 import CloseIcon from '@mui/icons-material/Close';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import './AddDorm.css';
@@ -124,12 +123,15 @@ function AddDorm({ universitySlug, universityName, onDormSubmitted }: AddDormPro
         </div>
       )}
 
-      {/* Add Dorm Button */}
+      {/* Add Dorm Call to Action Card */}
       {!isFormOpen && !submitSuccess && (
-        <button className="add-dorm-btn" onClick={handleOpenForm}>
-          <AddIcon className="add-icon" />
-          <span>Add a New Dorm</span>
-        </button>
+        <div className="add-dorm-cta-card">
+          <h2>Can't find your dorm?</h2>
+          <p>Write a review for a dorm not listed.</p>
+          <button className="add-dorm-btn" onClick={handleOpenForm}>
+            Add dorm
+          </button>
+        </div>
       )}
 
       {/* Add Dorm Form */}

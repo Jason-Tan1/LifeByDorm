@@ -48,76 +48,59 @@
   margin-bottom: 24px;
 }
 
-.university-stats {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: clamp(4px, 1.5vw, 16px);
-  margin-bottom: clamp(16px, 3vw, 32px);
-  padding: clamp(8px, 2vw, 16px);
-  background: #f8f9fa;
-  border-radius: 8px;
-}
-
-.stat-item {
+.university-website-card {
+  background: white;
+  border-radius: 12px;
+  padding: 24px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
   display: flex;
   flex-direction: column;
-  align-items: center;
-  text-align: center;
+  align-items: flex-start;
+  margin-bottom: 24px;
 }
 
-.stat-label {
-  font-size: clamp(0.6rem, 1.8vw, 0.9rem);
-  color: #666;
-  margin-bottom: 4px;
-}
-
-.stat-value {
-  font-size: clamp(0.8rem, 2.2vw, 1.2rem);
-  font-weight: bold;
+.university-website-card h2 {
+  font-size: 1.8rem;
+  font-weight: 800;
   color: #1a1a1a;
+  margin: 0 0 8px 0;
+  line-height: 1.1;
 }
 
-.university-highlights {
-  margin-bottom: clamp(20px, 3vw, 32px);
-}
-
-.university-highlights h2 {
-  font-size: clamp(1.1rem, 2.5vw, 1.5rem);
-  color: #1a1a1a;
-  margin-bottom: 16px;
-}
-
-.university-highlights ul { list-style: none; padding: 0; }
-
-.university-highlights li {
-  padding: clamp(6px, 1.5vw, 12px) 0;
-  padding-left: 20px;
-  border-bottom: 1px solid #eee;
-  color: #444;
-  position: relative;
-  font-size: clamp(0.85rem, 2vw, 1rem);
-}
-
-.university-highlights li:before {
-  content: "•";
+.university-website-card .highlight-text {
   color: #1976d2;
-  font-weight: bold;
-  position: absolute;
-  left: 0;
 }
 
-.university-website-link {
+.university-website-card p {
+  color: #1a1a1a;
+  margin: 0 0 20px 0;
+  font-size: 1rem;
+  font-weight: 500;
+  line-height: 1.4;
+}
+
+.university-website-btn {
   display: inline-block;
-  padding: clamp(8px, 1.5vw, 12px) clamp(14px, 2vw, 24px);
-  background-color: #1976d2;
+  padding: 10px 24px;
+  background-color: #5AA9E6;
   color: white;
-  text-decoration: none;
+  border: none;
   border-radius: 6px;
-  font-size: clamp(0.85rem, 2vw, 1rem);
+  font-size: 1rem;
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
   transition: background-color 0.2s;
+  width: auto;
 }
 
-.university-website-link:hover { background-color: #1565c0; }
+.university-website-btn:hover {
+  background-color: #4a91c8;
+}
+
+.university-website-btn:active {
+  background-color: #3d80b0;
+}
 
 /* Right side - Dorms List */
 .dorms-list {
