@@ -2,18 +2,18 @@
 
 body {
   font-family: 'DM Sans', sans-serif;
-  background-color: #f6f7fe; 
+  background-color: #f6f7fe;
   margin: 0;
 }
 
 /* Main Navbar Container */
 .navbar {
   display: flex;
-  justify-content: space-between; 
+  justify-content: space-between;
   align-items: center;
-  padding: clamp(0.5rem, 2vw, 1rem) clamp(0.75rem, 3vw, 2.5rem); 
+  padding: clamp(0.5rem, 2vw, 1rem) clamp(0.75rem, 3vw, 2.5rem);
   background-color: #ffffff;
-  border-bottom: 1px solid #e0e7ff; 
+  border-bottom: 1px solid #e0e7ff;
   box-sizing: border-box;
   width: 100%;
   flex-wrap: wrap;
@@ -21,12 +21,18 @@ body {
 }
 
 /* Logo Styling */
+/* Logo Styling */
 .navbar_logo a {
-  margin: 0;
-  font-size: clamp(1.1rem, 3vw, 1.5rem);
-  font-weight: 600;
-  color: #111827;
+  display: flex;
+  align-items: center;
   text-decoration: none;
+}
+
+.navbar_logo img {
+  height: 40px;
+  /* Adjust height as needed */
+  width: auto;
+  object-fit: contain;
 }
 
 /* Container for the navigation buttons */
@@ -58,14 +64,14 @@ body {
   font-size: clamp(0.75rem, 2vw, 0.95rem);
   font-weight: 500;
   padding: clamp(0.4rem, 1vw, 0.6rem) clamp(0.7rem, 2vw, 1.2rem);
-  transition: all 0.2s ease-in-out; 
+  transition: all 0.2s ease-in-out;
 }
 
 /* Styling for secondary buttons (About Me, Contact Me) */
 .navbar_aboutme button,
 .navbar_contactme button {
-  background-color: #f6f7fe; 
-  color: #4338ca; 
+  background-color: #f6f7fe;
+  color: #4338ca;
   border: 1px solid #e0e7ff;
 }
 
@@ -77,14 +83,15 @@ body {
 
 /* Styling for the primary button (Log In) */
 .navbar_login button {
-  background-color: #4f46e5; 
-  color: #ffffff; 
+  background-color: #4f46e5;
+  color: #ffffff;
 }
 
 /* Hover effect for the primary button */
 .navbar_login button:hover {
   background-color: #4338ca;
 }
+
 /* Dropdown Container */
 .navbar_account_dropdown {
   position: relative;
@@ -99,8 +106,10 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 8px 12px; /* Adjusted padding for icon */
-  box-shadow: none; /* Ensure no shadow either if present elsewhere */
+  padding: 8px 12px;
+  /* Adjusted padding for icon */
+  box-shadow: none;
+  /* Ensure no shadow either if present elsewhere */
 }
 
 .navbar_account_dropdown .account_btn:hover {
@@ -114,7 +123,7 @@ body {
   right: 0;
   background-color: #ffffff;
   min-width: 140px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
   z-index: 1000;
   border-radius: 8px;
   overflow: hidden;
@@ -147,4 +156,3 @@ body {
   display: block;
 }
 */
-
