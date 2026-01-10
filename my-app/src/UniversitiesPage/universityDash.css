@@ -151,7 +151,7 @@
   display: flex;
   flex-direction: column;
   gap: 16px;
-  margin-bottom: 5px;
+  margin-bottom: 10px;
 }
 
 .search-section label, .filter-section label {
@@ -161,13 +161,14 @@
 }
 
 .dorm-search-input, .filter-select {
-  padding: clamp(8px, 1.5vw, 12px) clamp(10px, 2vw, 16px);
+  padding: clamp(8px, 1.5vw, 12px) clamp(20px, 2vw, 24px);
   font-size: clamp(0.85rem, 2vw, 1rem);
-  border: 2px solid #ddd;
-  border-radius: 6px;
+  border: 1px solid #e2e8f0;
+  border-radius: 50px;
   background: white;
   transition: border-color 0.2s;
   outline: none;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
 }
 
 .dorm-search-input:focus, .filter-select:focus { border-color: #1976d2; }
@@ -178,9 +179,9 @@
   appearance: none;
   background-image: url('data:image/svg+xml;charset=UTF-8,%3csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="%23333" stroke-width="2"%3e%3cpolyline points="6 9 12 15 18 9"%3e%3c/polyline%3e%3c/svg%3e');
   background-repeat: no-repeat;
-  background-position: right 12px center;
+  background-position: right 20px center;
   background-size: 18px;
-  padding-right: 40px;
+  padding-right: 50px;
 }
 
 .dorms-grid {
@@ -272,6 +273,28 @@
 .leave-review-btn-small:hover {
   background-color: #4CAF50;
   color: white;
+}
+
+.dorm-breadcrumbs {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.9rem;
+  margin-bottom: 12px;
+}
+.dorm-breadcrumbs a {
+  color: #1a1a1a;
+  text-decoration: none;
+}
+.dorm-breadcrumbs a:hover {
+  text-decoration: none;
+}
+.breadcrumb-separator {
+  color: #1a1a1a;
+}
+.breadcrumb-current {
+  color: #1a1a1a;
+  font-weight: 500;
 }
 
 /* Only 2 breakpoints for major layout changes */

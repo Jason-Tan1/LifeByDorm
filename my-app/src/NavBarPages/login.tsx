@@ -5,6 +5,7 @@ import axios from 'axios'
 import MailOutlineIcon from '@mui/icons-material/MailOutline';
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import './login.css'
 import LBDLogo from '../assets/LBDLogo-removebg-preview.png';
 
@@ -103,7 +104,7 @@ function login({ isOpen, onClose }: LoginModalProps) {
               <img src={LBDLogo} alt="LifeByDorm Logo" />
             </div>
             <h1 className="login_tagline">
-              Sign in to unlock the <br /> best of LifeByDorm.
+              Become Verified and<br /> unlock the best of LifeByDorm.
             </h1>
 
             <div className="login_options">
@@ -143,6 +144,14 @@ function login({ isOpen, onClose }: LoginModalProps) {
         ) : (
           // Email Form (replicates screenshot layout)
           <form onSubmit={handleSubmit} className="email_screen">
+            <button 
+              type="button" 
+              className="back_button" 
+              onClick={() => setShowEmailForm(false)}
+            >
+              <ArrowBackIcon />
+              <span>Back</span>
+            </button>
             <div className="email_header">
               <h1>{isRegistering ? "Create an account" : "Welcome back."}</h1>
             </div>

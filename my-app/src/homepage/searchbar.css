@@ -41,7 +41,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: #6c63ff;
+  background-color: #3076BD;
   color: white;
   border: none;
   border-radius: 50%;
@@ -53,7 +53,7 @@
   flex-shrink: 0;
 }
 
-.search-button:hover { background-color: #5850e0; }
+.search-button:hover { background-color: #1f4e8c; }
 
 .search-dropdown {
   position: absolute;

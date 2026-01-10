@@ -3,6 +3,7 @@ import { Link, useParams } from 'react-router-dom';
 import NavBar from '../NavBarPages/navbar';
 import Footer from '../homepage/footer';
 import Star from '@mui/icons-material/Star';
+import HomeIcon from '@mui/icons-material/Home';
 import './universityDash.css';
 import '../homepage/searchbar.css';
 import { FaSearch } from 'react-icons/fa';
@@ -203,6 +204,16 @@ function UniversityDash() {
             alt={university.name}
             className="university-main-image"
           />
+
+          {/* Breadcrumbs */}
+          <div className="dorm-breadcrumbs" style={{ marginBottom: '16px' }}>
+            <Link to="/" className="breadcrumb-home">
+              <HomeIcon style={{ fontSize: '1.2rem', color: '#1a1a1a' }} />
+            </Link>
+            <span className="breadcrumb-separator" style={{ margin: '0 8px', color: '#666' }}>›</span>
+            <span className="breadcrumb-current" style={{ fontWeight: 600, color: '#1a1a1a' }}>{university.name} Dorms</span>
+          </div>
+
           <h1>{university.name}</h1>
           
           
@@ -242,11 +253,10 @@ function UniversityDash() {
 
         {/* Right side - Dorms List */}
         <div className="dorms-list">
-          <h2 style={{ textAlign: 'center' }}>Browse {dorms.length} {dorms.length === 1 ? 'Dorm' : 'Dorms'}</h2>
           
           <div className="dorms-controls">
             <div className="search-section">
-              <label htmlFor="dorm-search">Search Dorms: </label>
+              <label htmlFor="dorm-search">Search {dorms.length} Dorms: </label>
               <div className="search-bar-container">
                 <input
                   id="dorm-search"
