@@ -377,7 +377,14 @@ app.get('/api/universities', async (req: Request, res: Response) => {
 app.get('/api/universities/:slug/dorms', async (req: Request, res: Response) => {
   try {
     const { slug } = req.params;
-    const dorms = await Dorm.find({ universitySlug: slug }).sort({ name: 1 }).lean();
+    // Only return approved dorms OR dorms without a status field (legacy dorms)
+    const dorms = await Dorm.find({ 
+      universitySlug: slug,
+      $or: [
+        { status: 'approved' },
+        { status: { $exists: false } }
+      ]
+    }).sort({ name: 1 }).lean();
     res.json(dorms);
   } catch (err) {
     console.error('Error fetching dorms for university', err);
@@ -406,6 +413,59 @@ app.get('/api/dorms', async (req: Request, res: Response) => {
   } catch (err) {
     console.error('Error fetching all dorms', err);
     res.status(500).json({ message: 'Error fetching dorms' });
+  }
+});
+
+// Submit a new dorm (requires authentication, pending approval)
+app.post('/api/dorms', authenticationToken, async (req: AuthRequest, res: Response) => {
+  try {
+    const { name, universitySlug, description, imageUrl, amenities, roomTypes } = req.body;
+    const userEmail = req.user?.name || '';
+
+    // Validate required fields
+    if (!name || !universitySlug) {
+      return res.status(400).json({ message: 'Name and university are required' });
+    }
+
+    // Create slug from name
+    const slug = name.toLowerCase()
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/^-|-$/g, '');
+
+    // Check if dorm with same slug already exists for this university
+    const existingDorm = await Dorm.findOne({ universitySlug, slug });
+    if (existingDorm) {
+      return res.status(400).json({ message: 'A dorm with this name already exists for this university' });
+    }
+
+    // Create new dorm with pending status
+    const dorm = new Dorm({
+      name,
+      slug,
+      universitySlug,
+      description: description || '',
+      imageUrl: imageUrl || null,
+      amenities: amenities || [],
+      roomTypes: roomTypes || [],
+      status: 'pending',
+      submittedBy: userEmail,
+      createdAt: new Date()
+    });
+
+    const savedDorm = await dorm.save();
+    console.log('✅ New dorm submitted for approval:', { 
+      name: savedDorm.name, 
+      university: savedDorm.universitySlug,
+      submittedBy: savedDorm.submittedBy 
+    });
+
+    res.status(201).json({ 
+      message: 'Dorm submitted for approval',
+      dorm: savedDorm 
+    });
+  } catch (err) {
+    console.error('Error submitting dorm', err);
+    res.status(500).json({ message: 'Error submitting dorm' });
   }
 });
 
@@ -624,7 +684,89 @@ app.delete('/api/admin/reviews/:id', authenticationToken, requireAdmin, async (r
 });
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
-// END ADMIN ROUTES
+// ADMIN ROUTES - Dorm Management
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+// Get all pending dorms (admin only)
+app.get('/api/admin/dorms/pending', authenticationToken, requireAdmin, async (req: AuthRequest, res: Response) => {
+  try {
+    const pendingDorms = await Dorm.find({ status: 'pending' }).sort({ createdAt: -1 }).lean();
+    res.json(pendingDorms);
+  } catch (err) {
+    console.error('Error fetching pending dorms', err);
+    res.status(500).json({ message: 'Error fetching pending dorms' });
+  }
+});
+
+// Get all dorms with any status (admin only)
+app.get('/api/admin/dorms/all', authenticationToken, requireAdmin, async (req: AuthRequest, res: Response) => {
+  try {
+    const allDorms = await Dorm.find({}).sort({ createdAt: -1 }).lean();
+    res.json(allDorms);
+  } catch (err) {
+    console.error('Error fetching all dorms', err);
+    res.status(500).json({ message: 'Error fetching all dorms' });
+  }
+});
+
+// Approve a dorm (admin only)
+app.patch('/api/admin/dorms/:id/approve', authenticationToken, requireAdmin, async (req: AuthRequest, res: Response) => {
+  try {
+    const { id } = req.params;
+    const dorm = await Dorm.findByIdAndUpdate(
+      id,
+      { status: 'approved' },
+      { new: true }
+    );
+    if (!dorm) {
+      return res.status(404).json({ message: 'Dorm not found' });
+    }
+    console.log('✅ Dorm approved:', dorm.name);
+    res.json({ message: 'Dorm approved', dorm });
+  } catch (err) {
+    console.error('Error approving dorm', err);
+    res.status(500).json({ message: 'Error approving dorm' });
+  }
+});
+
+// Decline a dorm (admin only)
+app.patch('/api/admin/dorms/:id/decline', authenticationToken, requireAdmin, async (req: AuthRequest, res: Response) => {
+  try {
+    const { id } = req.params;
+    const dorm = await Dorm.findByIdAndUpdate(
+      id,
+      { status: 'declined' },
+      { new: true }
+    );
+    if (!dorm) {
+      return res.status(404).json({ message: 'Dorm not found' });
+    }
+    console.log('❌ Dorm declined:', dorm.name);
+    res.json({ message: 'Dorm declined', dorm });
+  } catch (err) {
+    console.error('Error declining dorm', err);
+    res.status(500).json({ message: 'Error declining dorm' });
+  }
+});
+
+// Delete a dorm permanently (admin only)
+app.delete('/api/admin/dorms/:id', authenticationToken, requireAdmin, async (req: AuthRequest, res: Response) => {
+  try {
+    const { id } = req.params;
+    const dorm = await Dorm.findByIdAndDelete(id);
+    if (!dorm) {
+      return res.status(404).json({ message: 'Dorm not found' });
+    }
+    console.log('🗑️ Dorm deleted:', dorm.name);
+    res.json({ message: 'Dorm deleted permanently' });
+  } catch (err) {
+    console.error('Error deleting dorm', err);
+    res.status(500).json({ message: 'Error deleting dorm' });
+  }
+});
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+// END ADMIN ROUTES - Dorm Management
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 // Start server

@@ -23,11 +23,27 @@ interface Review {
   status?: string;
 }
 
+interface PendingDorm {
+  _id: string;
+  name: string;
+  slug: string;
+  universitySlug: string;
+  description?: string;
+  imageUrl?: string;
+  amenities?: string[];
+  roomTypes?: string[];
+  submittedBy?: string;
+  createdAt?: string;
+  status?: string;
+}
+
 function AdminDashboard() {
   const navigate = useNavigate();
   const [pendingReviews, setPendingReviews] = useState<Review[]>([]);
+  const [pendingDorms, setPendingDorms] = useState<PendingDorm[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [activeTab, setActiveTab] = useState<'reviews' | 'dorms'>('reviews');
 
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -46,6 +62,7 @@ function AdminDashboard() {
     }
 
     fetchPendingReviews();
+    fetchPendingDorms();
   }, [navigate]);
 
   const fetchPendingReviews = async () => {
@@ -68,6 +85,26 @@ function AdminDashboard() {
       setError('Error loading reviews');
       setLoading(false);
       console.error(err);
+    }
+  };
+
+  const fetchPendingDorms = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      const response = await fetch(`${API_BASE}/api/admin/dorms/pending`, {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+      
+      if (!response.ok) {
+        throw new Error('Failed to fetch pending dorms');
+      }
+      
+      const data = await response.json();
+      setPendingDorms(data);
+    } catch (err) {
+      console.error('Error loading pending dorms:', err);
     }
   };
 
@@ -115,6 +152,50 @@ function AdminDashboard() {
     }
   };
 
+  const handleApproveDorm = async (dormId: string) => {
+    try {
+      const token = localStorage.getItem('token');
+      const response = await fetch(`${API_BASE}/api/admin/dorms/${dormId}/approve`, {
+        method: 'PATCH',
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+      
+      if (!response.ok) {
+        throw new Error('Failed to approve dorm');
+      }
+      
+      // Remove from pending list
+      setPendingDorms(prev => prev.filter(d => d._id !== dormId));
+    } catch (err) {
+      alert('Error approving dorm');
+      console.error(err);
+    }
+  };
+
+  const handleDeclineDorm = async (dormId: string) => {
+    try {
+      const token = localStorage.getItem('token');
+      const response = await fetch(`${API_BASE}/api/admin/dorms/${dormId}/decline`, {
+        method: 'PATCH',
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+      
+      if (!response.ok) {
+        throw new Error('Failed to decline dorm');
+      }
+      
+      // Remove from pending list
+      setPendingDorms(prev => prev.filter(d => d._id !== dormId));
+    } catch (err) {
+      alert('Error declining dorm');
+      console.error(err);
+    }
+  };
+
   const calculateOverallRating = (review: Review) => {
     return ((review.room + review.bathroom + review.building + review.amenities + review.location) / 5).toFixed(1);
   };
@@ -140,6 +221,44 @@ function AdminDashboard() {
         <h1>Admin Dashboard</h1>
         <p>Review pending submissions from users.</p>
 
+        {/* Tabs */}
+        <div style={{ display: 'flex', gap: '8px', marginTop: '24px', marginBottom: '24px' }}>
+          <button
+            onClick={() => setActiveTab('reviews')}
+            style={{
+              padding: '12px 24px',
+              backgroundColor: activeTab === 'reviews' ? '#1976d2' : '#e0e0e0',
+              color: activeTab === 'reviews' ? 'white' : '#333',
+              border: 'none',
+              borderRadius: '8px',
+              cursor: 'pointer',
+              fontWeight: '600',
+              fontSize: '14px',
+              transition: 'all 0.2s'
+            }}
+          >
+            Pending Reviews ({pendingReviews.length})
+          </button>
+          <button
+            onClick={() => setActiveTab('dorms')}
+            style={{
+              padding: '12px 24px',
+              backgroundColor: activeTab === 'dorms' ? '#1976d2' : '#e0e0e0',
+              color: activeTab === 'dorms' ? 'white' : '#333',
+              border: 'none',
+              borderRadius: '8px',
+              cursor: 'pointer',
+              fontWeight: '600',
+              fontSize: '14px',
+              transition: 'all 0.2s'
+            }}
+          >
+            Pending Dorms ({pendingDorms.length})
+          </button>
+        </div>
+
+        {/* Reviews Tab Content */}
+        {activeTab === 'reviews' && (
         <div style={{ marginTop: '32px' }}>
           <h2>Pending Reviews ({pendingReviews.length})</h2>
           
@@ -245,6 +364,110 @@ function AdminDashboard() {
             ))}
           </div>
         </div>
+        )}
+
+        {/* Dorms Tab Content */}
+        {activeTab === 'dorms' && (
+          <div style={{ marginTop: '32px' }}>
+            <h2>Pending Dorms ({pendingDorms.length})</h2>
+            
+            {pendingDorms.length === 0 && (
+              <p>No pending dorm submissions at this time.</p>
+            )}
+
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '20px', marginTop: '20px' }}>
+              {pendingDorms.map(dorm => (
+                <div 
+                  key={dorm._id} 
+                  style={{ 
+                    border: '1px solid #ddd', 
+                    borderRadius: '8px', 
+                    padding: '20px',
+                    backgroundColor: '#f9f9f9'
+                  }}
+                >
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                    <div style={{ flex: 1 }}>
+                      <h3 style={{ margin: '0 0 8px 0' }}>
+                        {dorm.name}
+                      </h3>
+                      <p style={{ margin: '4px 0', color: '#666' }}>
+                        <strong>University:</strong> {dorm.universitySlug.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}
+                      </p>
+                      {dorm.description && (
+                        <div style={{ marginTop: '12px' }}>
+                          <strong>Description:</strong>
+                          <p style={{ marginTop: '4px', lineHeight: '1.5' }}>{dorm.description}</p>
+                        </div>
+                      )}
+                      {dorm.amenities && dorm.amenities.length > 0 && (
+                        <p style={{ margin: '8px 0', color: '#666' }}>
+                          <strong>Amenities:</strong> {dorm.amenities.join(', ')}
+                        </p>
+                      )}
+                      {dorm.roomTypes && dorm.roomTypes.length > 0 && (
+                        <p style={{ margin: '8px 0', color: '#666' }}>
+                          <strong>Room Types:</strong> {dorm.roomTypes.join(', ')}
+                        </p>
+                      )}
+                      {dorm.imageUrl && (
+                        <div style={{ marginTop: '12px' }}>
+                          <strong>Image:</strong>
+                          <div style={{ marginTop: '8px' }}>
+                            <img 
+                              src={dorm.imageUrl} 
+                              alt={dorm.name}
+                              style={{ maxWidth: '200px', maxHeight: '150px', objectFit: 'cover', borderRadius: '4px' }}
+                              onError={(e) => {
+                                (e.target as HTMLImageElement).style.display = 'none';
+                              }}
+                            />
+                          </div>
+                        </div>
+                      )}
+                      <p style={{ fontSize: '12px', color: '#999', marginTop: '12px' }}>
+                        Submitted by: {dorm.submittedBy || 'Unknown'} | {dorm.createdAt ? new Date(dorm.createdAt).toLocaleString() : 'Unknown date'}
+                      </p>
+                    </div>
+
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginLeft: '20px' }}>
+                      <button
+                        onClick={() => handleApproveDorm(dorm._id)}
+                        style={{
+                          padding: '10px 20px',
+                          backgroundColor: '#4caf50',
+                          color: 'white',
+                          border: 'none',
+                          borderRadius: '6px',
+                          cursor: 'pointer',
+                          fontWeight: '600',
+                          fontSize: '14px'
+                        }}
+                      >
+                        ✓ Approve
+                      </button>
+                      <button
+                        onClick={() => handleDeclineDorm(dorm._id)}
+                        style={{
+                          padding: '10px 20px',
+                          backgroundColor: '#f44336',
+                          color: 'white',
+                          border: 'none',
+                          borderRadius: '6px',
+                          cursor: 'pointer',
+                          fontWeight: '600',
+                          fontSize: '14px'
+                        }}
+                      >
+                        ✗ Decline
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
       </main>
     </div>
   );
