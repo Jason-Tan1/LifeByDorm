@@ -29,7 +29,7 @@ const app = express()
 // Rate limiting configuration
 const authLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 10, // Limit each IP to 10 requests per windowMs
+  max: 50, // Limit each IP to 50 auth requests per windowMs
   message: { message: 'Too many authentication attempts, please try again after 15 minutes' },
   standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
   legacyHeaders: false, // Disable the `X-RateLimit-*` headers
@@ -37,7 +37,7 @@ const authLimiter = rateLimit({
 
 const apiLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 100, // Limit each IP to 100 requests per windowMs
+  max: 1000, // Limit each IP to 1000 requests per windowMs (generous for development)
   message: { message: 'Too many requests, please try again later' },
   standardHeaders: true,
   legacyHeaders: false,
@@ -403,13 +403,22 @@ app.post('/api/reviews', async (req: Request, res: Response) => {
 
     // Check if user is logged in (verified) via Authorization header
     let isVerified = false;
+    let userEmail = '';
     const authHeader = req.headers.authorization;
+    console.log('🔑 Auth header present:', !!authHeader);
+    console.log('🔑 Auth header value:', authHeader ? authHeader.substring(0, 50) + '...' : '(none)');
+    
     if (authHeader && authHeader.startsWith('Bearer ')) {
       const token = authHeader.split(' ')[1];
+      console.log('🔑 Token extracted, length:', token?.length);
       try {
-        jwt.verify(token, process.env.ACCESS_TOKEN_SECRET as Secret);
+        const decoded = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET as Secret) as JwtPayload;
+        console.log('🔑 Decoded token payload:', JSON.stringify(decoded, null, 2));
         isVerified = true;
-      } catch {
+        userEmail = decoded.name || '';
+        console.log('🔑 User email from token:', userEmail);
+      } catch (err) {
+        console.log('🔑 Token verification failed:', err);
         isVerified = false;
       }
     }
@@ -419,6 +428,7 @@ app.post('/api/reviews', async (req: Request, res: Response) => {
     console.log('  - images:', images);
     console.log('  - images length:', images ? images.length : 0);
     console.log('  - verified:', isVerified);
+    console.log('  - user email:', userEmail || '(none)');
 
     const review = new UserReview({
       university,
@@ -434,7 +444,8 @@ app.post('/api/reviews', async (req: Request, res: Response) => {
       wouldDormAgain,
       fileImage,
       images,
-      verified: isVerified
+      verified: isVerified,
+      user: userEmail
     });
 
     const saved = await review.save();
@@ -443,7 +454,8 @@ app.post('/api/reviews', async (req: Request, res: Response) => {
       university: saved.university, 
       dorm: saved.dorm,
       imagesLength: saved.images ? saved.images.length : 0,
-      verified: saved.verified
+      verified: saved.verified,
+      user: saved.user || '(none)'
     });
   res.status(201).json(saved);
   } catch (err) {
@@ -482,6 +494,26 @@ app.get('/api/reviews', async (req: Request, res: Response) => {
   } catch (err) {
     console.error('Error fetching reviews', err);
     res.status(500).json({ message: 'Error fetching reviews' });
+  }
+});
+
+// Get reviews for the logged-in user
+app.get('/api/reviews/user', authenticationToken, async (req: AuthRequest, res: Response) => {
+  try {
+    const userEmail = req.user?.name;
+    console.log('📋 Fetching reviews for user:', userEmail);
+    
+    if (!userEmail) {
+      return res.status(401).json({ message: 'User not authenticated' });
+    }
+    
+    // Find reviews by user email
+    const reviews = await UserReview.find({ user: userEmail }).sort({ createdAt: -1 }).lean();
+    console.log('📋 Found', reviews.length, 'reviews for user:', userEmail);
+    res.json(reviews);
+  } catch (err) {
+    console.error('Error fetching user reviews', err);
+    res.status(500).json({ message: 'Error fetching user reviews' });
   }
 });
 

@@ -59,7 +59,7 @@ function navbar() {
               </button>
               {isDropdownOpen && (
                 <div className="account_dropdown_content" style={{ display: 'block' }}>
-                  <button onClick={() => { navigate('/profile'); setIsDropdownOpen(false); }}>My Account</button>
+                  <button onClick={() => { navigate('/account'); setIsDropdownOpen(false); }}>My Account</button>
                   <button onClick={handleLogout}>Log Out</button>
                 </div>
               )}
