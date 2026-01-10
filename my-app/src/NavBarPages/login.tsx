@@ -3,6 +3,8 @@ import { useGoogleLogin } from '@react-oauth/google'
 import type { TokenResponse } from '@react-oauth/google'
 import axios from 'axios'
 import MailOutlineIcon from '@mui/icons-material/MailOutline';
+import Visibility from '@mui/icons-material/Visibility';
+import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import './login.css'
 import LBDLogo from '../assets/LBDLogo-removebg-preview.png';
 
@@ -19,6 +21,7 @@ function login({ isOpen, onClose }: LoginModalProps) {
   const [isRegistering, setIsRegistering] = useState<boolean>(false);
   const [error, setError] = useState<string>("");
   const [showEmailForm, setShowEmailForm] = useState<boolean>(false);
+  const [showPassword, setShowPassword] = useState<boolean>(false);
 
   // Custom Google Login Hook
   const loginWithGoogle = useGoogleLogin({
@@ -138,56 +141,73 @@ function login({ isOpen, onClose }: LoginModalProps) {
             </div>
           </div>
         ) : (
-          // Email Form
-          <form onSubmit={handleSubmit}>
-            <button
-              type="button"
-              className="back_button"
-              onClick={() => setShowEmailForm(false)}
-            >
-              ← Back
-            </button>
-
-            <div className="login_logo">
-              <img src={LBDLogo} alt="LifeByDorm Logo" />
+          // Email Form (replicates screenshot layout)
+          <form onSubmit={handleSubmit} className="email_screen">
+            <div className="email_header">
+              <h1>Welcome back.</h1>
             </div>
 
-            <h2 className="login_form_title">{isRegistering ? 'Create Account' : 'Sign In'}</h2>
-
-            <div className="login_email">
-              <h2> Email: </h2>
+            <div className="field_group">
+              <label className="field_label">Email address</label>
               <input
-                type="text"
-                placeholder="Enter Email"
+                type="email"
+                placeholder="Email"
                 name="email"
-                className="login_typing"
+                className="input_field"
+                value={email}
                 onChange={(e) => setEmail(e.target.value)}
               />
             </div>
-            <div className="login_password">
-              <h2> Password: </h2>
-              <input
-                type="password"
-                placeholder="Enter Password"
-                name="password"
-                className="login_typing"
-                onChange={(e) => setPassword(e.target.value)}
-              />
+
+            <div className="field_group">
+              <label className="field_label">Password</label>
+              <div className="password_wrapper">
+                <input
+                  type={showPassword ? 'text' : 'password'}
+                  placeholder="Password"
+                  name="password"
+                  className="input_field"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                />
+                <button
+                  type="button"
+                  className="password_toggle"
+                  onClick={() => setShowPassword(!showPassword)}
+                  aria-label="Toggle password visibility"
+                >
+                  {showPassword ? <VisibilityOff /> : <Visibility />}
+                </button>
+              </div>
             </div>
+
+            <div className="forgot_row">
+              <a className="forgot_link" href="#">Forgot password?</a>
+            </div>
+
             {error && (
               <div className="login_error">
                 <p>{error}</p>
               </div>
             )}
-            <div className="login_button">
-              <button type="submit">
-                {isRegistering ? 'Register' : 'Sign In'}
-              </button>
+
+            <div className="primary_action">
+              <button type="submit" className="primary_button">Sign in</button>
             </div>
 
-            <div className="login_signup">
-              <p onClick={toggleMode}>
-                {isRegistering ? 'Already have an account? Sign in' : "Don't have an account? Create one!"}
+            <div className="member_separator">
+              <span className="line" />
+              <span className="member_text">Not a member?</span>
+              <span className="line" />
+            </div>
+
+            <div className="join_row">
+              <a className="join_link" href="#">Join to unlock the best of LifeByDorm.</a>
+            </div>
+
+            <div className="login_footer_small">
+              <p>
+                By proceeding, you agree to our Terms of Use and confirm you have read our <span className="footer_link">Privacy and Cookie Statement</span>.
               </p>
             </div>
           </form>
