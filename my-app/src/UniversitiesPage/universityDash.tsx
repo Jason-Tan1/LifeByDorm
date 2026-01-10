@@ -199,12 +199,6 @@ function UniversityDash() {
       <div className="university-content">
         {/* Left side - University Information */}
         <div className="university-info">
-          <img
-            src={university.imageUrl || '/src/assets/Default_Campus.png'}
-            alt={university.name}
-            className="university-main-image"
-          />
-
           {/* Breadcrumbs */}
           <div className="dorm-breadcrumbs" style={{ marginBottom: '16px' }}>
             <Link to="/" className="breadcrumb-home">
@@ -214,7 +208,18 @@ function UniversityDash() {
             <span className="breadcrumb-current" style={{ fontWeight: 600, color: '#1a1a1a' }}>{university.name} Dorms</span>
           </div>
 
-          <h1>{university.name}</h1>
+          <div className="university-image-container">
+            <img
+              src={university.imageUrl || '/src/assets/Default_Campus.png'}
+              alt={university.name}
+              className="university-main-image"
+            />
+            <div className="university-image-overlay"></div>
+            <div className="university-header-content">
+              <h1>{university.name}</h1>
+              {university.location && <p className="university-location">{university.location}</p>}
+            </div>
+          </div>
 
           <div className="university-website-card">
             <h2>Need more information?</h2>

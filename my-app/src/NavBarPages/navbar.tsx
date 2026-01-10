@@ -48,13 +48,6 @@ function navbar() {
       </div>
       {/* Navigation Bar Buttons */}
       <div className="navbar_actions">
-        {isAdmin && (
-          <div className="navbar_dashboard">
-            <Link to="/admin/dashboard">
-              <button>Dashboard</button>
-            </Link>
-          </div>
-        )}
         <div className="navbar_login">
           {isLoggedIn ? (
             <div className="navbar_account_dropdown">
@@ -63,6 +56,9 @@ function navbar() {
               </button>
               {isDropdownOpen && (
                 <div className="account_dropdown_content" style={{ display: 'block' }}>
+                  {isAdmin && (
+                    <button onClick={() => { navigate('/admin/dashboard'); setIsDropdownOpen(false); }}>Dashboard</button>
+                  )}
                   <button onClick={() => { navigate('/account'); setIsDropdownOpen(false); }}>My Account</button>
                   <button onClick={handleLogout}>Log Out</button>
                 </div>

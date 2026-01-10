@@ -26,11 +26,58 @@
 }
 
 .dorm-main-image {
+  display: block;
   width: 100%;
   aspect-ratio: 16 / 10;
   object-fit: cover;
-  border-radius: 8px;
-  margin-bottom: 10px;
+  margin-bottom: 0;
+}
+
+.dorm-image-container {
+  position: relative;
+  width: 100%;
+  border-radius: 12px;
+  overflow: hidden;
+  margin-bottom: clamp(14px, 2vw, 20px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.dorm-image-overlay {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 60%;
+  background: linear-gradient(to top, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0.4) 50%, rgba(0,0,0,0) 100%);
+  pointer-events: none;
+}
+
+.dorm-header-content {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  padding: 24px;
+  width: 100%;
+  box-sizing: border-box;
+  z-index: 1;
+}
+
+.dorm-header-content h1 {
+  font-size: clamp(1.5rem, 4vw, 2.2rem);
+  color: white;
+  margin: 0 0 4px 0;
+  text-align: left;
+  font-weight: 800;
+  text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+  line-height: 1.1;
+}
+
+.dorm-location {
+  color: rgba(255, 255, 255, 0.95);
+  font-size: 1rem;
+  margin: 4px 0 0 0;
+  font-weight: 500;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.3);
 }
 
 .dorm-breadcrumbs {
@@ -57,17 +104,6 @@
 .breadcrumb-current {
   color: #1a1a1a;
   font-weight: 500;
-}
-
-.dorm-header {
-  margin-bottom: clamp(16px, 3vw, 24px);
-  text-align: center;
-}
-
-.dorm-header h1 {
-  font-size: clamp(1.4rem, 4vw, 2.4rem);
-  color: #1a1a1a;
-  margin-bottom: 12px;
 }
 
 .dorm-rating {
