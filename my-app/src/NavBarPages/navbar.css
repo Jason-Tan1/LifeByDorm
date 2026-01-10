@@ -83,14 +83,14 @@ body {
 
 /* Styling for the primary button (Sign In) */
 .navbar_login button {
-  background-color: #4f46e5;
+  background-color: #3076BD;
   color: #ffffff;
   border-radius: 25px;
 }
 
 /* Hover effect for the primary button */
 .navbar_login button:hover {
-  background-color: #4338ca;
+  background-color: #1f4e8c;
 }
 
 /* Dropdown Container */

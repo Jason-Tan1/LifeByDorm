@@ -32,8 +32,8 @@
 }
 
 :root {
-    --primary-green: #4f46e5; /* primary indigo used across site */
-    --primary-hover: #4338ca;
+    --primary-green: #3076BD; /* primary indigo used across site */
+    --primary-hover: #1f4e8c;
     --input-border: #e0e7ff;
     --muted: #6b6b6b;
 }
@@ -76,7 +76,7 @@
 }
 
 .login_logo {
-    text-align: left;
+    text-align: center;
     margin-bottom: 30px;
 }
 
@@ -136,8 +136,8 @@
 .input_field {
     width: 100%;
     height: 56px;
-    padding: 14px 18px;
-    border-radius: 8px;
+    padding: 14px 24px;
+    border-radius: 50px;
     border: 2px solid var(--input-border);
     background: #f7f7f6;
     color: #111;
@@ -172,7 +172,7 @@
     background: #1e1b4b;
     color: white;
     border: none;
-    border-radius: 25px;
+    border-radius: 50px;
     font-weight: 700;
     font-size: 1.05rem;
     cursor: pointer;
@@ -206,7 +206,7 @@
     background: white;
     color: #1e1b4b;
     border: 1px solid #511ec7 !important;
-    border-radius: 25px;
+    border-radius: 50px;
     font-size: 1.05rem;
     font-weight: 600;
     cursor: pointer;
@@ -355,7 +355,7 @@
     background: #1e1b4b;
     color: white;
     border: none;
-    border-radius: 25px;
+    border-radius: 50px;
     font-size: 1.1rem;
     font-weight: 600;
     cursor: pointer;
