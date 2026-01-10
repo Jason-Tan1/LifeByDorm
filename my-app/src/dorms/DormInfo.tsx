@@ -22,6 +22,7 @@ interface DormInfoProps {
   dorm: APIDorm;
   reviews: any[];
   universityName?: string;
+  universityLocation?: string;
   calculateAverageRating: () => number;
   calculateCategoryAverages: () => {
     room: number;
@@ -32,7 +33,7 @@ interface DormInfoProps {
   };
 }
 
-function DormInfo({ dorm, reviews, universityName, calculateAverageRating, calculateCategoryAverages }: DormInfoProps) {
+function DormInfo({ dorm, reviews, universityName, universityLocation, calculateAverageRating, calculateCategoryAverages }: DormInfoProps) {
   const [showMap, setShowMap] = useState(false);
 
   const renderStars = (rating: number) => {
@@ -61,12 +62,6 @@ function DormInfo({ dorm, reviews, universityName, calculateAverageRating, calcu
 
   return (
     <div className="dorm-info">
-      <img 
-        src={dorm.imageUrl && dorm.imageUrl.trim() !== '' ? dorm.imageUrl : '/src/assets/Default_Dorm.png'} 
-        alt={dorm.name} 
-        className="dorm-main-image"
-      />
-      
       {/* Breadcrumbs */}
       <div className="dorm-breadcrumbs">
         <Link to="/" className="breadcrumb-home">
@@ -79,9 +74,18 @@ function DormInfo({ dorm, reviews, universityName, calculateAverageRating, calcu
         <span className="breadcrumb-separator">›</span>
         <span className="breadcrumb-current">{dorm.name}</span>
       </div>
-      
-      <div className="dorm-header">
-        <h1>{dorm.name}</h1>
+
+      <div className="dorm-image-container">
+        <img
+          src={dorm.imageUrl && dorm.imageUrl.trim() !== '' ? dorm.imageUrl : '/src/assets/Default_Dorm.png'}
+          alt={dorm.name}
+          className="dorm-main-image"
+        />
+        <div className="dorm-image-overlay"></div>
+        <div className="dorm-header-content">
+          <h1>{dorm.name}</h1>
+          {universityLocation && <p className="dorm-location">{universityLocation}</p>}
+        </div>
       </div>
 
       {/* Description Section */}

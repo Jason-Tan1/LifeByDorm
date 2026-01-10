@@ -28,6 +28,7 @@ const API_BASE = (import.meta as any).env?.VITE_API_BASE || 'http://localhost:30
 function Dorms() {
   const { universityName, dormSlug } = useParams();
   const [dorm, setDorm] = useState<APIDorm | null>(null);
+  const [univLocation, setUnivLocation] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [lightboxOpen, setLightboxOpen] = useState(false);
@@ -43,15 +44,25 @@ function Dorms() {
         setError(null);
 
         // Fetch all dorms for this university and find the matching one
-        const response = await fetch(`${API_BASE}/api/universities/${encodeURIComponent(universityName!)}/dorms`);
-        if (!response.ok) throw new Error('Failed to fetch dorm data');
+        const [dormsRes, uniRes] = await Promise.all([
+          fetch(`${API_BASE}/api/universities/${encodeURIComponent(universityName!)}/dorms`),
+          fetch(`${API_BASE}/api/universities/${encodeURIComponent(universityName!)}`)
+        ]);
 
-        const dorms: APIDorm[] = await response.json();
+        if (!dormsRes.ok) throw new Error('Failed to fetch dorm data');
+
+        const dorms: APIDorm[] = await dormsRes.json();
         const matchedDorm = dorms.find(d => d.slug === dormSlug);
 
         if (!matchedDorm) throw new Error('Dorm not found');
 
         setDorm(matchedDorm);
+
+        if (uniRes.ok) {
+          const uniData = await uniRes.json();
+          setUnivLocation(uniData.location);
+        }
+
       } catch (e: any) {
         setError(e?.message || 'Failed to load dorm');
       } finally {
@@ -225,6 +236,7 @@ function Dorms() {
           dorm={dorm}
           reviews={reviews}
           universityName={universityName}
+          universityLocation={univLocation || undefined}
           calculateAverageRating={calculateAverageRating}
           calculateCategoryAverages={calculateCategoryAverages}
         />
