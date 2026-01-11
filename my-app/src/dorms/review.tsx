@@ -10,6 +10,7 @@ import MeetingRoomIcon from '@mui/icons-material/MeetingRoom';
 import ThumbUpIcon from '@mui/icons-material/ThumbUp';
 import CloseIcon from '@mui/icons-material/Close';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
+import DefaultDormImage from '../assets/Default_Dorm.png';
 
 const API_BASE = (import.meta as any).env?.VITE_API_BASE || 'http://localhost:3000';
 
@@ -245,13 +246,20 @@ function Reviews() {
     <div className='Review'>
       <NavBar />
       
+      {/* Hero Section */}
+      <div className="review-hero" style={{ backgroundImage: `url(${DefaultDormImage})` }}>
+        <div className="review-hero-overlay">
+           <h1>Rating {formatName(displayDormName)}</h1>
+        </div>
+      </div>
+      
       <div className='review-page-content'>
-        <div className='review-container'>
-          
-          <div className="breadcrumb-wrapper">
+        
+        {/* Breadcrumbs moved out of container to match screenshot layout */}
+        <div className="breadcrumb-wrapper">
               <div className="dorm-breadcrumbs">
                 <Link to="/" className="breadcrumb-home">
-                  <HomeIcon style={{ fontSize: '1.2rem', color: '#666' }} />
+                  <HomeIcon style={{ fontSize: '1.2rem', color: '#333' }} />
                 </Link>
                 
                 {resolvedUniversity && (
@@ -278,11 +286,11 @@ function Reviews() {
                 <span className="breadcrumb-separator">›</span>
                 <span className="breadcrumb-current">Review</span>
               </div>
-          </div>
+        </div>
 
-          <div className="review-header">
-            <h1>Reviewing {formatName(displayDormName)}</h1>
-          </div>
+        <div className='review-container'>
+          
+          {/* Header removed from here */}
           
           <div className="review-content">
             
