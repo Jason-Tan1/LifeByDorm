@@ -419,6 +419,55 @@
   box-shadow: 0 2px 4px rgba(0,0,0,0.2);
 }
 
+/* Popup Styles */
+.popup-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5); /* Dim background */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+  animation: fadeIn 0.3s ease-out;
+}
+
+.popup-card {
+  background-color: white;
+  border-radius: 16px;
+  padding: 32px 40px;
+  width: 90%;
+  max-width: 400px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+  text-align: left;
+  transform: translateY(0);
+  animation: slideUp 0.3s cubic-bezier(0.165, 0.84, 0.44, 1);
+}
+
+.popup-title {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #1a1a1a; /* Dark text */
+  margin: 0 0 8px 0;
+  border-bottom: none; /* Override global h2 border */
+  padding-bottom: 0; /* Override global h2 padding */
+}
+
+.popup-subtitle {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 1rem;
+  color: #5f6368; /* Grey text */
+  margin: 0;
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
 /* Submit Button */
 .submit-section {
   margin-top: 40px;
