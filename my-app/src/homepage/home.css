@@ -101,7 +101,7 @@
     margin-bottom: 20px;
     color: #ffffff;
     text-align: center;
-    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.6);
   }
 
   @media (min-width: 1600px) {
