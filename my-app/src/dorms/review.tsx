@@ -1,15 +1,21 @@
 import { useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, Link } from 'react-router-dom';
 import './review.css';
 import NavBar from '../NavBarPages/navbar';
 import Star from '@mui/icons-material/Star';
 import StarBorder from '@mui/icons-material/StarBorder';
+import HomeIcon from '@mui/icons-material/Home';
+import SchoolIcon from '@mui/icons-material/School';
+import MeetingRoomIcon from '@mui/icons-material/MeetingRoom';
+import ThumbUpIcon from '@mui/icons-material/ThumbUp';
+import CloseIcon from '@mui/icons-material/Close';
+import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 
 const API_BASE = (import.meta as any).env?.VITE_API_BASE || 'http://localhost:3000';
 
 function Reviews() {
   const navigate = useNavigate();
-  const [currentPage, setCurrentPage] = useState(1);
+  // Removed currentPage state
   const [ratings, setRatings] = useState({
     room: 0,
     bathrooms: 0,
@@ -17,16 +23,25 @@ function Reviews() {
     amenities: 0,
     location: 0
   });
+
   // Try to read university/dorm from either route params or query string
   const { universityName, dormName } = useParams();
   const urlSearch = typeof window !== 'undefined' ? new URLSearchParams(window.location.search) : null;
   const queryUniversity = urlSearch ? urlSearch.get('university') : null;
   const queryDorm = urlSearch ? urlSearch.get('dorm') : null;
+
+  const resolvedUniversity = queryUniversity || universityName;
+  const resolvedDorm = queryDorm || dormName;
+  const displayDormName = (resolvedDorm || 'Dorm').replace(/-/g, ' ');
+
   const [hoverRatings, setHoverRatings] = useState<{ category: string | null, value: number }>({ category: null, value: 0 });
 
   const [description, setDescription] = useState('');
-  const [year, setYear] = useState<string[]>([]);
-  const [roomType, setRoomType] = useState<string[]>([]);
+  
+  // Using single string for UI simplicity, will convert to array on submit
+  const [selectedYear, setSelectedYear] = useState<string>('');
+  const [selectedRoomType, setSelectedRoomType] = useState<string>('');
+  
   const [wouldDormAgain, setWouldDormAgain] = useState('');
   const [fileDataUrls, setFileDataUrls] = useState<string[]>([]);
   const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10 MB
@@ -48,16 +63,10 @@ function Reviews() {
   };
 
   const renderStars = (category: keyof typeof ratings) => {
-    // Current locked-in rating
     const currentRating = ratings[category];
-    
-    // Determine which value to show
     let effectiveValue = currentRating;
     
-    // Only update based on hover if we are hovering this exact category
     if (hoverRatings.category === category && hoverRatings.value > 0) {
-      // If we are hovering a value HIGHER than the current rating, show the hover state (preview increase)
-      // Otherwise, keep the current rating fixed (don't show preview decrease)
       if (hoverRatings.value > currentRating) {
         effectiveValue = hoverRatings.value;
       }
@@ -69,10 +78,11 @@ function Reviews() {
           <button
             key={star}
             type="button"
+            className="star-button"
             onClick={() => handleRatingClick(category, star)}
             onMouseEnter={() => handleMouseEnter(category, star)}
           >
-            {star <= effectiveValue ? <Star /> : <StarBorder />}
+            {star <= effectiveValue ? <Star fontSize="inherit" /> : <StarBorder fontSize="inherit" />}
           </button>
         ))}
       </div>
@@ -85,7 +95,7 @@ function Reviews() {
     
     if (files.length > MAX_FILES) {
       alert(`You can only upload up to ${MAX_FILES} images.`);
-      e.target.value = ''; // Reset input
+      e.target.value = '';
       return;
     }
     
@@ -106,7 +116,7 @@ function Reviews() {
         
         if (filesProcessed === files.length) {
           setFileDataUrls(prev => [...prev, ...newFileDataUrls]);
-          e.target.value = ''; // Reset input after processing
+          e.target.value = '';
         }
       };
       reader.readAsDataURL(file);
@@ -117,74 +127,17 @@ function Reviews() {
     setFileDataUrls(prev => prev.filter((_, i) => i !== index));
   };
 
-  const formatName = (name: string) => {
-    // Replace dashes/hyphens with spaces and capitalize each word
-    return name
-      .replace(/-/g, ' ')
-      .split(' ')
-      .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
-      .join(' ');
-  };
-
-  const handleNext = () => {
-    // Validate current page before proceeding
-    if (currentPage === 1) {
-      const missing: string[] = [];
-      if (ratings.room <= 0) missing.push('Room rating');
-      if (ratings.bathrooms <= 0) missing.push('Bathroom rating');
-      if (ratings.building <= 0) missing.push('Building rating');
-      if (ratings.amenities <= 0) missing.push('Amenities rating');
-      if (ratings.location <= 0) missing.push('Location rating');
-      
-      if (missing.length > 0) {
-        alert('Please complete all ratings:\n' + missing.join('\n'));
-        return;
-      }
-    } else if (currentPage === 2) {
-      const missing: string[] = [];
-      if (year.length === 0) missing.push('Year');
-      if (roomType.length === 0) missing.push('Room type');
-      if (!wouldDormAgain) missing.push('Would Dorm Again');
-      
-      if (missing.length > 0) {
-        alert('Please fill out the following fields:\n' + missing.join('\n'));
-        return;
-      }
-    } else if (currentPage === 3) {
-      if (!description || description.trim().length < 5) {
-        alert('Please add comments (minimum 5 characters)');
-        return;
-      }
-    }
-    
-    if (currentPage < 4) {
-      setCurrentPage(prev => prev + 1);
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    }
-  };
-
-  const handleBack = () => {
-    setCurrentPage(prev => Math.max(prev - 1, 1));
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  };
-
   const handleSubmit = async () => {
-    // Only allow submission on page 4
-    if (currentPage !== 4) {
-      return;
-    }
-    
-    // Basic client-side validation to avoid server-side validation errors
     const missing: string[] = [];
-    if (!description || description.trim().length < 5) missing.push('Comments (min 5 chars)');
-    if (year.length === 0) missing.push('Year');
-    if (roomType.length === 0) missing.push('Room type');
+    if (!selectedYear) missing.push('Year');
+    if (!selectedRoomType) missing.push('Room type');
     if (!wouldDormAgain) missing.push('Would Dorm Again');
     if (ratings.room <= 0) missing.push('Room rating');
     if (ratings.bathrooms <= 0) missing.push('Bathroom rating');
     if (ratings.building <= 0) missing.push('Building rating');
     if (ratings.amenities <= 0) missing.push('Amenities rating');
     if (ratings.location <= 0) missing.push('Location rating');
+    if (!description || description.trim().length < 5) missing.push('Comments (min 5 chars)');
 
     if (missing.length > 0) {
       alert('Please fill out the following fields before submitting:\n' + missing.join('\n'));
@@ -192,28 +145,23 @@ function Reviews() {
     }
 
     const payload = {
-      // Prefer query params if provided, then route params, otherwise null
-      university: (queryUniversity || universityName) || null,
-      dorm: (queryDorm || dormName) || null,
+      university: resolvedUniversity || null,
+      dorm: resolvedDorm || null,
       room: ratings.room,
       bathroom: ratings.bathrooms,
       building: ratings.building,
       amenities: ratings.amenities,
       location: ratings.location,
       description,
-      year: year.length > 0 ? year.map(y => Number(y)) : [],
-      roomType: roomType,
+      year: [Number(selectedYear)], // Convert single selection to array
+      roomType: [selectedRoomType], // Convert single selection to array
       wouldDormAgain: wouldDormAgain === 'yes',
       fileImage: fileDataUrls.length > 0 ? fileDataUrls[0] : null,
       images: fileDataUrls
     };
 
     try {
-      // Include auth token if user is logged in
       const token = localStorage.getItem('token');
-      console.log('🔐 Submitting review - Token present:', !!token);
-      console.log('🔐 Token length:', token?.length || 0);
-      
       const headers: Record<string, string> = { 'Content-Type': 'application/json' };
       if (token) {
         headers['Authorization'] = `Bearer ${token}`;
@@ -226,26 +174,23 @@ function Reviews() {
       });
       const data = await res.json();
       if (!res.ok) {
-        // If server sent validation errors, show them
         const serverMessage = data?.message || 'Failed to submit review';
         const serverErrors = data?.errors ? JSON.stringify(data.errors, null, 2) : null;
         alert(serverMessage + (serverErrors ? '\n' + serverErrors : ''));
         throw new Error(serverMessage);
       }
-      // Clear form after success
+      
+      // Clear form
       setRatings({ room: 0, bathrooms: 0, building: 0, amenities: 0, location: 0 });
       setDescription('');
-      setYear([]);
-      setRoomType([]);
+      setSelectedYear('');
+      setSelectedRoomType('');
       setWouldDormAgain('');
       setFileDataUrls([]);
       alert('Review submitted — thank you!');
-      console.log('Saved review:', data);
       
-      // Navigate back to the dorm page
-      const university = queryUniversity || universityName;
+      const university = resolvedUniversity;
       if (university && payload.dorm) {
-        // Need to convert dorm name to slug format (lowercase, replace spaces with hyphens)
         const dormSlug = payload.dorm.toLowerCase().replace(/\s+/g, '-');
         navigate(`/universities/${encodeURIComponent(university)}/dorms/${dormSlug}`);
       }
@@ -255,342 +200,285 @@ function Reviews() {
     }
   };
 
+  const formatName = (name: string) => {
+    return name
+      .replace(/-/g, ' ') 
+      .split(' ')
+      .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+      .join(' ');
+  };
+
+  const getYearLabel = (val: string) => {
+    switch(val) {
+      case '1': return 'First';
+      case '2': return 'Second';
+      case '3': return 'Third';
+      case '4': return 'Fourth+';
+      case '5': return 'Graduate';
+      default: return val;
+    }
+  };
+
+  const yearOptions = [
+    { value: '1', label: 'First' },
+    { value: '2', label: 'Second' },
+    { value: '3', label: 'Third' },
+    { value: '4', label: 'Fourth+' },
+    { value: '5', label: 'Graduate' }
+  ];
+
+  const roomTypeOptions = [
+    { value: 'single', label: 'Single' },
+    { value: 'double', label: 'Double' },
+    { value: 'triple', label: 'Triple' },
+    { value: 'quad', label: 'Quad' },
+    { value: 'suite', label: 'Suite' },
+    { value: 'other', label: 'Other' }
+  ];
+
+  const dormAgainOptions = [
+    { value: 'yes', label: 'Yes, I would' },
+    { value: 'no', label: 'No, I would not' }
+  ];
+
   return (
     <div className='Review'>
       <NavBar />
-      <div className='review-container'>
-        {(currentPage === 1 || currentPage === 2) && (
-          <div className="typing-wrapper">
-            <div className={`typing-demo ${currentPage === 2 ? 'no-animation' : ''}`}>
-              How was your experience?
-            </div>
-          </div>
-        )}
-        <div className="review-form">
-          {/* Page 1: Ratings */}
-          {currentPage === 1 && (
-            <div className="form-page">
-              <div className="rating-group">
-                <label>Rate the Room</label>
-                {renderStars('room')}
-              </div>
-
-              <div className="rating-group">
-                <label>Rate the Bathrooms</label>
-                {renderStars('bathrooms')}
-              </div>
-
-              <div className="rating-group">
-                <label>Rate the Building</label>
-                {renderStars('building')}
-              </div>
-
-              <div className="rating-group">
-                <label>Rate the Amenities</label>
-                {renderStars('amenities')}
-              </div>
-
-              <div className="rating-group">
-                <label>Rate the Location</label>
-                {renderStars('location')}
-              </div>
-            </div>
-          )}
-
-          {/* Page 2: Personal Details */}
-          {currentPage === 2 && (
-
-            <div className="form-page">
-              
-              <div className="details-row">
-                <label className="details-label">What class year(s) did you live here?</label>
-                <div className="details-options">
-                  <label className="checkbox-option">
-                    <input
-                      type="checkbox"
-                      checked={year.includes('1')}
-                      onChange={() => setYear(prev => prev.includes('1') ? prev.filter(y => y !== '1') : [...prev, '1'])}
-                    />
-                    <span>First Year</span>
-                  </label>
-                  <label className="checkbox-option">
-                    <input
-                      type="checkbox"
-                      checked={year.includes('2')}
-                      onChange={() => setYear(prev => prev.includes('2') ? prev.filter(y => y !== '2') : [...prev, '2'])}
-                    />
-                    <span>Second Year</span>
-                  </label>
-                  <label className="checkbox-option">
-                    <input
-                      type="checkbox"
-                      checked={year.includes('3')}
-                      onChange={() => setYear(prev => prev.includes('3') ? prev.filter(y => y !== '3') : [...prev, '3'])}
-                    />
-                    <span>Third Year</span>
-                  </label>
-                  <label className="checkbox-option">
-                    <input
-                      type="checkbox"
-                      checked={year.includes('4')}
-                      onChange={() => setYear(prev => prev.includes('4') ? prev.filter(y => y !== '4') : [...prev, '4'])}
-                    />
-                    <span>Fourth Year</span>
-                  </label>
-                   <label className="checkbox-option">
-                    <input
-                      type="checkbox"
-                      checked={year.includes('5')}
-                      onChange={() => setYear(prev => prev.includes('5') ? prev.filter(y => y !== '5') : [...prev, '5'])}
-                    />
-                    <span>Fifth Year+</span>
-                  </label>
-                  <label className="checkbox-option">
-                    <input
-                      type="checkbox"
-                      checked={year.includes('5')}
-                      onChange={() => setYear(prev => prev.includes('5') ? prev.filter(y => y !== '5') : [...prev, '5'])}
-                    />
-                    <span>Graduate Student</span>
-                  </label>
-                </div>
-              </div>
-
-              <div className="details-row">
-                <label className="details-label">What type of room(s) did you have?</label>
-                <div className="details-options">
-                  <label className="checkbox-option">
-                    <input
-                      type="checkbox"
-                      checked={roomType.includes('single')}
-                      onChange={() => setRoomType(prev => prev.includes('single') ? prev.filter(r => r !== 'single') : [...prev, 'single'])}
-                    />
-                    <span>Single</span>
-                  </label>
-                  <label className="checkbox-option">
-                    <input
-                      type="checkbox"
-                      checked={roomType.includes('double')}
-                      onChange={() => setRoomType(prev => prev.includes('double') ? prev.filter(r => r !== 'double') : [...prev, 'double'])}
-                    />
-                    <span>Double</span>
-                  </label>
-                  <label className="checkbox-option">
-                    <input
-                      type="checkbox"
-                      checked={roomType.includes('triple')}
-                      onChange={() => setRoomType(prev => prev.includes('triple') ? prev.filter(r => r !== 'triple') : [...prev, 'triple'])}
-                    />
-                    <span>Triple</span>
-                  </label>
-                  <label className="checkbox-option">
-                    <input
-                      type="checkbox"
-                      checked={roomType.includes('quad')}
-                      onChange={() => setRoomType(prev => prev.includes('quad') ? prev.filter(r => r !== 'quad') : [...prev, 'quad'])}
-                    />
-                    <span>Quad</span>
-                  </label>
-                  <label className="checkbox-option">
-                    <input
-                      type="checkbox"
-                      checked={roomType.includes('suite')}
-                      onChange={() => setRoomType(prev => prev.includes('suite') ? prev.filter(r => r !== 'suite') : [...prev, 'suite'])}
-                    />
-                    <span>Suite</span>
-                  </label>
-                  <label className="checkbox-option">
-                    <input
-                      type="checkbox"
-                      checked={roomType.includes('other')}
-                      onChange={() => setRoomType(prev => prev.includes('other') ? prev.filter(r => r !== 'other') : [...prev, 'other'])}
-                    />
-                    <span>Other</span>
-                  </label>
-                </div>
-              </div>
-
-              <div className="details-row">
-                <label className="details-label">Would you dorm here again?</label>
-                <div className="details-options">
-                  <label className="checkbox-option">
-                    <input
-                      type="checkbox"
-                      checked={wouldDormAgain === 'yes'}
-                      onChange={() => setWouldDormAgain(wouldDormAgain === 'yes' ? '' : 'yes')}
-                    />
-                    <span>Yes</span>
-                  </label>
-                  <label className="checkbox-option">
-                    <input
-                      type="checkbox"
-                      checked={wouldDormAgain === 'no'}
-                      onChange={() => setWouldDormAgain(wouldDormAgain === 'no' ? '' : 'no')}
-                    />
-                    <span>No</span>
-                  </label>
-                </div>
-              </div>
-            </div>
-          )}
-
-          {/* Page 3: Comments and Photos */}
-          {currentPage === 3 && (
-            <div className="form-page">
-              <h2>Tell us more about the experience?</h2>
-              <div className="form-group">
-                <label>Comments about the dorm</label>
-                <textarea
-                  placeholder="Share your experience living in this dorm..."
-                  value={description}
-                  onChange={e => setDescription(e.target.value)}
-                />
-              </div>
-
-              <div className="file-input-group">
-                <label>Photos of Dorm (up to {MAX_FILES})</label>
-                <div className="file-input-wrapper">
-                  <input type="file" accept="image/*" multiple onChange={handleFileChange} />
-                  <p className="file-input-text">Click to upload or drag and drop</p>
-                  <p className="file-input-text">PNG, JPG up to 10MB each</p>
-                </div>
-                {fileDataUrls.length > 0 && (
-                  <div style={{ marginTop: 10, display: 'flex', flexWrap: 'wrap', gap: '10px' }}>
-                    {fileDataUrls.map((url, index) => (
-                      <div key={index} style={{ position: 'relative', display: 'inline-block' }}>
-                        <img src={url} alt={`preview ${index + 1}`} style={{ maxWidth: '150px', height: '150px', objectFit: 'cover', borderRadius: 8 }} />
-                        <button
-                          type="button"
-                          onClick={() => removeImage(index)}
-                          style={{
-                            position: 'absolute',
-                            top: '5px',
-                            right: '5px',
-                            background: 'red',
-                            color: 'white',
-                            border: 'none',
-                            borderRadius: '50%',
-                            width: '24px',
-                            height: '24px',
-                            cursor: 'pointer',
-                            fontSize: '14px',
-                            fontWeight: 'bold'
-                          }}
-                        >
-                          ×
-                        </button>
-                      </div>
-                    ))}
-                  </div>
+      
+      <div className='review-page-content'>
+        <div className='review-container'>
+          
+          <div className="breadcrumb-wrapper">
+              <div className="dorm-breadcrumbs">
+                <Link to="/" className="breadcrumb-home">
+                  <HomeIcon style={{ fontSize: '1.2rem', color: '#666' }} />
+                </Link>
+                
+                {resolvedUniversity && (
+                  <>
+                    <span className="breadcrumb-separator">›</span>
+                    <Link to={`/universities/${encodeURIComponent(resolvedUniversity)}`} className="breadcrumb-link">
+                      {formatName(resolvedUniversity)}
+                    </Link>
+                  </>
                 )}
-              </div>
-            </div>
-          )}
 
-          {/* Page 4: Summary and Submit */}
-          {currentPage === 4 && (
-            <div className="form-page summary-page">         
-              <div className="summary-section">
-                <h3>Ratings</h3>
-                <div className="summary-ratings">
-                  <div className="summary-item">
-                    <span>Room:</span>
-                    <span className="summary-stars">
-                      {[...Array(ratings.room)].map((_, i) => <Star key={`room-${i}`} />)}
-                      {[...Array(5 - ratings.room)].map((_, i) => <StarBorder key={`room-empty-${i}`} />)}
-                      ({ratings.room}/5)
-                    </span>
-                  </div>
-                  <div className="summary-item">
-                    <span>Bathrooms:</span>
-                    <span className="summary-stars">
-                      {[...Array(ratings.bathrooms)].map((_, i) => <Star key={`bath-${i}`} />)}
-                      {[...Array(5 - ratings.bathrooms)].map((_, i) => <StarBorder key={`bath-empty-${i}`} />)}
-                      ({ratings.bathrooms}/5)
-                    </span>
-                  </div>
-                  <div className="summary-item">
-                    <span>Building:</span>
-                    <span className="summary-stars">
-                      {[...Array(ratings.building)].map((_, i) => <Star key={`build-${i}`} />)}
-                      {[...Array(5 - ratings.building)].map((_, i) => <StarBorder key={`build-empty-${i}`} />)}
-                      ({ratings.building}/5)
-                    </span>
-                  </div>
-                  <div className="summary-item">
-                    <span>Amenities:</span>
-                    <span className="summary-stars">
-                      {[...Array(ratings.amenities)].map((_, i) => <Star key={`amen-${i}`} />)}
-                      {[...Array(5 - ratings.amenities)].map((_, i) => <StarBorder key={`amen-empty-${i}`} />)}
-                      ({ratings.amenities}/5)
-                    </span>
-                  </div>
-                  <div className="summary-item">
-                    <span>Location:</span>
-                    <span className="summary-stars">
-                      {[...Array(ratings.location)].map((_, i) => <Star key={`loc-${i}`} />)}
-                      {[...Array(5 - ratings.location)].map((_, i) => <StarBorder key={`loc-empty-${i}`} />)}
-                      ({ratings.location}/5)
-                    </span>
-                  </div>
-                </div>
+                {resolvedUniversity && resolvedDorm && (
+                  <>
+                    <span className="breadcrumb-separator">›</span>
+                    <Link 
+                      to={`/universities/${encodeURIComponent(resolvedUniversity)}/dorms/${resolvedDorm.toLowerCase().replace(/\s+/g, '-')}`} 
+                      className="breadcrumb-link"
+                    >
+                      {formatName(resolvedDorm)}
+                    </Link>
+                  </>
+                )}
+                
+                <span className="breadcrumb-separator">›</span>
+                <span className="breadcrumb-current">Review</span>
               </div>
+          </div>
 
-              <div className="summary-section">
-                <h3>Details</h3>
-                <div className="summary-item">
-                  <span>Year:</span>
-                  <span>{year.map(y => ['', 'First Year', 'Second Year', 'Third Year', 'Fourth Year', 'Graduate Student'][Number(y)]).join(', ')}</span>
-                </div>
-                <div className="summary-item">
-                  <span>Room Type:</span>
-                  <span>{roomType.map(r => r.charAt(0).toUpperCase() + r.slice(1)).join(', ')}</span>
-                </div>
-                <div className="summary-item">
-                  <span>Would Dorm Again:</span>
-                  <span>{wouldDormAgain === 'yes' ? 'Yes' : 'No'}</span>
-                </div>
-              </div>
+          <div className="review-header">
+            <h1>Reviewing {formatName(displayDormName)}</h1>
+          </div>
+          
+          <div className="review-content">
+            
+            {/* Sequential Steps Section - Refactored for Independent Editing */}
+            <div className="review-section sequential-section">
+              
+              {/* Selected Badges Row (Always Visible if any exist) */}
+              {(selectedYear || selectedRoomType || wouldDormAgain) && (
+                 <div className="selected-badges-row">
+                    {selectedYear && (
+                       <div className="selected-item-row fade-in">
+                          <div className="selected-item-icon"><SchoolIcon /></div>
+                          <span className="selected-item-text">{getYearLabel(selectedYear)}</span>
+                          <button 
+                            type="button" 
+                            className="selected-item-remove"
+                            onClick={() => setSelectedYear('')} // Only clears Year
+                          >
+                            <CloseIcon fontSize="small" />
+                          </button>
+                       </div>
+                    )}
 
-              <div className="summary-section">
-                <h3>Comments</h3>
-                <p className="summary-description">{description}</p>
-              </div>
+                    {selectedRoomType && (
+                       <div className="selected-item-row fade-in">
+                          <div className="selected-item-icon"><MeetingRoomIcon /></div>
+                          <span className="selected-item-text">
+                            {roomTypeOptions.find(o => o.value === selectedRoomType)?.label || selectedRoomType}
+                          </span>
+                          <button 
+                             type="button" 
+                             className="selected-item-remove"
+                             onClick={() => setSelectedRoomType('')} // Only clears Room
+                          >
+                            <CloseIcon fontSize="small" />
+                          </button>
+                       </div>
+                    )}
 
-              {fileDataUrls.length > 0 && (
-                <div className="summary-section">
-                  <h3>Photos ({fileDataUrls.length})</h3>
-                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: '10px' }}>
-                    {fileDataUrls.map((url, index) => (
-                      <img 
-                        key={index} 
-                        src={url} 
-                        alt={`preview ${index + 1}`} 
-                        style={{ width: '100px', height: '100px', objectFit: 'cover', borderRadius: 8 }} 
-                      />
-                    ))}
-                  </div>
-                </div>
+                    {wouldDormAgain && (
+                       <div className="selected-item-row fade-in">
+                          <div className="selected-item-icon"><ThumbUpIcon /></div>
+                          <span className="selected-item-text">
+                            {wouldDormAgain === 'yes' ? 'Would Dorm Again: Yes' : 'Would Dorm Again: No'}
+                          </span>
+                          <button 
+                            type="button" 
+                            className="selected-item-remove"
+                            onClick={() => setWouldDormAgain('')} // Only clears Choice
+                          >
+                            <CloseIcon fontSize="small" />
+                          </button>
+                       </div>
+                    )}
+                 </div>
               )}
-            </div>
-          )}
 
-          {/* Navigation Buttons */}
-          <div className="form-navigation">
-            {currentPage > 1 && (
-              <button type="button" className="nav-button back-button" onClick={handleBack}>
-                Back
-              </button>
-            )}
-            {currentPage < 4 ? (
-              <button type="button" className="nav-button next-button" onClick={handleNext}>
-                Next
-              </button>
-            ) : (
-              <button type="button" className="submit-button" onClick={handleSubmit}>
+              {/* Active Input Area - Prioritizes first missing field */}
+              <div className="active-selection-area">
+                 {!selectedYear ? (
+                    <div className="selection-step fade-in">
+                        <label className="step-label">What year were you?</label>
+                        <div className="options-grid">
+                          {yearOptions.map((opt) => (
+                              <button 
+                                key={opt.value}
+                                type="button"
+                                className="option-button"
+                                onClick={() => setSelectedYear(opt.value)}
+                              >
+                                {opt.label}
+                              </button>
+                          ))}
+                        </div>
+                    </div>
+                 ) : !selectedRoomType ? (
+                    <div className="selection-step fade-in">
+                       <label className="step-label">What was your room type?</label>
+                       <div className="options-grid">
+                        {roomTypeOptions.map((opt) => (
+                           <button 
+                             key={opt.value}
+                             type="button"
+                             className="option-button"
+                             onClick={() => setSelectedRoomType(opt.value)}
+                           >
+                              {opt.label}
+                           </button>
+                        ))}
+                      </div>
+                    </div>
+                 ) : !wouldDormAgain ? (
+                    <div className="selection-step fade-in">
+                        <label className="step-label">Would you dorm here again?</label>
+                        <div className="options-grid">
+                          {dormAgainOptions.map((opt) => (
+                              <button 
+                                key={opt.value}
+                                type="button"
+                                className="option-button"
+                                onClick={() => setWouldDormAgain(opt.value)}
+                              >
+                                {opt.label}
+                              </button>
+                          ))}
+                        </div>
+                    </div>
+                 ) : null}
+              </div>
+
+            </div>
+
+            {/* Ratings Section */}
+            <div className="review-section ratings-grid">
+                <div className="rating-group">
+                  <label>Room</label>
+                  {renderStars('room')}
+                </div>
+
+                <div className="rating-group">
+                  <label>Bathroom</label>
+                  {renderStars('bathrooms')}
+                </div>
+
+                <div className="rating-group">
+                  <label>Building</label>
+                  {renderStars('building')}
+                </div>
+
+                <div className="rating-group">
+                  <label>Amenities</label>
+                  {renderStars('amenities')}
+                </div>
+
+                <div className="rating-group">
+                  <label>Location</label>
+                  {renderStars('location')}
+                </div>
+            </div>
+
+            {/* Comments Section */}
+            <div className="review-section comments-section">
+              <label className="section-label">Comments</label>
+              <textarea
+                className="review-textarea"
+                placeholder="Share your experience living in this dorm... (Required)"
+                value={description}
+                onChange={e => setDescription(e.target.value)}
+              />
+            </div>
+
+            {/* Photo Section */}
+            <div className="review-section photo-section">
+              <label className="section-label">Add a Photo</label>
+              
+              <div className="file-upload-container">
+                 <input 
+                    type="file" 
+                    id="file-upload" 
+                    accept="image/*" 
+                    multiple 
+                    onChange={handleFileChange} 
+                    style={{ display: 'none' }} 
+                 />
+                 <label htmlFor="file-upload" className="file-upload-label">
+                    <div className="upload-icon-wrapper">
+                        <CloudUploadIcon style={{ fontSize: 32, color: '#445E75' }} />
+                    </div>
+                    <span className="upload-text">Click to browse files</span>
+                 </label>
+              </div>
+              
+              {fileDataUrls.length > 0 && (
+                    <div className="photo-previews">
+                      {fileDataUrls.map((url, index) => (
+                        <div key={index} className="photo-preview-item">
+                          <img src={url} alt={`preview ${index + 1}`} />
+                          <button
+                            type="button"
+                            className="remove-photo-btn"
+                            onClick={() => removeImage(index)}
+                          >
+                            ×
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+            </div>
+            
+            <div className="submit-section">
+              <button type="button" className="submit-review-btn" onClick={handleSubmit}>
                 Submit Review
               </button>
-            )}
+            </div>
+
           </div>
         </div>
       </div>
