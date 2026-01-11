@@ -45,6 +45,7 @@ function Reviews() {
   
   const [wouldDormAgain, setWouldDormAgain] = useState('');
   const [fileDataUrls, setFileDataUrls] = useState<string[]>([]);
+  const [showSuccessPopup, setShowSuccessPopup] = useState(false);
   const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10 MB
   const MAX_FILES = 5; // Maximum 5 images
 
@@ -188,13 +189,20 @@ function Reviews() {
       setSelectedRoomType('');
       setWouldDormAgain('');
       setFileDataUrls([]);
-      alert('Review submitted — thank you!');
       
+      // Show Success Popup
+      setShowSuccessPopup(true);
+
       const university = resolvedUniversity;
-      if (university && payload.dorm) {
-        const dormSlug = payload.dorm.toLowerCase().replace(/\s+/g, '-');
-        navigate(`/universities/${encodeURIComponent(university)}/dorms/${dormSlug}`);
-      }
+      const dormSlug = payload.dorm ? payload.dorm.toLowerCase().replace(/\s+/g, '-') : '';
+
+      // Navigate after delay
+      setTimeout(() => {
+        if (university && dormSlug) {
+           navigate(`/universities/${encodeURIComponent(university)}/dorms/${dormSlug}`);
+        }
+      }, 2000);
+
     } catch (err) {
       console.error(err);
       alert('Error submitting review');
@@ -490,6 +498,15 @@ function Reviews() {
           </div>
         </div>
       </div>
+      {/* Success Popup */}
+      {showSuccessPopup && (
+        <div className="popup-overlay">
+          <div className="popup-card">
+            <h2 className="popup-title">Review Submitted!</h2>
+            <p className="popup-subtitle">Thanks for sharing your experience.</p>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
