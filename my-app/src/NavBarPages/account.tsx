@@ -22,6 +22,7 @@ interface Review {
   wouldDormAgain: boolean;
   createdAt: string;
   images?: string[];
+  status?: string;
 }
 
 function Account() {
@@ -100,6 +101,14 @@ function Account() {
     return 'rating-low';
   };
 
+  const getStatusLabel = (status: string = 'pending') => {
+    switch (status.toLowerCase()) {
+      case 'approved': return 'Accepted';
+      case 'declined': return 'Rejected';
+      default: return 'Pending';
+    }
+  };
+
   return (
     <div className="account-page">
       <NavBar />
@@ -157,9 +166,14 @@ function Account() {
                       </Link>
                       <h3 className="review-dorm-name">{review.dorm}</h3>
                     </div>
-                    <div className={`review-rating ${getRatingClass(calculateOverallRating(review))}`}>
-                      <Star style={{ fontSize: '1rem' }} />
-                      <span>{calculateOverallRating(review).toFixed(1)}</span>
+                    <div className="review-header-right">
+                      <span className={`status-badge status-${(review.status || 'pending').toLowerCase()}`}>
+                        {getStatusLabel(review.status)}
+                      </span>
+                      <div className={`review-rating ${getRatingClass(calculateOverallRating(review))}`}>
+                        <Star style={{ fontSize: '1rem' }} />
+                        <span>{calculateOverallRating(review).toFixed(1)}</span>
+                      </div>
                     </div>
                   </div>
                   
