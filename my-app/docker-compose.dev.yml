@@ -1,0 +1,93 @@
+# ==============================================================================
+# Docker Compose for Development
+# Run: docker-compose -f docker-compose.dev.yml up
+# ==============================================================================
+
+services:
+  # ============================================================================
+  # MongoDB Database (Development)
+  # ============================================================================
+  mongodb:
+    image: mongo:7.0
+    container_name: lifebydorm-mongodb-dev
+    restart: unless-stopped
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: adminpassword
+      MONGO_INITDB_DATABASE: lifebydorm
+    volumes:
+      - mongodb_data_dev:/data/db
+    ports:
+      - "27017:27017"
+    networks:
+      - lifebydorm-network-dev
+
+  # ============================================================================
+  # Backend Server (Development with hot-reload)
+  # ============================================================================
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    container_name: lifebydorm-backend-dev
+    restart: unless-stopped
+    environment:
+      NODE_ENV: development
+      PORT: 3000
+      MONGODB_URI: mongodb://admin:adminpassword@mongodb:27017/lifebydorm?authSource=admin
+      ACCESS_TOKEN_SECRET: dev-secret-key-not-for-production
+      GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID:-}
+      ADMIN_EMAILS: ${ADMIN_EMAILS:-}
+    volumes:
+      # Mount source code for hot-reloading
+      - ./server:/app/server
+      # Prevent overwriting node_modules
+      - /app/server/node_modules
+    ports:
+      - "3000:3000"
+    depends_on:
+      - mongodb
+    networks:
+      - lifebydorm-network-dev
+    command: ["npm", "run", "devStart"]
+    working_dir: /app/server
+
+  # ============================================================================
+  # Frontend (Development with Vite hot-reload)
+  # ============================================================================
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    container_name: lifebydorm-frontend-dev
+    restart: unless-stopped
+    environment:
+      VITE_API_BASE: http://localhost:3000
+      VITE_GOOGLE_CLIENT_ID: ${VITE_GOOGLE_CLIENT_ID:-}
+    volumes:
+      # Mount source code for hot-reloading
+      - ./src:/app/src
+      - ./public:/app/public
+      - ./index.html:/app/index.html
+      - ./vite.config.ts:/app/vite.config.ts
+      # Prevent overwriting node_modules
+      - /app/node_modules
+    ports:
+      - "5173:5173"
+    networks:
+      - lifebydorm-network-dev
+    command: ["npm", "run", "dev", "--", "--host", "0.0.0.0"]
+
+# ==============================================================================
+# Networks
+# ==============================================================================
+networks:
+  lifebydorm-network-dev:
+    driver: bridge
+
+# ==============================================================================
+# Volumes
+# ==============================================================================
+volumes:
+  mongodb_data_dev:
+    driver: local
