@@ -23,6 +23,7 @@ function login({ isOpen, onClose }: LoginModalProps) {
   const [error, setError] = useState<string>("");
   const [showEmailForm, setShowEmailForm] = useState<boolean>(false);
   const [showPassword, setShowPassword] = useState<boolean>(false);
+  const [showSuccessPopup, setShowSuccessPopup] = useState<boolean>(false);
 
   // Custom Google Login Hook
   const loginWithGoogle = useGoogleLogin({
@@ -36,8 +37,11 @@ function login({ isOpen, onClose }: LoginModalProps) {
 
         if (response.data.token) {
           localStorage.setItem('token', response.data.token);
-          onClose();
-          window.location.reload();
+          setShowSuccessPopup(true);
+          setTimeout(() => {
+            onClose();
+            window.location.reload();
+          }, 2000);
         }
       } catch (err: any) {
         console.error("Google Login Error:", err);

@@ -1,4 +1,5 @@
 import dotenv from 'dotenv';
+import path from 'path';
 import express, { Request, Response, NextFunction } from 'express';
 import cors from 'cors';
 import jwt, { Secret, JwtPayload } from 'jsonwebtoken';
@@ -769,9 +770,54 @@ app.delete('/api/admin/dorms/:id', authenticationToken, requireAdmin, async (req
 // END ADMIN ROUTES - Dorm Management
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+// HEALTH CHECK ENDPOINT (for Docker/Kubernetes health probes)
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+app.get('/api/health', async (req: Request, res: Response) => {
+  try {
+    // Check MongoDB connection
+    const dbStatus = mongoose.connection.readyState === 1 ? 'connected' : 'disconnected';
+    
+    res.status(200).json({
+      status: 'healthy',
+      timestamp: new Date().toISOString(),
+      uptime: process.uptime(),
+      database: dbStatus,
+      environment: process.env.NODE_ENV || 'development'
+    });
+  } catch (error) {
+    res.status(503).json({
+      status: 'unhealthy',
+      timestamp: new Date().toISOString(),
+      error: error instanceof Error ? error.message : 'Unknown error'
+    });
+  }
+});
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+// STATIC FILE SERVING (Production - serve built React app)
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+if (process.env.NODE_ENV === 'production') {
+  // Serve static files from the React build directory
+  const staticPath = path.join(__dirname, '..', 'dist');
+  app.use(express.static(staticPath));
+  
+  // Handle client-side routing - serve index.html for all non-API routes
+  app.get('*', (req: Request, res: Response) => {
+    // Don't serve index.html for API routes
+    if (req.path.startsWith('/api')) {
+      return res.status(404).json({ message: 'API endpoint not found' });
+    }
+    res.sendFile(path.join(staticPath, 'index.html'));
+  });
+  
+  console.log(`📁 Serving static files from: ${staticPath}`);
+}
+
 // Start server
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
+  console.log(`🚀 Server is running on port ${PORT}`);
+  console.log(`📍 Environment: ${process.env.NODE_ENV || 'development'}`);
 });
 
