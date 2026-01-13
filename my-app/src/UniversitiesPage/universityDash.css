@@ -111,7 +111,7 @@
 }
 
 .university-website-card .highlight-text {
-  color: #1976d2;
+  color: #D62828;
 }
 
 .university-website-card p {
@@ -125,7 +125,7 @@
 .university-website-btn {
   display: inline-block;
   padding: 10px 24px;
-  background-color: #5AA9E6;
+  background-color: #D62828;
   color: white;
   border: none;
   border-radius: 6px;
@@ -138,11 +138,11 @@
 }
 
 .university-website-btn:hover {
-  background-color: #4a91c8;
+  background-color: #B91C1C;
 }
 
 .university-website-btn:active {
-  background-color: #3d80b0;
+  background-color: #991b1b;
 }
 
 /* Right side - Dorms List */
@@ -197,7 +197,7 @@
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
 }
 
-.dorm-search-input:focus, .filter-select:focus { border-color: #1976d2; }
+.dorm-search-input:focus, .filter-select:focus { border-color: #D62828; }
 .dorm-search-input::placeholder { color: #999; }
 
 .filter-select {

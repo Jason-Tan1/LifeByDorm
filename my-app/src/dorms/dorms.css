@@ -144,8 +144,8 @@
 }
 
 .room-type-item {
-  background-color: #e3f2fd;
-  color: #1976d2;
+  background-color: #fff1f2;
+  color: #D62828;
   padding: 8px 16px;
   border-radius: 16px;
   font-size: 0.9rem;
@@ -203,7 +203,7 @@
 
 .distribution-fill {
   height: 100%;
-  background-color: #1976d2;
+  background-color: #D62828;
   border-radius: 4px;
   transition: width 0.3s ease;
   min-width: 30px;
@@ -1053,7 +1053,7 @@ h2 {
   font-size: 1rem;
   font-weight: 600;
   color: white;
-  background-color: #1976d2;
+  background-color: #D62828;
   border: none;
   border-radius: 30px;
   cursor: pointer;
@@ -1062,7 +1062,7 @@ h2 {
 }
 
 .load-more-button:hover {
-  background-color: #1565c0;
+  background-color: #B91C1C;;
   transform: translateY(-2px);
   box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
 }

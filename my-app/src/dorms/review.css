@@ -178,14 +178,14 @@
 .option-button:hover {
   transform: translateY(-2px);
   box-shadow: 0 6px 12px rgba(0,0,0,0.08);
-  border-color: #1976d2; 
-  color: #1976d2;
-  background-color: #f0f7ff;
+  border-color: #D62828; 
+  color: #D62828;
+  background-color: #fff1f2;
 }
 
 .option-button:active {
   transform: translateY(0);
-  background-color: #e3effb;
+  background-color: #ffe4e6;
 }
 
 /* Selected Item Tag Styling (The "Chip") */
@@ -194,8 +194,8 @@
   align-items: center;
   padding: 8px 16px;
   border-radius: 50px; /* Pill shape */
-  border: 1px solid #cce5ff;
-  background-color: #f0f7ff; /* Light blue background */
+  border: 1px solid #fecaca;
+  background-color: #fff1f2; /* Light red background */
   transition: all 0.3s ease;
   height: 44px;
   box-sizing: border-box;
@@ -204,14 +204,14 @@
 }
 
 .selected-item-row:hover {
-  background-color: #e3effb;
-  border-color: #bbdefb;
+  background-color: #ffe4e6;
+  border-color: #fca5a5;
 }
 
 .selected-item-icon {
   display: flex;
   align-items: center;
-  color: #1976d2;
+  color: #D62828;
   margin-right: 10px;
 }
 

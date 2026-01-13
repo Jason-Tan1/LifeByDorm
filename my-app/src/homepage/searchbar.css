@@ -49,7 +49,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: #3076BD;
+  background-color: #D62828;
   color: white;
   border: none;
   border-radius: 50%;
@@ -61,7 +61,7 @@
   flex-shrink: 0;
 }
 
-.search-button:hover { background-color: #1f4e8c; }
+.search-button:hover { background-color: #B91C1C; }
 
 /* Toggle Style */
 .search-mode-toggle {
@@ -82,7 +82,7 @@
 
 .search-mode-toggle:hover {
   color: #ffffff;
-  background-color: rgba(48, 118, 189, 0.05); /* Subtle hover background */
+  background-color: rgba(214, 40, 40, 0.05); /* Subtle hover background */
   border-radius: 6px;
 }
 
