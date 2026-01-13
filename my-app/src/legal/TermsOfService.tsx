@@ -2,13 +2,21 @@ import React from 'react';
 import './legal.css';
 import NavBar from '../NavBarPages/navbar';
 import Footer from '../homepage/footer';
+import DefaultDormImage from '../assets/Default_Dorm.png';
 
 function TermsOfService() {
   return (
     <>
       <NavBar />
+      
+      {/* Hero Section */}
+      <div className="page-hero" style={{ backgroundImage: `url(${DefaultDormImage})` }}>
+        <div className="page-hero-overlay">
+           <h1>Terms & Conditions</h1>
+        </div>
+      </div>
+
       <div className="legal-container">
-        <h1 className="legal-title">Terms & Conditions</h1>
         <span className="legal-date">Last Updated: January 12, 2026</span>
 
         <div className="legal-section">
