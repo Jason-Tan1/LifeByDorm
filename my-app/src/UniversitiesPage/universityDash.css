@@ -1,44 +1,96 @@
 /* University Dashboard - Efficient Responsive Styles */
-@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap');
+/* 
+  NOTE: Move this font import to your HTML <head> for better performance:
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+*/
+
+/* ========== CSS VARIABLES ========== */
+:root {
+  /* Brand Colors */
+  --color-primary: #D62828;
+  --color-primary-hover: #B91C1C;
+  --color-primary-active: #991b1b;
+  --color-success: #4CAF50;
+  --color-success-hover: #45a049;
+  
+  /* Neutral Colors */
+  --color-text-primary: #1a1a1a;
+  --color-text-secondary: #444;
+  --color-text-muted: #666;
+  --color-text-placeholder: #999;
+  --color-background: #f5f5f5;
+  --color-surface: #ffffff;
+  --color-border: #e2e8f0;
+  
+  /* Shadows */
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.08);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.1);
+  --shadow-lg: 0 4px 16px rgba(0, 0, 0, 0.15);
+  --shadow-input: 0 4px 15px rgba(0, 0, 0, 0.08);
+  
+  /* Star Rating */
+  --color-star: #f8c41b;
+  
+  /* Z-Index Scale */
+  --z-base: 1;
+  --z-overlay: 10;
+  --z-header-content: 20;
+  --z-dropdown: 100;
+  --z-modal: 1000;
+  
+  /* Focus Ring */
+  --focus-ring: 0 0 0 3px rgba(214, 40, 40, 0.4);
+  
+  /* Border Radius */
+  --radius-sm: 6px;
+  --radius-md: 12px;
+  --radius-full: 50px;
+}
 
 .university-dash {
   min-height: 100vh;
-  background-color: #f5f5f5;
+  background-color: var(--color-background);
   font-family: 'DM Sans', sans-serif;
 }
 
 .university-content {
-  display: flex;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: minmax(300px, 500px) 1fr;
   max-width: 1400px;
   margin: 0 auto;
   padding: clamp(8px, 2vw, 20px);
   gap: clamp(16px, 3vw, 40px);
+  align-items: start;
 }
 
 /* Left side - University Information */
 .university-info {
-  flex: 1 1 320px;
-  max-width: 500px;
   background: transparent;
   padding: 0;
   box-shadow: none;
   height: fit-content;
+  min-width: 0; /* Prevent grid blowout */
 }
 
 .university-image-container {
   position: relative;
   width: 100%;
-  border-radius: 12px;
+  border-radius: var(--radius-md);
   overflow: hidden;
   margin-bottom: clamp(14px, 2vw, 20px);
-  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  box-shadow: var(--shadow-md);
+  /* Placeholder background while image loads - prevents layout shift */
+  background-color: #e0e0e0;
+  /* Maintain aspect ratio even before image loads */
+  aspect-ratio: 16 / 10;
 }
 
 .university-main-image {
   display: block;
   width: 100%;
-  aspect-ratio: 16 / 10;
+  height: 100%;
   object-fit: cover;
   margin-bottom: 0;
 }
@@ -48,9 +100,10 @@
   bottom: 0;
   left: 0;
   width: 100%;
-  height: 60%;
-  background: linear-gradient(to top, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0.4) 50%, rgba(0,0,0,0) 100%);
+  height: 70%; /* Increased for longer text */
+  background: linear-gradient(to top, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.5) 40%, rgba(0,0,0,0) 100%);
   pointer-events: none;
+  z-index: var(--z-overlay);
 }
 
 .university-header-content {
@@ -60,42 +113,57 @@
   padding: 24px;
   width: 100%;
   box-sizing: border-box;
-  z-index: 1;
+  z-index: var(--z-header-content);
+  /* Allow child buttons to be clickable */
+  pointer-events: auto;
+  /* Prevent text from overflowing container */
+  max-height: 65%;
+  overflow: hidden;
 }
 
 .university-header-content h1 {
-  font-size: clamp(1.5rem, 4vw, 2.2rem);
+  font-size: clamp(1.3rem, 3.5vw, 2.2rem);
   color: white;
   margin: 0 0 4px 0;
   text-align: left;
   font-weight: 800;
-  text-shadow: 0 2px 4px rgba(0,0,0,0.3);
-  line-height: 1.1;
+  text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+  line-height: 1.2;
+  /* Truncate very long names */
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  word-break: break-word;
 }
 
 .university-location {
   color: rgba(255, 255, 255, 0.95);
-  font-size: 1rem;
+  font-size: 0.95rem;
   margin: 4px 0 0 0;
   font-weight: 500;
-  text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+  text-shadow: 0 1px 3px rgba(0,0,0,0.5);
   display: flex;
   align-items: center;
   gap: 6px;
+  /* Truncate long locations */
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .university-description {
   font-size: clamp(0.95rem, 2vw, 1.1rem);
   line-height: 1.6;
-  color: #444;
+  color: var(--color-text-secondary);
   margin-bottom: 24px;
 }
 
 .university-website-card {
-  background: white;
-  border-radius: 12px;
+  background: var(--color-surface);
+  border-radius: var(--radius-md);
   padding: 24px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  box-shadow: var(--shadow-sm);
   display: flex;
   flex-direction: column;
   align-items: flex-start;
@@ -105,17 +173,17 @@
 .university-website-card h2 {
   font-size: 1.8rem;
   font-weight: 800;
-  color: #1a1a1a;
+  color: var(--color-text-primary);
   margin: 0 0 8px 0;
   line-height: 1.1;
 }
 
 .university-website-card .highlight-text {
-  color: #D62828;
+  color: var(--color-primary);
 }
 
 .university-website-card p {
-  color: #1a1a1a;
+  color: var(--color-text-primary);
   margin: 0 0 20px 0;
   font-size: 1rem;
   font-weight: 500;
@@ -125,35 +193,39 @@
 .university-website-btn {
   display: inline-block;
   padding: 10px 24px;
-  background-color: #D62828;
-  color: white;
+  background-color: var(--color-primary);
+  color: var(--color-surface);
   border: none;
-  border-radius: 6px;
+  border-radius: var(--radius-sm);
   font-size: 1rem;
   font-weight: 600;
   text-decoration: none;
   cursor: pointer;
-  transition: background-color 0.2s;
+  transition: background-color 0.2s, box-shadow 0.2s;
   width: auto;
 }
 
 .university-website-btn:hover {
-  background-color: #B91C1C;
+  background-color: var(--color-primary-hover);
+}
+
+.university-website-btn:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring);
 }
 
 .university-website-btn:active {
-  background-color: #991b1b;
+  background-color: var(--color-primary-active);
 }
 
 /* Right side - Dorms List */
 .dorms-list {
-  flex: 1 1 400px;
   min-width: 0;
 }
 
 .dorms-list h2 {
   font-size: clamp(1.2rem, 3.5vw, 2rem);
-  color: #1a1a1a;
+  color: var(--color-text-primary);
   margin-bottom: clamp(12px, 2vw, 24px);
 }
 
@@ -183,22 +255,30 @@
 .search-section label, .filter-section label {
   font-size: clamp(0.85rem, 2vw, 1rem);
   font-weight: 500;
-  color: #1a1a1a;
+  color: var(--color-text-primary);
 }
 
 .dorm-search-input, .filter-select {
   padding: clamp(8px, 1.5vw, 12px) clamp(20px, 2vw, 24px);
   font-size: clamp(0.85rem, 2vw, 1rem);
-  border: 1px solid #e2e8f0;
-  border-radius: 50px;
-  background: white;
-  transition: border-color 0.2s;
-  outline: none;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+  border: 2px solid var(--color-border);
+  border-radius: var(--radius-full);
+  background: var(--color-surface);
+  transition: border-color 0.2s, box-shadow 0.2s;
+  box-shadow: var(--shadow-input);
 }
 
-.dorm-search-input:focus, .filter-select:focus { border-color: #D62828; }
-.dorm-search-input::placeholder { color: #999; }
+/* Accessible focus states - visible for keyboard users */
+.dorm-search-input:focus,
+.filter-select:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: var(--focus-ring), var(--shadow-input);
+}
+
+.dorm-search-input::placeholder {
+  color: var(--color-text-placeholder);
+}
 
 .filter-select {
   cursor: pointer;
@@ -219,26 +299,36 @@
 .no-results {
   text-align: center;
   padding: clamp(30px, 5vw, 60px) 20px;
-  background: white;
-  border-radius: 12px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  background: var(--color-surface);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
 }
 
-.no-results p { font-size: clamp(0.95rem, 2vw, 1.1rem); color: #666; margin: 0; }
+.no-results p {
+  font-size: clamp(0.95rem, 2vw, 1.1rem);
+  color: var(--color-text-muted);
+  margin: 0;
+}
 
 .dorm-card {
   display: flex;
-  background: white;
-  border-radius: 12px;
+  background: var(--color-surface);
+  border-radius: var(--radius-md);
   overflow: hidden;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: var(--shadow-sm);
   transition: transform 0.2s, box-shadow 0.2s;
   cursor: pointer;
 }
 
 .dorm-card:hover {
   transform: translateY(-4px);
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+  box-shadow: var(--shadow-lg);
+}
+
+/* Focus state for keyboard navigation on dorm cards */
+.dorm-card:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring), var(--shadow-md);
 }
 
 .dorm-image {
@@ -246,6 +336,8 @@
   min-width: clamp(100px, 20vw, 150px);
   aspect-ratio: 4 / 3;
   object-fit: cover;
+  /* Placeholder background while image loads */
+  background-color: #e0e0e0;
 }
 
 .dorm-card-info {
@@ -267,9 +359,13 @@
 
 .dorm-card-info h3 {
   font-size: clamp(0.9rem, 2.5vw, 1.15rem);
-  color: #1a1a1a;
+  color: var(--color-text-primary);
   margin: 0 0 6px;
   font-weight: 600;
+  /* Truncate long dorm names */
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .dorm-rating {
@@ -279,26 +375,38 @@
   margin-bottom: 4px;
 }
 
-.stars { color: #f8c41b; font-size: clamp(0.8rem, 2vw, 0.9rem); }
-.rating-number { color: #666; font-size: clamp(0.7rem, 1.8vw, 0.8rem); }
+.stars {
+  color: var(--color-star);
+  font-size: clamp(0.8rem, 2vw, 0.9rem);
+}
+
+.rating-number {
+  color: var(--color-text-muted);
+  font-size: clamp(0.7rem, 1.8vw, 0.8rem);
+}
 
 .leave-review-btn-small {
   display: inline-block;
   padding: 8px 16px;
-  background-color: white;
-  color: #4CAF50;
-  border: 1px solid #4CAF50;
+  background-color: var(--color-surface);
+  color: var(--color-success);
+  border: 2px solid var(--color-success);
   border-radius: 20px;
   font-size: 0.9rem;
   font-weight: 600;
   text-decoration: none;
   white-space: nowrap;
-  transition: all 0.2s ease;
+  transition: background-color 0.2s, color 0.2s, box-shadow 0.2s;
 }
 
 .leave-review-btn-small:hover {
-  background-color: #4CAF50;
-  color: white;
+  background-color: var(--color-success);
+  color: var(--color-surface);
+}
+
+.leave-review-btn-small:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.4);
 }
 
 .dorm-breadcrumbs {
@@ -308,39 +416,82 @@
   font-size: 0.9rem;
   margin-bottom: 12px;
 }
+
 .dorm-breadcrumbs a {
-  color: #1a1a1a;
+  color: var(--color-text-primary);
   text-decoration: none;
+  transition: color 0.2s;
 }
+
 .dorm-breadcrumbs a:hover {
-  text-decoration: none;
+  text-decoration: underline;
+  color: var(--color-primary);
 }
+
+.dorm-breadcrumbs a:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring);
+  border-radius: 2px;
+}
+
 .breadcrumb-separator {
-  color: #1a1a1a;
+  color: var(--color-text-primary);
 }
+
 .breadcrumb-current {
-  color: #1a1a1a;
+  color: var(--color-text-primary);
   font-weight: 500;
 }
 
 /* Only 2 breakpoints for major layout changes */
 @media (max-width: 768px) {
-  .university-content { flex-direction: column; align-items: center; }
-  .university-info, .dorms-list { max-width: 100%; width: 100%; }
-  .university-info { position: static; }
-  .dorms-controls { flex-direction: column; }
-  .search-section, .filter-section { width: 100%; flex: 1 1 100%; }
+  .university-content {
+    grid-template-columns: 1fr;
+  }
+  
+  .university-info,
+  .dorms-list {
+    max-width: 100%;
+    width: 100%;
+  }
+  
+  .dorms-controls {
+    flex-direction: column;
+  }
+  
+  .search-section,
+  .filter-section {
+    width: 100%;
+    flex: 1 1 100%;
+  }
 }
 
 @media (max-width: 500px) {
-  .dorm-card { flex-direction: column; }
-  .dorm-image { width: 100%; min-width: 100%; aspect-ratio: 16 / 9; }
-  .university-website-link { width: 100%; text-align: center; box-sizing: border-box; }
+  .dorm-card {
+    flex-direction: column;
+  }
+  
+  .dorm-image {
+    width: 100%;
+    min-width: 100%;
+    aspect-ratio: 16 / 9;
+  }
+  
+  .university-website-btn {
+    width: 100%;
+    text-align: center;
+    box-sizing: border-box;
+  }
   
   .dorm-card-info {
     flex-direction: column;
     align-items: flex-start;
     gap: 12px;
+  }
+  
+  .dorm-card-info h3 {
+    /* Allow text to wrap on small screens */
+    white-space: normal;
   }
   
   .dorm-action-area {
@@ -352,6 +503,6 @@
     display: block;
     text-align: center;
     width: 100%;
-    box-sizing: border-box; 
+    box-sizing: border-box;
   }
 }
