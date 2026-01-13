@@ -36,7 +36,7 @@
 .user-avatar {
   width: 80px;
   height: 80px;
-  background: linear-gradient(135deg, #1976d2, #42a5f5);
+  background: linear-gradient(135deg, #D62828, #ef4444);
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -84,10 +84,10 @@
 }
 
 .nav-item.active {
-  background-color: #e3f2fd;
-  color: #1976d2;
+  background-color: #fff1f2;
+  color: #D62828;
   font-weight: 500;
-  border-left: 3px solid #1976d2;
+  border-left: 3px solid #D62828;
 }
 
 /* Main Content */
@@ -136,7 +136,7 @@
 
 .retry-button {
   padding: 12px 24px;
-  background-color: #1976d2;
+  background-color: #D62828;
   color: white;
   border: none;
   border-radius: 8px;
@@ -147,13 +147,13 @@
 }
 
 .retry-button:hover {
-  background-color: #1565c0;
+  background-color: #B91C1C;
 }
 
 .browse-link {
   display: inline-block;
   padding: 12px 24px;
-  background-color: #1976d2;
+  background-color: #D62828;
   color: white;
   text-decoration: none;
   border-radius: 8px;
@@ -162,7 +162,7 @@
 }
 
 .browse-link:hover {
-  background-color: #1565c0;
+  background-color: #B91C1C;
 }
 
 /* Reviews List */
@@ -192,7 +192,7 @@
 
 .review-university {
   font-size: 0.85rem;
-  color: #1976d2;
+  color: #D62828;
   text-decoration: none;
   display: block;
   margin-bottom: 4px;

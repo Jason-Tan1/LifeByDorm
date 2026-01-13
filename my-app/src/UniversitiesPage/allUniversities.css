@@ -69,13 +69,13 @@
 
 .university-list a {
   text-decoration: none;
-  color: #1976d2;
+  color: #000000;
   font-size: clamp(0.9rem, 2.5vw, 1.1rem);
   font-weight: 500;
   display: block;
 }
 
-.university-list a:hover { color: #1565c0; }
+.university-list a:hover { color: #B91C1C; }
 
 .university-list .location {
   color: #666;

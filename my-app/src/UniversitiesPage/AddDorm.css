@@ -67,7 +67,7 @@
 }
 
 .add-dorm-cta-card .highlight-text {
-  color: #1976d2; /* Using the site's primary blue */
+  color: #D62828; /* Using the site's primary red */
 }
 
 .add-dorm-cta-card p {
@@ -81,7 +81,7 @@
 .add-dorm-btn {
   display: inline-block;
   padding: 10px 24px;
-  background-color: #5AA9E6; /* Light blue similar to screenshot */
+  background-color: #D62828; /* Standard red for main action button */
   color: white;
   border: none;
   border-radius: 6px;
@@ -94,7 +94,7 @@
 }
 
 .add-dorm-btn:hover {
-  background-color: #4a91c8;
+  background-color: #B91C1C;
   transform: none;
 }
 

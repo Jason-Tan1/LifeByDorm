@@ -48,7 +48,7 @@ function AllUniversities() {
       </div>
 
       <div className="all-universities-content">
-        <h2 style={{ marginBottom: '20px', fontSize: '1.5rem', borderBottom: '2px solid #1976d2', paddingBottom: '10px' }}>
+        <h2 style={{ marginBottom: '20px', fontSize: '1.5rem', paddingBottom: '10px' }}>
              All Universities ({universities.length})
         </h2>
         {loading && <p>Loading universities...</p>}

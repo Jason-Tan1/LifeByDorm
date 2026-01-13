@@ -121,7 +121,7 @@ function DormInfo({ dorm, reviews, universityName, universityLocation, calculate
                         className="distribution-fill" 
                         style={{ width: `${percentage}%` }}
                       ></div>
-                      <span className="distribution-percentage">{Math.round(percentage)}%</span>
+                    
                     </div>
                   </div>
                 );

@@ -2,7 +2,7 @@
 
 body {
   font-family: 'DM Sans', sans-serif;
-  background-color: #f6f7fe;
+  background-color: #fffafa;
   margin: 0;
 }
 
@@ -13,7 +13,7 @@ body {
   align-items: center;
   padding: clamp(0.5rem, 2vw, 1rem) clamp(0.75rem, 3vw, 2.5rem);
   background-color: #ffffff;
-  border-bottom: 1px solid #e0e7ff;
+  border-bottom: 1px solid #fee2e2;
   box-sizing: border-box;
   width: 100%;
   flex-wrap: wrap;
@@ -57,27 +57,27 @@ body {
 /* Styling for secondary buttons (About Me, Contact Me) */
 .navbar_aboutme button,
 .navbar_contactme button {
-  background-color: #f6f7fe;
-  color: #4338ca;
-  border: 1px solid #e0e7ff;
+  background-color: #fff1f2;
+  color: #B91C1C;
+  border: 1px solid #fecaca;
 }
 
 /* Hover effect for secondary buttons */
 .navbar_aboutme button:hover,
 .navbar_contactme button:hover {
-  background-color: #e0e7ff;
+  background-color: #ffe4e6;
 }
 
 /* Styling for the primary button (Sign In) */
 .navbar_login button {
-  background-color: #3076BD;
+  background-color: #D62828;
   color: #ffffff;
   border-radius: 25px;
 }
 
 /* Hover effect for the primary button */
 .navbar_login button:hover {
-  background-color: #1f4e8c;
+  background-color: #B91C1C;
 }
 
 /* Dropdown Container */

@@ -100,8 +100,8 @@
 .form-group input:focus,
 .form-group textarea:focus {
   outline: none;
-  border-color: #1976d2;
-  box-shadow: 0 0 0 3px rgba(25, 118, 210, 0.1);
+  border-color: #D62828;
+  box-shadow: 0 0 0 3px rgba(214, 40, 40, 0.1);
 }
 
 .form-group input::placeholder,
@@ -116,7 +116,7 @@
 
 .submit-button {
   padding: 14px 24px;
-  background-color: #1976d2;
+  background-color: #D62828;
   color: white;
   border: none;
   border-radius: 8px;
@@ -128,7 +128,7 @@
 }
 
 .submit-button:hover {
-  background-color: #1565c0;
+  background-color: #B91C1C;
 }
 
 .submit-button:active {
