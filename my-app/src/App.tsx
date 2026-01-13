@@ -9,7 +9,7 @@ import Dorms from './dorms/dorms.tsx';
 import NavBar from './NavBarPages/navbar.tsx';
 import SearchBar from './homepage/searchbar.tsx';
 import Review from './dorms/review.tsx';
-import AllUniversities from './footer/allUniversities.tsx';
+import AllUniversities from './UniversitiesPage/allUniversities.tsx';
 import AdminDashboard from './admin/dashboard';
 import { UniversityDataProvider } from './context/UniversityDataContext';
 import TermsOfService from './legal/TermsOfService.tsx';
