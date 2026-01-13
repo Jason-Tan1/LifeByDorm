@@ -3,8 +3,6 @@ import { useGoogleLogin } from '@react-oauth/google'
 import type { TokenResponse } from '@react-oauth/google'
 import axios from 'axios'
 import MailOutlineIcon from '@mui/icons-material/MailOutline';
-import Visibility from '@mui/icons-material/Visibility';
-import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import './login.css'
 import LBDLogo from '../assets/LBDLogo-removebg-preview.png';
@@ -18,11 +16,10 @@ interface LoginModalProps {
 
 function login({ isOpen, onClose }: LoginModalProps) {
   const [email, setEmail] = useState<string>("");
-  const [password, setPassword] = useState<string>("");
-  const [isRegistering, setIsRegistering] = useState<boolean>(false);
+  const [verificationCode, setVerificationCode] = useState<string>("");
+  const [showVerificationStep, setShowVerificationStep] = useState<boolean>(false);
   const [error, setError] = useState<string>("");
   const [showEmailForm, setShowEmailForm] = useState<boolean>(false);
-  const [showPassword, setShowPassword] = useState<boolean>(false);
   const [showSuccessPopup, setShowSuccessPopup] = useState<boolean>(false);
 
   // Custom Google Login Hook
@@ -58,40 +55,41 @@ function login({ isOpen, onClose }: LoginModalProps) {
 
   const handleClose = () => {
     setShowEmailForm(false);
+    setShowVerificationStep(false);
+    setVerificationCode("");
+    setEmail("");
     setError("");
     onClose();
   };
-
-  /* Removed old handleGoogleSuccess as it's replaced by the hook above */
-
-
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
 
     try {
-      const endpoint = isRegistering ? `${API_BASE}/register` : `${API_BASE}/login`;
-      const response = await axios.post(endpoint, {
-        email,
-        password
-      });
+      if (!showVerificationStep) {
+        // Step 1: Send Code
+        await axios.post(`${API_BASE}/auth/send-code`, { email });
+        setShowVerificationStep(true);
+      } else {
+        // Step 2: Verify Code
+        const response = await axios.post(`${API_BASE}/auth/verify-code`, { 
+            email, 
+            code: verificationCode 
+        });
 
-      if (response.data.token) {
-        // Store the token in localStorage
-        localStorage.setItem('token', response.data.token);
-        // Close modal and reload to update navbar state
-        onClose();
-        window.location.reload();
+        if (response.data.token) {
+          localStorage.setItem('token', response.data.token);
+          setShowSuccessPopup(true);
+          setTimeout(() => {
+            handleClose();
+            window.location.reload();
+          }, 1500);
+        }
       }
     } catch (err: any) {
       setError(err.response?.data?.message || 'An error occurred');
     }
-  }
-
-  const toggleMode = () => {
-    setIsRegistering(!isRegistering);
-    setError("");
   }
 
   //Login Modal
@@ -146,57 +144,60 @@ function login({ isOpen, onClose }: LoginModalProps) {
             </div>
           </div>
         ) : (
-          // Email Form (replicates screenshot layout)
+          // Email Form (Passwordless)
           <form onSubmit={handleSubmit} className="email_screen">
             <button 
               type="button" 
               className="back_button" 
-              onClick={() => setShowEmailForm(false)}
+              onClick={() => {
+                  if (showVerificationStep) setShowVerificationStep(false);
+                  else setShowEmailForm(false);
+                  setError("");
+              }}
             >
               <ArrowBackIcon />
               <span>Back</span>
             </button>
             <div className="email_header">
-              <h1>{isRegistering ? "Create an account" : "Welcome back."}</h1>
+              <h1>{showVerificationStep ? "Check your inbox" : "Sign in or Sign up"}</h1>
             </div>
 
-            <div className="field_group">
-              <label className="field_label">Email address</label>
-              <input
-                type="email"
-                placeholder="Email"
-                name="email"
-                className="input_field"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-              />
-            </div>
-
-            <div className="field_group">
-              <label className="field_label">Password</label>
-              <div className="password_wrapper">
-                <input
-                  type={showPassword ? 'text' : 'password'}
-                  placeholder="Password"
-                  name="password"
-                  className="input_field"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                />
-                <button
-                  type="button"
-                  className="password_toggle"
-                  onClick={() => setShowPassword(!showPassword)}
-                  aria-label="Toggle password visibility"
-                >
-                  {showPassword ? <VisibilityOff /> : <Visibility />}
-                </button>
-              </div>
-            </div>
-
-            <div className="forgot_row">
-              <a className="forgot_link" href="#">Forgot password?</a>
-            </div>
+            {!showVerificationStep ? (
+                <div className="field_group">
+                  <label className="field_label">Email address</label>
+                  <input
+                    type="email"
+                    placeholder="Email"
+                    name="email"
+                    className="input_field"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    required
+                    autoFocus
+                  />
+                  <p style={{marginTop: '10px', fontSize: '13px', color: '#666'}}>
+                      We'll email you a code to sign in without a password.
+                  </p>
+                </div>
+            ) : (
+                <div className="field_group">
+                  <label className="field_label">Verification Code</label>
+                  <p style={{marginBottom: '15px', fontSize: '14px', color: '#555'}}>
+                      We sent a code to <strong>{email}</strong>. Enter it below.
+                  </p>
+                  <input
+                    type="text"
+                    placeholder="123456"
+                    name="code"
+                    className="input_field"
+                    value={verificationCode}
+                    onChange={(e) => setVerificationCode(e.target.value)}
+                    required
+                    autoFocus
+                    maxLength={6}
+                  />
+                </div>
+            )}
 
             {error && (
               <div className="login_error">
@@ -205,23 +206,9 @@ function login({ isOpen, onClose }: LoginModalProps) {
             )}
 
             <div className="primary_action">
-              <button type="submit" className="primary_button">{isRegistering ? "Create account" : "Sign in"}</button>
-            </div>
-
-            <div className="member_separator">
-              <span className="line" />
-              <span className="member_text">{isRegistering ? "Already a member?" : "Not a member?"}</span>
-              <span className="line" />
-            </div>
-
-            <div className="join_row">
-              <a 
-                className="join_link" 
-                href="#" 
-                onClick={(e) => { e.preventDefault(); toggleMode(); }}
-              >
-                {isRegistering ? "Sign in to LifeByDorm" : "Join to unlock the best of LifeByDorm."}
-              </a>
+              <button type="submit" className="primary_button">
+                  {showVerificationStep ? "Verify & Continue" : "Send Code"}
+              </button>
             </div>
 
             <div className="login_footer_small">

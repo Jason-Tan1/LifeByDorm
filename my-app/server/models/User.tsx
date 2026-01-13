@@ -2,11 +2,13 @@ import mongoose, { Document, Schema } from 'mongoose';
 
 export interface IUser extends Document {
   email: string;
-  password: string;
+  password?: string;
   role?: string;
   googleId?: string;
   name?: string;
   picture?: string;
+  verificationCode?: string;
+  verificationCodeExpires?: Date;
 }
 
 const userSchema = new Schema<IUser>({
@@ -17,7 +19,7 @@ const userSchema = new Schema<IUser>({
   },
   password: {
     type: String,
-    required: true
+    required: false
   },
   role: {
     type: String,
@@ -33,6 +35,12 @@ const userSchema = new Schema<IUser>({
   },
   picture: {
     type: String
+  },
+  verificationCode: {
+    type: String
+  },
+  verificationCodeExpires: {
+    type: Date
   }
 });
 
