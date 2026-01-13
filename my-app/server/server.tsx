@@ -11,6 +11,7 @@ import { User, IUser } from './models/user';
 import { UserReview } from './models/userreview';
 import { University } from './models/universities';
 import { Dorm } from './models/dorm';
+import nodemailer from 'nodemailer';
 
 dotenv.config();
 console.log('Loaded secret:', process.env.ACCESS_TOKEN_SECRET ? '✅ Loaded' : '❌ Missing');
@@ -206,6 +207,10 @@ app.post('/login', authLimiter, async (req, res) => {
     }
 
     // Check password
+    if (!user.password) {
+      return res.status(400).json({ message: 'User does not have a password. Please use email verification.' });
+    }
+    
     const validPassword = await bcrypt.compare(password, user.password);
     if (!validPassword) {
       return res.status(400).json({ message: 'Invalid password' });
@@ -228,6 +233,105 @@ app.post('/login', authLimiter, async (req, res) => {
   } catch (error) {
     res.status(500).json({ message: 'Error logging in' });
   }
+});
+
+// Email Transporter Configuration
+const transporter = nodemailer.createTransport({
+  service: 'gmail',
+  auth: {
+    user: process.env.EMAIL_USER,
+    pass: process.env.EMAIL_PASS
+  }
+});
+
+// Send Verification Code
+app.post('/auth/send-code', authLimiter, async (req, res) => {
+  try {
+    const { email } = req.body;
+    if (!email) return res.status(400).json({ message: 'Email is required' });
+
+    // Generate 6-digit code
+    const verificationCode = Math.floor(100000 + Math.random() * 900000).toString();
+    const verificationCodeExpires = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes
+
+    // Find or create user
+    let user = await User.findOne({ email });
+    if (!user) {
+        // Create new user if not exists
+        user = new User({
+            email,
+            password: await bcrypt.hash(Math.random().toString(36), 10), // Random dummy password
+            verificationCode,
+            verificationCodeExpires
+        });
+    } else {
+        // Update existing user
+        user.verificationCode = verificationCode;
+        user.verificationCodeExpires = verificationCodeExpires;
+    }
+    await user.save();
+
+    console.log(`[Auth] Verification code generated for ${email}`);
+
+    // Send email if credentials are present, otherwise just log (for dev)
+    if (process.env.EMAIL_USER && process.env.EMAIL_PASS) {
+        await transporter.sendMail({
+            from: process.env.EMAIL_USER,
+            to: email,
+            subject: 'Your LifeByDorm Verification Code',
+            text: `Your verification code is: ${verificationCode}. It expires in 10 minutes.`
+        });
+        console.log(`[Auth] Email sent to ${email}`);
+    } else {
+        console.log(`[Auth] No email credentials found. Code for ${email} is: ${verificationCode}`);
+    }
+
+    res.json({ message: 'Verification code sent' });
+  } catch (error) {
+    console.error('Error sending code:', error);
+    res.status(500).json({ message: 'Error sending verification code' });
+  }
+});
+
+// Verify Code and Login
+app.post('/auth/verify-code', authLimiter, async (req, res) => {
+    try {
+        const { email, code } = req.body;
+        if (!email || !code) return res.status(400).json({ message: 'Email and code are required' });
+
+        const user = await User.findOne({ 
+            email, 
+            verificationCode: code,
+            verificationCodeExpires: { $gt: new Date() }
+        });
+
+        if (!user) {
+            return res.status(400).json({ message: 'Invalid or expired verification code' });
+        }
+
+        // Clear code after successful use
+        user.verificationCode = undefined;
+        user.verificationCodeExpires = undefined;
+        await user.save();
+
+        if (!process.env.ACCESS_TOKEN_SECRET) {
+            throw new Error('ACCESS_TOKEN_SECRET is not defined');
+        }
+
+        // Determine role and generate token
+        const dbRole = (user as any).role as string | undefined;
+        const isAdmin = (dbRole === 'admin') || ADMIN_EMAILS.includes(user.email);
+        const token = jwt.sign(
+            { userId: user._id, name: user.email, role: isAdmin ? 'admin' : 'user' },
+            process.env.ACCESS_TOKEN_SECRET as Secret,
+            { expiresIn: '24h' }
+        );
+
+        res.json({ token });
+    } catch (error) {
+        console.error('Error verifying code:', error);
+        res.status(500).json({ message: 'Error verifying code' });
+    }
 });
 
 // Google OAuth login - simplified with ID token verification
