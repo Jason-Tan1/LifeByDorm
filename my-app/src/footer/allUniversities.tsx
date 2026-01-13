@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import NavBar from '../NavBarPages/navbar';
 import Footer from '../homepage/footer';
 import './allUniversities.css';
+import DefaultDormImage from '../assets/Default_Dorm.png';
 
 type University = {
   name: string;
@@ -38,8 +39,18 @@ function AllUniversities() {
   return (
     <div className="all-universities-page">
       <NavBar />
+      
+      {/* Hero Section */}
+      <div className="uni-hero" style={{ backgroundImage: `url(${DefaultDormImage})` }}>
+        <div className="uni-hero-overlay">
+           <h1>University List</h1>
+        </div>
+      </div>
+
       <div className="all-universities-content">
-        <h1>University List ({universities.length} Universities)</h1>
+        <h2 style={{ marginBottom: '20px', fontSize: '1.5rem', borderBottom: '2px solid #1976d2', paddingBottom: '10px' }}>
+             All Universities ({universities.length})
+        </h2>
         {loading && <p>Loading universities...</p>}
         {error && <p>Error: {error}</p>}
         {!loading && !error && (

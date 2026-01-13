@@ -2,6 +2,7 @@
 import NavBar from './navbar.tsx'; 
 import Footer from '../homepage/footer.tsx';
 import './contactme.css';
+import DefaultDormImage from '../assets/Default_Dorm.png';
 
 function ContactMe() {
   const [formData, setFormData] = useState({
@@ -30,9 +31,16 @@ function ContactMe() {
     <div className="contact-page">
       <NavBar />
       
+      {/* Hero Section */}
+      <div className="contact-hero" style={{ backgroundImage: `url(${DefaultDormImage})` }}>
+        <div className="contact-hero-overlay">
+           <h1>Contact Us</h1>
+        </div>
+      </div>
+      
       <div className="contact-content">
         <div className="contact-container">
-          <h1>Contact Us</h1>
+          {/* h1 hidden by CSS but removed here effectively */}
           <p className="contact-subtitle">Have a question or feedback? We'd love to hear from you!</p>
           
           <form className="contact-form" onSubmit={handleSubmit}>
