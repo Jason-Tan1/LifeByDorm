@@ -12,6 +12,8 @@ import Review from './dorms/review.tsx';
 import AllUniversities from './footer/allUniversities.tsx';
 import AdminDashboard from './admin/dashboard';
 import { UniversityDataProvider } from './context/UniversityDataContext';
+import TermsOfService from './legal/TermsOfService.tsx';
+import PrivacyPolicy from './legal/PrivacyPolicy.tsx';
 
 function App() {
   return (
@@ -31,6 +33,8 @@ function App() {
           <Route path="/navbar" element={<NavBar />} />
           <Route path="/searchbar" element={<SearchBar />} />
           <Route path="/review" element={<Review />} />
+          <Route path="/terms" element={<TermsOfService />} />
+          <Route path="/privacy" element={<PrivacyPolicy />} />
         </Routes>
       </Router>
     </UniversityDataProvider>

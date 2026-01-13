@@ -16,6 +16,12 @@
   text-align: center;
 }
 
+.footer-logo {
+  height: 80px; 
+  width: auto;
+  margin-bottom: 0.5rem;
+}
+
 .footer-links {
   display: flex;
   justify-content: center;
