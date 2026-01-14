@@ -75,10 +75,21 @@ export const reviewSchema = z.object({
     building: z.number().int().min(1).max(5),
     amenities: z.number().int().min(1).max(5),
     location: z.number().int().min(1).max(5),
-    description: z.string().min(10).max(3000).trim(), // Enforce minimum length for meaningful reviews
-    year: z.union([z.number(), z.array(z.number())]), // Handle various formats sent by frontend
-    roomType: z.union([z.string(), z.array(z.string())]),
-    wouldDormAgain: z.boolean().optional(),
-    fileImage: z.string().optional(), // Base64 strings can be large, we rely on express limit
-    images: z.array(z.string()).optional()
-}).strict();
+    description: z.string().min(10).max(3000).trim(),
+    // Handle all possible year formats: number, string, array of numbers/strings
+    year: z.union([
+        z.number(),
+        z.string(),
+        z.array(z.union([z.number(), z.string()]))
+    ]),
+    // Handle all possible roomType formats: string or array of strings
+    roomType: z.union([
+        z.string(),
+        z.array(z.string())
+    ]),
+    wouldDormAgain: z.boolean().nullable().optional(),
+    // fileImage can be string, null, undefined, or empty string
+    fileImage: z.union([z.string(), z.null()]).optional(),
+    // images can be array of strings, null, undefined, or empty array
+    images: z.union([z.array(z.string()), z.null()]).optional()
+}).passthrough(); // Use passthrough instead of strict to allow any extra fields
