@@ -5,6 +5,7 @@ import StarHalf from '@mui/icons-material/StarHalf';
 import StarBorder from '@mui/icons-material/StarBorder';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import HomeIcon from '@mui/icons-material/Home';
+import DefaultDorm from '../assets/Default_Dorm.png';
 
 type APIDorm = {
   name: string;
@@ -77,7 +78,7 @@ function DormInfo({ dorm, reviews, universityName, universityLocation, calculate
 
       <div className="dorm-image-container">
         <img
-          src={dorm.imageUrl && dorm.imageUrl.trim() !== '' ? dorm.imageUrl : '/src/assets/Default_Dorm.png'}
+          src={dorm.imageUrl && dorm.imageUrl.trim() !== '' ? dorm.imageUrl : DefaultDorm}
           alt={dorm.name}
           className="dorm-main-image"
         />

@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import NavBar from '../NavBarPages/navbar';
+import DefaultDorm from '../assets/Default_Dorm.png';
 
 const API_BASE = (import.meta as any).env?.VITE_API_BASE || 'http://localhost:3000';
 
@@ -410,21 +411,16 @@ function AdminDashboard() {
                           <strong>Room Types:</strong> {dorm.roomTypes.join(', ')}
                         </p>
                       )}
-                      {dorm.imageUrl && (
-                        <div style={{ marginTop: '12px' }}>
-                          <strong>Image:</strong>
-                          <div style={{ marginTop: '8px' }}>
-                            <img 
-                              src={dorm.imageUrl} 
-                              alt={dorm.name}
-                              style={{ maxWidth: '200px', maxHeight: '150px', objectFit: 'cover', borderRadius: '4px' }}
-                              onError={(e) => {
-                                (e.target as HTMLImageElement).style.display = 'none';
-                              }}
-                            />
-                          </div>
+                      <div style={{ marginTop: '12px' }}>
+                        <strong>Image:</strong>
+                        <div style={{ marginTop: '8px' }}>
+                          <img 
+                            src={dorm.imageUrl || DefaultDorm} 
+                            alt={dorm.name}
+                            style={{ maxWidth: '200px', maxHeight: '150px', objectFit: 'cover', borderRadius: '4px' }}
+                          />
                         </div>
-                      )}
+                      </div>
                       <p style={{ fontSize: '12px', color: '#999', marginTop: '12px' }}>
                         Submitted by: {dorm.submittedBy || 'Unknown'} | {dorm.createdAt ? new Date(dorm.createdAt).toLocaleString() : 'Unknown date'}
                       </p>
