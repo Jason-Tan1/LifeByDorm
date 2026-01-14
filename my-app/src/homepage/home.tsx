@@ -5,6 +5,8 @@ import NavBar from '../NavBarPages/navbar.tsx';
 import SearchBar from './searchbar.tsx';
 import Footer from './footer.tsx';
 import { useUniversityData } from '../context/UniversityDataContext';
+import DefaultCampus from '../assets/Default_Campus.png';
+import DefaultDorm from '../assets/Default_Dorm.png';
 
 const API_BASE = (import.meta as any).env?.VITE_API_BASE || 'http://localhost:3000';
 
@@ -229,7 +231,7 @@ function Home() {
               {topUniversities.map(uni => (
                 <Link key={uni.slug} to={`/universities/${uni.slug}`} className="featured-card slider-card">
                   <div className="featured-image-container">
-                    <img src={uni.imageUrl || '/src/assets/Default_Campus.png'} alt={uni.name} className="featured-image" />
+                    <img src={uni.imageUrl || DefaultCampus} alt={uni.name} className="featured-image" />
                   </div>
                   <div className="featured-info">
                     <h3 className="featured-university-name">
@@ -271,7 +273,7 @@ function Home() {
               {mostRatedDorms.map(dorm => (
                 <Link key={`${dorm.universitySlug}-${dorm.slug}`} to={`/universities/${dorm.universitySlug}/dorms/${dorm.slug}`} className="featured-card slider-card">
                   <div className="featured-image-container">
-                    <img src={dorm.imageUrl || '/src/assets/Default_Dorm.png'} alt={dorm.name} className="featured-image" />
+                    <img src={dorm.imageUrl || DefaultDorm} alt={dorm.name} className="featured-image" />
                   </div>
                   <div className="featured-info">
                     <h3 className="featured-university-name">
@@ -314,7 +316,7 @@ function Home() {
               {topDorms.map(dorm => (
                 <Link key={`${dorm.universitySlug}-${dorm.slug}`} to={`/universities/${dorm.universitySlug}/dorms/${dorm.slug}`} className="featured-card slider-card">
                   <div className="featured-image-container">
-                    <img src={dorm.imageUrl || '/src/assets/Default_Dorm.png'} alt={dorm.name} className="featured-image" />
+                    <img src={dorm.imageUrl || DefaultDorm} alt={dorm.name} className="featured-image" />
                   </div>
                   <div className="featured-info">
                     <h3 className="featured-university-name">

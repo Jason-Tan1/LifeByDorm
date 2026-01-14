@@ -8,6 +8,8 @@ import AddDorm from './AddDorm';
 import './universityDash.css';
 import '../homepage/searchbar.css';
 import { FaSearch } from 'react-icons/fa';
+import DefaultCampus from '../assets/Default_Campus.png';
+import DefaultDorm from '../assets/Default_Dorm.png';
 
 // Define types for University and Dorm data from API
 type APIUniversity = {
@@ -210,7 +212,7 @@ function UniversityDash() {
 
           <div className="university-image-container">
             <img
-              src={university.imageUrl || '/src/assets/Default_Campus.png'}
+              src={university.imageUrl || DefaultCampus}
               alt={university.name}
               className="university-main-image"
             />
@@ -293,7 +295,7 @@ function UniversityDash() {
                 className="dorm-card"
                 style={{ textDecoration: 'none', color: 'inherit' }}
               >
-                <img src={(dorm.imageUrl && dorm.imageUrl !== '' && dorm.imageUrl !== 'null') ? dorm.imageUrl : '/src/assets/Default_Dorm.png'} alt={dorm.name} className="dorm-image" />
+                <img src={(dorm.imageUrl && dorm.imageUrl !== '' && dorm.imageUrl !== 'null') ? dorm.imageUrl : DefaultDorm} alt={dorm.name} className="dorm-image" />
                 <div className="dorm-card-info">
                   <div className="dorm-text-content">
                     <h3>{dorm.name}</h3>

@@ -12,6 +12,16 @@ import { UserReview } from './models/userreview';
 import { University } from './models/universities';
 import { Dorm } from './models/dorm';
 import nodemailer from 'nodemailer';
+import { 
+  validate, 
+  registerSchema, 
+  loginSchema, 
+  sendCodeSchema, 
+  verifyCodeSchema, 
+  googleAuthSchema, 
+  dormSchema, 
+  reviewSchema 
+} from './validation';
 
 dotenv.config();
 console.log('Loaded secret:', process.env.ACCESS_TOKEN_SECRET ? '✅ Loaded' : '❌ Missing');
@@ -29,17 +39,21 @@ console.log('Admin emails:', ADMIN_EMAILS.length ? ADMIN_EMAILS : 'none');
 const app = express()
 
 // Rate limiting configuration
+// OWASP: Rate Limiting to prevent brute-force and DoS attacks
 const authLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 50, // Limit each IP to 50 auth requests per windowMs
+  max: 20, // Strict limit for auth endpoints (login/register) - 20 per 15 mins
   message: { message: 'Too many authentication attempts, please try again after 15 minutes' },
   standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
   legacyHeaders: false, // Disable the `X-RateLimit-*` headers
+  handler: (req, res, next, options) => {
+    res.status(429).json(options.message);
+  }
 });
 
 const apiLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 1000, // Limit each IP to 1000 requests per windowMs (generous for development)
+  max: 300, // Limit each IP to 300 requests per 15 mins (approx 1 req/3 sec avg)
   message: { message: 'Too many requests, please try again later' },
   standardHeaders: true,
   legacyHeaders: false,
@@ -152,9 +166,10 @@ app.get('/posts', authenticationToken, (req: AuthRequest, res: Response) => {
 })
 
 // Register new user
-app.post('/register', authLimiter, async (req, res) => {
+app.post('/register', authLimiter, validate(registerSchema), async (req, res) => {
   try {
-    console.log('Received registration request:', req.body);
+    // OWASP: Logging - Do not log sensitive information like passwords
+    console.log('Received registration request for:', req.body.email);
     const { email, password } = req.body;
     
     // Check if user already exists
@@ -196,14 +211,18 @@ app.post('/register', authLimiter, async (req, res) => {
 });
 
 // Login user
-app.post('/login', authLimiter, async (req, res) => {
+app.post('/login', authLimiter, validate(loginSchema), async (req, res) => {
   try {
     const { email, password } = req.body;
     
     // Find user
     const user = await User.findOne({ email });
+    
+    // OWASP: Account Enumeration Prevention - Use generic error messages
+    const genericErrorMessage = 'Invalid email or password';
+
     if (!user) {
-      return res.status(400).json({ message: 'User not found' });
+      return res.status(400).json({ message: genericErrorMessage });
     }
 
     // Check password
@@ -213,7 +232,7 @@ app.post('/login', authLimiter, async (req, res) => {
     
     const validPassword = await bcrypt.compare(password, user.password);
     if (!validPassword) {
-      return res.status(400).json({ message: 'Invalid password' });
+      return res.status(400).json({ message: genericErrorMessage });
     }
 
     if (!process.env.ACCESS_TOKEN_SECRET) {
@@ -245,7 +264,7 @@ const transporter = nodemailer.createTransport({
 });
 
 // Send Verification Code
-app.post('/auth/send-code', authLimiter, async (req, res) => {
+app.post('/auth/send-code', authLimiter, validate(sendCodeSchema), async (req, res) => {
   try {
     const { email } = req.body;
     if (!email) return res.status(400).json({ message: 'Email is required' });
@@ -294,7 +313,7 @@ app.post('/auth/send-code', authLimiter, async (req, res) => {
 });
 
 // Verify Code and Login
-app.post('/auth/verify-code', authLimiter, async (req, res) => {
+app.post('/auth/verify-code', authLimiter, validate(verifyCodeSchema), async (req, res) => {
     try {
         const { email, code } = req.body;
         if (!email || !code) return res.status(400).json({ message: 'Email and code are required' });
@@ -337,7 +356,7 @@ app.post('/auth/verify-code', authLimiter, async (req, res) => {
 // Google OAuth login - simplified with ID token verification
 const googleClient = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
-app.post('/auth/google', authLimiter, async (req, res) => {
+app.post('/auth/google', authLimiter, validate(googleAuthSchema), async (req, res) => {
   try {
     const { credential, access_token } = req.body;
     
@@ -522,7 +541,7 @@ app.get('/api/dorms', async (req: Request, res: Response) => {
 });
 
 // Submit a new dorm (requires authentication, pending approval)
-app.post('/api/dorms', authenticationToken, async (req: AuthRequest, res: Response) => {
+app.post('/api/dorms', authenticationToken, validate(dormSchema), async (req: AuthRequest, res: Response) => {
   try {
     const { name, universitySlug, description, imageUrl, amenities, roomTypes } = req.body;
     const userEmail = req.user?.name || '';
@@ -575,7 +594,7 @@ app.post('/api/dorms', authenticationToken, async (req: AuthRequest, res: Respon
 });
 
 // Reviews API: create and fetch reviews
-app.post('/api/reviews', async (req: Request, res: Response) => {
+app.post('/api/reviews', validate(reviewSchema), async (req: Request, res: Response) => {
   try {
     const {
       university,
