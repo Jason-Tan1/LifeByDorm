@@ -42,8 +42,17 @@ function Account() {
     try {
       const payloadJson = token.split('.')[1];
       const decoded = JSON.parse(atob(payloadJson));
+      
+      // Check if token is expired
+      if (decoded.exp * 1000 < Date.now()) {
+        localStorage.removeItem('token');
+        navigate('/navbar'); // Redirect to login
+        return;
+      }
+
       setUserEmail(decoded?.name || decoded?.email || '');
     } catch (err) {
+      localStorage.removeItem('token');
       navigate('/');
     }
   }, [navigate]);
@@ -126,6 +135,48 @@ function Account() {
           <nav className="account-nav">
             <button className="nav-item active">My Reviews</button>
           </nav>
+
+          <div className="account-actions" style={{ marginTop: '20px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
+            <button 
+              className="action-btn logout-btn" 
+              onClick={() => {
+                localStorage.removeItem('token');
+                window.location.href = '/';
+              }}
+              style={{
+                width: '100%',
+                padding: '12px',
+                background: 'white',
+                border: '1px solid #ddd',
+                borderRadius: '8px',
+                color: '#333',
+                cursor: 'pointer',
+                fontWeight: '600'
+              }}
+            >
+              Log Out
+            </button>
+            <button 
+              className="action-btn delete-btn" 
+              onClick={() => {
+                if(window.confirm('Are you sure you want to delete your account? This cannot be undone.')) {
+                   alert('Account deletion request has been submitted. (Demo)');
+                }
+              }}
+              style={{
+                width: '100%',
+                padding: '12px',
+                background: '#fee2e2',
+                border: '1px solid #ef4444',
+                borderRadius: '8px',
+                color: '#b91c1c',
+                cursor: 'pointer',
+                fontWeight: '600'
+              }}
+            >
+              Delete Account
+            </button>
+          </div>
         </div>
 
         <div className="account-main">
