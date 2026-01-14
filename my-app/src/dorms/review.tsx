@@ -146,20 +146,26 @@ function Reviews() {
       return;
     }
 
+    // Validate university and dorm before submission
+    if (!resolvedUniversity || !resolvedDorm) {
+      alert('Error: University or dorm information is missing. Please navigate from a dorm page.');
+      return;
+    }
+
     const payload = {
-      university: resolvedUniversity || null,
-      dorm: resolvedDorm || null,
+      university: resolvedUniversity,
+      dorm: resolvedDorm,
       room: ratings.room,
       bathroom: ratings.bathrooms,
       building: ratings.building,
       amenities: ratings.amenities,
       location: ratings.location,
-      description,
-      year: [Number(selectedYear)], // Convert single selection to array
-      roomType: [selectedRoomType], // Convert single selection to array
+      description: description.trim(),
+      year: Number(selectedYear),
+      roomType: selectedRoomType,
       wouldDormAgain: wouldDormAgain === 'yes',
-      fileImage: fileDataUrls.length > 0 ? fileDataUrls[0] : null,
-      images: fileDataUrls
+      ...(fileDataUrls.length > 0 && { fileImage: fileDataUrls[0] }),
+      ...(fileDataUrls.length > 0 && { images: fileDataUrls })
     };
 
     try {

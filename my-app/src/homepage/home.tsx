@@ -41,114 +41,45 @@ function Home() {
 
     hasFetched.current = true;
 
-    // Single optimized function to fetch all data using shared universities
+    // Optimized: Fetch all homepage data in a single request
     const fetchAllData = async () => {
       setIsLoading(true);
 
       try {
-        // First, fetch all dorms for all universities in parallel (single pass)
-        const dormsWithUniversity: any[] = [];
+        // Single API call to get all stats
+        const statsRes = await fetch(`${API_BASE}/api/stats/homepage`);
+        
+        if (!statsRes.ok) {
+          throw new Error('Failed to fetch homepage stats');
+        }
 
-        await Promise.all(
-          universities.map(async (uni: any) => {
-            try {
-              const dormsRes = await fetch(`${API_BASE}/api/universities/${encodeURIComponent(uni.slug)}/dorms`);
-              if (dormsRes.ok) {
-                const dorms = await dormsRes.json();
-                dorms.forEach((dorm: any) => {
-                  dormsWithUniversity.push({
-                    ...dorm,
-                    university: uni.name,
-                    universitySlug: uni.slug
-                  });
-                });
-              }
-            } catch (e) {
-              console.error(`Failed to fetch dorms for ${uni.name}`, e);
-            }
-          })
-        );
+        const stats = await statsRes.json();
 
-        // Batch all review requests for universities
-        const universityData = await Promise.all(
-          universities.map(async (uni: any) => {
-            try {
-              const reviewRes = await fetch(`${API_BASE}/api/reviews?university=${encodeURIComponent(uni.slug)}`);
-              if (reviewRes.ok) {
-                const reviews = await reviewRes.json();
-                return { ...uni, reviewCount: reviews.length };
-              }
-            } catch (e) {
-              console.error(`Failed to fetch reviews for ${uni.name}`, e);
-            }
-            return { ...uni, reviewCount: 0 };
-          })
-        );
+        // Set top universities (already sorted and limited to 7)
+        setTopUniversities(stats.topUniversities);
 
-        // Sort and get top 7 universities by review count
-        const top7Universities = universityData
-          .sort((a, b) => b.reviewCount - a.reviewCount)
-          .slice(0, 7);
-
-        setTopUniversities(top7Universities);
-
+        // Build university review counts map
         const uniCounts: { [slug: string]: number } = {};
-        top7Universities.forEach(uni => {
+        stats.topUniversities.forEach((uni: any) => {
           uniCounts[uni.slug] = uni.reviewCount;
         });
         setUniversityReviewCounts(uniCounts);
 
-        // Batch all review requests for dorms (single pass for all dorms)
-        const dormData = await Promise.all(
-          dormsWithUniversity.map(async (dorm) => {
-            try {
-              const reviewRes = await fetch(`${API_BASE}/api/reviews?university=${encodeURIComponent(dorm.universitySlug)}&dorm=${encodeURIComponent(dorm.name)}`);
-              if (reviewRes.ok) {
-                const reviews = await reviewRes.json();
-                const reviewCount = reviews.length;
-                let avgRating = 0;
+        // Set top rated dorms (already sorted and limited to 7)
+        setTopDorms(stats.topRatedDorms);
 
-                if (reviews.length > 0) {
-                  const totalRating = reviews.reduce((sum: number, review: any) => sum + calculateOverallRating(review), 0);
-                  avgRating = totalRating / reviews.length;
-                }
-
-                return { ...dorm, avgRating, reviewCount };
-              }
-            } catch (e) {
-              console.error(`Failed to fetch reviews for ${dorm.name}`, e);
-            }
-            return { ...dorm, avgRating: 0, reviewCount: 0 };
-          })
-        );
-
-        // Top rated dorms (by average rating)
-        const topRatedDorms = [...dormData]
-          .sort((a, b) => {
-            if (b.avgRating === a.avgRating) {
-              return b.reviewCount - a.reviewCount;
-            }
-            return b.avgRating - a.avgRating;
-          })
-          .slice(0, 7);
-
-        setTopDorms(topRatedDorms);
-
+        // Build dorm ratings and counts maps
         const ratings: { [name: string]: number } = {};
         const counts: { [name: string]: number } = {};
-        topRatedDorms.forEach(dorm => {
+        stats.topRatedDorms.forEach((dorm: any) => {
           ratings[dorm.name] = dorm.avgRating;
           counts[dorm.name] = dorm.reviewCount;
         });
         setDormRatings(ratings);
         setDormReviewCounts(counts);
 
-        // Most rated dorms (by review count)
-        const mostReviewedDorms = [...dormData]
-          .sort((a, b) => b.reviewCount - a.reviewCount)
-          .slice(0, 7);
-
-        setMostRatedDorms(mostReviewedDorms);
+        // Set most reviewed dorms (already sorted and limited to 7)
+        setMostRatedDorms(stats.mostReviewedDorms);
       } catch (e) {
         console.error('Failed to fetch data', e);
       } finally {

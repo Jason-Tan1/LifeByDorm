@@ -11,7 +11,8 @@ dotenv.config();
 
 async function main() {
   const mongoUri = process.env.MONGODB_URI || 'mongodb://localhost:27017/lifebydorm';
-  console.log('Connecting to', mongoUri);
+  const redactedUri = mongoUri.replace(/:([^:@]+)@/, ':****@');
+  console.log('Connecting to', redactedUri);
   await mongoose.connect(mongoUri);
   console.log('Connected to MongoDB');
 
@@ -95,6 +96,9 @@ async function main() {
       console.log(`Found ${adminEmails.length} admin emails in seed file`);
 
       const defaultAdminPassword = process.env.ADMIN_DEFAULT_PASSWORD || 'Admin123!';
+      if (!process.env.ADMIN_DEFAULT_PASSWORD) {
+        console.warn('⚠️ WARNING: Using hardcoded default password for admin users. Set ADMIN_DEFAULT_PASSWORD env var.');
+      }
 
       for (const email of adminEmails) {
         if (!email || typeof email !== 'string') continue;

@@ -12,6 +12,8 @@ import { UserReview } from './models/userreview';
 import { University } from './models/universities';
 import { Dorm } from './models/dorm';
 import nodemailer from 'nodemailer';
+import helmet from 'helmet';
+import mongoSanitize from 'express-mongo-sanitize';
 import { 
   validate, 
   registerSchema, 
@@ -38,6 +40,10 @@ console.log('Admin emails:', ADMIN_EMAILS.length ? ADMIN_EMAILS : 'none');
 
 const app = express()
 
+// Security Middleware
+app.use(helmet()); // Set secure HTTP headers
+app.use(mongoSanitize()); // Prevent MongoDB Operator Injection
+
 // Rate limiting configuration
 // OWASP: Rate Limiting to prevent brute-force and DoS attacks
 const authLimiter = rateLimit({
@@ -53,11 +59,41 @@ const authLimiter = rateLimit({
 
 const apiLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 300, // Limit each IP to 300 requests per 15 mins (approx 1 req/3 sec avg)
+  max: 500, // Limit each IP to 500 requests per 15 mins
   message: { message: 'Too many requests, please try again later' },
   standardHeaders: true,
   legacyHeaders: false,
 });
+
+// Higher limit for read-only GET requests (public data)
+const readOnlyLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 1000, // More generous limit for read-only endpoints
+  message: { message: 'Too many requests, please try again later' },
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+
+// Simple in-memory cache for expensive aggregations
+interface CacheEntry<T> {
+  data: T;
+  timestamp: number;
+}
+const cache: Map<string, CacheEntry<any>> = new Map();
+const CACHE_TTL = 5 * 60 * 1000; // 5 minutes cache TTL
+
+function getCached<T>(key: string): T | null {
+  const entry = cache.get(key);
+  if (entry && Date.now() - entry.timestamp < CACHE_TTL) {
+    return entry.data as T;
+  }
+  cache.delete(key);
+  return null;
+}
+
+function setCache<T>(key: string, data: T): void {
+  cache.set(key, { data, timestamp: Date.now() });
+}
 
 // CORS configuration - restrict to trusted origins
 const ALLOWED_ORIGINS = process.env.NODE_ENV === 'production'
@@ -116,8 +152,124 @@ connectDB();
 // Apply general API rate limiting to all /api routes
 app.use('/api/', apiLimiter);
 
-// Test route to check MongoDB connection
-app.get('/api/test', async (req: Request, res: Response) => {
+// ========================================
+// BATCH STATS ENDPOINT - Optimized for homepage
+// Returns all university and dorm statistics in a single request
+// ========================================
+app.get('/api/stats/homepage', readOnlyLimiter, async (req: Request, res: Response) => {
+  try {
+    // Check cache first
+    const cacheKey = 'homepage-stats';
+    const cached = getCached<any>(cacheKey);
+    if (cached) {
+      return res.json(cached);
+    }
+
+    // Fetch all universities
+    const universities = await University.find({}).lean();
+    
+    // Fetch all approved dorms
+    const dorms = await Dorm.find({
+      $or: [
+        { status: 'approved' },
+        { status: { $exists: false } }
+      ]
+    }).lean();
+    
+    // Fetch all approved reviews
+    const reviews = await UserReview.find({
+      $or: [
+        { status: 'approved' },
+        { status: { $exists: false } }
+      ]
+    }).lean();
+
+    // Calculate university stats (review count per university)
+    const universityStats: { [slug: string]: { reviewCount: number } } = {};
+    universities.forEach((uni: any) => {
+      universityStats[uni.slug] = { reviewCount: 0 };
+    });
+
+    // Calculate dorm stats (avg rating and review count per dorm)
+    const dormStats: { [key: string]: { avgRating: number; reviewCount: number; totalRating: number } } = {};
+    
+    reviews.forEach((review: any) => {
+      // Count for university
+      if (review.university && universityStats[review.university]) {
+        universityStats[review.university].reviewCount++;
+      }
+      
+      // Calculate overall rating for dorm
+      const dormKey = `${review.university}:${review.dorm}`;
+      const overallRating = (review.room + review.bathroom + review.building + review.amenities + review.location) / 5;
+      
+      if (!dormStats[dormKey]) {
+        dormStats[dormKey] = { avgRating: 0, reviewCount: 0, totalRating: 0 };
+      }
+      dormStats[dormKey].reviewCount++;
+      dormStats[dormKey].totalRating += overallRating;
+    });
+
+    // Calculate averages for dorms
+    Object.keys(dormStats).forEach(key => {
+      const stat = dormStats[key];
+      stat.avgRating = stat.reviewCount > 0 ? stat.totalRating / stat.reviewCount : 0;
+    });
+
+    // Prepare response with enriched data
+    const enrichedUniversities = universities.map((uni: any) => ({
+      ...uni,
+      reviewCount: universityStats[uni.slug]?.reviewCount || 0
+    }));
+
+    const enrichedDorms = dorms.map((dorm: any) => {
+      const dormKey = `${dorm.universitySlug}:${dorm.name}`;
+      const stats = dormStats[dormKey] || { avgRating: 0, reviewCount: 0 };
+      return {
+        ...dorm,
+        avgRating: stats.avgRating,
+        reviewCount: stats.reviewCount
+      };
+    });
+
+    // Sort and get top universities by review count
+    const topUniversities = [...enrichedUniversities]
+      .sort((a, b) => b.reviewCount - a.reviewCount)
+      .slice(0, 7);
+
+    // Sort and get top dorms by rating
+    const topRatedDorms = [...enrichedDorms]
+      .sort((a, b) => {
+        if (b.avgRating === a.avgRating) return b.reviewCount - a.reviewCount;
+        return b.avgRating - a.avgRating;
+      })
+      .slice(0, 7);
+
+    // Sort and get most reviewed dorms
+    const mostReviewedDorms = [...enrichedDorms]
+      .sort((a, b) => b.reviewCount - a.reviewCount)
+      .slice(0, 7);
+
+    const result = {
+      topUniversities,
+      topRatedDorms,
+      mostReviewedDorms,
+      universityStats,
+      dormStats
+    };
+
+    // Cache the result
+    setCache(cacheKey, result);
+
+    res.json(result);
+  } catch (err) {
+    console.error('Error fetching homepage stats', err);
+    res.status(500).json({ message: 'Error fetching homepage stats' });
+  }
+});
+
+// Test route to check MongoDB connection (Admin Only)
+app.get('/api/test', authenticationToken, requireAdmin, async (req: AuthRequest, res: Response) => {
   try {
     // Check if database connection exists
     if (!mongoose.connection.db) {
@@ -127,17 +279,13 @@ app.get('/api/test', async (req: Request, res: Response) => {
     // Get collections
     const collections = await mongoose.connection.db.listCollections().toArray();
     
-    // Get users without passwords
-    const users = await User.find({}, { password: 0 }).lean();
-
     // Get database name safely
     const dbName = mongoose.connection.db.databaseName;
 
     res.json({ 
       status: 'Connected to MongoDB',
       database: dbName,
-      collections: collections.map(c => c.name),
-      users: users
+      collections: collections.map(c => c.name)
     });
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred';
@@ -302,7 +450,11 @@ app.post('/auth/send-code', authLimiter, validate(sendCodeSchema), async (req, r
         });
         console.log(`[Auth] Email sent to ${email}`);
     } else {
-        console.log(`[Auth] No email credentials found. Code for ${email} is: ${verificationCode}`);
+        if (process.env.NODE_ENV !== 'production') {
+            console.log(`[Auth] No email credentials found. Code for ${email} is: ${verificationCode}`);
+        } else {
+            console.log(`[Auth] No email credentials found. Suppressed code logging in production.`);
+        }
     }
 
     res.json({ message: 'Verification code sent' });
@@ -621,15 +773,12 @@ app.post('/api/reviews', validate(reviewSchema), async (req: Request, res: Respo
     
     if (authHeader && authHeader.startsWith('Bearer ')) {
       const token = authHeader.split(' ')[1];
-      console.log('🔑 Token extracted, length:', token?.length);
       try {
         const decoded = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET as Secret) as JwtPayload;
-        console.log('🔑 Decoded token payload:', JSON.stringify(decoded, null, 2));
         isVerified = true;
         userEmail = decoded.name || '';
-        console.log('🔑 User email from token:', userEmail);
       } catch (err) {
-        console.log('🔑 Token verification failed:', err);
+        console.log('🔑 Token verification failed:', err instanceof Error ? err.message : 'Unknown error');
         isVerified = false;
       }
     }
