@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
-import { z, RequestTimeout } from 'zod'; // Note: RequestTimeout is likely not what we want, just z
+import { z, ZodIssue } from 'zod'; // Note: RequestTimeout is likely not what we want, just z
 
 // --- Validation Middleware ---
 export const validate = (schema: z.ZodSchema) => (req: Request, res: Response, next: NextFunction) => {
@@ -8,9 +8,10 @@ export const validate = (schema: z.ZodSchema) => (req: Request, res: Response, n
     next();
   } catch (error) {
     if (error instanceof z.ZodError) {
+      const zodError = error as z.ZodError<any>;
       return res.status(400).json({ 
         message: 'Validation failed', 
-        errors: error.errors.map(e => ({ path: e.path, message: e.message })) 
+        errors: zodError.issues.map((e: ZodIssue) => ({ path: e.path, message: e.message })) 
       });
     }
     next(error);
@@ -29,8 +30,12 @@ export const registerSchema = z.object({
     .max(128, { message: "Password is too long" })
     .regex(/[A-Z]/, { message: "Password must contain at least one uppercase letter" })
     .regex(/[0-9]/, { message: "Password must contain at least one number" })
-    .regex(/[^A-Za-z0-9]/, { message: "Password must contain at least one special character" })
-}).strict();
+    .regex(/[^A-Za-z0-9]/, { message: "Password must contain at least one special character" }),
+  confirm: z.string()
+}).strict().refine((data) => data.password === data.confirm, {
+  message: "Passwords do not match",
+  path: ["confirm"],
+});
 
 export const loginSchema = z.object({
   email: z.string().email().trim().toLowerCase().max(100),
