@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect, useCallback, ReactNode } from 'react';
+import { createContext, useContext, useState, useEffect, useCallback, type ReactNode } from 'react';
 
 const API_BASE = (import.meta as any).env?.VITE_API_BASE || 'http://localhost:3000';
 
@@ -9,7 +9,8 @@ type University = {
   imageUrl?: string;
 };
 
-type Dorm = {
+// Dorm type kept for future use
+type _Dorm = {
   name: string;
   slug: string;
   university: string;

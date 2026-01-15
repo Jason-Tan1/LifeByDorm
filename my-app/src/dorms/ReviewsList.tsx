@@ -1,4 +1,3 @@
-import { Link } from 'react-router-dom';
 import Star from '@mui/icons-material/Star';
 
 type APIDorm = {
@@ -29,7 +28,7 @@ interface ReviewsListProps {
 }
 
 function ReviewsList({
-  universityName,
+  // universityName, (Removed unused)
   // dorm, (Removed unused)
   reviews,
   reviewsLoading,
