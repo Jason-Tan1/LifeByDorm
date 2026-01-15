@@ -159,12 +159,12 @@ function UniversityDash() {
   }, [dorms, searchQuery, filterOption, reviewCounts, dormRatings]);
 
   // Function to render star ratings (kept for future use)
-  const _renderStars = (rating: number) => {
-    const fullStars = Math.floor(rating);
-    const hasHalfStar = rating - fullStars >= 0.5;
-    const emptyStars = 5 - fullStars - (hasHalfStar ? 1 : 0);
-    return "★".repeat(fullStars) + (hasHalfStar ? "⯨" : "") + "☆".repeat(emptyStars);
-  };
+  // const _renderStars = (rating: number) => {
+  //   const fullStars = Math.floor(rating);
+  //   const hasHalfStar = rating - fullStars >= 0.5;
+  //   const emptyStars = 5 - fullStars - (hasHalfStar ? 1 : 0);
+  //   return "★".repeat(fullStars) + (hasHalfStar ? "⯨" : "") + "☆".repeat(emptyStars);
+  // };
 
   const calculateOverallRating = (review: any) => {
     const ratings = [review.room, review.bathroom, review.building, review.amenities, review.location];
