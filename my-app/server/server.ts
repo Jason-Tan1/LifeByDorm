@@ -48,6 +48,7 @@ const app = express()
 // Include common Vite dev ports (5173 and 4173) and localhost variants
 const ALLOWED_ORIGINS = [
   process.env.FRONTEND_URL || 'https://yourdomain.com',
+  'https://lifebydorm-frontend.vercel.app', 
   'http://localhost:5173',
   'http://127.0.0.1:5173',
   'http://localhost:4173',
@@ -59,6 +60,12 @@ app.use(cors({
   origin: (origin, callback) => {
     // Allow requests with no origin (like mobile apps, curl, Postman)
     if (!origin) return callback(null, true);
+    
+    // If FRONTEND_URL is set to '*', allow all origins
+    if (process.env.FRONTEND_URL === '*') {
+      return callback(null, true);
+    }
+
     // Exact match allowed origins
     if (ALLOWED_ORIGINS.indexOf(origin) !== -1) {
       return callback(null, true);
