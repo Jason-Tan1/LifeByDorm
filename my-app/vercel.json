@@ -3,8 +3,7 @@
   "rewrites": [
     {
       "source": "/api/(.*)",
-      "destination": "/api/index.ts",
-      "git.deploymentEnabled": true
+      "destination": "/api/index.ts"
     }
   ]
 }
