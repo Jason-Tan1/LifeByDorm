@@ -158,8 +158,8 @@ function UniversityDash() {
     setFilteredDorms(result);
   }, [dorms, searchQuery, filterOption, reviewCounts, dormRatings]);
 
-  // Function to render star ratings
-  const renderStars = (rating: number) => {
+  // Function to render star ratings (kept for future use)
+  const _renderStars = (rating: number) => {
     const fullStars = Math.floor(rating);
     const hasHalfStar = rating - fullStars >= 0.5;
     const emptyStars = 5 - fullStars - (hasHalfStar ? 1 : 0);

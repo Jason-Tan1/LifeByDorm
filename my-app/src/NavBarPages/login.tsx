@@ -20,7 +20,7 @@ function login({ isOpen, onClose }: LoginModalProps) {
   const [showVerificationStep, setShowVerificationStep] = useState<boolean>(false);
   const [error, setError] = useState<string>("");
   const [showEmailForm, setShowEmailForm] = useState<boolean>(false);
-  const [showSuccessPopup, setShowSuccessPopup] = useState<boolean>(false);
+  const [, setShowSuccessPopup] = useState<boolean>(false);
 
   // Custom Google Login Hook
   const loginWithGoogle = useGoogleLogin({
