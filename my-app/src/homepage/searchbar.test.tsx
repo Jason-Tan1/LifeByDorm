@@ -5,7 +5,7 @@ import { BrowserRouter } from 'react-router-dom';
 import SearchBar from './searchbar';
 
 // Mock the fetch API
-global.fetch = vi.fn();
+globalThis.fetch = vi.fn();
 
 describe('SearchBar Integration Tests', () => {
   const mockUniversities = [
@@ -16,7 +16,7 @@ describe('SearchBar Integration Tests', () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
-    (global.fetch as any).mockResolvedValue({
+    (globalThis.fetch as any).mockResolvedValue({
       ok: true,
       json: async () => mockUniversities,
     });
@@ -82,7 +82,7 @@ describe('SearchBar Integration Tests', () => {
 
     // Verify fetch was called
     await waitFor(() => {
-      expect(global.fetch).toHaveBeenCalledWith(
+      expect(globalThis.fetch).toHaveBeenCalledWith(
         expect.stringContaining('/api/universities')
       );
     });
@@ -90,7 +90,7 @@ describe('SearchBar Integration Tests', () => {
 
   it('should handle API errors gracefully', async () => {
     // Mock a failed fetch
-    (global.fetch as any).mockRejectedValueOnce(new Error('API Error'));
+    (globalThis.fetch as any).mockRejectedValueOnce(new Error('API Error'));
 
     const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
 

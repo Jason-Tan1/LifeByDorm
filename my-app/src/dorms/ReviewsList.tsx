@@ -30,12 +30,12 @@ interface ReviewsListProps {
 
 function ReviewsList({
   universityName,
-  dorm,
+  // dorm, (Removed unused)
   reviews,
   reviewsLoading,
   visibleReviews,
   visibleCount,
-  reviewsPerLoad,
+  // reviewsPerLoad, (Removed unused)
   calculateOverallRating,
   getRatingClass,
   formatReviewTime,

@@ -1,5 +1,6 @@
-import React, { useEffect, useState, useCallback, useRef } from 'react';
+import { useEffect, useState, useCallback, useRef } from 'react';
 import './Home.css';
+
 import { Link } from 'react-router-dom';
 import NavBar from '../NavBarPages/navbar.tsx';
 import SearchBar from './searchbar.tsx';
@@ -20,7 +21,7 @@ function Home() {
   const [universityScrollPosition, setUniversityScrollPosition] = useState(0);
   const [mostRatedDormsScrollPosition, setMostRatedDormsScrollPosition] = useState(0);
   const [dormScrollPosition, setDormScrollPosition] = useState(0);
-  const [isLoading, setIsLoading] = useState(true);
+  // const [isLoading, setIsLoading] = useState(true); (Removed unused)
 
   // Track if data has been fetched to prevent duplicate calls
   const hasFetched = useRef(false);

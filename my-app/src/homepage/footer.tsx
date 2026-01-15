@@ -1,4 +1,4 @@
-import React from 'react';
+// import React from 'react';
 import { Link } from 'react-router-dom';
 import './footer.css';
 import LBDLogo from '../assets/LBDLogo-removebg-preview.png';
