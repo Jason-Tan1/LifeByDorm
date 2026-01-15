@@ -21,7 +21,7 @@ function Home() {
   const [universityScrollPosition, setUniversityScrollPosition] = useState(0);
   const [mostRatedDormsScrollPosition, setMostRatedDormsScrollPosition] = useState(0);
   const [dormScrollPosition, setDormScrollPosition] = useState(0);
-  // const [isLoading, setIsLoading] = useState(true); (Removed unused)
+  const [isLoading, setIsLoading] = useState(true);
 
   // Track if data has been fetched to prevent duplicate calls
   const hasFetched = useRef(false);
