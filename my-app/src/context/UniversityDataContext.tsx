@@ -10,15 +10,15 @@ type University = {
 };
 
 // Dorm type kept for future use
-type _Dorm = {
-  name: string;
-  slug: string;
-  university: string;
-  universitySlug: string;
-  imageUrl?: string;
-  avgRating?: number;
-  reviewCount?: number;
-};
+// type _Dorm = {
+//   name: string;
+//   slug: string;
+//   university: string;
+//   universitySlug: string;
+//   imageUrl?: string;
+//   avgRating?: number;
+//   reviewCount?: number;
+// };
 
 type UniversityDataContextType = {
   universities: University[];
