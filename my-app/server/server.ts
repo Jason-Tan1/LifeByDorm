@@ -149,6 +149,14 @@ interface CacheEntry<T> {
 const cache: Map<string, CacheEntry<any>> = new Map();
 const CACHE_TTL = 5 * 60 * 1000; // 5 minutes cache TTL
 
+app.get('/', (req: Request, res: Response) => {
+    res.json({ 
+        message: "LifeByDorm Backend is Running", 
+        environment: process.env.NODE_ENV,
+        database: mongoose.connection.readyState === 1 ? 'connected' : 'disconnected' 
+    });
+});
+
 function getCached<T>(key: string): T | null {
   const entry = cache.get(key);
   if (entry && Date.now() - entry.timestamp < CACHE_TTL) {
