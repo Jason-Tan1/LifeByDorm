@@ -25,7 +25,6 @@ Finding the right dorm can be overwhelming. LifeByDorm bridges the gap by provid
 - 👨‍💼 **Admin Dashboard** – Moderation tools for managing reviews and content
 
 ## 🛠️ Built With
-
 ### Frontend
 
 ![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=for-the-badge&logo=typescript&logoColor=white)
@@ -46,6 +45,12 @@ Finding the right dorm can be overwhelming. LifeByDorm bridges the gap by provid
 
 ![JWT](https://img.shields.io/badge/JWT-000000?style=for-the-badge&logo=jsonwebtokens&logoColor=white)
 ![Google OAuth](https://img.shields.io/badge/Google_OAuth_2.0-4285F4?style=for-the-badge&logo=google&logoColor=white)
+![AWS IAM](https://img.shields.io/badge/AWS_IAM-232F3E?style=for-the-badge&logo=amazonwebservices&logoColor=white)
+
+### Deployment & Infrastructure
+
+![Vercel](https://img.shields.io/badge/Vercel-000000?style=for-the-badge&logo=vercel&logoColor=white)
+![AWS App Runner](https://img.shields.io/badge/AWS_App_Runner-232F3E?style=for-the-badge&logo=amazonwebservices&logoColor=white)
 
 ### Testing
 
