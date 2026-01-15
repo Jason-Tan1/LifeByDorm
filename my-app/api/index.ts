@@ -1,5 +1,6 @@
 // Vercel Serverless Function Entrypoint
 // This bridges the Vercel API environment to your Express app
-import app from '../server/server';
+// Vercel requires explicit .js extensions for ESM imports in built output
+import app from '../server/server.js';
 
 export default app;
