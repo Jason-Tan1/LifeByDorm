@@ -44,21 +44,41 @@ console.log('Admin emails:', ADMIN_EMAILS.length ? ADMIN_EMAILS : 'none');
 const app = express()
 
 // CORS configuration - restrict to trusted origins
-const ALLOWED_ORIGINS = process.env.NODE_ENV === 'production'
-  ? [process.env.FRONTEND_URL || 'https://yourdomain.com'] // Production: only your domain
-  : ['http://localhost:5173', 'http://localhost:3000', 'http://127.0.0.1:5173']; // Development: local URLs
+// Allowed origins: include FRONTEND_URL when set, and always include common localhost dev origins
+// Include common Vite dev ports (5173 and 4173) and localhost variants
+const ALLOWED_ORIGINS = [
+  process.env.FRONTEND_URL || 'https://yourdomain.com',
+  'http://localhost:5173',
+  'http://127.0.0.1:5173',
+  'http://localhost:4173',
+  'http://127.0.0.1:4173',
+  'http://localhost:3000'
+].filter(Boolean);
 
 app.use(cors({
   origin: (origin, callback) => {
     // Allow requests with no origin (like mobile apps, curl, Postman)
     if (!origin) return callback(null, true);
-    
+    // Exact match allowed origins
     if (ALLOWED_ORIGINS.indexOf(origin) !== -1) {
-      callback(null, true);
-    } else {
-      console.warn(`🚫 Blocked CORS request from unauthorized origin: ${origin}`);
-      callback(new Error('Not allowed by CORS'));
+      return callback(null, true);
     }
+
+    // Allow common localhost/127.0.0.1 origins in non-production (dev) environments
+    if (process.env.NODE_ENV !== 'production' && origin) {
+      try {
+        const parsed = new URL(origin);
+        const host = parsed.hostname;
+        if (host === 'localhost' || host === '127.0.0.1') {
+          return callback(null, true);
+        }
+      } catch (e) {
+        // ignore parse errors and fall through to block
+      }
+    }
+
+    console.warn(`🚫 Blocked CORS request from unauthorized origin: ${origin}`);
+    callback(new Error('Not allowed by CORS'));
   },
   credentials: true, // Allow cookies and authorization headers
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
@@ -1139,11 +1159,8 @@ if (process.env.NODE_ENV === 'production' && process.env.VERCEL !== '1') {
   app.use(express.static(staticPath));
   
   // Handle client-side routing - serve index.html for all non-API routes
-  app.get('*', (req: Request, res: Response) => {
-    // Don't serve index.html for API routes
-    if (req.path.startsWith('/api')) {
-      return res.status(404).json({ message: 'API endpoint not found' });
-    }
+  // Use a RegExp route to avoid path-to-regexp errors with a bare '*'
+  app.get(/^\/(?!api).*/, (req: Request, res: Response) => {
     res.sendFile(path.join(staticPath, 'index.html'));
   });
   
