@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Link, useParams } from 'react-router-dom';
+import { Link, useParams, useNavigate } from 'react-router-dom';
 import NavBar from '../NavBarPages/navbar';
 import Footer from '../homepage/footer';
 import Star from '@mui/icons-material/Star';
@@ -38,6 +38,7 @@ const API_BASE = (import.meta as any).env?.VITE_API_BASE || 'http://localhost:30
 // Main component for University Dashboard
 function UniversityDash() {
   const { universityName } = useParams();
+  const navigate = useNavigate();
 
   const [university, setUniversity] = useState<APIUniversity | null>(null);
   const [dorms, setDorms] = useState<APIDorm[]>([]);
@@ -307,13 +308,16 @@ function UniversityDash() {
                     </div>
                   </div>
                   <div className="dorm-action-area">
-                    <Link
-                      to={`/review?university=${encodeURIComponent(universityName || '')}&dorm=${encodeURIComponent(dorm.name)}`}
+                    <button
                       className="leave-review-btn-small"
-                      onClick={(e) => e.stopPropagation()}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        navigate(`/review?university=${encodeURIComponent(universityName || '')}&dorm=${encodeURIComponent(dorm.name)}`);
+                      }}
                     >
                       Leave Review
-                    </Link>
+                    </button>
                   </div>
                 </div>
               </Link>

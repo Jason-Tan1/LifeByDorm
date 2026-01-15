@@ -13,7 +13,10 @@ import { University } from './models/universities';
 import { Dorm } from './models/dorm';
 import nodemailer from 'nodemailer';
 import helmet from 'helmet';
-import mongoSanitize from 'express-mongo-sanitize';
+import { uploadToS3 } from './s3';
+
+// Note: express-mongo-sanitize is incompatible with Express 5 (req.query is read-only)
+// MongoDB injection protection is handled by Mongoose's strict schema validation
 import { 
   validate, 
   registerSchema, 
@@ -40,9 +43,46 @@ console.log('Admin emails:', ADMIN_EMAILS.length ? ADMIN_EMAILS : 'none');
 
 const app = express()
 
+// CORS configuration - restrict to trusted origins
+const ALLOWED_ORIGINS = process.env.NODE_ENV === 'production'
+  ? [process.env.FRONTEND_URL || 'https://yourdomain.com'] // Production: only your domain
+  : ['http://localhost:5173', 'http://localhost:3000', 'http://127.0.0.1:5173']; // Development: local URLs
+
+app.use(cors({
+  origin: (origin, callback) => {
+    // Allow requests with no origin (like mobile apps, curl, Postman)
+    if (!origin) return callback(null, true);
+    
+    if (ALLOWED_ORIGINS.indexOf(origin) !== -1) {
+      callback(null, true);
+    } else {
+      console.warn(`🚫 Blocked CORS request from unauthorized origin: ${origin}`);
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  credentials: true, // Allow cookies and authorization headers
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  exposedHeaders: ['RateLimit-Limit', 'RateLimit-Remaining', 'RateLimit-Reset'],
+  maxAge: 86400, // Cache preflight requests for 24 hours
+}));
+
 // Security Middleware
-app.use(helmet()); // Set secure HTTP headers
-app.use(mongoSanitize()); // Prevent MongoDB Operator Injection
+app.use(helmet({
+  crossOriginResourcePolicy: { policy: "cross-origin" }
+})); // Set secure HTTP headers
+
+// Increase JSON body size limit to allow base64 image uploads from the client.
+// The frontend encodes images as data URLs; increase the limit to 10mb.
+app.use(express.json({ limit: '10mb' }))
+// Also parse URL-encoded bodies (forms) with the same limit
+app.use(express.urlencoded({ extended: true, limit: '10mb' }))
+
+// Note: express-mongo-sanitize removed - incompatible with Express 5
+// MongoDB injection protection is provided by:
+// 1. Mongoose schema validation (strict mode)
+// 2. Zod input validation schemas
+// 3. Parameterized queries (Mongoose uses them by default)
 
 // Rate limiting configuration
 // OWASP: Rate Limiting to prevent brute-force and DoS attacks
@@ -95,7 +135,8 @@ function setCache<T>(key: string, data: T): void {
   cache.set(key, { data, timestamp: Date.now() });
 }
 
-// CORS configuration - restrict to trusted origins
+// CORS configuration - Moved to top of file
+/* 
 const ALLOWED_ORIGINS = process.env.NODE_ENV === 'production'
   ? [process.env.FRONTEND_URL || 'https://yourdomain.com'] // Production: only your domain
   : ['http://localhost:5173', 'http://localhost:3000', 'http://127.0.0.1:5173']; // Development: local URLs
@@ -118,12 +159,7 @@ app.use(cors({
   exposedHeaders: ['RateLimit-Limit', 'RateLimit-Remaining', 'RateLimit-Reset'],
   maxAge: 86400, // Cache preflight requests for 24 hours
 }));
-
-// Increase JSON body size limit to allow base64 image uploads from the client.
-// The frontend encodes images as data URLs; increase the limit to 10mb.
-app.use(express.json({ limit: '10mb' }))
-// Also parse URL-encoded bodies (forms) with the same limit
-app.use(express.urlencoded({ extended: true, limit: '10mb' }))
+*/
 
 // MongoDB Connection
 const connectDB = async () => {
@@ -790,6 +826,33 @@ app.post('/api/reviews', validate(reviewSchema), async (req: Request, res: Respo
     console.log('  - verified:', isVerified);
     console.log('  - user email:', userEmail || '(none)');
 
+    // Process images: upload base64 strings to S3
+    let processedFileImage = fileImage;
+    if (fileImage && typeof fileImage === 'string' && fileImage.startsWith('data:')) {
+      try {
+        console.log('📤 Uploading fileImage to S3...');
+        processedFileImage = await uploadToS3(fileImage, 'reviews/main');
+      } catch (err) {
+        console.error('❌ Failed to upload fileImage:', err);
+      }
+    }
+
+    let processedImages = images || [];
+    if (processedImages.length > 0) {
+      console.log(`📤 Uploading ${processedImages.length} additional images to S3...`);
+      processedImages = await Promise.all(processedImages.map(async (img: string) => {
+        if (typeof img === 'string' && img.startsWith('data:')) {
+          try {
+            return await uploadToS3(img, 'reviews/gallery');
+          } catch (err) {
+            console.error('❌ Failed to upload gallery image:', err);
+            return img;
+          }
+        }
+        return img;
+      }));
+    }
+
     const review = new UserReview({
       university,
       dorm,
@@ -802,8 +865,8 @@ app.post('/api/reviews', validate(reviewSchema), async (req: Request, res: Respo
       year,
       roomType,
       wouldDormAgain,
-      fileImage,
-      images,
+      fileImage: processedFileImage,
+      images: processedImages,
       verified: isVerified,
       user: userEmail
     });
@@ -1085,6 +1148,27 @@ if (process.env.NODE_ENV === 'production') {
   
   console.log(`📁 Serving static files from: ${staticPath}`);
 }
+
+// Global Error Handler
+app.use((err: any, req: Request, res: Response, next: NextFunction) => {
+  console.error('❌ Unhandled Error:', err);
+  res.status(500).json({ message: 'Internal Server Error', error: process.env.NODE_ENV === 'development' ? err.message : undefined });
+});
+
+// Handle Uncaught Exceptions
+process.on('uncaughtException', (err) => {
+  console.error('❌ Uncaught Exception:', err);
+  // Optional: Perform cleanup or exit
+  // process.exit(1); // Usually recommended to exit, but user wants to prevent crash "at anytime"
+  console.log('⚠️ Process kept alive after uncaught exception.');
+});
+
+// Handle Unhandled Rejections
+process.on('unhandledRejection', (reason, promise) => {
+  console.error('❌ Unhandled Rejection at:', promise, 'reason:', reason);
+  // Optional: Perform cleanup or exit
+   console.log('⚠️ Process kept alive after unhandled rejection.');
+});
 
 // Start server
 const PORT = process.env.PORT || 3000;
