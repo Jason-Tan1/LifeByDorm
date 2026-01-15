@@ -1132,9 +1132,10 @@ app.get('/api/health', async (req: Request, res: Response) => {
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 // STATIC FILE SERVING (Production - serve built React app)
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
-if (process.env.NODE_ENV === 'production') {
+if (process.env.NODE_ENV === 'production' && process.env.VERCEL !== '1') {
   // Serve static files from the React build directory
-  const staticPath = path.join(__dirname, '..', 'dist');
+  // Note: specific to CommonJS/ESM
+  const staticPath = path.join(process.cwd(), 'dist');
   app.use(express.static(staticPath));
   
   // Handle client-side routing - serve index.html for all non-API routes
