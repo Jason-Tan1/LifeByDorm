@@ -2,12 +2,12 @@
   "name": "server",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "dist/server.js",
   "scripts": {
     "build": "tsc",
     "start": "node dist/server.js",
-    "dev": "ts-node server.tsx",
-    "devStart": "nodemon --exec ts-node server.tsx",
+    "dev": "ts-node server.ts",
+    "devStart": "nodemon --exec ts-node server.ts",
     "seed": "ts-node seed/seed.ts",
     "test": "vitest",
     "test:run": "vitest run"
