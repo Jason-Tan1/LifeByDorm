@@ -47,8 +47,9 @@ const app = express()
 // Allowed origins: include FRONTEND_URL when set, and always include common localhost dev origins
 // Include common Vite dev ports (5173 and 4173) and localhost variants
 const ALLOWED_ORIGINS = [
-  process.env.FRONTEND_URL || 'https://yourdomain.com',
-  'https://lifebydorm-frontend.vercel.app', 
+  process.env.FRONTEND_URL || 'https://life-by-dorm-git-main-jason-tans-projects-d9f50bb0.vercel.app', 
+  'https://life-by-dorm-git-main-jason-tans-projects-d9f50bb0.vercel.app', // Explicitly add your frontend URL
+  'https://lifebydorm-frontend.vercel.app', // Add production alias if you have one
   'http://localhost:5173',
   'http://127.0.0.1:5173',
   'http://localhost:4173',
