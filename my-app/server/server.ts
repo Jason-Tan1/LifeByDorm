@@ -160,7 +160,8 @@ app.get('/', (req: Request, res: Response) => {
         message: "LifeByDorm Backend is Running", 
         environment: process.env.NODE_ENV,
         database: states[mongoose.connection.readyState] || 'unknown',
-        readyState: mongoose.connection.readyState
+        readyState: mongoose.connection.readyState,
+        lastError: connectionError ? (connectionError.message || String(connectionError)) : null
     });
 });
 
@@ -205,6 +206,7 @@ app.use(cors({
 
 // MongoDB Connection optimized for Serverless with Global Caching
 let cached = (global as any).mongoose;
+let connectionError: any = null; // Store last connection error for diagnostics
 
 if (!cached) {
   cached = (global as any).mongoose = { conn: null, promise: null };
@@ -224,8 +226,13 @@ const connectDB = async () => {
     };
 
     console.log('🔌 Connecting to MongoDB...');
-    cached.promise = mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/lifebydorm', opts).then((mongoose) => {
+    // Log the URI (masked) to debugging
+    const uri = process.env.MONGODB_URI || 'mongodb://localhost:27017/lifebydorm';
+    console.log(`Target URI: ${uri.replace(/:([^:@]+)@/, ':****@')}`);
+
+    cached.promise = mongoose.connect(uri, opts).then((mongoose) => {
       console.log('✅ MongoDB connected successfully');
+      connectionError = null;
       return mongoose;
     });
   }
@@ -235,6 +242,7 @@ const connectDB = async () => {
     return cached.conn;
   } catch (e) {
     cached.promise = null;
+    connectionError = e;
     console.error('❌ MongoDB connection error:', e);
     throw e;
   }
@@ -247,11 +255,16 @@ const dbMiddleware = async (req: Request, res: Response, next: NextFunction) => 
     next();
   } catch (error) {
     console.error('Database connection failed in middleware');
-    // Don't block the request, let it fail in the specific route handler if needed,
-    // or we could return 500 here. For debug, let's allow it to proceed but log heavily.
     next(); 
   }
 };
+
+// Fix 404 for favicon to reduce log noise
+app.get('/favicon.ico', (req, res) => res.status(204).end());
+
+// Apply DB Middleware to API routes and Root
+app.use(dbMiddleware);
+
 
 // Apply DB Middleware to API routes and Root
 app.use(dbMiddleware);
