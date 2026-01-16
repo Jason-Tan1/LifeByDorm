@@ -1,9 +1,6 @@
 {
   "version": 2,
   "outputDirectory": "dist",
-  "dataCache": {
-    "expiration": 0
-  },
   "rewrites": [
     {
       "source": "/(.*)",
