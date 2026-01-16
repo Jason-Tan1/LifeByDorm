@@ -107,7 +107,8 @@ const corsOptions = {
 
 app.use(cors(corsOptions));
 // Explicitly handle OPTIONS preflight to ensure headers are sent
-app.options('*', cors(corsOptions));
+// Note: In Express 5, '*' is not valid. Use RegEx /.*/ to match all routes.
+app.options(/.*/, cors(corsOptions));
 
 // Security Middleware
 app.use(helmet({
