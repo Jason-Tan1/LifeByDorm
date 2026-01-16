@@ -203,15 +203,29 @@ app.use(cors({
 }));
 */
 
-// MongoDB Connection
+// MongoDB Connection optimized for Serverless
 const connectDB = async () => {
-  try {
-    await mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/lifebydorm');
-    
-    // Check if connection is successful and database is accessible
-    if (mongoose.connection.readyState !== 1) {
-      throw new Error('MongoDB connection not ready');
+    // 1. Check if already connected
+    if (mongoose.connection.readyState === 1) {
+        console.log('✅ MongoDB already connected');
+        return;
     }
+    
+    // 2. Check if currently connecting
+    if (mongoose.connection.readyState === 2) {
+        console.log('⏳ MongoDB currently connecting...');
+        return;
+    }
+
+  try {
+    const opts = {
+        serverSelectionTimeoutMS: 5000, // Timeout after 5s instead of 30s
+        socketTimeoutMS: 45000,
+        family: 4 // Force IPv4 to avoid some Vercel/Mongo issues
+    };
+    
+    console.log('🔌 Connecting to MongoDB...');
+    await mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/lifebydorm', opts);
     
     console.log('✅ MongoDB connected successfully');
   } catch (error) {
@@ -220,7 +234,8 @@ const connectDB = async () => {
     } else {
       console.error('❌ MongoDB connection error: Unknown error');
     }
-    process.exit(1);
+    // Don't exit process in serverless! It kills the lambda.
+    // process.exit(1); 
   }
 };
 
