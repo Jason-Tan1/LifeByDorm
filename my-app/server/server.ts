@@ -96,7 +96,8 @@ app.use(cors({
 
 // Security Middleware
 app.use(helmet({
-  crossOriginResourcePolicy: { policy: "cross-origin" }
+  crossOriginResourcePolicy: { policy: "cross-origin" },
+  crossOriginOpenerPolicy: { policy: "unsafe-none" } // Allow Google Login popups
 })); // Set secure HTTP headers
 
 // Increase JSON body size limit to allow base64 image uploads from the client.
