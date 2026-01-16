@@ -47,15 +47,19 @@ const app = express()
 // Allowed origins: include FRONTEND_URL when set, and always include common localhost dev origins
 // Include common Vite dev ports (5173 and 4173) and localhost variants
 const ALLOWED_ORIGINS = [
-  process.env.FRONTEND_URL || 'https://life-by-dorm-git-main-jason-tans-projects-d9f50bb0.vercel.app', 
-  'https://life-by-dorm-git-main-jason-tans-projects-d9f50bb0.vercel.app', // Explicitly add your frontend URL
-  'https://lifebydorm-frontend.vercel.app', // Add production alias if you have one
+  process.env.FRONTEND_URL,
+  'https://life-by-dorm.vercel.app', // Production frontend
+  'https://lifebydorm.vercel.app', // Alternative production alias
   'http://localhost:5173',
   'http://127.0.0.1:5173',
   'http://localhost:4173',
   'http://127.0.0.1:4173',
   'http://localhost:3000'
 ].filter(Boolean);
+
+// Vercel preview deployment pattern for your project
+// Matches: life-by-dorm-*-jason-tans-projects-*.vercel.app
+const VERCEL_PREVIEW_PATTERN = /^https:\/\/life-by-dorm(-[a-z0-9-]+)?-jason-tans-projects(-[a-z0-9]+)?\.vercel\.app$/;
 
 app.use(cors({
   origin: (origin, callback) => {
@@ -69,6 +73,11 @@ app.use(cors({
 
     // Exact match allowed origins
     if (ALLOWED_ORIGINS.indexOf(origin) !== -1) {
+      return callback(null, true);
+    }
+
+    // Allow Vercel preview deployments for your project
+    if (VERCEL_PREVIEW_PATTERN.test(origin)) {
       return callback(null, true);
     }
 
