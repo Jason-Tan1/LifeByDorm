@@ -203,44 +203,59 @@ app.use(cors({
 }));
 */
 
-// MongoDB Connection optimized for Serverless
+// MongoDB Connection optimized for Serverless with Global Caching
+let cached = (global as any).mongoose;
+
+if (!cached) {
+  cached = (global as any).mongoose = { conn: null, promise: null };
+}
+
 const connectDB = async () => {
-    // 1. Check if already connected
-    if (mongoose.connection.readyState === 1) {
-        console.log('✅ MongoDB already connected');
-        return;
-    }
-    
-    // 2. Check if currently connecting
-    if (mongoose.connection.readyState === 2) {
-        console.log('⏳ MongoDB currently connecting...');
-        return;
-    }
+  if (cached.conn) {
+    return cached.conn;
+  }
+
+  if (!cached.promise) {
+    const opts = {
+      bufferCommands: false, // Disable mongoose buffering
+      serverSelectionTimeoutMS: 5000, 
+      socketTimeoutMS: 45000,
+      family: 4
+    };
+
+    console.log('🔌 Connecting to MongoDB...');
+    cached.promise = mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/lifebydorm', opts).then((mongoose) => {
+      console.log('✅ MongoDB connected successfully');
+      return mongoose;
+    });
+  }
 
   try {
-    const opts = {
-        serverSelectionTimeoutMS: 5000, // Timeout after 5s instead of 30s
-        socketTimeoutMS: 45000,
-        family: 4 // Force IPv4 to avoid some Vercel/Mongo issues
-    };
-    
-    console.log('🔌 Connecting to MongoDB...');
-    await mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/lifebydorm', opts);
-    
-    console.log('✅ MongoDB connected successfully');
-  } catch (error) {
-    if (error instanceof Error) {
-      console.error('❌ MongoDB connection error:', error.message);
-    } else {
-      console.error('❌ MongoDB connection error: Unknown error');
-    }
-    // Don't exit process in serverless! It kills the lambda.
-    // process.exit(1); 
+    cached.conn = await cached.promise;
+    return cached.conn;
+  } catch (e) {
+    cached.promise = null;
+    console.error('❌ MongoDB connection error:', e);
+    throw e;
   }
 };
 
-// Connect to MongoDB
-connectDB();
+// Create a middleware to ensure DB connection is established for every request
+const dbMiddleware = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    await connectDB();
+    next();
+  } catch (error) {
+    console.error('Database connection failed in middleware');
+    // Don't block the request, let it fail in the specific route handler if needed,
+    // or we could return 500 here. For debug, let's allow it to proceed but log heavily.
+    next(); 
+  }
+};
+
+// Apply DB Middleware to API routes and Root
+app.use(dbMiddleware);
+
 
 // Apply general API rate limiting to all /api routes
 app.use('/api/', apiLimiter);
