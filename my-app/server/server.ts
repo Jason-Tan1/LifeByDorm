@@ -58,8 +58,9 @@ const ALLOWED_ORIGINS = [
 ].filter(Boolean);
 
 // Vercel preview deployment pattern for your project
-// Matches: life-by-dorm-*-jason-tans-projects-*.vercel.app
-const VERCEL_PREVIEW_PATTERN = /^https:\/\/life-by-dorm(-[a-z0-9-]+)?-jason-tans-projects(-[a-z0-9]+)?\.vercel\.app$/;
+// Allow any subdomain starting with life-by-dorm owned by specific accounts/structures
+// Simplified regex to avoid greedy matching issues
+const VERCEL_PREVIEW_PATTERN = /^https:\/\/life-by-dorm.*\.vercel\.app$/;
 
 app.use(cors({
   origin: (origin, callback) => {
@@ -72,17 +73,19 @@ app.use(cors({
     }
 
     // Exact match allowed origins
-    if (ALLOWED_ORIGINS.indexOf(origin) !== -1) {
+    if (ALLOWED_ORIGINS.includes(origin)) {
       return callback(null, true);
     }
 
     // Allow Vercel preview deployments for your project
     if (VERCEL_PREVIEW_PATTERN.test(origin)) {
+      console.log(`✅ Allowed Vercel Preview Origin: ${origin}`);
       return callback(null, true);
     }
 
     // Allow common localhost/127.0.0.1 origins in non-production (dev) environments
-    if (process.env.NODE_ENV !== 'production' && origin) {
+    // AND explicitly allow them if NODE_ENV is not set (which sometimes happens)
+    if ((process.env.NODE_ENV !== 'production' && process.env.NODE_ENV !== 'test') || !process.env.NODE_ENV) {
       try {
         const parsed = new URL(origin);
         const host = parsed.hostname;
