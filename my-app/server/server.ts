@@ -150,10 +150,17 @@ const cache: Map<string, CacheEntry<any>> = new Map();
 const CACHE_TTL = 5 * 60 * 1000; // 5 minutes cache TTL
 
 app.get('/', (req: Request, res: Response) => {
+    const states: {[key: number]: string} = {
+        0: 'disconnected',
+        1: 'connected',
+        2: 'connecting',
+        3: 'disconnecting',
+    };
     res.json({ 
         message: "LifeByDorm Backend is Running", 
         environment: process.env.NODE_ENV,
-        database: mongoose.connection.readyState === 1 ? 'connected' : 'disconnected' 
+        database: states[mongoose.connection.readyState] || 'unknown',
+        readyState: mongoose.connection.readyState
     });
 });
 
