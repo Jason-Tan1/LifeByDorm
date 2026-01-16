@@ -34,7 +34,9 @@ console.log('Loaded secret:', process.env.ACCESS_TOKEN_SECRET ? '✅ Loaded' : '
 // Validate required environment variables
 if (!process.env.ACCESS_TOKEN_SECRET) {
   console.error('❌ CRITICAL: ACCESS_TOKEN_SECRET is not defined in .env file');
-  process.exit(1);
+  // Do not exit process in Vercel environment, as it causes "Internal Server Error" without CORS headers
+  // process.exit(1); 
+  console.warn('⚠️ Process continuing without ACCESS_TOKEN_SECRET - Auth will fail');
 }
 
 // Admin emails (comma-separated) read from env, e.g. ADMIN_EMAILS=admin@example.com,alice@org.com
@@ -48,8 +50,9 @@ const app = express()
 // Include common Vite dev ports (5173 and 4173) and localhost variants
 const ALLOWED_ORIGINS = [
   process.env.FRONTEND_URL,
-  'https://life-by-dorm.vercel.app', // Production frontend
-  'https://lifebydorm.vercel.app', // Alternative production alias
+  'https://life-by-dorm.vercel.app', 
+  'https://lifebydorm.vercel.app',
+  'https://life-by-dorm-git-main-jason-tans-projects-d9f50bb0.vercel.app', // Explicit fix for current preview
   'http://localhost:5173',
   'http://127.0.0.1:5173',
   'http://localhost:4173',
@@ -58,12 +61,11 @@ const ALLOWED_ORIGINS = [
 ].filter(Boolean);
 
 // Vercel preview deployment pattern for your project
-// Allow any subdomain starting with life-by-dorm owned by specific accounts/structures
-// Simplified regex to avoid greedy matching issues
-const VERCEL_PREVIEW_PATTERN = /^https:\/\/life-by-dorm.*\.vercel\.app$/;
+// Allow any subdomain starting with life-by-dorm
+const VERCEL_PREVIEW_PATTERN = /^https:\/\/life-by-dorm.*\.vercel\.app$/; // Matches life-by-dorm-git-main...
 
-app.use(cors({
-  origin: (origin, callback) => {
+const corsOptions = {
+  origin: (origin: string | undefined, callback: (err: Error | null, allow?: boolean) => void) => {
     // Allow requests with no origin (like mobile apps, curl, Postman)
     if (!origin) return callback(null, true);
     
@@ -72,40 +74,40 @@ app.use(cors({
       return callback(null, true);
     }
 
-    // Exact match allowed origins
+    // Check allowed origins list
     if (ALLOWED_ORIGINS.includes(origin)) {
       return callback(null, true);
     }
 
-    // Allow Vercel preview deployments for your project
+    // Check Vercel pattern
     if (VERCEL_PREVIEW_PATTERN.test(origin)) {
-      console.log(`✅ Allowed Vercel Preview Origin: ${origin}`);
+      console.log(`✅ Allowed Vercel Preview Origin via Regex: ${origin}`);
       return callback(null, true);
     }
 
-    // Allow common localhost/127.0.0.1 origins in non-production (dev) environments
-    // AND explicitly allow them if NODE_ENV is not set (which sometimes happens)
+    // Allow Localhost in non-prod
     if ((process.env.NODE_ENV !== 'production' && process.env.NODE_ENV !== 'test') || !process.env.NODE_ENV) {
       try {
         const parsed = new URL(origin);
-        const host = parsed.hostname;
-        if (host === 'localhost' || host === '127.0.0.1') {
+        if (parsed.hostname === 'localhost' || parsed.hostname === '127.0.0.1') {
           return callback(null, true);
         }
-      } catch (e) {
-        // ignore parse errors and fall through to block
-      }
+      } catch (e) {}
     }
 
     console.warn(`🚫 Blocked CORS request from unauthorized origin: ${origin}`);
     callback(new Error('Not allowed by CORS'));
   },
-  credentials: true, // Allow cookies and authorization headers
+  credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept', 'Origin'],
   exposedHeaders: ['RateLimit-Limit', 'RateLimit-Remaining', 'RateLimit-Reset'],
-  maxAge: 86400, // Cache preflight requests for 24 hours
-}));
+  maxAge: 600, // Reduced maxAge to 10 mins to help with debugging/clearing bad cache
+};
+
+app.use(cors(corsOptions));
+// Explicitly handle OPTIONS preflight to ensure headers are sent
+app.options('*', cors(corsOptions));
 
 // Security Middleware
 app.use(helmet({
@@ -193,30 +195,8 @@ function setCache<T>(key: string, data: T): void {
 }
 
 // CORS configuration - Moved to top of file
-/* 
-const ALLOWED_ORIGINS = process.env.NODE_ENV === 'production'
-  ? [process.env.FRONTEND_URL || 'https://yourdomain.com'] // Production: only your domain
-  : ['http://localhost:5173', 'http://localhost:3000', 'http://127.0.0.1:5173']; // Development: local URLs
-
-app.use(cors({
-  origin: (origin, callback) => {
-    // Allow requests with no origin (like mobile apps, curl, Postman)
-    if (!origin) return callback(null, true);
-    
-    if (ALLOWED_ORIGINS.indexOf(origin) !== -1) {
-      callback(null, true);
-    } else {
-      console.warn(`🚫 Blocked CORS request from unauthorized origin: ${origin}`);
-      callback(new Error('Not allowed by CORS'));
-    }
-  },
-  credentials: true, // Allow cookies and authorization headers
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization'],
-  exposedHeaders: ['RateLimit-Limit', 'RateLimit-Remaining', 'RateLimit-Reset'],
-  maxAge: 86400, // Cache preflight requests for 24 hours
-}));
-*/
+// const ALLOWED_ORIGINS = ... 
+// (Commented out legacy block removed to avoid confusion)
 
 // MongoDB Connection optimized for Serverless with Global Caching
 let cached = (global as any).mongoose;
