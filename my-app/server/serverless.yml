@@ -1,0 +1,59 @@
+service: lifebydorm-backend
+
+useDotenv: true
+
+provider:
+  name: aws
+  runtime: nodejs20.x
+  region: us-east-1
+  memorySize: 512
+  timeout: 10
+  environment:
+    MONGODB_URI: ${env:MONGODB_URI}
+    ACCESS_TOKEN_SECRET: ${env:ACCESS_TOKEN_SECRET}
+    ADMIN_EMAILS: ${env:ADMIN_EMAILS, ''}
+    FRONTEND_URL: ${env:FRONTEND_URL, ''}
+    AWS_BUCKET_NAME: ${env:AWS_BUCKET_NAME}
+    # AWS_REGION: ${env:AWS_REGION} # Reserved key, handled by provider.region
+    NODE_ENV: production
+
+  # Grant Lambda permission to access S3 properly using IAM roles
+  # (This is better than hardcoding keys in env vars)
+  iam:
+    role:
+      statements:
+        - Effect: Allow
+          Action:
+            - s3:PutObject
+            - s3:GetObject
+            - s3:DeleteObject
+          Resource: "arn:aws:s3:::${env:AWS_BUCKET_NAME}/*"
+
+functions:
+  api:
+    handler: lambda.handler
+    events:
+      - http:
+          path: /
+          method: ANY
+          cors: true
+      - http:
+          path: /{proxy+}
+          method: ANY
+          cors: true
+
+build:
+  esbuild:
+    bundle: true
+    minify: false
+    sourcemap: true
+    target: node20
+    platform: node
+    external:
+      - aws-sdk
+
+plugins:
+  - serverless-offline
+
+# custom:
+#  esbuild configuration is now under build.esbuild 

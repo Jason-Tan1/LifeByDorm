@@ -1248,8 +1248,8 @@ process.on('unhandledRejection', (reason, promise) => {
    console.log('⚠️ Process kept alive after unhandled rejection.');
 });
 
-// Start server if not running in Vercel (Vercel exports the app instead)
-if (process.env.VERCEL !== '1') {
+// Start server if not running in Vercel or AWS Lambda
+if (process.env.VERCEL !== '1' && !process.env.AWS_LAMBDA_FUNCTION_NAME) {
   const PORT = process.env.PORT || 3000;
   app.listen(PORT, () => {
     console.log(`🚀 Server is running on port ${PORT}`);
