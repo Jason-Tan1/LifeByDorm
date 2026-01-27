@@ -11,16 +11,21 @@ const secretAccessKey = process.env.AWS_SECRET_ACCESS_KEY;
 
 let s3Client: S3Client | null = null;
 
-if (bucketName && region && accessKeyId && secretAccessKey) {
-  s3Client = new S3Client({
-    region,
-    credentials: {
+if (bucketName && region) {
+  const S3Config: any = { region };
+  
+  // Use explicit credentials if available (e.g. local development)
+  // Otherwise, if running on AWS Lambda, it will automatically use the IAM Role attached to the function
+  if (accessKeyId && secretAccessKey) {
+    S3Config.credentials = {
       accessKeyId,
       secretAccessKey
-    }
-  });
+    };
+  }
+
+  s3Client = new S3Client(S3Config);
 } else {
-  console.warn('⚠️ AWS S3 credentials missing. File uploads will be skipped or stored as raw strings.');
+  console.warn('⚠️ AWS S3 configuration missing (Bucket Name or Region). File uploads will be skipped.');
 }
 
 /**
