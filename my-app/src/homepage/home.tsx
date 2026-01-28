@@ -49,7 +49,7 @@ function Home() {
       try {
         // Single API call to get all stats
         const statsRes = await fetch(`${API_BASE}/api/stats/homepage`);
-        
+
         if (!statsRes.ok) {
           throw new Error('Failed to fetch homepage stats');
         }
@@ -163,7 +163,7 @@ function Home() {
               {topUniversities.map(uni => (
                 <Link key={uni.slug} to={`/universities/${uni.slug}`} className="featured-card slider-card">
                   <div className="featured-image-container">
-                    <img src={uni.imageUrl || DefaultCampus} alt={uni.name} className="featured-image" />
+                    <img src={uni.imageUrl || DefaultCampus} alt={uni.name} className="featured-image" loading="lazy" />
                   </div>
                   <div className="featured-info">
                     <h3 className="featured-university-name">
@@ -205,7 +205,7 @@ function Home() {
               {mostRatedDorms.map(dorm => (
                 <Link key={`${dorm.universitySlug}-${dorm.slug}`} to={`/universities/${dorm.universitySlug}/dorms/${dorm.slug}`} className="featured-card slider-card">
                   <div className="featured-image-container">
-                    <img src={dorm.imageUrl || DefaultDorm} alt={dorm.name} className="featured-image" />
+                    <img src={dorm.imageUrl || DefaultDorm} alt={dorm.name} className="featured-image" loading="lazy" />
                   </div>
                   <div className="featured-info">
                     <h3 className="featured-university-name">
@@ -248,7 +248,7 @@ function Home() {
               {topDorms.map(dorm => (
                 <Link key={`${dorm.universitySlug}-${dorm.slug}`} to={`/universities/${dorm.universitySlug}/dorms/${dorm.slug}`} className="featured-card slider-card">
                   <div className="featured-image-container">
-                    <img src={dorm.imageUrl || DefaultDorm} alt={dorm.name} className="featured-image" />
+                    <img src={dorm.imageUrl || DefaultDorm} alt={dorm.name} className="featured-image" loading="lazy" />
                   </div>
                   <div className="featured-info">
                     <h3 className="featured-university-name">

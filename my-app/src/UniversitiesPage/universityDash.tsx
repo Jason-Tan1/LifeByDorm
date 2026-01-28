@@ -57,55 +57,73 @@ function UniversityDash() {
     setLoading(true);
     setError(null);
 
-    // Fetch data from APIs
+    // Helper to calculate overall rating from a review
+    const calculateOverallRating = (review: any) => {
+      const ratings = [review.room, review.bathroom, review.building, review.amenities, review.location];
+      return ratings.reduce((acc, rating) => acc + rating, 0) / ratings.length;
+    };
+
+    // Fetch data from APIs - try optimized endpoint first, fallback to old method
     async function fetchData() {
       try {
-        const [uniRes, dormsRes] = await Promise.all([
-          fetch(`${API_BASE}/api/universities/${encodeURIComponent(universityName!)}`),
-          fetch(`${API_BASE}/api/universities/${encodeURIComponent(universityName!)}/dorms`),
-        ]);
-
+        // Fetch university data
+        const uniRes = await fetch(`${API_BASE}/api/universities/${encodeURIComponent(universityName!)}`);
         if (!uniRes.ok) {
           throw new Error(`Failed to load university: ${uniRes.status}`);
         }
-        if (!dormsRes.ok) {
-          throw new Error(`Failed to load dorms: ${dormsRes.status}`);
+        const uniData: APIUniversity = await uniRes.json();
+
+        // Try the new optimized batch endpoint first
+        let dormsWithStats: APIDorm[] = [];
+        const dormsStatsRes = await fetch(`${API_BASE}/api/universities/${encodeURIComponent(universityName!)}/dorms-stats`);
+
+        if (dormsStatsRes.ok) {
+          // Use the optimized endpoint - dorms come with stats pre-calculated
+          dormsWithStats = await dormsStatsRes.json();
+        } else {
+          // Fallback to old method if new endpoint not available (404)
+          console.log('Falling back to old dorms endpoint');
+          const dormsRes = await fetch(`${API_BASE}/api/universities/${encodeURIComponent(universityName!)}/dorms`);
+          if (!dormsRes.ok) {
+            throw new Error(`Failed to load dorms: ${dormsRes.status}`);
+          }
+          const dormsData = await dormsRes.json();
+
+          // Fetch reviews for each dorm (old N+1 method)
+          const reviewPromises = dormsData.map(async (dorm: any) => {
+            try {
+              const reviewRes = await fetch(
+                `${API_BASE}/api/reviews?university=${encodeURIComponent(universityName!)}&dorm=${encodeURIComponent(dorm.name)}`
+              );
+              if (reviewRes.ok) {
+                const reviews = await reviewRes.json();
+                const avgRating = reviews.length > 0
+                  ? reviews.reduce((sum: number, r: any) => sum + calculateOverallRating(r), 0) / reviews.length
+                  : 0;
+                return { ...dorm, avgRating, reviewCount: reviews.length };
+              }
+            } catch (e) {
+              console.error(`Failed to fetch reviews for ${dorm.name}`, e);
+            }
+            return { ...dorm, avgRating: 0, reviewCount: 0 };
+          });
+
+          dormsWithStats = await Promise.all(reviewPromises);
         }
 
-        const uniData: APIUniversity = await uniRes.json();
-        const dormsData: APIDorm[] = await dormsRes.json();
         if (!cancelled) {
           setUniversity(uniData);
-          setDorms(dormsData);
-          
-          // Fetch review counts and ratings for each dorm
+          setDorms(dormsWithStats);
+
+          // Extract ratings and counts from the stats
           const counts: { [dormName: string]: number } = {};
           const ratings: { [dormName: string]: number } = {};
-          await Promise.all(
-            dormsData.map(async (dorm) => {
-              try {
-                const reviewRes = await fetch(
-                  `${API_BASE}/api/reviews?university=${encodeURIComponent(universityName!)}&dorm=${encodeURIComponent(dorm.name)}`
-                );
-                if (reviewRes.ok) {
-                  const reviews = await reviewRes.json();
-                  counts[dorm.name] = reviews.length;
-                  if (reviews.length > 0) {
-                    const totalRating = reviews.reduce((sum: number, review: any) => {
-                      return sum + calculateOverallRating(review);
-                    }, 0);
-                    ratings[dorm.name] = totalRating / reviews.length;
-                  } else {
-                    ratings[dorm.name] = 0;
-                  }
-                }
-              } catch (e) {
-                console.error(`Failed to fetch reviews for ${dorm.name}`, e);
-                counts[dorm.name] = 0;
-                ratings[dorm.name] = 0;
-              }
-            })
-          );
+
+          dormsWithStats.forEach((dorm: any) => {
+            counts[dorm.name] = dorm.reviewCount || 0;
+            ratings[dorm.name] = dorm.avgRating || 0;
+          });
+
           setReviewCounts(counts);
           setDormRatings(ratings);
         }
@@ -166,11 +184,6 @@ function UniversityDash() {
   //   return "★".repeat(fullStars) + (hasHalfStar ? "⯨" : "") + "☆".repeat(emptyStars);
   // };
 
-  const calculateOverallRating = (review: any) => {
-    const ratings = [review.room, review.bathroom, review.building, review.amenities, review.location];
-    return ratings.reduce((acc, rating) => acc + rating, 0) / ratings.length;
-  };
-
   // Main component render
   if (loading) {
     return (
@@ -227,10 +240,10 @@ function UniversityDash() {
           <div className="university-website-card">
             <h2>Need more information?</h2>
             <p>Visit the {university.name} website to learn more</p>
-            <a 
+            <a
               href={university.website || '#'}
-              target="_blank" 
-              rel="noopener noreferrer" 
+              target="_blank"
+              rel="noopener noreferrer"
               className="university-website-btn"
             >
               Visit University Website
@@ -238,8 +251,8 @@ function UniversityDash() {
           </div>
 
           {/* Add Dorm Section */}
-          <AddDorm 
-            universitySlug={universityName || ''} 
+          <AddDorm
+            universitySlug={universityName || ''}
             universityName={university.name}
             onDormSubmitted={() => {
               // Optionally refresh dorms list (though pending dorms won't show)
@@ -250,7 +263,7 @@ function UniversityDash() {
 
         {/* Right side - Dorms List */}
         <div className="dorms-list">
-          
+
           <div className="dorms-controls">
             <div className="search-section">
               <label htmlFor="dorm-search">Search {dorms.length} Dorms: </label>
@@ -268,7 +281,7 @@ function UniversityDash() {
                 </button>
               </div>
             </div>
-            
+
             <div className="filter-section">
               <label htmlFor="filter-select">Filter by:</label>
               <select
@@ -290,37 +303,37 @@ function UniversityDash() {
           <div className="dorms-grid">
             {filteredDorms.length > 0 ? (
               filteredDorms.map(dorm => (
-              <Link 
-                key={`${dorm.universitySlug}-${dorm.slug}`} 
-                to={`/universities/${universityName}/dorms/${dorm.slug}`}
-                className="dorm-card"
-                style={{ textDecoration: 'none', color: 'inherit' }}
-              >
-                <img src={(dorm.imageUrl && dorm.imageUrl !== '' && dorm.imageUrl !== 'null') ? dorm.imageUrl : DefaultDorm} alt={dorm.name} className="dorm-image" />
-                <div className="dorm-card-info">
-                  <div className="dorm-text-content">
-                    <h3>{dorm.name}</h3>
-                    <div className="dorm-rating" style={{ display: 'flex', alignItems: 'center', gap: '4px', marginTop: '8px' }}>
-                      <Star style={{ fontSize: '1.15rem', color: '#FFD700' }} />
-                      <span className="rating-number">
-                        {(dormRatings[dorm.name] ?? 0).toFixed(1)} ({reviewCounts[dorm.name] ?? 0} reviews)
-                      </span>
+                <Link
+                  key={`${dorm.universitySlug}-${dorm.slug}`}
+                  to={`/universities/${universityName}/dorms/${dorm.slug}`}
+                  className="dorm-card"
+                  style={{ textDecoration: 'none', color: 'inherit' }}
+                >
+                  <img src={(dorm.imageUrl && dorm.imageUrl !== '' && dorm.imageUrl !== 'null') ? dorm.imageUrl : DefaultDorm} alt={dorm.name} className="dorm-image" loading="lazy" />
+                  <div className="dorm-card-info">
+                    <div className="dorm-text-content">
+                      <h3>{dorm.name}</h3>
+                      <div className="dorm-rating" style={{ display: 'flex', alignItems: 'center', gap: '4px', marginTop: '8px' }}>
+                        <Star style={{ fontSize: '1.15rem', color: '#FFD700' }} />
+                        <span className="rating-number">
+                          {(dormRatings[dorm.name] ?? 0).toFixed(1)} ({reviewCounts[dorm.name] ?? 0} reviews)
+                        </span>
+                      </div>
+                    </div>
+                    <div className="dorm-action-area">
+                      <button
+                        className="leave-review-btn-small"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          navigate(`/review?university=${encodeURIComponent(universityName || '')}&dorm=${encodeURIComponent(dorm.name)}`);
+                        }}
+                      >
+                        Leave Review
+                      </button>
                     </div>
                   </div>
-                  <div className="dorm-action-area">
-                    <button
-                      className="leave-review-btn-small"
-                      onClick={(e) => {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        navigate(`/review?university=${encodeURIComponent(universityName || '')}&dorm=${encodeURIComponent(dorm.name)}`);
-                      }}
-                    >
-                      Leave Review
-                    </button>
-                  </div>
-                </div>
-              </Link>
+                </Link>
               ))
             ) : (
               <div className="no-results">

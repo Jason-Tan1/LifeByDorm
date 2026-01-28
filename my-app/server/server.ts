@@ -17,15 +17,15 @@ import { uploadToS3 } from './s3';
 
 // Note: express-mongo-sanitize is incompatible with Express 5 (req.query is read-only)
 // MongoDB injection protection is handled by Mongoose's strict schema validation
-import { 
-  validate, 
-  registerSchema, 
-  loginSchema, 
-  sendCodeSchema, 
-  verifyCodeSchema, 
-  googleAuthSchema, 
-  dormSchema, 
-  reviewSchema 
+import {
+  validate,
+  registerSchema,
+  loginSchema,
+  sendCodeSchema,
+  verifyCodeSchema,
+  googleAuthSchema,
+  dormSchema,
+  reviewSchema
 } from './validation';
 
 dotenv.config();
@@ -50,7 +50,7 @@ const app = express()
 // Include common Vite dev ports (5173 and 4173) and localhost variants
 const ALLOWED_ORIGINS = [
   process.env.FRONTEND_URL,
-  'https://life-by-dorm.vercel.app', 
+  'https://life-by-dorm.vercel.app',
   'https://lifebydorm.vercel.app',
   'https://life-by-dorm-git-main-jason-tans-projects-d9f50bb0.vercel.app', // Explicit fix for current preview
   'http://localhost:5173',
@@ -68,7 +68,7 @@ const corsOptions = {
   origin: (origin: string | undefined, callback: (err: Error | null, allow?: boolean) => void) => {
     // Allow requests with no origin (like mobile apps, curl, Postman)
     if (!origin) return callback(null, true);
-    
+
     // If FRONTEND_URL is set to '*', allow all origins
     if (process.env.FRONTEND_URL === '*') {
       return callback(null, true);
@@ -92,7 +92,7 @@ const corsOptions = {
         if (parsed.hostname === 'localhost' || parsed.hostname === '127.0.0.1') {
           return callback(null, true);
         }
-      } catch (e) {}
+      } catch (e) { }
     }
 
     console.warn(`🚫 Blocked CORS request from unauthorized origin: ${origin}`);
@@ -167,19 +167,19 @@ const cache: Map<string, CacheEntry<any>> = new Map();
 const CACHE_TTL = 5 * 60 * 1000; // 5 minutes cache TTL
 
 app.get('/', (req: Request, res: Response) => {
-    const states: {[key: number]: string} = {
-        0: 'disconnected',
-        1: 'connected',
-        2: 'connecting',
-        3: 'disconnecting',
-    };
-    res.json({ 
-        message: "LifeByDorm Backend is Running", 
-        environment: process.env.NODE_ENV,
-        database: states[mongoose.connection.readyState] || 'unknown',
-        readyState: mongoose.connection.readyState,
-        lastError: connectionError ? (connectionError.message || String(connectionError)) : null
-    });
+  const states: { [key: number]: string } = {
+    0: 'disconnected',
+    1: 'connected',
+    2: 'connecting',
+    3: 'disconnecting',
+  };
+  res.json({
+    message: "LifeByDorm Backend is Running",
+    environment: process.env.NODE_ENV,
+    database: states[mongoose.connection.readyState] || 'unknown',
+    readyState: mongoose.connection.readyState,
+    lastError: connectionError ? (connectionError.message || String(connectionError)) : null
+  });
 });
 
 function getCached<T>(key: string): T | null {
@@ -215,7 +215,7 @@ const connectDB = async () => {
   if (!cached.promise) {
     const opts = {
       bufferCommands: false, // Disable mongoose buffering
-      serverSelectionTimeoutMS: 5000, 
+      serverSelectionTimeoutMS: 5000,
       socketTimeoutMS: 45000,
       family: 4
     };
@@ -250,7 +250,7 @@ const dbMiddleware = async (req: Request, res: Response, next: NextFunction) => 
     next();
   } catch (error) {
     console.error('Database connection failed in middleware');
-    next(); 
+    next();
   }
 };
 
@@ -283,7 +283,7 @@ app.get('/api/stats/homepage', readOnlyLimiter, async (req: Request, res: Respon
 
     // Fetch all universities
     const universities = await University.find({}).lean();
-    
+
     // Fetch all approved dorms
     const dorms = await Dorm.find({
       $or: [
@@ -291,7 +291,7 @@ app.get('/api/stats/homepage', readOnlyLimiter, async (req: Request, res: Respon
         { status: { $exists: false } }
       ]
     }).lean();
-    
+
     // Fetch all approved reviews
     const reviews = await UserReview.find({
       $or: [
@@ -308,17 +308,17 @@ app.get('/api/stats/homepage', readOnlyLimiter, async (req: Request, res: Respon
 
     // Calculate dorm stats (avg rating and review count per dorm)
     const dormStats: { [key: string]: { avgRating: number; reviewCount: number; totalRating: number } } = {};
-    
+
     reviews.forEach((review: any) => {
       // Count for university
       if (review.university && universityStats[review.university]) {
         universityStats[review.university].reviewCount++;
       }
-      
+
       // Calculate overall rating for dorm
       const dormKey = `${review.university}:${review.dorm}`;
       const overallRating = (review.room + review.bathroom + review.building + review.amenities + review.location) / 5;
-      
+
       if (!dormStats[dormKey]) {
         dormStats[dormKey] = { avgRating: 0, reviewCount: 0, totalRating: 0 };
       }
@@ -394,18 +394,18 @@ app.get('/api/test', authenticationToken, requireAdmin, async (req: AuthRequest,
 
     // Get collections
     const collections = await mongoose.connection.db.listCollections().toArray();
-    
+
     // Get database name safely
     const dbName = mongoose.connection.db.databaseName;
 
-    res.json({ 
+    res.json({
       status: 'Connected to MongoDB',
       database: dbName,
       collections: collections.map(c => c.name)
     });
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred';
-    res.status(500).json({ 
+    res.status(500).json({
       status: 'Error',
       message: errorMessage
     });
@@ -435,7 +435,7 @@ app.post('/register', authLimiter, validate(registerSchema), async (req, res) =>
     // OWASP: Logging - Do not log sensitive information like passwords
     console.log('Received registration request for:', req.body.email);
     const { email, password } = req.body;
-    
+
     // Check if user already exists
     const existingUser = await User.findOne({ email });
     if (existingUser) {
@@ -445,7 +445,7 @@ app.post('/register', authLimiter, validate(registerSchema), async (req, res) =>
 
     // Hash password
     const hashedPassword = await bcrypt.hash(password, 10);
-    
+
     // Create new user
     const user = new User({
       email,
@@ -455,7 +455,7 @@ app.post('/register', authLimiter, validate(registerSchema), async (req, res) =>
     console.log('Saving new user:', email);
     const savedUser = await user.save();
     console.log('User saved successfully:', savedUser._id);
-    
+
     if (!process.env.ACCESS_TOKEN_SECRET) {
       throw new Error('ACCESS_TOKEN_SECRET is not defined');
     }
@@ -478,10 +478,10 @@ app.post('/register', authLimiter, validate(registerSchema), async (req, res) =>
 app.post('/login', authLimiter, validate(loginSchema), async (req, res) => {
   try {
     const { email, password } = req.body;
-    
+
     // Find user
     const user = await User.findOne({ email });
-    
+
     // OWASP: Account Enumeration Prevention - Use generic error messages
     const genericErrorMessage = 'Invalid email or password';
 
@@ -493,7 +493,7 @@ app.post('/login', authLimiter, validate(loginSchema), async (req, res) => {
     if (!user.password) {
       return res.status(400).json({ message: 'User does not have a password. Please use email verification.' });
     }
-    
+
     const validPassword = await bcrypt.compare(password, user.password);
     if (!validPassword) {
       return res.status(400).json({ message: genericErrorMessage });
@@ -540,17 +540,17 @@ app.post('/auth/send-code', authLimiter, validate(sendCodeSchema), async (req, r
     // Find or create user
     let user = await User.findOne({ email });
     if (!user) {
-        // Create new user if not exists
-        user = new User({
-            email,
-            password: await bcrypt.hash(Math.random().toString(36), 10), // Random dummy password
-            verificationCode,
-            verificationCodeExpires
-        });
+      // Create new user if not exists
+      user = new User({
+        email,
+        password: await bcrypt.hash(Math.random().toString(36), 10), // Random dummy password
+        verificationCode,
+        verificationCodeExpires
+      });
     } else {
-        // Update existing user
-        user.verificationCode = verificationCode;
-        user.verificationCodeExpires = verificationCodeExpires;
+      // Update existing user
+      user.verificationCode = verificationCode;
+      user.verificationCodeExpires = verificationCodeExpires;
     }
     await user.save();
 
@@ -558,19 +558,19 @@ app.post('/auth/send-code', authLimiter, validate(sendCodeSchema), async (req, r
 
     // Send email if credentials are present, otherwise just log (for dev)
     if (process.env.EMAIL_USER && process.env.EMAIL_PASS) {
-        await transporter.sendMail({
-            from: process.env.EMAIL_USER,
-            to: email,
-            subject: 'Your LifeByDorm Verification Code',
-            text: `Your verification code is: ${verificationCode}. It expires in 10 minutes.`
-        });
-        console.log(`[Auth] Email sent to ${email}`);
+      await transporter.sendMail({
+        from: process.env.EMAIL_USER,
+        to: email,
+        subject: 'Your LifeByDorm Verification Code',
+        text: `Your verification code is: ${verificationCode}. It expires in 10 minutes.`
+      });
+      console.log(`[Auth] Email sent to ${email}`);
     } else {
-        if (process.env.NODE_ENV !== 'production') {
-            console.log(`[Auth] No email credentials found. Code for ${email} is: ${verificationCode}`);
-        } else {
-            console.log(`[Auth] No email credentials found. Suppressed code logging in production.`);
-        }
+      if (process.env.NODE_ENV !== 'production') {
+        console.log(`[Auth] No email credentials found. Code for ${email} is: ${verificationCode}`);
+      } else {
+        console.log(`[Auth] No email credentials found. Suppressed code logging in production.`);
+      }
     }
 
     res.json({ message: 'Verification code sent' });
@@ -582,43 +582,43 @@ app.post('/auth/send-code', authLimiter, validate(sendCodeSchema), async (req, r
 
 // Verify Code and Login
 app.post('/auth/verify-code', authLimiter, validate(verifyCodeSchema), async (req, res) => {
-    try {
-        const { email, code } = req.body;
-        if (!email || !code) return res.status(400).json({ message: 'Email and code are required' });
+  try {
+    const { email, code } = req.body;
+    if (!email || !code) return res.status(400).json({ message: 'Email and code are required' });
 
-        const user = await User.findOne({ 
-            email, 
-            verificationCode: code,
-            verificationCodeExpires: { $gt: new Date() }
-        });
+    const user = await User.findOne({
+      email,
+      verificationCode: code,
+      verificationCodeExpires: { $gt: new Date() }
+    });
 
-        if (!user) {
-            return res.status(400).json({ message: 'Invalid or expired verification code' });
-        }
-
-        // Clear code after successful use
-        user.verificationCode = undefined;
-        user.verificationCodeExpires = undefined;
-        await user.save();
-
-        if (!process.env.ACCESS_TOKEN_SECRET) {
-            throw new Error('ACCESS_TOKEN_SECRET is not defined');
-        }
-
-        // Determine role and generate token
-        const dbRole = (user as any).role as string | undefined;
-        const isAdmin = (dbRole === 'admin') || ADMIN_EMAILS.includes(user.email);
-        const token = jwt.sign(
-            { userId: user._id, name: user.email, role: isAdmin ? 'admin' : 'user' },
-            process.env.ACCESS_TOKEN_SECRET as Secret,
-            { expiresIn: '24h' }
-        );
-
-        res.json({ token });
-    } catch (error) {
-        console.error('Error verifying code:', error);
-        res.status(500).json({ message: 'Error verifying code' });
+    if (!user) {
+      return res.status(400).json({ message: 'Invalid or expired verification code' });
     }
+
+    // Clear code after successful use
+    user.verificationCode = undefined;
+    user.verificationCodeExpires = undefined;
+    await user.save();
+
+    if (!process.env.ACCESS_TOKEN_SECRET) {
+      throw new Error('ACCESS_TOKEN_SECRET is not defined');
+    }
+
+    // Determine role and generate token
+    const dbRole = (user as any).role as string | undefined;
+    const isAdmin = (dbRole === 'admin') || ADMIN_EMAILS.includes(user.email);
+    const token = jwt.sign(
+      { userId: user._id, name: user.email, role: isAdmin ? 'admin' : 'user' },
+      process.env.ACCESS_TOKEN_SECRET as Secret,
+      { expiresIn: '24h' }
+    );
+
+    res.json({ token });
+  } catch (error) {
+    console.error('Error verifying code:', error);
+    res.status(500).json({ message: 'Error verifying code' });
+  }
 });
 
 // Google OAuth login - simplified with ID token verification
@@ -627,7 +627,7 @@ const googleClient = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 app.post('/auth/google', authLimiter, validate(googleAuthSchema), async (req, res) => {
   try {
     const { credential, access_token } = req.body;
-    
+
     if (!credential && !access_token) {
       return res.status(400).json({ message: 'Google credential or access_token is required' });
     }
@@ -658,7 +658,7 @@ app.post('/auth/google', authLimiter, validate(googleAuthSchema), async (req, re
         });
 
         if (!response.ok) {
-           throw new Error('Failed to fetch user info');
+          throw new Error('Failed to fetch user info');
         }
 
         const data = await response.json() as any;
@@ -674,7 +674,7 @@ app.post('/auth/google', authLimiter, validate(googleAuthSchema), async (req, re
 
     // Find or create user
     let user = await User.findOne({ email });
-    
+
     if (!user) {
       user = new User({
         email,
@@ -770,7 +770,7 @@ app.get('/api/universities/:slug/dorms', async (req: Request, res: Response) => 
   try {
     const { slug } = req.params;
     // Only return approved dorms OR dorms without a status field (legacy dorms)
-    const dorms = await Dorm.find({ 
+    const dorms = await Dorm.find({
       universitySlug: slug,
       $or: [
         { status: 'approved' },
@@ -781,6 +781,74 @@ app.get('/api/universities/:slug/dorms', async (req: Request, res: Response) => 
   } catch (err) {
     console.error('Error fetching dorms for university', err);
     res.status(500).json({ message: 'Error fetching dorms' });
+  }
+});
+
+// ========================================
+// BATCH DORM STATS ENDPOINT - Optimized for university dashboard
+// Returns dorms with ratings and review counts in a single request
+// ========================================
+app.get('/api/universities/:slug/dorms-stats', readOnlyLimiter, async (req: Request, res: Response) => {
+  try {
+    const { slug } = req.params;
+
+    // Check cache first
+    const cacheKey = `dorms-stats-${slug}`;
+    const cachedData = getCached<any>(cacheKey);
+    if (cachedData) {
+      return res.json(cachedData);
+    }
+
+    // Fetch dorms for this university
+    const dorms = await Dorm.find({
+      universitySlug: slug,
+      $or: [
+        { status: 'approved' },
+        { status: { $exists: false } }
+      ]
+    }).sort({ name: 1 }).lean();
+
+    // Fetch all reviews for this university in one query
+    const reviews = await UserReview.find({
+      university: slug,
+      $or: [
+        { status: 'approved' },
+        { status: { $exists: false } }
+      ]
+    }).lean();
+
+    // Calculate stats per dorm
+    const dormStats: { [dormName: string]: { totalRating: number; reviewCount: number } } = {};
+
+    reviews.forEach((review: any) => {
+      if (!review.dorm) return;
+
+      if (!dormStats[review.dorm]) {
+        dormStats[review.dorm] = { totalRating: 0, reviewCount: 0 };
+      }
+
+      const overallRating = (review.room + review.bathroom + review.building + review.amenities + review.location) / 5;
+      dormStats[review.dorm].reviewCount++;
+      dormStats[review.dorm].totalRating += overallRating;
+    });
+
+    // Enrich dorms with stats
+    const enrichedDorms = dorms.map((dorm: any) => {
+      const stats = dormStats[dorm.name] || { totalRating: 0, reviewCount: 0 };
+      return {
+        ...dorm,
+        avgRating: stats.reviewCount > 0 ? stats.totalRating / stats.reviewCount : 0,
+        reviewCount: stats.reviewCount
+      };
+    });
+
+    // Cache the result
+    setCache(cacheKey, enrichedDorms);
+
+    res.json(enrichedDorms);
+  } catch (err) {
+    console.error('Error fetching dorm stats for university', err);
+    res.status(500).json({ message: 'Error fetching dorm stats' });
   }
 });
 
@@ -845,15 +913,15 @@ app.post('/api/dorms', authenticationToken, validate(dormSchema), async (req: Au
     });
 
     const savedDorm = await dorm.save();
-    console.log('✅ New dorm submitted for approval:', { 
-      name: savedDorm.name, 
+    console.log('✅ New dorm submitted for approval:', {
+      name: savedDorm.name,
       university: savedDorm.universitySlug,
-      submittedBy: savedDorm.submittedBy 
+      submittedBy: savedDorm.submittedBy
     });
 
-    res.status(201).json({ 
+    res.status(201).json({
       message: 'Dorm submitted for approval',
-      dorm: savedDorm 
+      dorm: savedDorm
     });
   } catch (err) {
     console.error('Error submitting dorm', err);
@@ -886,7 +954,7 @@ app.post('/api/reviews', validate(reviewSchema), async (req: Request, res: Respo
     const authHeader = req.headers.authorization;
     console.log('🔑 Auth header present:', !!authHeader);
     console.log('🔑 Auth header value:', authHeader ? authHeader.substring(0, 50) + '...' : '(none)');
-    
+
     if (authHeader && authHeader.startsWith('Bearer ')) {
       const token = authHeader.split(' ')[1];
       try {
@@ -952,15 +1020,15 @@ app.post('/api/reviews', validate(reviewSchema), async (req: Request, res: Respo
     });
 
     const saved = await review.save();
-    console.log('✅ Saved review to DB:', { 
-      id: saved._id, 
-      university: saved.university, 
+    console.log('✅ Saved review to DB:', {
+      id: saved._id,
+      university: saved.university,
       dorm: saved.dorm,
       imagesLength: saved.images ? saved.images.length : 0,
       verified: saved.verified,
       user: saved.user || '(none)'
     });
-  res.status(201).json(saved);
+    res.status(201).json(saved);
   } catch (err) {
     console.error('Error saving review', err);
     // If this is a Mongoose validation error, return 400 with details
@@ -984,7 +1052,7 @@ app.get('/api/reviews', async (req: Request, res: Response) => {
   try {
     const { university, dorm } = req.query;
     // Show approved reviews OR reviews without a status field (legacy reviews)
-    const filter: any = { 
+    const filter: any = {
       $or: [
         { status: 'approved' },
         { status: { $exists: false } }
@@ -1005,11 +1073,11 @@ app.get('/api/reviews/user', authenticationToken, async (req: AuthRequest, res: 
   try {
     const userEmail = req.user?.name;
     console.log('📋 Fetching reviews for user:', userEmail);
-    
+
     if (!userEmail) {
       return res.status(401).json({ message: 'User not authenticated' });
     }
-    
+
     // Find reviews by user email
     const reviews = await UserReview.find({ user: userEmail }).sort({ createdAt: -1 }).lean();
     console.log('📋 Found', reviews.length, 'reviews for user:', userEmail);
@@ -1192,7 +1260,7 @@ app.get('/api/health', async (req: Request, res: Response) => {
   try {
     // Check MongoDB connection
     const dbStatus = mongoose.connection.readyState === 1 ? 'connected' : 'disconnected';
-    
+
     res.status(200).json({
       status: 'healthy',
       timestamp: new Date().toISOString(),
@@ -1217,13 +1285,13 @@ if (process.env.NODE_ENV === 'production' && process.env.VERCEL !== '1') {
   // Note: specific to CommonJS/ESM
   const staticPath = path.join(process.cwd(), 'dist');
   app.use(express.static(staticPath));
-  
+
   // Handle client-side routing - serve index.html for all non-API routes
   // Use a RegExp route to avoid path-to-regexp errors with a bare '*'
   app.get(/^\/(?!api).*/, (req: Request, res: Response) => {
     res.sendFile(path.join(staticPath, 'index.html'));
   });
-  
+
   console.log(`📁 Serving static files from: ${staticPath}`);
 }
 
@@ -1245,7 +1313,7 @@ process.on('uncaughtException', (err) => {
 process.on('unhandledRejection', (reason, promise) => {
   console.error('❌ Unhandled Rejection at:', promise, 'reason:', reason);
   // Optional: Perform cleanup or exit
-   console.log('⚠️ Process kept alive after unhandled rejection.');
+  console.log('⚠️ Process kept alive after unhandled rejection.');
 });
 
 // Start server if not running in Vercel or AWS Lambda
