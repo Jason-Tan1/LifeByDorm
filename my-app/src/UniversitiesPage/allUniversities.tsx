@@ -1,55 +1,28 @@
-import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import NavBar from '../NavBarPages/navbar';
 import Footer from '../homepage/footer';
 import './allUniversities.css';
 import DefaultCampusImage from '../assets/Default_Campus.png';
-
-type University = {
-  name: string;
-  slug: string;
-  location?: string;
-  totalStudents?: number;
-};
-
-const API_BASE = (import.meta as any).env?.VITE_API_BASE || 'http://localhost:3000';
+import { useUniversityData } from '../context/UniversityDataContext';
 
 function AllUniversities() {
-  const [universities, setUniversities] = useState<University[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    async function fetchUniversities() {
-      try {
-        const response = await fetch(`${API_BASE}/api/universities`);
-        if (!response.ok) throw new Error('Failed to fetch universities');
-        const data = await response.json();
-        setUniversities(data);
-      } catch (e: any) {
-        setError(e?.message || 'Failed to load universities');
-      } finally {
-        setLoading(false);
-      }
-    }
-
-    fetchUniversities();
-  }, []);
+  // Use shared context instead of making a separate API call
+  const { universities, isLoading: loading, error } = useUniversityData();
 
   return (
     <div className="all-universities-page">
       <NavBar />
-      
+
       {/* Hero Section */}
       <div className="uni-hero" style={{ backgroundImage: `url(${DefaultCampusImage})` }}>
         <div className="uni-hero-overlay">
-           <h1>University List</h1>
+          <h1>University List</h1>
         </div>
       </div>
 
       <div className="all-universities-content">
         <h2 style={{ marginBottom: '20px', fontSize: '1.5rem', paddingBottom: '10px' }}>
-             All Universities ({universities.length})
+          All Universities ({universities.length})
         </h2>
         {loading && <p>Loading universities...</p>}
         {error && <p>Error: {error}</p>}

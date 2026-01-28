@@ -81,6 +81,7 @@ function DormInfo({ dorm, reviews, universityName, universityLocation, calculate
           src={dorm.imageUrl && dorm.imageUrl.trim() !== '' ? dorm.imageUrl : DefaultDorm}
           alt={dorm.name}
           className="dorm-main-image"
+          loading="eager"
         />
         <div className="dorm-image-overlay"></div>
         <div className="dorm-header-content">
