@@ -4,7 +4,7 @@
   min-height: 100vh;
   background-color: #f5f5f5;
   font-family: 'DM Sans', sans-serif;
-  padding: 0; 
+  padding: 0;
 }
 
 .review-page-content {
@@ -18,7 +18,8 @@
 .review-hero {
   position: relative;
   width: 100%;
-  height: 350px; /* Adjust as needed */
+  height: 350px;
+  /* Adjust as needed */
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
@@ -33,7 +34,8 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0, 0, 0, 0.4); /* Dark overlay */
+  background: rgba(0, 0, 0, 0.4);
+  /* Dark overlay */
   display: flex;
   align-items: center;
   justify-content: center;
@@ -43,7 +45,7 @@
   color: white;
   font-size: clamp(2rem, 5vw, 3rem);
   font-weight: 700;
-  text-shadow: 0 2px 8px rgba(0,0,0,0.5);
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
   margin: 0;
   text-align: center;
 }
@@ -58,7 +60,8 @@
   align-items: center;
   flex-wrap: wrap;
   gap: 8px;
-  font-size: 0.95rem; /* Larger like screenshot */
+  font-size: 0.95rem;
+  /* Larger like screenshot */
   color: #333;
 }
 
@@ -70,7 +73,7 @@
   transition: color 0.2s;
 }
 
-.breadcrumb-home:hover, 
+.breadcrumb-home:hover,
 .breadcrumb-link:hover {
   text-decoration: underline;
 }
@@ -168,17 +171,17 @@
   color: #444;
   cursor: pointer;
   transition: all 0.2s cubic-bezier(0.25, 0.8, 0.25, 1);
-  box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
   font-family: 'DM Sans', sans-serif;
   text-align: center;
-  flex-grow: 1; 
-  max-width: fit-content; 
+  flex-grow: 1;
+  max-width: fit-content;
 }
 
 .option-button:hover {
   transform: translateY(-2px);
-  box-shadow: 0 6px 12px rgba(0,0,0,0.08);
-  border-color: #D62828; 
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.08);
+  border-color: #D62828;
   color: #D62828;
   background-color: #fff1f2;
 }
@@ -193,9 +196,11 @@
   display: inline-flex;
   align-items: center;
   padding: 8px 16px;
-  border-radius: 50px; /* Pill shape */
+  border-radius: 50px;
+  /* Pill shape */
   border: 1px solid #fecaca;
-  background-color: #fff1f2; /* Light red background */
+  background-color: #fff1f2;
+  /* Light red background */
   transition: all 0.3s ease;
   height: 44px;
   box-sizing: border-box;
@@ -252,25 +257,47 @@
 }
 
 @keyframes fadeIn {
-  from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 @keyframes slideIn {
-  from { opacity: 0; transform: translateX(-10px); }
-  to { opacity: 1; transform: translateX(0); }
+  from {
+    opacity: 0;
+    transform: translateX(-10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
 }
 
 @keyframes popIn {
-  from { opacity: 0; transform: scale(0.9); }
-  to { opacity: 1; transform: scale(1); }
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
 }
 
 /* Ratings */
 .ratings-grid {
   display: grid;
   gap: 24px;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); /* Responsive Grid */
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  /* Responsive Grid */
 }
 
 .rating-group {
@@ -416,7 +443,7 @@
   align-items: center;
   justify-content: center;
   font-weight: bold;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
 /* Popup Styles */
@@ -426,7 +453,8 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: rgba(0, 0, 0, 0.5); /* Dim background */
+  background-color: rgba(0, 0, 0, 0.5);
+  /* Dim background */
   display: flex;
   align-items: center;
   justify-content: center;
@@ -450,22 +478,33 @@
   font-family: 'DM Sans', sans-serif;
   font-size: 1.5rem;
   font-weight: 700;
-  color: #1a1a1a; /* Dark text */
+  color: #1a1a1a;
+  /* Dark text */
   margin: 0 0 8px 0;
-  border-bottom: none; /* Override global h2 border */
-  padding-bottom: 0; /* Override global h2 padding */
+  border-bottom: none;
+  /* Override global h2 border */
+  padding-bottom: 0;
+  /* Override global h2 padding */
 }
 
 .popup-subtitle {
   font-family: 'DM Sans', sans-serif;
   font-size: 1rem;
-  color: #5f6368; /* Grey text */
+  color: #5f6368;
+  /* Grey text */
   margin: 0;
 }
 
 @keyframes slideUp {
-  from { opacity: 0; transform: translateY(20px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 /* Submit Button */
@@ -490,7 +529,7 @@
 .submit-review-btn:hover {
   background-color: #333;
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
 @media (max-width: 600px) {
@@ -498,7 +537,7 @@
     grid-template-columns: 1fr;
     gap: 16px;
   }
-  
+
   .review-header h1 {
     font-size: 1.8rem;
   }
@@ -512,4 +551,51 @@
     text-align: left;
     max-width: none;
   }
+}
+
+/* Error Popup Specific Styles */
+.popup-card-error {
+  border-left: 6px solid #d32f2f;
+  background-color: #fff;
+}
+
+.popup-header-error {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 12px;
+}
+
+.popup-close-btn {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  line-height: 1;
+  color: #999;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 4px;
+  transition: all 0.2s;
+}
+
+.popup-close-btn:hover {
+  background-color: #f5f5f5;
+  color: #333;
+}
+
+.popup-action-btn {
+  margin-top: 20px;
+  background-color: #d32f2f;
+  color: white;
+  border: none;
+  padding: 10px 24px;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  width: 100%;
+}
+
+.popup-action-btn:hover {
+  background-color: #b71c1c;
 }

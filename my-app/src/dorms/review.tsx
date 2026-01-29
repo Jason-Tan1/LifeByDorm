@@ -46,6 +46,8 @@ function Reviews() {
   const [wouldDormAgain, setWouldDormAgain] = useState('');
   const [fileDataUrls, setFileDataUrls] = useState<string[]>([]);
   const [showSuccessPopup, setShowSuccessPopup] = useState(false);
+  const [showErrorPopup, setShowErrorPopup] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
   const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10 MB
   const MAX_FILES = 5; // Maximum 5 images
 
@@ -130,6 +132,9 @@ function Reviews() {
   };
 
   const handleSubmit = async () => {
+    setShowErrorPopup(false);
+    setErrorMessage('');
+
     const missing: string[] = [];
     if (!selectedYear) missing.push('Year');
     if (!selectedRoomType) missing.push('Room type');
@@ -142,13 +147,16 @@ function Reviews() {
     if (!description || description.trim().length < 5) missing.push('Comments (min 5 chars)');
 
     if (missing.length > 0) {
-      alert('Please fill out the following fields before submitting:\n' + missing.join('\n'));
+      setErrorMessage('Please fill out the following fields:\n' + missing.join(', '));
+      setShowErrorPopup(true);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
       return;
     }
 
     // Validate university and dorm before submission
     if (!resolvedUniversity || !resolvedDorm) {
-      alert('Error: University or dorm information is missing. Please navigate from a dorm page.');
+      setErrorMessage('Error: University or dorm information is missing. Please navigate from a dorm page.');
+      setShowErrorPopup(true);
       return;
     }
 
@@ -183,8 +191,8 @@ function Reviews() {
       const data = await res.json();
       if (!res.ok) {
         const serverMessage = data?.message || 'Failed to submit review';
-        const serverErrors = data?.errors ? JSON.stringify(data.errors, null, 2) : null;
-        alert(serverMessage + (serverErrors ? '\n' + serverErrors : ''));
+        setErrorMessage(serverMessage);
+        setShowErrorPopup(true);
         throw new Error(serverMessage);
       }
 
@@ -211,7 +219,10 @@ function Reviews() {
 
     } catch (err) {
       console.error(err);
-      alert('Error submitting review');
+      if (!showErrorPopup) { // Don't overwrite if we already set a specific server error
+        setErrorMessage('Error submitting review. Please try again.');
+        setShowErrorPopup(true);
+      }
     }
   };
 
@@ -510,6 +521,19 @@ function Reviews() {
           <div className="popup-card">
             <h2 className="popup-title">Review Submitted!</h2>
             <p className="popup-subtitle">Thanks for sharing! Your review has been submitted for approval.</p>
+          </div>
+        </div>
+      )}
+      {/* Error Popup */}
+      {showErrorPopup && (
+        <div className="popup-overlay" onClick={() => setShowErrorPopup(false)}>
+          <div className="popup-card popup-card-error" onClick={(e) => e.stopPropagation()}>
+            <div className="popup-header-error">
+              <h2 className="popup-title" style={{ color: '#d32f2f' }}>Action Required</h2>
+              <button className="popup-close-btn" onClick={() => setShowErrorPopup(false)}>×</button>
+            </div>
+            <p className="popup-subtitle" style={{ whiteSpace: 'pre-line' }}>{errorMessage}</p>
+            <button className="popup-action-btn" onClick={() => setShowErrorPopup(false)}>Okay</button>
           </div>
         </div>
       )}
