@@ -554,28 +554,64 @@ app.post('/auth/send-code', authLimiter, validate(sendCodeSchema), async (req, r
     }
     await user.save();
 
+    // Debug Email Credentials (SAFE LOGGING)
+    const pass = process.env.EMAIL_PASS || '';
+    console.log('[DEBUG] Email Auth Check:');
+    console.log(`- EMAIL_USER: '${process.env.EMAIL_USER}'`);
+    console.log(`- EMAIL_PASS Length: ${pass.length}`);
+    console.log(`- EMAIL_PASS First/Last: ${pass.substring(0, 2)}...${pass.substring(pass.length - 2)}`);
+    console.log(`- EMAIL_PASS has spaces: ${pass.includes(' ')}`);
+
+    // Verify transporter connection on startup
+    transporter.verify(function (error, success) {
+      if (error) {
+        console.log('❌ Email Server Connect Failed immediately:', error.message);
+      } else {
+        console.log('✅ Email Server login succeeded! Ready to send.');
+      }
+    });
+
     console.log(`[Auth] Verification code generated for ${email}`);
+    console.log(`[Auth] Attempting to send email from: ${process.env.EMAIL_USER ? 'Set' : 'Missing'} to: ${email}`);
 
     // Send email if credentials are present, otherwise just log (for dev)
     if (process.env.EMAIL_USER && process.env.EMAIL_PASS) {
-      await transporter.sendMail({
-        from: process.env.EMAIL_USER,
-        to: email,
-        subject: 'Your LifeByDorm Verification Code',
-        text: `Your verification code is: ${verificationCode}. It expires in 10 minutes.`
-      });
-      console.log(`[Auth] Email sent to ${email}`);
+      try {
+        const info = await transporter.sendMail({
+          from: `"LifeByDorm" <${process.env.EMAIL_USER}>`,
+          to: email,
+          subject: 'Your Verification Code',
+          text: `Your verification code is: ${verificationCode}. It expires in 10 minutes.`,
+          html: `
+            <div style="font-family: Arial, sans-serif; padding: 20px; color: #333;">
+              <h2 style="color: #1e3a5f;">Verify your LifeByDorm Login</h2>
+              <p>Your verification code is:</p>
+              <h1 style="font-size: 32px; letter-spacing: 5px; background: #f4f4f4; padding: 10px; display: inline-block; border-radius: 5px;">${verificationCode}</h1>
+              <p>This code expires in 10 minutes.</p>
+              <p>If you didn't request this code, you can safely ignore this email.</p>
+            </div>
+          `
+        });
+        console.log(`[Auth] Email sent successfully using ${process.env.EMAIL_USER}`);
+        console.log(`[Auth] Message ID: ${info.messageId}`);
+      } catch (emailError) {
+        console.error('❌ Failed to send email:', emailError);
+        // Fallback to console log in dev if email fails
+        if (process.env.NODE_ENV !== 'production') {
+          console.log(`[Auth] FALLBACK: Code for ${email} is: ${verificationCode}`);
+        }
+        throw emailError; // Re-throw to handle in main catch
+      }
     } else {
+      console.warn('[Auth] No EMAIL_USER or EMAIL_PASS defined in environment variables');
       if (process.env.NODE_ENV !== 'production') {
         console.log(`[Auth] No email credentials found. Code for ${email} is: ${verificationCode}`);
-      } else {
-        console.log(`[Auth] No email credentials found. Suppressed code logging in production.`);
       }
     }
 
     res.json({ message: 'Verification code sent' });
   } catch (error) {
-    console.error('Error sending code:', error);
+    console.error('Error in send-code endpoint:', error);
     res.status(500).json({ message: 'Error sending verification code' });
   }
 });
@@ -586,15 +622,30 @@ app.post('/auth/verify-code', authLimiter, validate(verifyCodeSchema), async (re
     const { email, code } = req.body;
     if (!email || !code) return res.status(400).json({ message: 'Email and code are required' });
 
-    const user = await User.findOne({
-      email,
-      verificationCode: code,
-      verificationCodeExpires: { $gt: new Date() }
-    });
+    // Debug Verification Request
+    console.log(`[Auth] Verifying code for ${email} with input: ${code}`);
+
+    // First find user by email only to debug why it fails
+    const user = await User.findOne({ email });
 
     if (!user) {
+      console.log(`[Auth] Verification failed: User not found for email ${email}`);
       return res.status(400).json({ message: 'Invalid or expired verification code' });
     }
+
+    // Check code
+    if (user.verificationCode !== code) {
+      console.log(`[Auth] Verification failed: Code mismatch. DB: '${user.verificationCode}', Input: '${code}'`);
+      return res.status(400).json({ message: 'Invalid or expired verification code' });
+    }
+
+    // Check expiration
+    if (!user.verificationCodeExpires || user.verificationCodeExpires < new Date()) {
+      console.log(`[Auth] Verification failed: Code expired. Expires: ${user.verificationCodeExpires}, Now: ${new Date()}`);
+      return res.status(400).json({ message: 'Invalid or expired verification code' });
+    }
+
+    console.log(`[Auth] Verification successful for ${email}`);
 
     // Clear code after successful use
     user.verificationCode = undefined;
