@@ -8,6 +8,8 @@ import '../NavBarPages/navbar.css';
 import { useParams } from 'react-router-dom';
 
 
+import PageLoader from '../components/PageLoader';
+
 //Define types for Dorm data from API (IMPORTANT)
 type APIDorm = {
   name: string;
@@ -203,15 +205,7 @@ function Dorms() {
   };
 
   if (loading) {
-    return (
-      <div className="dorm-page">
-        <NavBar />
-        <div className="dorm-content">
-          <p>Loading dorm details...</p>
-        </div>
-        <Footer />
-      </div>
-    );
+    return <PageLoader />;
   }
 
   if (error || !dorm) {
