@@ -7,7 +7,13 @@ import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import './login.css'
 import LBDLogo from '../assets/LBDLogo-removebg-preview.png';
 
-const API_BASE = (import.meta as any).env?.VITE_API_BASE || 'http://localhost:3000';
+// Use relative path '' when on localhost to leverage the Vite proxy (vite.config.ts)
+// Otherwise use the environment variable (for production)
+const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+const API_BASE = isLocal ? '' : ((import.meta as any).env?.VITE_API_BASE || 'http://localhost:3000');
+
+console.log('Login Component configured with API_BASE:', API_BASE || '(Relative Proxy)');
+console.log('Is Local:', isLocal);
 
 interface LoginModalProps {
   isOpen: boolean;
@@ -20,12 +26,14 @@ function login({ isOpen, onClose }: LoginModalProps) {
   const [showVerificationStep, setShowVerificationStep] = useState<boolean>(false);
   const [error, setError] = useState<string>("");
   const [showEmailForm, setShowEmailForm] = useState<boolean>(false);
+  const [loading, setLoading] = useState<boolean>(false);
   const [, setShowSuccessPopup] = useState<boolean>(false);
 
   // Custom Google Login Hook
   const loginWithGoogle = useGoogleLogin({
     onSuccess: async (tokenResponse: TokenResponse) => {
       try {
+        setLoading(true);
         // Send the access token to your backend to verify and create a session
         const response = await axios.post(`${API_BASE}/auth/google`, {
           // Note: using access_token instead of credential for useGoogleLogin
@@ -43,6 +51,7 @@ function login({ isOpen, onClose }: LoginModalProps) {
       } catch (err: any) {
         console.error("Google Login Error:", err);
         setError(err.response?.data?.message || 'Google sign-in failed');
+        setLoading(false);
       }
     },
     onError: (error) => {
@@ -59,12 +68,16 @@ function login({ isOpen, onClose }: LoginModalProps) {
     setVerificationCode("");
     setEmail("");
     setError("");
+    setLoading(false);
     onClose();
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (loading) return;
+
     setError("");
+    setLoading(true);
 
     try {
       if (!showVerificationStep) {
@@ -73,9 +86,9 @@ function login({ isOpen, onClose }: LoginModalProps) {
         setShowVerificationStep(true);
       } else {
         // Step 2: Verify Code
-        const response = await axios.post(`${API_BASE}/auth/verify-code`, { 
-            email, 
-            code: verificationCode 
+        const response = await axios.post(`${API_BASE}/auth/verify-code`, {
+          email,
+          code: verificationCode
         });
 
         if (response.data.token) {
@@ -89,6 +102,8 @@ function login({ isOpen, onClose }: LoginModalProps) {
       }
     } catch (err: any) {
       setError(err.response?.data?.message || 'An error occurred');
+    } finally {
+      setLoading(false);
     }
   }
 
@@ -113,6 +128,7 @@ function login({ isOpen, onClose }: LoginModalProps) {
               <button
                 className="google_custom_button"
                 onClick={() => loginWithGoogle()}
+                disabled={loading}
               >
                 <img
                   src="https://cdn1.iconfinder.com/data/icons/google-s-logo/150/Google_Icons-09-512.png"
@@ -125,6 +141,7 @@ function login({ isOpen, onClose }: LoginModalProps) {
               <button
                 className="email_option_button"
                 onClick={() => setShowEmailForm(true)}
+                disabled={loading}
               >
                 <MailOutlineIcon className="email_icon" />
                 Continue with email
@@ -146,14 +163,15 @@ function login({ isOpen, onClose }: LoginModalProps) {
         ) : (
           // Email Form (Passwordless)
           <form onSubmit={handleSubmit} className="email_screen">
-            <button 
-              type="button" 
-              className="back_button" 
+            <button
+              type="button"
+              className="back_button"
               onClick={() => {
-                  if (showVerificationStep) setShowVerificationStep(false);
-                  else setShowEmailForm(false);
-                  setError("");
+                if (showVerificationStep) setShowVerificationStep(false);
+                else setShowEmailForm(false);
+                setError("");
               }}
+              disabled={loading}
             >
               <ArrowBackIcon />
               <span>Back</span>
@@ -163,40 +181,42 @@ function login({ isOpen, onClose }: LoginModalProps) {
             </div>
 
             {!showVerificationStep ? (
-                <div className="field_group">
-                  <label className="field_label">Email address</label>
-                  <input
-                    type="email"
-                    placeholder="Email"
-                    name="email"
-                    className="input_field"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    required
-                    autoFocus
-                  />
-                  <p style={{marginTop: '10px', fontSize: '13px', color: '#666'}}>
-                      We'll email you a code to sign in without a password.
-                  </p>
-                </div>
+              <div className="field_group">
+                <label className="field_label">Email address</label>
+                <input
+                  type="email"
+                  placeholder="Email"
+                  name="email"
+                  className="input_field"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  required
+                  autoFocus
+                  disabled={loading}
+                />
+                <p style={{ marginTop: '10px', fontSize: '13px', color: '#666' }}>
+                  We'll email you a code to sign in without a password.
+                </p>
+              </div>
             ) : (
-                <div className="field_group">
-                  <label className="field_label">Verification Code</label>
-                  <p style={{marginBottom: '15px', fontSize: '14px', color: '#555'}}>
-                      We sent a code to <strong>{email}</strong>. Enter it below.
-                  </p>
-                  <input
-                    type="text"
-                    placeholder="123456"
-                    name="code"
-                    className="input_field"
-                    value={verificationCode}
-                    onChange={(e) => setVerificationCode(e.target.value)}
-                    required
-                    autoFocus
-                    maxLength={6}
-                  />
-                </div>
+              <div className="field_group">
+                <label className="field_label">Verification Code</label>
+                <p style={{ marginBottom: '15px', fontSize: '14px', color: '#555' }}>
+                  We sent a code to <strong>{email}</strong>. Enter it below.
+                </p>
+                <input
+                  type="text"
+                  placeholder="123456"
+                  name="code"
+                  className="input_field"
+                  value={verificationCode}
+                  onChange={(e) => setVerificationCode(e.target.value)}
+                  required
+                  autoFocus
+                  maxLength={6}
+                  disabled={loading}
+                />
+              </div>
             )}
 
             {error && (
@@ -206,8 +226,8 @@ function login({ isOpen, onClose }: LoginModalProps) {
             )}
 
             <div className="primary_action">
-              <button type="submit" className="primary_button">
-                  {showVerificationStep ? "Verify & Continue" : "Send Code"}
+              <button type="submit" className="primary_button" disabled={loading}>
+                {loading ? (showVerificationStep ? "Verifying..." : "Sending...") : (showVerificationStep ? "Verify & Continue" : "Send Code")}
               </button>
             </div>
 
