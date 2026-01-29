@@ -1,6 +1,7 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { lazy, Suspense } from 'react';
 import { UniversityDataProvider } from './context/UniversityDataContext';
+import PageLoader from './components/PageLoader';
 
 // Lazy load all page components for better initial load performance
 const Home = lazy(() => import('./homepage/home.tsx'));
@@ -16,27 +17,6 @@ const AllUniversities = lazy(() => import('./UniversitiesPage/allUniversities.ts
 const AdminDashboard = lazy(() => import('./admin/dashboard'));
 const TermsOfService = lazy(() => import('./legal/TermsOfService.tsx'));
 const PrivacyPolicy = lazy(() => import('./legal/PrivacyPolicy.tsx'));
-
-// Minimal loading fallback for fast perceived performance
-const PageLoader = () => (
-  <div style={{
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
-    minHeight: '100vh',
-    background: '#f5f5f5'
-  }}>
-    <div style={{
-      width: '40px',
-      height: '40px',
-      border: '3px solid #e0e0e0',
-      borderTop: '3px solid #1e3a5f',
-      borderRadius: '50%',
-      animation: 'spin 1s linear infinite'
-    }} />
-    <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
-  </div>
-);
 
 function App() {
   return (

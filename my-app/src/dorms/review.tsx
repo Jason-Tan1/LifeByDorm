@@ -38,11 +38,11 @@ function Reviews() {
   const [hoverRatings, setHoverRatings] = useState<{ category: string | null, value: number }>({ category: null, value: 0 });
 
   const [description, setDescription] = useState('');
-  
+
   // Using single string for UI simplicity, will convert to array on submit
   const [selectedYear, setSelectedYear] = useState<string>('');
   const [selectedRoomType, setSelectedRoomType] = useState<string>('');
-  
+
   const [wouldDormAgain, setWouldDormAgain] = useState('');
   const [fileDataUrls, setFileDataUrls] = useState<string[]>([]);
   const [showSuccessPopup, setShowSuccessPopup] = useState(false);
@@ -67,7 +67,7 @@ function Reviews() {
   const renderStars = (category: keyof typeof ratings) => {
     const currentRating = ratings[category];
     let effectiveValue = currentRating;
-    
+
     if (hoverRatings.category === category && hoverRatings.value > 0) {
       if (hoverRatings.value > currentRating) {
         effectiveValue = hoverRatings.value;
@@ -94,28 +94,28 @@ function Reviews() {
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
     if (!files || files.length === 0) return;
-    
+
     if (files.length > MAX_FILES) {
       alert(`You can only upload up to ${MAX_FILES} images.`);
       e.target.value = '';
       return;
     }
-    
+
     const newFileDataUrls: string[] = [];
     let filesProcessed = 0;
-    
+
     Array.from(files).forEach((file) => {
       if (file.size > MAX_FILE_SIZE) {
         alert(`File "${file.name}" is too large. Maximum file size is 10 MB.`);
         filesProcessed++;
         return;
       }
-      
+
       const reader = new FileReader();
       reader.onload = () => {
         newFileDataUrls.push(reader.result as string);
         filesProcessed++;
-        
+
         if (filesProcessed === files.length) {
           setFileDataUrls(prev => [...prev, ...newFileDataUrls]);
           e.target.value = '';
@@ -187,7 +187,7 @@ function Reviews() {
         alert(serverMessage + (serverErrors ? '\n' + serverErrors : ''));
         throw new Error(serverMessage);
       }
-      
+
       // Clear form
       setRatings({ room: 0, bathrooms: 0, building: 0, amenities: 0, location: 0 });
       setDescription('');
@@ -195,7 +195,7 @@ function Reviews() {
       setSelectedRoomType('');
       setWouldDormAgain('');
       setFileDataUrls([]);
-      
+
       // Show Success Popup
       setShowSuccessPopup(true);
 
@@ -205,7 +205,7 @@ function Reviews() {
       // Navigate after delay
       setTimeout(() => {
         if (university && dormSlug) {
-           navigate(`/universities/${encodeURIComponent(university)}/dorms/${dormSlug}`);
+          navigate(`/universities/${encodeURIComponent(university)}/dorms/${dormSlug}`);
         }
       }, 2000);
 
@@ -217,14 +217,14 @@ function Reviews() {
 
   const formatName = (name: string) => {
     return name
-      .replace(/-/g, ' ') 
+      .replace(/-/g, ' ')
       .split(' ')
       .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
       .join(' ');
   };
 
   const getYearLabel = (val: string) => {
-    switch(val) {
+    switch (val) {
       case '1': return 'First';
       case '2': return 'Second';
       case '3': return 'Third';
@@ -259,190 +259,190 @@ function Reviews() {
   return (
     <div className='Review'>
       <NavBar />
-      
+
       {/* Hero Section */}
       <div className="review-hero" style={{ backgroundImage: `url(${DefaultDormImage})` }}>
         <div className="review-hero-overlay">
-           <h1>Rating {formatName(displayDormName)}</h1>
+          <h1>Rating {formatName(displayDormName)}</h1>
         </div>
       </div>
-      
+
       <div className='review-page-content'>
-        
+
         {/* Breadcrumbs moved out of container to match screenshot layout */}
         <div className="breadcrumb-wrapper">
-              <div className="dorm-breadcrumbs">
-                <Link to="/" className="breadcrumb-home">
-                  <HomeIcon style={{ fontSize: '1.2rem', color: '#333' }} />
-                </Link>
-                
-                {resolvedUniversity && (
-                  <>
-                    <span className="breadcrumb-separator">›</span>
-                    <Link to={`/universities/${encodeURIComponent(resolvedUniversity)}`} className="breadcrumb-link">
-                      {formatName(resolvedUniversity)}
-                    </Link>
-                  </>
-                )}
+          <div className="dorm-breadcrumbs">
+            <Link to="/" className="breadcrumb-home">
+              <HomeIcon style={{ fontSize: '1.2rem', color: '#333' }} />
+            </Link>
 
-                {resolvedUniversity && resolvedDorm && (
-                  <>
-                    <span className="breadcrumb-separator">›</span>
-                    <Link 
-                      to={`/universities/${encodeURIComponent(resolvedUniversity)}/dorms/${resolvedDorm.toLowerCase().replace(/\s+/g, '-')}`} 
-                      className="breadcrumb-link"
-                    >
-                      {formatName(resolvedDorm)}
-                    </Link>
-                  </>
-                )}
-                
+            {resolvedUniversity && (
+              <>
                 <span className="breadcrumb-separator">›</span>
-                <span className="breadcrumb-current">Review</span>
-              </div>
+                <Link to={`/universities/${encodeURIComponent(resolvedUniversity)}`} className="breadcrumb-link">
+                  {formatName(resolvedUniversity)}
+                </Link>
+              </>
+            )}
+
+            {resolvedUniversity && resolvedDorm && (
+              <>
+                <span className="breadcrumb-separator">›</span>
+                <Link
+                  to={`/universities/${encodeURIComponent(resolvedUniversity)}/dorms/${resolvedDorm.toLowerCase().replace(/\s+/g, '-')}`}
+                  className="breadcrumb-link"
+                >
+                  {formatName(resolvedDorm)}
+                </Link>
+              </>
+            )}
+
+            <span className="breadcrumb-separator">›</span>
+            <span className="breadcrumb-current">Review</span>
+          </div>
         </div>
 
         <div className='review-container'>
-          
+
           {/* Header removed from here */}
-          
+
           <div className="review-content">
-            
+
             {/* Sequential Steps Section - Refactored for Independent Editing */}
             <div className="review-section sequential-section">
-              
+
               {/* Selected Badges Row (Always Visible if any exist) */}
               {(selectedYear || selectedRoomType || wouldDormAgain) && (
-                 <div className="selected-badges-row">
-                    {selectedYear && (
-                       <div className="selected-item-row fade-in">
-                          <div className="selected-item-icon"><SchoolIcon /></div>
-                          <span className="selected-item-text">{getYearLabel(selectedYear)}</span>
-                          <button 
-                            type="button" 
-                            className="selected-item-remove"
-                            onClick={() => setSelectedYear('')} // Only clears Year
-                          >
-                            <CloseIcon fontSize="small" />
-                          </button>
-                       </div>
-                    )}
+                <div className="selected-badges-row">
+                  {selectedYear && (
+                    <div className="selected-item-row fade-in">
+                      <div className="selected-item-icon"><SchoolIcon /></div>
+                      <span className="selected-item-text">{getYearLabel(selectedYear)}</span>
+                      <button
+                        type="button"
+                        className="selected-item-remove"
+                        onClick={() => setSelectedYear('')} // Only clears Year
+                      >
+                        <CloseIcon fontSize="small" />
+                      </button>
+                    </div>
+                  )}
 
-                    {selectedRoomType && (
-                       <div className="selected-item-row fade-in">
-                          <div className="selected-item-icon"><MeetingRoomIcon /></div>
-                          <span className="selected-item-text">
-                            {roomTypeOptions.find(o => o.value === selectedRoomType)?.label || selectedRoomType}
-                          </span>
-                          <button 
-                             type="button" 
-                             className="selected-item-remove"
-                             onClick={() => setSelectedRoomType('')} // Only clears Room
-                          >
-                            <CloseIcon fontSize="small" />
-                          </button>
-                       </div>
-                    )}
+                  {selectedRoomType && (
+                    <div className="selected-item-row fade-in">
+                      <div className="selected-item-icon"><MeetingRoomIcon /></div>
+                      <span className="selected-item-text">
+                        {roomTypeOptions.find(o => o.value === selectedRoomType)?.label || selectedRoomType}
+                      </span>
+                      <button
+                        type="button"
+                        className="selected-item-remove"
+                        onClick={() => setSelectedRoomType('')} // Only clears Room
+                      >
+                        <CloseIcon fontSize="small" />
+                      </button>
+                    </div>
+                  )}
 
-                    {wouldDormAgain && (
-                       <div className="selected-item-row fade-in">
-                          <div className="selected-item-icon"><ThumbUpIcon /></div>
-                          <span className="selected-item-text">
-                            {wouldDormAgain === 'yes' ? 'Would Dorm Again: Yes' : 'Would Dorm Again: No'}
-                          </span>
-                          <button 
-                            type="button" 
-                            className="selected-item-remove"
-                            onClick={() => setWouldDormAgain('')} // Only clears Choice
-                          >
-                            <CloseIcon fontSize="small" />
-                          </button>
-                       </div>
-                    )}
-                 </div>
+                  {wouldDormAgain && (
+                    <div className="selected-item-row fade-in">
+                      <div className="selected-item-icon"><ThumbUpIcon /></div>
+                      <span className="selected-item-text">
+                        {wouldDormAgain === 'yes' ? 'Would Dorm Again: Yes' : 'Would Dorm Again: No'}
+                      </span>
+                      <button
+                        type="button"
+                        className="selected-item-remove"
+                        onClick={() => setWouldDormAgain('')} // Only clears Choice
+                      >
+                        <CloseIcon fontSize="small" />
+                      </button>
+                    </div>
+                  )}
+                </div>
               )}
 
               {/* Active Input Area - Prioritizes first missing field */}
               <div className="active-selection-area">
-                 {!selectedYear ? (
-                    <div className="selection-step fade-in">
-                        <label className="step-label">What year were you?</label>
-                        <div className="options-grid">
-                          {yearOptions.map((opt) => (
-                              <button 
-                                key={opt.value}
-                                type="button"
-                                className="option-button"
-                                onClick={() => setSelectedYear(opt.value)}
-                              >
-                                {opt.label}
-                              </button>
-                          ))}
-                        </div>
+                {!selectedYear ? (
+                  <div className="selection-step fade-in">
+                    <label className="step-label">What year were you?</label>
+                    <div className="options-grid">
+                      {yearOptions.map((opt) => (
+                        <button
+                          key={opt.value}
+                          type="button"
+                          className="option-button"
+                          onClick={() => setSelectedYear(opt.value)}
+                        >
+                          {opt.label}
+                        </button>
+                      ))}
                     </div>
-                 ) : !selectedRoomType ? (
-                    <div className="selection-step fade-in">
-                       <label className="step-label">What was your room type?</label>
-                       <div className="options-grid">
-                        {roomTypeOptions.map((opt) => (
-                           <button 
-                             key={opt.value}
-                             type="button"
-                             className="option-button"
-                             onClick={() => setSelectedRoomType(opt.value)}
-                           >
-                              {opt.label}
-                           </button>
-                        ))}
-                      </div>
+                  </div>
+                ) : !selectedRoomType ? (
+                  <div className="selection-step fade-in">
+                    <label className="step-label">What was your room type?</label>
+                    <div className="options-grid">
+                      {roomTypeOptions.map((opt) => (
+                        <button
+                          key={opt.value}
+                          type="button"
+                          className="option-button"
+                          onClick={() => setSelectedRoomType(opt.value)}
+                        >
+                          {opt.label}
+                        </button>
+                      ))}
                     </div>
-                 ) : !wouldDormAgain ? (
-                    <div className="selection-step fade-in">
-                        <label className="step-label">Would you dorm here again?</label>
-                        <div className="options-grid">
-                          {dormAgainOptions.map((opt) => (
-                              <button 
-                                key={opt.value}
-                                type="button"
-                                className="option-button"
-                                onClick={() => setWouldDormAgain(opt.value)}
-                              >
-                                {opt.label}
-                              </button>
-                          ))}
-                        </div>
+                  </div>
+                ) : !wouldDormAgain ? (
+                  <div className="selection-step fade-in">
+                    <label className="step-label">Would you dorm here again?</label>
+                    <div className="options-grid">
+                      {dormAgainOptions.map((opt) => (
+                        <button
+                          key={opt.value}
+                          type="button"
+                          className="option-button"
+                          onClick={() => setWouldDormAgain(opt.value)}
+                        >
+                          {opt.label}
+                        </button>
+                      ))}
                     </div>
-                 ) : null}
+                  </div>
+                ) : null}
               </div>
 
             </div>
 
             {/* Ratings Section */}
             <div className="review-section ratings-grid">
-                <div className="rating-group">
-                  <label>Room</label>
-                  {renderStars('room')}
-                </div>
+              <div className="rating-group">
+                <label>Room</label>
+                {renderStars('room')}
+              </div>
 
-                <div className="rating-group">
-                  <label>Bathroom</label>
-                  {renderStars('bathrooms')}
-                </div>
+              <div className="rating-group">
+                <label>Bathroom</label>
+                {renderStars('bathrooms')}
+              </div>
 
-                <div className="rating-group">
-                  <label>Building</label>
-                  {renderStars('building')}
-                </div>
+              <div className="rating-group">
+                <label>Building</label>
+                {renderStars('building')}
+              </div>
 
-                <div className="rating-group">
-                  <label>Amenities</label>
-                  {renderStars('amenities')}
-                </div>
+              <div className="rating-group">
+                <label>Amenities</label>
+                {renderStars('amenities')}
+              </div>
 
-                <div className="rating-group">
-                  <label>Location</label>
-                  {renderStars('location')}
-                </div>
+              <div className="rating-group">
+                <label>Location</label>
+                {renderStars('location')}
+              </div>
             </div>
 
             {/* Comments Section */}
@@ -459,42 +459,42 @@ function Reviews() {
             {/* Photo Section */}
             <div className="review-section photo-section">
               <label className="section-label">Add a Photo</label>
-              
+
               <div className="file-upload-container">
-                 <input 
-                    type="file" 
-                    id="file-upload" 
-                    accept="image/*" 
-                    multiple 
-                    onChange={handleFileChange} 
-                    style={{ display: 'none' }} 
-                 />
-                 <label htmlFor="file-upload" className="file-upload-label">
-                    <div className="upload-icon-wrapper">
-                        <CloudUploadIcon style={{ fontSize: 32, color: '#445E75' }} />
-                    </div>
-                    <span className="upload-text">Click to browse files</span>
-                 </label>
+                <input
+                  type="file"
+                  id="file-upload"
+                  accept="image/*"
+                  multiple
+                  onChange={handleFileChange}
+                  style={{ display: 'none' }}
+                />
+                <label htmlFor="file-upload" className="file-upload-label">
+                  <div className="upload-icon-wrapper">
+                    <CloudUploadIcon style={{ fontSize: 32, color: '#445E75' }} />
+                  </div>
+                  <span className="upload-text">Click to browse files</span>
+                </label>
               </div>
-              
+
               {fileDataUrls.length > 0 && (
-                    <div className="photo-previews">
-                      {fileDataUrls.map((url, index) => (
-                        <div key={index} className="photo-preview-item">
-                          <img src={url} alt={`preview ${index + 1}`} />
-                          <button
-                            type="button"
-                            className="remove-photo-btn"
-                            onClick={() => removeImage(index)}
-                          >
-                            ×
-                          </button>
-                        </div>
-                      ))}
+                <div className="photo-previews">
+                  {fileDataUrls.map((url, index) => (
+                    <div key={index} className="photo-preview-item">
+                      <img src={url} alt={`preview ${index + 1}`} />
+                      <button
+                        type="button"
+                        className="remove-photo-btn"
+                        onClick={() => removeImage(index)}
+                      >
+                        ×
+                      </button>
                     </div>
-                  )}
+                  ))}
+                </div>
+              )}
             </div>
-            
+
             <div className="submit-section">
               <button type="button" className="submit-review-btn" onClick={handleSubmit}>
                 Submit Review
@@ -509,7 +509,7 @@ function Reviews() {
         <div className="popup-overlay">
           <div className="popup-card">
             <h2 className="popup-title">Review Submitted!</h2>
-            <p className="popup-subtitle">Thanks for sharing your experience.</p>
+            <p className="popup-subtitle">Thanks for sharing! Your review has been submitted for approval.</p>
           </div>
         </div>
       )}

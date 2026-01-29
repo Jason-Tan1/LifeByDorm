@@ -10,6 +10,7 @@ import '../homepage/searchbar.css';
 import { FaSearch } from 'react-icons/fa';
 import DefaultCampus from '../assets/Default_Campus.png';
 import DefaultDorm from '../assets/Default_Dorm.png';
+import PageLoader from '../components/PageLoader';
 
 // Define types for University and Dorm data from API
 type APIUniversity = {
@@ -186,14 +187,7 @@ function UniversityDash() {
 
   // Main component render
   if (loading) {
-    return (
-      <div className="university-dash">
-        <NavBar />
-        <div className="university-content">
-          <p>Loading...</p>
-        </div>
-      </div>
-    );
+    return <PageLoader />;
   }
 
   // Handle error state

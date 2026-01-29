@@ -4,10 +4,13 @@ import Footer from '../homepage/footer';
 import './allUniversities.css';
 import DefaultCampusImage from '../assets/Default_Campus.png';
 import { useUniversityData } from '../context/UniversityDataContext';
+import PageLoader from '../components/PageLoader';
 
 function AllUniversities() {
   // Use shared context instead of making a separate API call
   const { universities, isLoading: loading, error } = useUniversityData();
+
+  if (loading) return <PageLoader />;
 
   return (
     <div className="all-universities-page">
@@ -24,7 +27,6 @@ function AllUniversities() {
         <h2 style={{ marginBottom: '20px', fontSize: '1.5rem', paddingBottom: '10px' }}>
           All Universities ({universities.length})
         </h2>
-        {loading && <p>Loading universities...</p>}
         {error && <p>Error: {error}</p>}
         {!loading && !error && (
           <ul className="university-list">
