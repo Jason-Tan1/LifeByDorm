@@ -14,6 +14,8 @@ provider:
     ADMIN_EMAILS: ${env:ADMIN_EMAILS, ''}
     FRONTEND_URL: ${env:FRONTEND_URL, ''}
     AWS_BUCKET_NAME: ${env:AWS_BUCKET_NAME}
+    EMAIL_USER: ${env:EMAIL_USER}
+    EMAIL_PASS: ${env:EMAIL_PASS}
     # AWS_REGION: ${env:AWS_REGION} # Reserved key, handled by provider.region
     NODE_ENV: production
 
