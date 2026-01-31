@@ -85,6 +85,8 @@ const app = express()
 // Include common Vite dev ports (5173 and 4173) and localhost variants
 const ALLOWED_ORIGINS = [
   process.env.FRONTEND_URL,
+  'https://lifebydorm.ca',
+  'https://www.lifebydorm.ca',
   'https://life-by-dorm.vercel.app',
   'https://lifebydorm.vercel.app',
   'https://life-by-dorm-git-main-jason-tans-projects-d9f50bb0.vercel.app', // Explicit fix for current preview
