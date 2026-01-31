@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import './searchbar.css';
 import { FaSearch, FaExchangeAlt } from 'react-icons/fa';
 import { useUniversityData } from '../context/UniversityDataContext';
+import { useDebouncedValue } from '../hooks/useDebounce';
 
 const API_BASE = (import.meta as any).env?.VITE_API_BASE || 'http://localhost:3000';
 
@@ -24,24 +25,30 @@ function SearchBar() {
   const [showDropdown, setShowDropdown] = useState(false);
   const [searchMode, setSearchMode] = useState<'universities' | 'dorms'>('universities');
   const [allDorms, setAllDorms] = useState<Dorm[]>([]);
+  const [isLoadingDorms, setIsLoadingDorms] = useState(false);
   const navigate = useNavigate();
+
+  // Debounce the query to reduce unnecessary filtering/fetching
+  const debouncedQuery = useDebouncedValue(query, 200);
 
   // Use shared context for universities - no duplicate fetch!
   const { universities } = useUniversityData();
 
-  // Fetch dorms when switching to dorm search mode
+  // Fetch dorms only when needed: dorm mode + user typing at least 2 chars + not already loaded
   useEffect(() => {
-    if (searchMode === 'dorms' && allDorms.length === 0) {
+    if (searchMode === 'dorms' && debouncedQuery.trim().length >= 2 && allDorms.length === 0 && !isLoadingDorms) {
+      setIsLoadingDorms(true);
       fetch(`${API_BASE}/api/dorms`)
         .then(res => res.json())
         .then(data => setAllDorms(data))
-        .catch(err => console.error('Failed to fetch dorms', err));
+        .catch(err => console.error('Failed to fetch dorms', err))
+        .finally(() => setIsLoadingDorms(false));
     }
-  }, [searchMode, allDorms.length]);
+  }, [searchMode, debouncedQuery, allDorms.length, isLoadingDorms]);
 
-  // Filter based on query and mode
+  // Filter based on debounced query and mode
   useEffect(() => {
-    if (query.trim() === '') {
+    if (debouncedQuery.trim() === '') {
       setFilteredUniversities([]);
       setFilteredDorms([]);
       setShowDropdown(false);
@@ -50,18 +57,18 @@ function SearchBar() {
 
     if (searchMode === 'universities') {
       const filtered = universities.filter(uni =>
-        uni.name.toLowerCase().includes(query.toLowerCase())
+        uni.name.toLowerCase().includes(debouncedQuery.toLowerCase())
       );
       setFilteredUniversities(filtered);
       setShowDropdown(filtered.length > 0);
     } else {
       const filtered = allDorms.filter(dorm =>
-        dorm.name.toLowerCase().includes(query.toLowerCase())
+        dorm.name.toLowerCase().includes(debouncedQuery.toLowerCase())
       );
       setFilteredDorms(filtered);
       setShowDropdown(filtered.length > 0);
     }
-  }, [query, universities, allDorms, searchMode]);
+  }, [debouncedQuery, universities, allDorms, searchMode]);
 
   const handleSearch = () => {
     if (query.trim() === '') return;

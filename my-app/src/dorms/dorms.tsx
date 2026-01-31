@@ -45,20 +45,21 @@ function Dorms() {
         setLoading(true);
         setError(null);
 
-        // Fetch all dorms for this university and find the matching one
-        const [dormsRes, uniRes] = await Promise.all([
-          fetch(`${API_BASE}/api/universities/${encodeURIComponent(universityName!)}/dorms`),
+        // Use the optimized single-dorm endpoint with stats
+        const [dormRes, uniRes] = await Promise.all([
+          fetch(`${API_BASE}/api/universities/${encodeURIComponent(universityName!)}/dorms/${encodeURIComponent(dormSlug!)}`),
           fetch(`${API_BASE}/api/universities/${encodeURIComponent(universityName!)}`)
         ]);
 
-        if (!dormsRes.ok) throw new Error('Failed to fetch dorm data');
+        if (!dormRes.ok) {
+          if (dormRes.status === 404) {
+            throw new Error('Dorm not found');
+          }
+          throw new Error('Failed to fetch dorm data');
+        }
 
-        const dorms: APIDorm[] = await dormsRes.json();
-        const matchedDorm = dorms.find(d => d.slug === dormSlug);
-
-        if (!matchedDorm) throw new Error('Dorm not found');
-
-        setDorm(matchedDorm);
+        const dormData: APIDorm = await dormRes.json();
+        setDorm(dormData);
 
         if (uniRes.ok) {
           const uniData = await uniRes.json();

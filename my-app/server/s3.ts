@@ -13,7 +13,7 @@ let s3Client: S3Client | null = null;
 
 if (bucketName && region) {
   const S3Config: any = { region };
-  
+
   // Use explicit credentials if available (e.g. local development)
   // Otherwise, if running on AWS Lambda, it will automatically use the IAM Role attached to the function
   if (accessKeyId && secretAccessKey) {
@@ -29,8 +29,30 @@ if (bucketName && region) {
 }
 
 /**
+ * Security: Allowed and dangerous MIME types for uploads
+ */
+const ALLOWED_MIME_TYPES = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+const DANGEROUS_MIME_TYPES = ['image/svg+xml', 'text/html', 'application/javascript', 'text/javascript', 'application/xml'];
+
+/**
+ * Validates that the MIME type is allowed for upload
+ */
+function validateMimeType(mimeType: string): void {
+  const normalizedMime = mimeType.toLowerCase();
+
+  if (DANGEROUS_MIME_TYPES.includes(normalizedMime)) {
+    throw new Error(`File type '${mimeType}' is not allowed for security reasons`);
+  }
+
+  if (!ALLOWED_MIME_TYPES.includes(normalizedMime)) {
+    throw new Error(`File type '${mimeType}' is not supported. Allowed types: ${ALLOWED_MIME_TYPES.join(', ')}`);
+  }
+}
+
+/**
  * Uploads a base64 image string to S3 and returns the public URL.
  * Expected format: "data:image/png;base64,iVBORw0KGgo..."
+ * Security: Validates MIME type before upload to prevent XSS via SVG, etc.
  */
 export async function uploadToS3(base64Data: string, folder: string = 'uploads'): Promise<string> {
   if (!s3Client || !bucketName) {
@@ -42,15 +64,25 @@ export async function uploadToS3(base64Data: string, folder: string = 'uploads')
   // 1. Parse Base64 Data
   // Format is usually: "data:<mime-type>;base64,<data>"
   const matches = base64Data.match(/^data:([A-Za-z-+\/]+);base64,(.+)$/);
-  
+
   if (!matches || matches.length !== 3) {
     // If it doesn't match the pattern, it might be a normal URL or invalid
     return base64Data;
   }
 
   const contentType = matches[1];
+
+  // Security: Validate MIME type before processing
+  validateMimeType(contentType);
+
   const buffer = Buffer.from(matches[2], 'base64');
-  
+
+  // Security: Validate file size (max 10MB)
+  const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
+  if (buffer.length > MAX_FILE_SIZE) {
+    throw new Error(`File size exceeds maximum allowed size of 10MB`);
+  }
+
   // 2. Generate Unique Filename
   const extension = contentType.split('/')[1] || 'jpg';
   const fileName = `${folder}/${crypto.randomUUID()}.${extension}`;
