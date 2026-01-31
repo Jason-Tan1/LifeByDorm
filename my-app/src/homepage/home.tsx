@@ -6,6 +6,7 @@ import NavBar from '../NavBarPages/navbar.tsx';
 import SearchBar from './searchbar.tsx';
 import Footer from './footer.tsx';
 import { useUniversityData } from '../context/UniversityDataContext';
+import { SkeletonSlider } from '../components/SkeletonCard';
 import DefaultCampus from '../assets/Default_Campus.png';
 import DefaultDorm from '../assets/Default_Dorm.png';
 
@@ -21,7 +22,8 @@ function Home() {
   const [universityScrollPosition, setUniversityScrollPosition] = useState(0);
   const [mostRatedDormsScrollPosition, setMostRatedDormsScrollPosition] = useState(0);
   const [dormScrollPosition, setDormScrollPosition] = useState(0);
-  const [_isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(true);
+
 
   // Track if data has been fetched to prevent duplicate calls
   const hasFetched = useRef(false);
@@ -160,24 +162,28 @@ function Home() {
               ‹
             </button>
             <div className="slider-wrapper" id="university-slider">
-              {topUniversities.map(uni => (
-                <Link key={uni.slug} to={`/universities/${uni.slug}`} className="featured-card slider-card">
-                  <div className="featured-image-container">
-                    <img src={uni.imageUrl || DefaultCampus} alt={uni.name} className="featured-image" loading="lazy" />
-                  </div>
-                  <div className="featured-info">
-                    <h3 className="featured-university-name">
-                      <span className="icon"></span> {uni.name}
-                    </h3>
-                    <p className="featured-location">
-                      <span className="icon"></span> {uni.location?.replace(', Canada', '') || 'Location N/A'}
-                    </p>
-                    <p className="featured-location">
-                      <span className="icon"></span> {universityReviewCounts[uni.slug] ?? 0} {universityReviewCounts[uni.slug] === 1 ? 'review' : 'reviews'}
-                    </p>
-                  </div>
-                </Link>
-              ))}
+              {isLoading ? (
+                <SkeletonSlider count={4} />
+              ) : (
+                topUniversities.map(uni => (
+                  <Link key={uni.slug} to={`/universities/${uni.slug}`} className="featured-card slider-card">
+                    <div className="featured-image-container">
+                      <img src={uni.imageUrl || DefaultCampus} alt={uni.name} className="featured-image" loading="lazy" />
+                    </div>
+                    <div className="featured-info">
+                      <h3 className="featured-university-name">
+                        <span className="icon"></span> {uni.name}
+                      </h3>
+                      <p className="featured-location">
+                        <span className="icon"></span> {uni.location?.replace(', Canada', '') || 'Location N/A'}
+                      </p>
+                      <p className="featured-location">
+                        <span className="icon"></span> {universityReviewCounts[uni.slug] ?? 0} {universityReviewCounts[uni.slug] === 1 ? 'review' : 'reviews'}
+                      </p>
+                    </div>
+                  </Link>
+                ))
+              )}
             </div>
             <button
               className="slider-button slider-button-right"
@@ -202,24 +208,28 @@ function Home() {
               ‹
             </button>
             <div className="slider-wrapper" id="most-rated-dorms-slider">
-              {mostRatedDorms.map(dorm => (
-                <Link key={`${dorm.universitySlug}-${dorm.slug}`} to={`/universities/${dorm.universitySlug}/dorms/${dorm.slug}`} className="featured-card slider-card">
-                  <div className="featured-image-container">
-                    <img src={dorm.imageUrl || DefaultDorm} alt={dorm.name} className="featured-image" loading="lazy" />
-                  </div>
-                  <div className="featured-info">
-                    <h3 className="featured-university-name">
-                      <span className="icon"></span> {dorm.name}
-                    </h3>
-                    <p className="featured-location">
-                      <span className="icon"></span> {dorm.university}
-                    </p>
-                    <p className="featured-location">
-                      <span className="icon"></span> {dorm.reviewCount ?? 0} {dorm.reviewCount === 1 ? 'review' : 'reviews'}
-                    </p>
-                  </div>
-                </Link>
-              ))}
+              {isLoading ? (
+                <SkeletonSlider count={4} />
+              ) : (
+                mostRatedDorms.map(dorm => (
+                  <Link key={`${dorm.universitySlug}-${dorm.slug}`} to={`/universities/${dorm.universitySlug}/dorms/${dorm.slug}`} className="featured-card slider-card">
+                    <div className="featured-image-container">
+                      <img src={dorm.imageUrl || DefaultDorm} alt={dorm.name} className="featured-image" loading="lazy" />
+                    </div>
+                    <div className="featured-info">
+                      <h3 className="featured-university-name">
+                        <span className="icon"></span> {dorm.name}
+                      </h3>
+                      <p className="featured-location">
+                        <span className="icon"></span> {dorm.university}
+                      </p>
+                      <p className="featured-location">
+                        <span className="icon"></span> {dorm.reviewCount ?? 0} {dorm.reviewCount === 1 ? 'review' : 'reviews'}
+                      </p>
+                    </div>
+                  </Link>
+                ))
+              )}
             </div>
             <button
               className="slider-button slider-button-right"
@@ -245,24 +255,28 @@ function Home() {
               ‹
             </button>
             <div className="slider-wrapper" id="dorm-slider">
-              {topDorms.map(dorm => (
-                <Link key={`${dorm.universitySlug}-${dorm.slug}`} to={`/universities/${dorm.universitySlug}/dorms/${dorm.slug}`} className="featured-card slider-card">
-                  <div className="featured-image-container">
-                    <img src={dorm.imageUrl || DefaultDorm} alt={dorm.name} className="featured-image" loading="lazy" />
-                  </div>
-                  <div className="featured-info">
-                    <h3 className="featured-university-name">
-                      <span className="icon"></span> {dorm.name}
-                    </h3>
-                    <p className="featured-location">
-                      <span className="icon"></span> {dorm.university}
-                    </p>
-                    <p className="featured-location">
-                      <span className="icon"></span> {(dormRatings[dorm.name] ?? 0).toFixed(1)} ({dormReviewCounts[dorm.name] ?? 0} {dormReviewCounts[dorm.name] === 1 ? 'review' : 'reviews'})
-                    </p>
-                  </div>
-                </Link>
-              ))}
+              {isLoading ? (
+                <SkeletonSlider count={4} />
+              ) : (
+                topDorms.map(dorm => (
+                  <Link key={`${dorm.universitySlug}-${dorm.slug}`} to={`/universities/${dorm.universitySlug}/dorms/${dorm.slug}`} className="featured-card slider-card">
+                    <div className="featured-image-container">
+                      <img src={dorm.imageUrl || DefaultDorm} alt={dorm.name} className="featured-image" loading="lazy" />
+                    </div>
+                    <div className="featured-info">
+                      <h3 className="featured-university-name">
+                        <span className="icon"></span> {dorm.name}
+                      </h3>
+                      <p className="featured-location">
+                        <span className="icon"></span> {dorm.university}
+                      </p>
+                      <p className="featured-location">
+                        <span className="icon"></span> {(dormRatings[dorm.name] ?? 0).toFixed(1)} ({dormReviewCounts[dorm.name] ?? 0} {dormReviewCounts[dorm.name] === 1 ? 'review' : 'reviews'})
+                      </p>
+                    </div>
+                  </Link>
+                ))
+              )}
             </div>
             <button
               className="slider-button slider-button-right"

@@ -1,12 +1,15 @@
 import dotenv from 'dotenv';
 import path from 'path';
+import crypto from 'crypto';
 import express, { Request, Response, NextFunction } from 'express';
 import cors from 'cors';
-import jwt, { Secret, JwtPayload } from 'jsonwebtoken';
+import jwt, { Secret, JwtPayload, Algorithm } from 'jsonwebtoken';
 import mongoose from 'mongoose'; // MongoDB Connections from Node.js
 import bcrypt from 'bcryptjs'; //Hide Passwords
 import { OAuth2Client } from 'google-auth-library';
 import rateLimit from 'express-rate-limit';
+import compression from 'compression';
+import sanitizeHtml from 'sanitize-html';
 import { User, IUser } from './models/user';
 import { UserReview } from './models/userreview';
 import { University } from './models/universities';
@@ -14,6 +17,38 @@ import { Dorm } from './models/dorm';
 import nodemailer from 'nodemailer';
 import helmet from 'helmet';
 import { uploadToS3 } from './s3';
+
+// Security: Check if running in production
+const isProduction = process.env.NODE_ENV === 'production';
+
+// Security: JWT Configuration
+const JWT_ALGORITHM: Algorithm = 'HS256';
+const JWT_EXPIRY = '24h';
+
+// Security: Timing-safe string comparison to prevent timing attacks
+function safeCompare(a: string, b: string): boolean {
+  if (a.length !== b.length) return false;
+  try {
+    return crypto.timingSafeEqual(Buffer.from(a), Buffer.from(b));
+  } catch {
+    return false;
+  }
+}
+
+// Security: Generate cryptographically secure verification code
+function generateSecureCode(): string {
+  return crypto.randomInt(100000, 999999).toString();
+}
+
+// Security: Sanitize user input to prevent XSS
+function sanitizeInput(input: string): string {
+  return sanitizeHtml(input, {
+    allowedTags: [],
+    allowedAttributes: {},
+    disallowedTagsMode: 'discard'
+  });
+}
+
 
 // Note: express-mongo-sanitize is incompatible with Express 5 (req.query is read-only)
 // MongoDB injection protection is handled by Mongoose's strict schema validation
@@ -110,11 +145,27 @@ app.use(cors(corsOptions));
 // Note: In Express 5, '*' is not valid. Use RegEx /.*/ to match all routes.
 app.options(/.*/, cors(corsOptions));
 
-// Security Middleware
+// Security Middleware - Enhanced with Content-Security-Policy
 app.use(helmet({
   crossOriginResourcePolicy: { policy: "cross-origin" },
-  crossOriginOpenerPolicy: { policy: "unsafe-none" } // Allow Google Login popups
+  crossOriginOpenerPolicy: { policy: "unsafe-none" }, // Allow Google Login popups
+  contentSecurityPolicy: isProduction ? {
+    directives: {
+      defaultSrc: ["'self'"],
+      scriptSrc: ["'self'", "'unsafe-inline'", "'unsafe-eval'", "https://accounts.google.com", "https://apis.google.com"],
+      styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
+      imgSrc: ["'self'", "data:", "https:", "blob:"],
+      fontSrc: ["'self'", "https://fonts.gstatic.com"],
+      connectSrc: ["'self'", process.env.FRONTEND_URL || '', "https://accounts.google.com", "https://www.googleapis.com"].filter(Boolean),
+      frameSrc: ["https://accounts.google.com"],
+      objectSrc: ["'none'"],
+      upgradeInsecureRequests: [],
+    }
+  } : false, // Disable CSP in development for easier debugging
 })); // Set secure HTTP headers
+
+// Enable gzip/deflate compression for all responses (70-90% size reduction)
+app.use(compression());
 
 // Increase JSON body size limit to allow base64 image uploads from the client.
 // The frontend encodes images as data URLs; increase the limit to 10mb.
@@ -256,10 +307,6 @@ const dbMiddleware = async (req: Request, res: Response, next: NextFunction) => 
 
 // Fix 404 for favicon to reduce log noise
 app.get('/favicon.ico', (req, res) => res.status(204).end());
-
-// Apply DB Middleware to API routes and Root
-app.use(dbMiddleware);
-
 
 // Apply DB Middleware to API routes and Root
 app.use(dbMiddleware);
@@ -460,11 +507,11 @@ app.post('/register', authLimiter, validate(registerSchema), async (req, res) =>
       throw new Error('ACCESS_TOKEN_SECRET is not defined');
     }
 
-    // Create token
+    // Create token - Security: Explicitly specify algorithm to prevent algorithm substitution attacks
     const token = jwt.sign(
       { userId: savedUser._id, name: savedUser.email },
       process.env.ACCESS_TOKEN_SECRET as Secret,
-      { expiresIn: '24h' }
+      { algorithm: JWT_ALGORITHM, expiresIn: JWT_EXPIRY }
     );
 
     res.status(201).json({ token });
@@ -509,7 +556,7 @@ app.post('/login', authLimiter, validate(loginSchema), async (req, res) => {
     const token = jwt.sign(
       { userId: user._id, name: user.email, role: isAdmin ? 'admin' : 'user' },
       process.env.ACCESS_TOKEN_SECRET as Secret,
-      { expiresIn: '24h' }
+      { algorithm: JWT_ALGORITHM, expiresIn: JWT_EXPIRY }
     );
 
     res.json({ token });
@@ -533,8 +580,8 @@ app.post('/auth/send-code', authLimiter, validate(sendCodeSchema), async (req, r
     const { email } = req.body;
     if (!email) return res.status(400).json({ message: 'Email is required' });
 
-    // Generate 6-digit code
-    const verificationCode = Math.floor(100000 + Math.random() * 900000).toString();
+    // Security: Generate cryptographically secure 6-digit code
+    const verificationCode = generateSecureCode();
     const verificationCodeExpires = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes
 
     // Find or create user
@@ -554,13 +601,13 @@ app.post('/auth/send-code', authLimiter, validate(sendCodeSchema), async (req, r
     }
     await user.save();
 
-    // Debug Email Credentials (SAFE LOGGING)
-    const pass = process.env.EMAIL_PASS || '';
-    console.log('[DEBUG] Email Auth Check:');
-    console.log(`- EMAIL_USER: '${process.env.EMAIL_USER}'`);
-    console.log(`- EMAIL_PASS Length: ${pass.length}`);
-    console.log(`- EMAIL_PASS First/Last: ${pass.substring(0, 2)}...${pass.substring(pass.length - 2)}`);
-    console.log(`- EMAIL_PASS has spaces: ${pass.includes(' ')}`);
+    // Security: Only log debug info in development
+    if (!isProduction) {
+      const pass = process.env.EMAIL_PASS || '';
+      console.log('[DEBUG] Email Auth Check:');
+      console.log(`- EMAIL_USER: '${process.env.EMAIL_USER}'`);
+      console.log(`- EMAIL_PASS Length: ${pass.length}`);
+    }
 
     // Verify transporter connection on startup
     transporter.verify(function (error, success) {
@@ -622,10 +669,12 @@ app.post('/auth/verify-code', authLimiter, validate(verifyCodeSchema), async (re
     const { email, code } = req.body;
     if (!email || !code) return res.status(400).json({ message: 'Email and code are required' });
 
-    // Debug Verification Request
-    console.log(`[Auth] Verifying code for ${email} with input: ${code}`);
+    // Security: Only log debug info in development
+    if (!isProduction) {
+      console.log(`[Auth] Verifying code for ${email}`);
+    }
 
-    // First find user by email only to debug why it fails
+    // First find user by email
     const user = await User.findOne({ email });
 
     if (!user) {
@@ -633,19 +682,25 @@ app.post('/auth/verify-code', authLimiter, validate(verifyCodeSchema), async (re
       return res.status(400).json({ message: 'Invalid or expired verification code' });
     }
 
-    // Check code
-    if (user.verificationCode !== code) {
-      console.log(`[Auth] Verification failed: Code mismatch. DB: '${user.verificationCode}', Input: '${code}'`);
+    // Security: Use timing-safe comparison to prevent timing attacks
+    if (!user.verificationCode || !safeCompare(user.verificationCode, code)) {
+      if (!isProduction) {
+        console.log(`[Auth] Verification failed: Code mismatch`);
+      }
       return res.status(400).json({ message: 'Invalid or expired verification code' });
     }
 
     // Check expiration
     if (!user.verificationCodeExpires || user.verificationCodeExpires < new Date()) {
-      console.log(`[Auth] Verification failed: Code expired. Expires: ${user.verificationCodeExpires}, Now: ${new Date()}`);
+      if (!isProduction) {
+        console.log(`[Auth] Verification failed: Code expired`);
+      }
       return res.status(400).json({ message: 'Invalid or expired verification code' });
     }
 
-    console.log(`[Auth] Verification successful for ${email}`);
+    if (!isProduction) {
+      console.log(`[Auth] Verification successful for ${email}`);
+    }
 
     // Clear code after successful use
     user.verificationCode = undefined;
@@ -662,7 +717,7 @@ app.post('/auth/verify-code', authLimiter, validate(verifyCodeSchema), async (re
     const token = jwt.sign(
       { userId: user._id, name: user.email, role: isAdmin ? 'admin' : 'user' },
       process.env.ACCESS_TOKEN_SECRET as Secret,
-      { expiresIn: '24h' }
+      { algorithm: JWT_ALGORITHM, expiresIn: JWT_EXPIRY }
     );
 
     res.json({ token });
@@ -753,7 +808,7 @@ app.post('/auth/google', authLimiter, validate(googleAuthSchema), async (req, re
     const token = jwt.sign(
       { userId: user._id, name: user.email, role: isAdmin ? 'admin' : 'user' },
       process.env.ACCESS_TOKEN_SECRET as Secret,
-      { expiresIn: '24h' }
+      { algorithm: JWT_ALGORITHM, expiresIn: JWT_EXPIRY }
     );
 
     res.json({ token });
@@ -778,7 +833,8 @@ function authenticationToken(req: AuthRequest, res: Response, next: NextFunction
       throw new Error('ACCESS_TOKEN_SECRET is not defined');
     }
 
-    const verified = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET as Secret) as JwtPayload;
+    // Security: Explicitly specify allowed algorithms to prevent algorithm substitution attacks
+    const verified = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET as Secret, { algorithms: [JWT_ALGORITHM] }) as JwtPayload;
     req.user = verified;
     next();
   } catch (error) {
@@ -900,6 +956,63 @@ app.get('/api/universities/:slug/dorms-stats', readOnlyLimiter, async (req: Requ
   } catch (err) {
     console.error('Error fetching dorm stats for university', err);
     res.status(500).json({ message: 'Error fetching dorm stats' });
+  }
+});
+
+// ========================================
+// SINGLE DORM ENDPOINT - Optimized for dorm detail page
+// Returns a single dorm with its ratings and review count
+// ========================================
+app.get('/api/universities/:slug/dorms/:dormSlug', readOnlyLimiter, async (req: Request, res: Response) => {
+  try {
+    const { slug, dormSlug } = req.params;
+
+    // Check cache first
+    const cacheKey = `dorm-${slug}-${dormSlug}`;
+    const cachedData = getCached<any>(cacheKey);
+    if (cachedData) {
+      return res.json(cachedData);
+    }
+
+    // Find the specific dorm
+    const dorm = await Dorm.findOne({
+      universitySlug: slug,
+      slug: dormSlug,
+      $or: [{ status: 'approved' }, { status: { $exists: false } }]
+    }).lean();
+
+    if (!dorm) {
+      return res.status(404).json({ message: 'Dorm not found' });
+    }
+
+    // Calculate stats from reviews
+    const reviews = await UserReview.find({
+      university: slug,
+      dorm: (dorm as any).name,
+      $or: [{ status: 'approved' }, { status: { $exists: false } }]
+    }).lean();
+
+    let avgRating = 0;
+    if (reviews.length > 0) {
+      const total = reviews.reduce((sum: number, r: any) => {
+        return sum + (r.room + r.bathroom + r.building + r.amenities + r.location) / 5;
+      }, 0);
+      avgRating = total / reviews.length;
+    }
+
+    const result = {
+      ...dorm,
+      avgRating,
+      reviewCount: reviews.length
+    };
+
+    // Cache the result
+    setCache(cacheKey, result);
+
+    res.json(result);
+  } catch (err) {
+    console.error('Error fetching dorm', err);
+    res.status(500).json({ message: 'Error fetching dorm' });
   }
 });
 
@@ -1060,7 +1173,8 @@ app.post('/api/reviews', validate(reviewSchema), async (req: Request, res: Respo
       building,
       amenities,
       location,
-      description,
+      // Security: Sanitize description to prevent stored XSS attacks
+      description: sanitizeInput(description),
       year,
       roomType,
       wouldDormAgain,
@@ -1101,7 +1215,14 @@ app.post('/api/reviews', validate(reviewSchema), async (req: Request, res: Respo
 
 app.get('/api/reviews', async (req: Request, res: Response) => {
   try {
-    const { university, dorm } = req.query;
+    const { university, dorm, limit: limitParam, skip: skipParam } = req.query;
+
+    // Security: Pagination with sensible limits to prevent DoS
+    const MAX_LIMIT = 100;
+    const DEFAULT_LIMIT = 50;
+    const limit = Math.min(parseInt(limitParam as string) || DEFAULT_LIMIT, MAX_LIMIT);
+    const skip = Math.max(parseInt(skipParam as string) || 0, 0);
+
     // Show approved reviews OR reviews without a status field (legacy reviews)
     const filter: any = {
       $or: [
@@ -1111,7 +1232,13 @@ app.get('/api/reviews', async (req: Request, res: Response) => {
     };
     if (university) filter.university = university;
     if (dorm) filter.dorm = dorm;
-    const reviews = await UserReview.find(filter).sort({ createdAt: -1 }).lean();
+
+    const reviews = await UserReview.find(filter)
+      .sort({ createdAt: -1 })
+      .limit(limit)
+      .skip(skip)
+      .lean();
+
     res.json(reviews);
   } catch (err) {
     console.error('Error fetching reviews', err);

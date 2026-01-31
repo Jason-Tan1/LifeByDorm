@@ -17,8 +17,11 @@
   "license": "ISC",
   "dependencies": {
     "@aws-sdk/client-s3": "^3.966.0",
+    "@types/compression": "^1.8.1",
     "@types/nodemailer": "^7.0.5",
+    "@types/sanitize-html": "^2.16.0",
     "bcryptjs": "^3.0.3",
+    "compression": "^1.8.1",
     "cors": "^2.8.5",
     "dotenv": "^17.2.3",
     "express": "^5.1.0",
@@ -27,6 +30,7 @@
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.19.3",
     "nodemailer": "^7.0.12",
+    "sanitize-html": "^2.17.0",
     "serverless-http": "^4.0.0",
     "zod": "^4.3.5"
   },
