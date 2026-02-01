@@ -5,7 +5,9 @@ import { FaSearch, FaExchangeAlt } from 'react-icons/fa';
 import { useUniversityData } from '../context/UniversityDataContext';
 import { useDebouncedValue } from '../hooks/useDebounce';
 
-const API_BASE = (import.meta as any).env?.VITE_API_BASE || 'http://localhost:3000';
+// Use relative path '' on localhost to leverage the Vite proxy
+const isLocal = typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1');
+const API_BASE = isLocal ? '' : ((import.meta as any).env?.VITE_API_BASE || '');
 
 type University = {
   name: string;

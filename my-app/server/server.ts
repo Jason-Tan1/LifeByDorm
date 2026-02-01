@@ -1489,6 +1489,29 @@ process.on('uncaughtException', (err) => {
   console.log('⚠️ Process kept alive after uncaught exception.');
 });
 
+// ========================================
+// GLOBAL ERROR HANDLER - Must be last middleware
+// Prevents stack trace leakage in production
+// ========================================
+app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
+  // Log full error details for debugging (visible in AWS CloudWatch / server logs)
+  console.error('❌ Unhandled Error:', err.stack || err.message || err);
+
+  // In production, return a generic message to avoid leaking implementation details
+  if (isProduction) {
+    return res.status(500).json({
+      message: 'Something went wrong. Please try again later.',
+      requestId: req.headers['x-amzn-requestid'] || undefined // AWS request ID for tracing
+    });
+  }
+
+  // In development, return detailed error for debugging
+  return res.status(500).json({
+    message: err.message || 'Internal Server Error',
+    stack: err.stack
+  });
+});
+
 // Handle Unhandled Rejections
 process.on('unhandledRejection', (reason, promise) => {
   console.error('❌ Unhandled Rejection at:', promise, 'reason:', reason);

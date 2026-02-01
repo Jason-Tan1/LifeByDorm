@@ -144,3 +144,53 @@ body {
   display: block;
 }
 */
+
+/* ========== RESPONSIVE BREAKPOINTS ========== */
+/* Tablet */
+@media (max-width: 768px) {
+  .navbar {
+    padding: 0.5rem 0.75rem;
+  }
+
+  .navbar_logo img {
+    height: 35px;
+  }
+
+  .navbar button {
+    padding: 0.35rem 0.6rem;
+    font-size: 0.8rem;
+  }
+}
+
+/* Mobile */
+@media (max-width: 480px) {
+  .navbar {
+    justify-content: space-between;
+    padding: 0.5rem;
+  }
+
+  .navbar_logo img {
+    height: 30px;
+  }
+
+  /* Hide secondary buttons on mobile - keep only login/account */
+  .navbar_aboutme,
+  .navbar_contactme {
+    display: none;
+  }
+
+  .navbar_actions {
+    gap: 0.3rem;
+  }
+
+  .navbar button {
+    padding: 0.4rem 0.8rem;
+    font-size: 0.75rem;
+  }
+
+  /* Adjust dropdown for mobile */
+  .account_dropdown_content {
+    right: -10px;
+    min-width: 120px;
+  }
+}
