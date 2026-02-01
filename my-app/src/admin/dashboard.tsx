@@ -3,7 +3,9 @@ import { useNavigate } from 'react-router-dom';
 import NavBar from '../NavBarPages/navbar';
 import DefaultDorm from '../assets/Default_Dorm.png';
 
-const API_BASE = (import.meta as any).env?.VITE_API_BASE || 'http://localhost:3000';
+// Use relative path '' on localhost to leverage the Vite proxy
+const isLocal = typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1');
+const API_BASE = isLocal ? '' : ((import.meta as any).env?.VITE_API_BASE || '');
 
 interface Review {
   _id: string;
@@ -74,11 +76,11 @@ function AdminDashboard() {
           'Authorization': `Bearer ${token}`
         }
       });
-      
+
       if (!response.ok) {
         throw new Error('Failed to fetch pending reviews');
       }
-      
+
       const data = await response.json();
       setPendingReviews(data);
       setLoading(false);
@@ -97,11 +99,11 @@ function AdminDashboard() {
           'Authorization': `Bearer ${token}`
         }
       });
-      
+
       if (!response.ok) {
         throw new Error('Failed to fetch pending dorms');
       }
-      
+
       const data = await response.json();
       setPendingDorms(data);
     } catch (err) {
@@ -118,11 +120,11 @@ function AdminDashboard() {
           'Authorization': `Bearer ${token}`
         }
       });
-      
+
       if (!response.ok) {
         throw new Error('Failed to approve review');
       }
-      
+
       // Remove from pending list
       setPendingReviews(prev => prev.filter(r => r._id !== reviewId));
     } catch (err) {
@@ -140,11 +142,11 @@ function AdminDashboard() {
           'Authorization': `Bearer ${token}`
         }
       });
-      
+
       if (!response.ok) {
         throw new Error('Failed to decline review');
       }
-      
+
       // Remove from pending list
       setPendingReviews(prev => prev.filter(r => r._id !== reviewId));
     } catch (err) {
@@ -162,11 +164,11 @@ function AdminDashboard() {
           'Authorization': `Bearer ${token}`
         }
       });
-      
+
       if (!response.ok) {
         throw new Error('Failed to approve dorm');
       }
-      
+
       // Remove from pending list
       setPendingDorms(prev => prev.filter(d => d._id !== dormId));
     } catch (err) {
@@ -184,11 +186,11 @@ function AdminDashboard() {
           'Authorization': `Bearer ${token}`
         }
       });
-      
+
       if (!response.ok) {
         throw new Error('Failed to decline dorm');
       }
-      
+
       // Remove from pending list
       setPendingDorms(prev => prev.filter(d => d._id !== dormId));
     } catch (err) {
@@ -260,129 +262,129 @@ function AdminDashboard() {
 
         {/* Reviews Tab Content */}
         {activeTab === 'reviews' && (
-        <div style={{ marginTop: '32px' }}>
-          <h2>Pending Reviews ({pendingReviews.length})</h2>
-          
-          {loading && <p>Loading...</p>}
-          {error && <p style={{ color: 'red' }}>{error}</p>}
-          
-          {!loading && !error && pendingReviews.length === 0 && (
-            <p>No pending reviews at this time.</p>
-          )}
+          <div style={{ marginTop: '32px' }}>
+            <h2>Pending Reviews ({pendingReviews.length})</h2>
 
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '20px', marginTop: '20px' }}>
-            {pendingReviews.map(review => (
-              <div 
-                key={review._id} 
-                style={{ 
-                  border: '1px solid #ddd', 
-                  borderRadius: '8px', 
-                  padding: '20px',
-                  backgroundColor: '#f9f9f9'
-                }}
-              >
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                  <div style={{ flex: 1 }}>
-                    <h3 style={{ margin: '0 0 8px 0' }}>
-                      {review.dorm} - {review.university}
-                    </h3>
-                    <p style={{ margin: '4px 0', color: '#666' }}>
-                      <strong>Overall Rating:</strong> {calculateOverallRating(review)} / 5.0
-                    </p>
-                    <p style={{ margin: '4px 0', color: '#666' }}>
-                      <strong>Room Type:</strong> {formatRoomTypes(review.roomType)} | 
-                      <strong> Year:</strong> {formatYears(review.year)} | 
-                      <strong> Would Dorm Again:</strong> {review.wouldDormAgain ? 'Yes' : 'No'}
-                    </p>
-                    <div style={{ marginTop: '12px' }}>
-                      <strong>Ratings:</strong>
-                      <div style={{ display: 'flex', gap: '16px', marginTop: '8px', fontSize: '14px' }}>
-                        <span>Room: {review.room}/5</span>
-                        <span>Bathroom: {review.bathroom}/5</span>
-                        <span>Building: {review.building}/5</span>
-                        <span>Amenities: {review.amenities}/5</span>
-                        <span>Location: {review.location}/5</span>
-                      </div>
-                    </div>
-                    <div style={{ marginTop: '12px' }}>
-                      <strong>Comments:</strong>
-                      <p style={{ marginTop: '4px', lineHeight: '1.5' }}>{review.description}</p>
-                    </div>
-                    {review.images && review.images.length > 0 && (
+            {loading && <p>Loading...</p>}
+            {error && <p style={{ color: 'red' }}>{error}</p>}
+
+            {!loading && !error && pendingReviews.length === 0 && (
+              <p>No pending reviews at this time.</p>
+            )}
+
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '20px', marginTop: '20px' }}>
+              {pendingReviews.map(review => (
+                <div
+                  key={review._id}
+                  style={{
+                    border: '1px solid #ddd',
+                    borderRadius: '8px',
+                    padding: '20px',
+                    backgroundColor: '#f9f9f9'
+                  }}
+                >
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                    <div style={{ flex: 1 }}>
+                      <h3 style={{ margin: '0 0 8px 0' }}>
+                        {review.dorm} - {review.university}
+                      </h3>
+                      <p style={{ margin: '4px 0', color: '#666' }}>
+                        <strong>Overall Rating:</strong> {calculateOverallRating(review)} / 5.0
+                      </p>
+                      <p style={{ margin: '4px 0', color: '#666' }}>
+                        <strong>Room Type:</strong> {formatRoomTypes(review.roomType)} |
+                        <strong> Year:</strong> {formatYears(review.year)} |
+                        <strong> Would Dorm Again:</strong> {review.wouldDormAgain ? 'Yes' : 'No'}
+                      </p>
                       <div style={{ marginTop: '12px' }}>
-                        <strong>Images ({review.images.length}):</strong>
-                        <div style={{ display: 'flex', gap: '8px', marginTop: '8px', flexWrap: 'wrap' }}>
-                          {review.images.map((img, idx) => (
-                            <img 
-                              key={idx} 
-                              src={img} 
-                              alt={`Review ${idx + 1}`}
-                              style={{ width: '100px', height: '100px', objectFit: 'cover', borderRadius: '4px' }}
-                            />
-                          ))}
+                        <strong>Ratings:</strong>
+                        <div style={{ display: 'flex', gap: '16px', marginTop: '8px', fontSize: '14px' }}>
+                          <span>Room: {review.room}/5</span>
+                          <span>Bathroom: {review.bathroom}/5</span>
+                          <span>Building: {review.building}/5</span>
+                          <span>Amenities: {review.amenities}/5</span>
+                          <span>Location: {review.location}/5</span>
                         </div>
                       </div>
-                    )}
-                    <p style={{ fontSize: '12px', color: '#999', marginTop: '12px' }}>
-                      Submitted: {review.createdAt ? new Date(review.createdAt).toLocaleString() : 'Unknown'}
-                    </p>
-                  </div>
+                      <div style={{ marginTop: '12px' }}>
+                        <strong>Comments:</strong>
+                        <p style={{ marginTop: '4px', lineHeight: '1.5' }}>{review.description}</p>
+                      </div>
+                      {review.images && review.images.length > 0 && (
+                        <div style={{ marginTop: '12px' }}>
+                          <strong>Images ({review.images.length}):</strong>
+                          <div style={{ display: 'flex', gap: '8px', marginTop: '8px', flexWrap: 'wrap' }}>
+                            {review.images.map((img, idx) => (
+                              <img
+                                key={idx}
+                                src={img}
+                                alt={`Review ${idx + 1}`}
+                                style={{ width: '100px', height: '100px', objectFit: 'cover', borderRadius: '4px' }}
+                              />
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                      <p style={{ fontSize: '12px', color: '#999', marginTop: '12px' }}>
+                        Submitted: {review.createdAt ? new Date(review.createdAt).toLocaleString() : 'Unknown'}
+                      </p>
+                    </div>
 
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginLeft: '20px' }}>
-                    <button
-                      onClick={() => handleApprove(review._id)}
-                      style={{
-                        padding: '10px 20px',
-                        backgroundColor: '#4caf50',
-                        color: 'white',
-                        border: 'none',
-                        borderRadius: '6px',
-                        cursor: 'pointer',
-                        fontWeight: '600',
-                        fontSize: '14px'
-                      }}
-                    >
-                      ✓ Approve
-                    </button>
-                    <button
-                      onClick={() => handleDecline(review._id)}
-                      style={{
-                        padding: '10px 20px',
-                        backgroundColor: '#f44336',
-                        color: 'white',
-                        border: 'none',
-                        borderRadius: '6px',
-                        cursor: 'pointer',
-                        fontWeight: '600',
-                        fontSize: '14px'
-                      }}
-                    >
-                      ✗ Decline
-                    </button>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginLeft: '20px' }}>
+                      <button
+                        onClick={() => handleApprove(review._id)}
+                        style={{
+                          padding: '10px 20px',
+                          backgroundColor: '#4caf50',
+                          color: 'white',
+                          border: 'none',
+                          borderRadius: '6px',
+                          cursor: 'pointer',
+                          fontWeight: '600',
+                          fontSize: '14px'
+                        }}
+                      >
+                        ✓ Approve
+                      </button>
+                      <button
+                        onClick={() => handleDecline(review._id)}
+                        style={{
+                          padding: '10px 20px',
+                          backgroundColor: '#f44336',
+                          color: 'white',
+                          border: 'none',
+                          borderRadius: '6px',
+                          cursor: 'pointer',
+                          fontWeight: '600',
+                          fontSize: '14px'
+                        }}
+                      >
+                        ✗ Decline
+                      </button>
+                    </div>
                   </div>
                 </div>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
-        </div>
         )}
 
         {/* Dorms Tab Content */}
         {activeTab === 'dorms' && (
           <div style={{ marginTop: '32px' }}>
             <h2>Pending Dorms ({pendingDorms.length})</h2>
-            
+
             {pendingDorms.length === 0 && (
               <p>No pending dorm submissions at this time.</p>
             )}
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: '20px', marginTop: '20px' }}>
               {pendingDorms.map(dorm => (
-                <div 
-                  key={dorm._id} 
-                  style={{ 
-                    border: '1px solid #ddd', 
-                    borderRadius: '8px', 
+                <div
+                  key={dorm._id}
+                  style={{
+                    border: '1px solid #ddd',
+                    borderRadius: '8px',
                     padding: '20px',
                     backgroundColor: '#f9f9f9'
                   }}
@@ -414,8 +416,8 @@ function AdminDashboard() {
                       <div style={{ marginTop: '12px' }}>
                         <strong>Image:</strong>
                         <div style={{ marginTop: '8px' }}>
-                          <img 
-                            src={dorm.imageUrl || DefaultDorm} 
+                          <img
+                            src={dorm.imageUrl || DefaultDorm}
                             alt={dorm.name}
                             style={{ maxWidth: '200px', maxHeight: '150px', objectFit: 'cover', borderRadius: '4px' }}
                           />

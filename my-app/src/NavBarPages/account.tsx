@@ -5,7 +5,9 @@ import Footer from '../homepage/footer.tsx';
 import Star from '@mui/icons-material/Star';
 import './account.css';
 
-const API_BASE = (import.meta as any).env?.VITE_API_BASE || 'http://localhost:3000';
+// Use relative path '' on localhost to leverage the Vite proxy
+const isLocal = typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1');
+const API_BASE = isLocal ? '' : ((import.meta as any).env?.VITE_API_BASE || '');
 
 interface Review {
   _id: string;
@@ -42,7 +44,7 @@ function Account() {
     try {
       const payloadJson = token.split('.')[1];
       const decoded = JSON.parse(atob(payloadJson));
-      
+
       // Check if token is expired
       if (decoded.exp * 1000 < Date.now()) {
         localStorage.removeItem('token');
@@ -70,7 +72,7 @@ function Account() {
             'Authorization': `Bearer ${token}`
           }
         });
-        
+
         if (response.ok) {
           const data = await response.json();
           console.log('Fetched user reviews:', data);
@@ -121,7 +123,7 @@ function Account() {
   return (
     <div className="account-page">
       <NavBar />
-      
+
       <div className="account-content">
         <div className="account-sidebar">
           <div className="user-info">
@@ -131,14 +133,14 @@ function Account() {
             <h2>My Account</h2>
             <p className="user-email">{userEmail}</p>
           </div>
-          
+
           <nav className="account-nav">
             <button className="nav-item active">My Reviews</button>
           </nav>
 
           <div className="account-actions" style={{ marginTop: '20px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
-            <button 
-              className="action-btn logout-btn" 
+            <button
+              className="action-btn logout-btn"
               onClick={() => {
                 localStorage.removeItem('token');
                 window.location.href = '/';
@@ -156,11 +158,11 @@ function Account() {
             >
               Log Out
             </button>
-            <button 
-              className="action-btn delete-btn" 
+            <button
+              className="action-btn delete-btn"
               onClick={() => {
-                if(window.confirm('Are you sure you want to delete your account? This cannot be undone.')) {
-                   alert('Account deletion request has been submitted. (Demo)');
+                if (window.confirm('Are you sure you want to delete your account? This cannot be undone.')) {
+                  alert('Account deletion request has been submitted. (Demo)');
                 }
               }}
               style={{
@@ -181,13 +183,13 @@ function Account() {
 
         <div className="account-main">
           <h1>My Dorm Reviews</h1>
-          
+
           {loading ? (
             <p className="loading-text">Loading your reviews...</p>
           ) : error ? (
             <div className="error-state">
               <p className="error-message">{error}</p>
-              <button 
+              <button
                 className="retry-button"
                 onClick={() => window.location.reload()}
               >
@@ -207,11 +209,11 @@ function Account() {
                 <div key={review._id} className="review-item">
                   <div className="review-item-header">
                     <div className="review-dorm-info">
-                      <Link 
+                      <Link
                         to={`/universities/${review.university}`}
                         className="review-university"
                       >
-                        {review.university.split('-').map(word => 
+                        {review.university.split('-').map(word =>
                           word.charAt(0).toUpperCase() + word.slice(1)
                         ).join(' ')}
                       </Link>
@@ -227,7 +229,7 @@ function Account() {
                       </div>
                     </div>
                   </div>
-                  
+
                   <div className="review-item-details">
                     <span>Room: {review.room}/5</span>
                     <span>Bathroom: {review.bathroom}/5</span>
@@ -235,9 +237,9 @@ function Account() {
                     <span>Amenities: {review.amenities}/5</span>
                     <span>Location: {review.location}/5</span>
                   </div>
-                  
+
                   <p className="review-item-description">{review.description}</p>
-                  
+
                   {review.images && review.images.length > 0 && (
                     <div className="review-item-images">
                       {review.images.slice(0, 3).map((img, idx) => (
@@ -248,7 +250,7 @@ function Account() {
                       )}
                     </div>
                   )}
-                  
+
                   <div className="review-item-footer">
                     <span className="review-date">Submitted on {formatDate(review.createdAt)}</span>
                     <span className="review-would-dorm">
@@ -261,7 +263,7 @@ function Account() {
           )}
         </div>
       </div>
-      
+
       <Footer />
     </div>
   );

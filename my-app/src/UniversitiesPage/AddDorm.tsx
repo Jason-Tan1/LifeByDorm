@@ -4,7 +4,9 @@ import CloseIcon from '@mui/icons-material/Close';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import './AddDorm.css';
 
-const API_BASE = (import.meta as any).env?.VITE_API_BASE || 'http://localhost:3000';
+// Use relative path '' on localhost to leverage the Vite proxy
+const isLocal = typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1');
+const API_BASE = isLocal ? '' : ((import.meta as any).env?.VITE_API_BASE || '');
 
 interface AddDormProps {
   universitySlug: string;
@@ -18,7 +20,7 @@ function AddDorm({ universitySlug, universityName, onDormSubmitted }: AddDormPro
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitSuccess, setSubmitSuccess] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  
+
   // Form fields
   const [dormName, setDormName] = useState('');
 
@@ -81,7 +83,7 @@ function AddDorm({ universitySlug, universityName, onDormSubmitted }: AddDormPro
 
       // Success
       setSubmitSuccess(true);
-      
+
       // Notify parent component
       if (onDormSubmitted) {
         onDormSubmitted();
@@ -143,7 +145,7 @@ function AddDorm({ universitySlug, universityName, onDormSubmitted }: AddDormPro
               <CloseIcon />
             </button>
           </div>
-          
+
           <p className="form-subtitle">
             Add a dorm to <strong>{universityName}</strong>. You will be redirected to write a review for it.
           </p>
@@ -170,16 +172,16 @@ function AddDorm({ universitySlug, universityName, onDormSubmitted }: AddDormPro
             </div>
 
             <div className="form-actions">
-              <button 
-                type="button" 
-                className="cancel-btn" 
+              <button
+                type="button"
+                className="cancel-btn"
                 onClick={handleCloseForm}
                 disabled={isSubmitting}
               >
                 Cancel
               </button>
-              <button 
-                type="submit" 
+              <button
+                type="submit"
                 className="submit-btn"
                 disabled={isSubmitting}
               >

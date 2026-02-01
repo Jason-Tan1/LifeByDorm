@@ -1,6 +1,9 @@
 import { createContext, useContext, useState, useEffect, useCallback, type ReactNode } from 'react';
 
-const API_BASE = (import.meta as any).env?.VITE_API_BASE || 'http://localhost:3000';
+// Use relative path '' on localhost to leverage the Vite proxy (vite.config.ts)
+// Otherwise use the environment variable (for production)
+const isLocal = typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1');
+const API_BASE = isLocal ? '' : ((import.meta as any).env?.VITE_API_BASE || '');
 
 type University = {
   name: string;
@@ -60,11 +63,11 @@ export function UniversityDataProvider({ children }: { children: ReactNode }) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
       const data = await response.json();
-      
+
       // Update cache
       cache.universities = data;
       cache.timestamp = now;
-      
+
       setUniversities(data);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to fetch universities');

@@ -11,8 +11,11 @@ import ThumbUpIcon from '@mui/icons-material/ThumbUp';
 import CloseIcon from '@mui/icons-material/Close';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import DefaultDormImage from '../assets/Default_Dorm.png';
+import { compressImage } from '../utils/imageUtils';
 
-const API_BASE = (import.meta as any).env?.VITE_API_BASE || 'http://localhost:3000';
+// Use relative path '' on localhost to leverage the Vite proxy
+const isLocal = typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1');
+const API_BASE = isLocal ? '' : ((import.meta as any).env?.VITE_API_BASE || '');
 
 function Reviews() {
   const navigate = useNavigate();
@@ -93,7 +96,7 @@ function Reviews() {
     );
   };
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
     if (!files || files.length === 0) return;
 
@@ -103,28 +106,33 @@ function Reviews() {
       return;
     }
 
-    const newFileDataUrls: string[] = [];
-    let filesProcessed = 0;
-
-    Array.from(files).forEach((file) => {
+    // Compress each image before storing
+    const compressionPromises = Array.from(files).map(async (file) => {
       if (file.size > MAX_FILE_SIZE) {
         alert(`File "${file.name}" is too large. Maximum file size is 10 MB.`);
-        filesProcessed++;
-        return;
+        return null;
       }
 
-      const reader = new FileReader();
-      reader.onload = () => {
-        newFileDataUrls.push(reader.result as string);
-        filesProcessed++;
-
-        if (filesProcessed === files.length) {
-          setFileDataUrls(prev => [...prev, ...newFileDataUrls]);
-          e.target.value = '';
-        }
-      };
-      reader.readAsDataURL(file);
+      try {
+        // Compress image to max 1200px and 80% quality JPEG
+        const compressedDataUrl = await compressImage(file, {
+          maxWidth: 1200,
+          maxHeight: 1200,
+          quality: 0.8,
+          outputType: 'image/jpeg'
+        });
+        return compressedDataUrl;
+      } catch (err) {
+        console.error(`Failed to compress ${file.name}:`, err);
+        return null;
+      }
     });
+
+    const results = await Promise.all(compressionPromises);
+    const validResults = results.filter((url): url is string => url !== null);
+
+    setFileDataUrls(prev => [...prev, ...validResults]);
+    e.target.value = '';
   };
 
   const removeImage = (index: number) => {
