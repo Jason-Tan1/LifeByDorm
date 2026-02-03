@@ -141,7 +141,7 @@
               "Properties": {
                 "Code": {
                   "S3Bucket": "serverless-framework-deployments-us-east-1-ae1440ea-d7ea",
-                  "S3Key": "serverless/lifebydorm-backend/dev/1769893227450-2026-01-31T21:00:27.450Z/lifebydorm-backend.zip"
+                  "S3Key": "serverless/lifebydorm-backend/dev/1769905694508-2026-02-01T00:28:14.508Z/lifebydorm-backend.zip"
                 },
                 "Handler": "lambda.handler",
                 "Runtime": "nodejs20.x",
@@ -172,14 +172,14 @@
                 "ApiLogGroup"
               ]
             },
-            "ApiLambdaVersiontSanjxxDSuGZt1g3nN10WdgAflgfGZyZXwj9IZvmJbs": {
+            "ApiLambdaVersion33ekfCI1oZXGFZqCI5GDpip3VzEQaIQEk8RJfghtDE": {
               "Type": "AWS::Lambda::Version",
               "DeletionPolicy": "Retain",
               "Properties": {
                 "FunctionName": {
                   "Ref": "ApiLambdaFunction"
                 },
-                "CodeSha256": "u3uEbYtDrhRlbbQomtEsooicvPwy4WDsaKFJXlpf2Fs="
+                "CodeSha256": "mldb7nTNypPeqakXpvsASPW59DmUNo2avd8GBk0Gw9g="
               }
             },
             "ApiGatewayRestApi": {
@@ -397,7 +397,7 @@
                 "ApiLambdaPermissionApiGateway"
               ]
             },
-            "ApiGatewayDeployment1769893219574": {
+            "ApiGatewayDeployment1769905685403": {
               "Type": "AWS::ApiGateway::Deployment",
               "Properties": {
                 "RestApiId": {
@@ -460,7 +460,7 @@
             "ApiLambdaFunctionQualifiedArn": {
               "Description": "Current Lambda function version",
               "Value": {
-                "Ref": "ApiLambdaVersiontSanjxxDSuGZt1g3nN10WdgAflgfGZyZXwj9IZvmJbs"
+                "Ref": "ApiLambdaVersion33ekfCI1oZXGFZqCI5GDpip3VzEQaIQEk8RJfghtDE"
               },
               "Export": {
                 "Name": "sls-lifebydorm-backend-dev-ApiLambdaFunctionQualifiedArn"
@@ -558,7 +558,7 @@
           "timeout": 10,
           "runtime": "nodejs20.x",
           "vpc": {},
-          "versionLogicalId": "ApiLambdaVersiontSanjxxDSuGZt1g3nN10WdgAflgfGZyZXwj9IZvmJbs"
+          "versionLogicalId": "ApiLambdaVersion33ekfCI1oZXGFZqCI5GDpip3VzEQaIQEk8RJfghtDE"
         }
       },
       "build": {
@@ -712,7 +712,7 @@
             "Properties": {
               "Code": {
                 "S3Bucket": "serverless-framework-deployments-us-east-1-ae1440ea-d7ea",
-                "S3Key": "serverless/lifebydorm-backend/dev/1769893227450-2026-01-31T21:00:27.450Z/lifebydorm-backend.zip"
+                "S3Key": "serverless/lifebydorm-backend/dev/1769905694508-2026-02-01T00:28:14.508Z/lifebydorm-backend.zip"
               },
               "Handler": "lambda.handler",
               "Runtime": "nodejs20.x",
@@ -743,14 +743,14 @@
               "ApiLogGroup"
             ]
           },
-          "ApiLambdaVersiontSanjxxDSuGZt1g3nN10WdgAflgfGZyZXwj9IZvmJbs": {
+          "ApiLambdaVersion33ekfCI1oZXGFZqCI5GDpip3VzEQaIQEk8RJfghtDE": {
             "Type": "AWS::Lambda::Version",
             "DeletionPolicy": "Retain",
             "Properties": {
               "FunctionName": {
                 "Ref": "ApiLambdaFunction"
               },
-              "CodeSha256": "u3uEbYtDrhRlbbQomtEsooicvPwy4WDsaKFJXlpf2Fs="
+              "CodeSha256": "mldb7nTNypPeqakXpvsASPW59DmUNo2avd8GBk0Gw9g="
             }
           },
           "ApiGatewayRestApi": {
@@ -968,7 +968,7 @@
               "ApiLambdaPermissionApiGateway"
             ]
           },
-          "ApiGatewayDeployment1769893219574": {
+          "ApiGatewayDeployment1769905685403": {
             "Type": "AWS::ApiGateway::Deployment",
             "Properties": {
               "RestApiId": {
@@ -1031,7 +1031,7 @@
           "ApiLambdaFunctionQualifiedArn": {
             "Description": "Current Lambda function version",
             "Value": {
-              "Ref": "ApiLambdaVersiontSanjxxDSuGZt1g3nN10WdgAflgfGZyZXwj9IZvmJbs"
+              "Ref": "ApiLambdaVersion33ekfCI1oZXGFZqCI5GDpip3VzEQaIQEk8RJfghtDE"
             },
             "Export": {
               "Name": "sls-lifebydorm-backend-dev-ApiLambdaFunctionQualifiedArn"
@@ -1089,12 +1089,12 @@
     "serviceProviderAwsCfStackName": "lifebydorm-backend-dev",
     "serviceProviderAwsCfStackId": "arn:aws:cloudformation:us-east-1:650122212159:stack/lifebydorm-backend-dev/7bc98cd0-fbc9-11f0-8edd-0affdbe436cb",
     "serviceProviderAwsCfStackCreated": "2026-01-27T21:45:23.348Z",
-    "serviceProviderAwsCfStackUpdated": "2026-01-31T20:07:37.160Z",
+    "serviceProviderAwsCfStackUpdated": "2026-01-31T21:00:30.435Z",
     "serviceProviderAwsCfStackStatus": "UPDATE_COMPLETE",
     "serviceProviderAwsCfStackOutputs": [
       {
         "OutputKey": "ApiLambdaFunctionQualifiedArn",
-        "OutputValue": "arn:aws:lambda:us-east-1:650122212159:function:lifebydorm-backend-dev-api:4",
+        "OutputValue": "arn:aws:lambda:us-east-1:650122212159:function:lifebydorm-backend-dev-api:5",
         "Description": "Current Lambda function version",
         "ExportName": "sls-lifebydorm-backend-dev-ApiLambdaFunctionQualifiedArn"
       },
@@ -1212,7 +1212,7 @@
           "Properties": {
             "Code": {
               "S3Bucket": "serverless-framework-deployments-us-east-1-ae1440ea-d7ea",
-              "S3Key": "serverless/lifebydorm-backend/dev/1769893227450-2026-01-31T21:00:27.450Z/lifebydorm-backend.zip"
+              "S3Key": "serverless/lifebydorm-backend/dev/1769905694508-2026-02-01T00:28:14.508Z/lifebydorm-backend.zip"
             },
             "Handler": "lambda.handler",
             "Runtime": "nodejs20.x",
@@ -1243,14 +1243,14 @@
             "ApiLogGroup"
           ]
         },
-        "ApiLambdaVersiontSanjxxDSuGZt1g3nN10WdgAflgfGZyZXwj9IZvmJbs": {
+        "ApiLambdaVersion33ekfCI1oZXGFZqCI5GDpip3VzEQaIQEk8RJfghtDE": {
           "Type": "AWS::Lambda::Version",
           "DeletionPolicy": "Retain",
           "Properties": {
             "FunctionName": {
               "Ref": "ApiLambdaFunction"
             },
-            "CodeSha256": "u3uEbYtDrhRlbbQomtEsooicvPwy4WDsaKFJXlpf2Fs="
+            "CodeSha256": "mldb7nTNypPeqakXpvsASPW59DmUNo2avd8GBk0Gw9g="
           }
         },
         "ApiGatewayRestApi": {
@@ -1468,7 +1468,7 @@
             "ApiLambdaPermissionApiGateway"
           ]
         },
-        "ApiGatewayDeployment1769893219574": {
+        "ApiGatewayDeployment1769905685403": {
           "Type": "AWS::ApiGateway::Deployment",
           "Properties": {
             "RestApiId": {
@@ -1531,7 +1531,7 @@
         "ApiLambdaFunctionQualifiedArn": {
           "Description": "Current Lambda function version",
           "Value": {
-            "Ref": "ApiLambdaVersiontSanjxxDSuGZt1g3nN10WdgAflgfGZyZXwj9IZvmJbs"
+            "Ref": "ApiLambdaVersion33ekfCI1oZXGFZqCI5GDpip3VzEQaIQEk8RJfghtDE"
           },
           "Export": {
             "Name": "sls-lifebydorm-backend-dev-ApiLambdaFunctionQualifiedArn"
