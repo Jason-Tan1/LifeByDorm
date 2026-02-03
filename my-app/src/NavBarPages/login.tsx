@@ -157,7 +157,7 @@ function login({ isOpen, onClose }: LoginModalProps) {
 
             <div className="login_footer">
               <p>
-                By proceeding, you agree to our <Link to="/terms" className="footer_link" onClick={handleClose}>Terms of Use</Link> and confirm you have read our <Link to="/privacy" className="footer_link" onClick={handleClose}>Privacy and Cookie Statement</Link>.
+                By proceeding, you agree to our <Link to="/terms" target="_blank" rel="noopener noreferrer" className="footer_link">Terms of Use</Link> and confirm you have read our <Link to="/privacy" target="_blank" rel="noopener noreferrer" className="footer_link">Privacy and Cookie Statement</Link>.
               </p>
             </div>
           </div>
@@ -234,7 +234,7 @@ function login({ isOpen, onClose }: LoginModalProps) {
 
             <div className="login_footer_small">
               <p>
-                By proceeding, you agree to our <Link to="/terms" className="footer_link" onClick={handleClose}>Terms of Use</Link> and confirm you have read our <Link to="/privacy" className="footer_link" onClick={handleClose}>Privacy and Cookie Statement</Link>.
+                By proceeding, you agree to our <Link to="/terms" target="_blank" rel="noopener noreferrer" className="footer_link">Terms of Use</Link> and confirm you have read our <Link to="/privacy" target="_blank" rel="noopener noreferrer" className="footer_link">Privacy and Cookie Statement</Link>.
               </p>
             </div>
           </form>

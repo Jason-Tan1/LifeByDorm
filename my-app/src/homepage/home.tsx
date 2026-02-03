@@ -109,29 +109,60 @@ function Home() {
     const gap = parseFloat(style.gap) || 20; // Default to 20px if not set
     const itemWidth = firstCard.offsetWidth + gap;
 
-    // Get current scroll position from the DOM for accuracy
+    // Get current scroll position from the DOM
     const currentScroll = container.scrollLeft;
+
+    // Add a small tolerance for floating point scroll positions
+    const tolerance = 5;
 
     let newPosition;
 
     if (direction === 'right') {
-      // Calculate next snap point: (current / width) + 1
-      const nextIndex = Math.floor(currentScroll / itemWidth) + 1;
+      // Calculate next snap point: (current + tolerance) / width
+      const nextIndex = Math.floor((currentScroll + tolerance) / itemWidth) + 1;
       newPosition = nextIndex * itemWidth;
     } else {
-      // Calculate previous snap point: (current / width) - 1
-      const prevIndex = Math.ceil(currentScroll / itemWidth) - 1;
-      newPosition = Math.max(0, prevIndex * itemWidth); // Don't go below 0
+      // Calculate previous snap point: (current - tolerance) / width
+      const prevIndex = Math.ceil((currentScroll - tolerance) / itemWidth) - 1;
+      newPosition = Math.max(0, prevIndex * itemWidth);
     }
 
     // scrollWidth - clientWidth is the max scroll
     const maxScroll = container.scrollWidth - container.clientWidth;
-    // Clamp newPosition to maxScroll (allow a small buffer for float inaccuracies)
+    // Clamp newPosition
     if (newPosition > maxScroll) newPosition = maxScroll;
 
     container.scrollTo({ left: newPosition, behavior: 'smooth' });
     setPos(newPosition);
   };
+
+  // Add event listeners to sync state on manual scroll
+  useEffect(() => {
+    const handleScroll = (id: string, setPos: (pos: number) => void) => {
+      const container = document.getElementById(id);
+      if (container) {
+        setPos(container.scrollLeft);
+      }
+    };
+
+    const uniSlider = document.getElementById('university-slider');
+    const mostRatedSlider = document.getElementById('most-rated-dorms-slider');
+    const dormSlider = document.getElementById('dorm-slider');
+
+    const onUniScroll = () => handleScroll('university-slider', setUniversityScrollPosition);
+    const onMostRatedScroll = () => handleScroll('most-rated-dorms-slider', setMostRatedDormsScrollPosition);
+    const onDormScroll = () => handleScroll('dorm-slider', setDormScrollPosition);
+
+    uniSlider?.addEventListener('scroll', onUniScroll, { passive: true });
+    mostRatedSlider?.addEventListener('scroll', onMostRatedScroll, { passive: true });
+    dormSlider?.addEventListener('scroll', onDormScroll, { passive: true });
+
+    return () => {
+      uniSlider?.removeEventListener('scroll', onUniScroll);
+      mostRatedSlider?.removeEventListener('scroll', onMostRatedScroll);
+      dormSlider?.removeEventListener('scroll', onDormScroll);
+    };
+  }, []);
 
   const scrollUniversities = (direction: 'left' | 'right') => {
     scrollContainer('university-slider', direction, setUniversityScrollPosition);
