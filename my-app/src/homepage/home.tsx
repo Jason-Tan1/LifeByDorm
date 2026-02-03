@@ -95,43 +95,54 @@ function Home() {
     fetchAllData();
   }, [universities, universitiesLoading, calculateOverallRating]);
 
-  const scrollUniversities = (direction: 'left' | 'right') => {
-    const container = document.getElementById('university-slider');
-    if (container) {
-      const scrollAmount = 350;
-      const newPosition = direction === 'left'
-        ? Math.max(0, universityScrollPosition - scrollAmount)
-        : Math.min(container.scrollWidth - container.clientWidth, universityScrollPosition + scrollAmount);
+  /* Helper to scroll a container by exactly one card width + gap */
+  const scrollContainer = (containerId: string, direction: 'left' | 'right', setPos: (pos: number) => void) => {
+    const container = document.getElementById(containerId);
+    if (!container) return;
 
-      container.scrollTo({ left: newPosition, behavior: 'smooth' });
-      setUniversityScrollPosition(newPosition);
+    // Find the first card to measure its width
+    const firstCard = container.querySelector('.slider-card') as HTMLElement;
+    if (!firstCard) return;
+
+    // Calculate total item width (card + gap)
+    const style = window.getComputedStyle(container);
+    const gap = parseFloat(style.gap) || 20; // Default to 20px if not set
+    const itemWidth = firstCard.offsetWidth + gap;
+
+    // Get current scroll position from the DOM for accuracy
+    const currentScroll = container.scrollLeft;
+
+    let newPosition;
+
+    if (direction === 'right') {
+      // Calculate next snap point: (current / width) + 1
+      const nextIndex = Math.floor(currentScroll / itemWidth) + 1;
+      newPosition = nextIndex * itemWidth;
+    } else {
+      // Calculate previous snap point: (current / width) - 1
+      const prevIndex = Math.ceil(currentScroll / itemWidth) - 1;
+      newPosition = Math.max(0, prevIndex * itemWidth); // Don't go below 0
     }
+
+    // scrollWidth - clientWidth is the max scroll
+    const maxScroll = container.scrollWidth - container.clientWidth;
+    // Clamp newPosition to maxScroll (allow a small buffer for float inaccuracies)
+    if (newPosition > maxScroll) newPosition = maxScroll;
+
+    container.scrollTo({ left: newPosition, behavior: 'smooth' });
+    setPos(newPosition);
+  };
+
+  const scrollUniversities = (direction: 'left' | 'right') => {
+    scrollContainer('university-slider', direction, setUniversityScrollPosition);
   };
 
   const scrollMostRatedDorms = (direction: 'left' | 'right') => {
-    const container = document.getElementById('most-rated-dorms-slider');
-    if (container) {
-      const scrollAmount = 350;
-      const newPosition = direction === 'left'
-        ? Math.max(0, mostRatedDormsScrollPosition - scrollAmount)
-        : Math.min(container.scrollWidth - container.clientWidth, mostRatedDormsScrollPosition + scrollAmount);
-
-      container.scrollTo({ left: newPosition, behavior: 'smooth' });
-      setMostRatedDormsScrollPosition(newPosition);
-    }
+    scrollContainer('most-rated-dorms-slider', direction, setMostRatedDormsScrollPosition);
   };
 
   const scrollDorms = (direction: 'left' | 'right') => {
-    const container = document.getElementById('dorm-slider');
-    if (container) {
-      const scrollAmount = 350;
-      const newPosition = direction === 'left'
-        ? Math.max(0, dormScrollPosition - scrollAmount)
-        : Math.min(container.scrollWidth - container.clientWidth, dormScrollPosition + scrollAmount);
-
-      container.scrollTo({ left: newPosition, behavior: 'smooth' });
-      setDormScrollPosition(newPosition);
-    }
+    scrollContainer('dorm-slider', direction, setDormScrollPosition);
   };
 
   return (
