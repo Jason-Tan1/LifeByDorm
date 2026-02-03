@@ -236,69 +236,89 @@ textarea {
 }
 
 .slider-card {
-  flex: 0 0 260px;
-  min-width: 260px;
+  flex: 0 0 230px;
+  min-width: 230px;
 }
 
 @media (min-width: 768px) {
   .slider-card {
-    flex: 0 0 280px;
-    min-width: 280px;
+    flex: 0 0 250px;
+    min-width: 250px;
   }
 }
 
 @media (min-width: 1200px) {
   .slider-card {
-    flex: 0 0 300px;
-    min-width: 300px;
+    flex: 0 0 270px;
+    min-width: 270px;
   }
 }
 
 .slider-button {
   flex-shrink: 0;
-  width: 50px;
-  height: 50px;
+  width: 48px;
+  height: 48px;
   border-radius: 50%;
-  border: 2px solid #333;
+  border: 1px solid rgba(0, 0, 0, 0.08);
   background-color: #ffffff;
-  color: #333;
-  font-size: 2rem;
+  color: #1a1a1a;
+  font-size: 1.5rem;
+  font-weight: 400;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   display: flex;
   align-items: center;
   justify-content: center;
   z-index: 10;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  /* Slight offset to align the arrow character visually if needed */
+  padding-bottom: 3px;
 }
 
 .slider-button:hover:not(:disabled) {
-  background-color: #333;
-  color: #ffffff;
-  transform: scale(1.1);
+  background-color: #ffffff;
+  color: #D62828;
+  border-color: #D62828;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 16px rgba(214, 40, 40, 0.15);
+}
+
+.slider-button:active:not(:disabled) {
+  transform: translateY(0);
 }
 
 .slider-button:disabled {
-  opacity: 0.3;
-  cursor: not-allowed;
+  opacity: 0.0;
+  cursor: default;
+  pointer-events: none;
 }
 
 .slider-button-left {
-  margin-right: -10px;
+  margin-right: 0;
 }
 
 .slider-button-right {
-  margin-left: -10px;
+  margin-left: 0;
 }
 
 @media (max-width: 768px) {
   .slider-button {
     width: 40px;
     height: 40px;
-    font-size: 1.5rem;
+    font-size: 1.2rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  }
+
+  .slider-button-left {
+    margin-right: -10px;
+  }
+
+  .slider-button-right {
+    margin-left: -10px;
   }
 
   .slider-container {
-    gap: 10px;
+    gap: 15px;
   }
 }
 

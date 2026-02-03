@@ -333,6 +333,8 @@
     display: flex;
     align-items: center;
     gap: 8px;
+    position: relative;
+    z-index: 10;
 }
 
 .back_button:hover {
