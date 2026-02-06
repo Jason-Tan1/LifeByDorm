@@ -46,9 +46,9 @@ textarea {
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
-  min-height: 550px;
-  height: 85vh;
-  max-height: 950px;
+  min-height: 650px;
+  height: 90vh;
+  max-height: 1100px;
   /* FORCE full width - must override the general .home-container rules below */
   max-width: 100% !important;
   width: 100% !important;
@@ -66,20 +66,20 @@ textarea {
   display: flex;
   align-items: center;
   justify-content: center;
-  padding-top: 8vh;
+  padding-top: 18vh;
 }
 
 @media (min-width: 1600px) {
   .home-container {
     max-width: 1400px;
-    padding-top: 8vh;
+    padding-top: 18vh;
   }
 }
 
 @media (min-width: 1920px) {
   .home-container {
     max-width: 1800px;
-    padding-top: 10vh;
+    padding-top: 20vh;
   }
 }
 
