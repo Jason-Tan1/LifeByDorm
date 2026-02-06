@@ -1,0 +1,99 @@
+/* Container for the cookie consent popup */
+.cookie-consent-container {
+    position: fixed;
+    bottom: 24px;
+    left: 24px;
+    z-index: 9999;
+    /* Ensure it appears above everything else */
+    width: 340px;
+    max-width: calc(100% - 48px);
+    animation: slideUp 0.5s ease-out;
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.cookie-consent-content {
+    background-color: #ffffff;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06), 0 0 0 1px rgba(0, 0, 0, 0.05);
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    font-family: inherit;
+    /* Inherit font from the app */
+}
+
+.cookie-icon {
+    font-size: 24px;
+}
+
+.cookie-text h3 {
+    margin: 0 0 4px 0;
+    font-size: 16px;
+    font-weight: 600;
+    color: #111827;
+}
+
+.cookie-text p {
+    margin: 0;
+    font-size: 14px;
+    line-height: 1.5;
+    color: #4b5563;
+}
+
+.cookie-actions {
+    display: flex;
+    gap: 10px;
+}
+
+.cookie-btn {
+    flex: 1;
+    padding: 8px 16px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+    border: none;
+    outline: none;
+}
+
+.accept-btn {
+    background-color: #111827;
+    /* Dark background for primary action */
+    color: white;
+}
+
+.accept-btn:hover {
+    background-color: #000000;
+    transform: translateY(-1px);
+}
+
+.deny-btn {
+    background-color: #f3f4f6;
+    color: #374151;
+}
+
+.deny-btn:hover {
+    background-color: #e5e7eb;
+}
+
+/* Mobile responsiveness */
+@media (max-width: 480px) {
+    .cookie-consent-container {
+        left: 16px;
+        bottom: 16px;
+        width: calc(100% - 32px);
+    }
+}
