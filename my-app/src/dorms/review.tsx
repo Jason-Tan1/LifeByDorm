@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import './review.css';
 import NavBar from '../NavBarPages/navbar';
@@ -48,6 +48,32 @@ function Reviews() {
   const [errorMessage, setErrorMessage] = useState('');
   const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10 MB
   const MAX_FILES = 5; // Maximum 5 images
+
+  const [dormImage, setDormImage] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!resolvedUniversity || !resolvedDorm) return;
+
+    async function fetchDormImage() {
+      try {
+        // Ensure we rely on a slug for the API logic
+        // If resolvedDorm comes from a query param like "Centennial Hall", we need "centennial-hall"
+        const dormSlug = resolvedDorm!.toLowerCase().replace(/\s+/g, '-');
+        
+        const res = await fetch(`${API_BASE}/api/universities/${encodeURIComponent(resolvedUniversity!)}/dorms/${encodeURIComponent(dormSlug)}`);
+        if (res.ok) {
+          const data = await res.json();
+          if (data.imageUrl) {
+            setDormImage(data.imageUrl);
+          }
+        }
+      } catch (error) {
+        console.error('Failed to fetch dorm image:', error);
+      }
+    }
+
+    fetchDormImage();
+  }, [resolvedUniversity, resolvedDorm]);
 
   const handleRatingClick = (category: keyof typeof ratings, value: number) => {
     setRatings(prev => ({
@@ -338,7 +364,7 @@ function Reviews() {
                 <h1 className="review-main-title">Rating<br />{formatName(displayDormName)}</h1>
                 <div className="dorm-info-card">
                   <div className="review-dorm-image-container">
-                      <img src={DefaultDormImage} alt={displayDormName} className="review-dorm-image" />
+                      <img src={dormImage || DefaultDormImage} alt={displayDormName} className="review-dorm-image" />
                   </div>
                   <div className="dorm-info-text">
                     <h3 className="dorm-name">{formatName(displayDormName)}</h3>
