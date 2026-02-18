@@ -8,10 +8,10 @@
 }
 
 .review-page-content {
-  max-width: 900px;
+  max-width: 1200px;
+  /* Increased width for split layout */
   margin: 0 auto;
   padding: 30px clamp(10px, 3vw, 20px) 40px;
-  /* Adjust padding because hero is above now */
 }
 
 /* Hero Section */
@@ -19,7 +19,6 @@
   position: relative;
   width: 100%;
   height: 350px;
-  /* Adjust as needed */
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
@@ -35,7 +34,6 @@
   right: 0;
   bottom: 0;
   background: rgba(0, 0, 0, 0.4);
-  /* Dark overlay */
   display: flex;
   align-items: center;
   justify-content: center;
@@ -52,7 +50,7 @@
 
 /* Breadcrumbs */
 .breadcrumb-wrapper {
-  margin-bottom: 24px;
+  margin-bottom: 40px;
 }
 
 .dorm-breadcrumbs {
@@ -61,7 +59,6 @@
   flex-wrap: wrap;
   gap: 8px;
   font-size: 0.95rem;
-  /* Larger like screenshot */
   color: #333;
 }
 
@@ -76,6 +73,8 @@
 .breadcrumb-home:hover,
 .breadcrumb-link:hover {
   text-decoration: underline;
+  color: #D62828;
+  /* Red hover */
 }
 
 .breadcrumb-link {
@@ -97,16 +96,100 @@
   color: #1a1a1a;
 }
 
-.review-container {
-  background: white;
+/* Main Split Layout */
+.review-main-layout {
+  display: grid;
+  grid-template-columns: 420px 1fr;
+  /* Widened left column from 350px */
+  gap: 0;
+  align-items: start;
+  position: relative;
+}
+
+/* Left Column */
+.review-left-column {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  /* Optional: make it sticky if the form is long */
+  position: sticky;
+  top: 40px;
+  height: fit-content;
+  padding-right: 40px;
+}
+
+.review-main-title {
+  font-size: 3rem;
+  /* Larger */
+  font-weight: 800;
+  line-height: 1.1;
+  color: #1a1a1a;
+  margin: 0;
+}
+
+.dorm-info-card {
+  border: 1px solid #e0e0e0;
   border-radius: 12px;
-  padding: 32px clamp(20px, 5vw, 40px);
+  overflow: hidden;
+  background: white;
+}
+
+.review-dorm-image-container {
+  width: 100%;
+  /* border-radius removed here as parent has it */
+  overflow: hidden;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.review-dorm-image {
+  width: 100%;
+  height: auto;
+  display: block;
+  aspect-ratio: 4/3;
+  object-fit: cover;
+}
+
+.dorm-info-text {
+  padding: 16px;
+}
+
+.dorm-name {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #1a1a1a;
+  margin: 0 0 4px 0;
+}
+
+.dorm-university {
+  font-size: 0.9rem;
+  color: #666;
+  margin: 0;
+}
+
+/* Right Column & Container */
+.review-right-column {
+  width: 100%;
+  padding-left: 40px;
+  border-left: 2px solid #e0e0e0;
+  /* Thicker and darker divider */
+  min-height: 500px;
+}
+
+.review-container {
+  background: transparent;
+  border-radius: 0;
+  padding: 0;
+  box-shadow: none;
+  /* Removed shadow for cleaner look matching Tripadvisor style, or keep if preferred. Tripadvisor is usually white bg on white content */
+  /* If we want the card look, keep border/shadow. If we want seamless, remove. Keeping card for now but simplified */
+  border: none;
 }
 
 /* Sections */
 .review-section {
-  margin-bottom: 24px;
+  max-width: 650px;
+  /* Constrain the content width within the right column */
+  margin-bottom: 32px;
 }
 
 .divider {
@@ -116,188 +199,23 @@
   margin: 30px 0;
 }
 
-/* Sequential Form Steps - Refactored Layout */
-.sequential-section {
-  display: flex;
-  flex-direction: column;
-  gap: 24px;
-  min-height: 80px;
-}
-
-.selected-badges-row {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 12px;
-  align-items: center;
-  margin-bottom: 8px;
-}
-
-.active-selection-area {
-  width: 100%;
-  transition: all 0.3s ease;
-}
-
-.control-group {
-  display: flex;
-  flex-direction: column;
-  transition: all 0.3s ease;
-}
-
-.selection-step {
-  animation: slideIn 0.4s ease-out;
-}
-
-.step-label {
-  display: block;
-  font-size: 1.2rem;
-  font-weight: 600;
-  color: #2c3e50;
-  margin-bottom: 16px;
-}
-
-.options-grid {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 12px;
-}
-
-.option-button {
-  background: white;
-  border: 1px solid #e0e0e0;
-  border-radius: 12px;
-  padding: 14px 24px;
-  font-size: 1rem;
-  font-weight: 500;
-  color: #444;
-  cursor: pointer;
-  transition: all 0.2s cubic-bezier(0.25, 0.8, 0.25, 1);
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
-  font-family: 'DM Sans', sans-serif;
-  text-align: center;
-  flex-grow: 1;
-  max-width: fit-content;
-}
-
-.option-button:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.08);
-  border-color: #D62828;
-  color: #D62828;
-  background-color: #fff1f2;
-}
-
-.option-button:active {
-  transform: translateY(0);
-  background-color: #ffe4e6;
-}
-
-/* Selected Item Tag Styling (The "Chip") */
-.selected-item-row {
-  display: inline-flex;
-  align-items: center;
-  padding: 8px 16px;
-  border-radius: 50px;
-  /* Pill shape */
-  border: 1px solid #fecaca;
-  background-color: #fff1f2;
-  /* Light red background */
-  transition: all 0.3s ease;
-  height: 44px;
-  box-sizing: border-box;
-  animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-  max-width: fit-content;
-}
-
-.selected-item-row:hover {
-  background-color: #ffe4e6;
-  border-color: #fca5a5;
-}
-
-.selected-item-icon {
-  display: flex;
-  align-items: center;
-  color: #D62828;
-  margin-right: 10px;
-}
-
-.selected-item-icon svg {
-  font-size: 1.2rem;
-}
-
-.selected-item-text {
-  font-weight: 600;
-  color: #1976d2;
-  font-size: 0.95rem;
-  margin-right: 12px;
-}
-
-.selected-item-remove {
-  background: white;
-  border: 1px solid transparent;
-  width: 24px;
-  height: 24px;
-  cursor: pointer;
-  color: #1976d2;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 50%;
-  transition: all 0.2s;
+.review-title-section h2 {
+  font-size: 1.5rem;
+  color: #1a1a1a;
+  margin: 0 0 4px 0;
+  font-weight: 700;
+  border: none;
+  /* Removed default border */
   padding: 0;
 }
 
-.selected-item-remove:hover {
-  background-color: #1976d2;
-  color: white;
-}
-
-/* Animation */
-.fade-in {
-  animation: fadeIn 0.5s ease-out forwards;
-}
-
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(10px);
-  }
-
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-@keyframes slideIn {
-  from {
-    opacity: 0;
-    transform: translateX(-10px);
-  }
-
-  to {
-    opacity: 1;
-    transform: translateX(0);
-  }
-}
-
-@keyframes popIn {
-  from {
-    opacity: 0;
-    transform: scale(0.9);
-  }
-
-  to {
-    opacity: 1;
-    transform: scale(1);
-  }
-}
-
-/* Ratings */
+/* Ratings Grid */
 .ratings-grid {
   display: grid;
-  gap: 24px;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  /* Responsive Grid */
+  gap: 24px 40px;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  margin-top: 0;
+  /* Adjusted */
 }
 
 .rating-group {
@@ -307,14 +225,15 @@
 }
 
 .rating-group label {
-  font-weight: 600;
+  font-weight: 700;
   font-size: 1.1rem;
-  color: #333;
+  color: #1a1a1a;
 }
 
 .star-rating {
   display: flex;
-  gap: 8px;
+  gap: 4px;
+  /* Tighter spacing */
 }
 
 .star-button {
@@ -323,7 +242,8 @@
   padding: 0;
   cursor: pointer;
   color: #faaf00;
-  font-size: 2rem;
+  font-size: 1.8rem;
+  /* Slightly smaller */
   display: flex;
   align-items: center;
   transition: transform 0.1s;
@@ -333,47 +253,124 @@
   transform: scale(1.1);
 }
 
+/* Selection Groups (Pills) */
+.selections-section {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+
+.selection-group {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.section-label {
+  display: block;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #1a1a1a;
+  margin: 0 0 16px 0;
+  /* Added spacing below headers */
+}
+
+.optional-text {
+  font-weight: 400;
+  color: #666;
+  font-size: 0.95rem;
+  margin-left: 8px;
+}
+
+.pill-options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.pill-button {
+  background: white;
+  border: 1px solid #d0d0d0;
+  border-radius: 20px;
+  /* Fully rounded pill */
+  padding: 8px 16px;
+  font-size: 0.95rem;
+  color: #444;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: 'DM Sans', sans-serif;
+  font-weight: 500;
+}
+
+.pill-button:hover {
+  border-color: #D62828;
+  color: #D62828;
+  background-color: #fff1f2;
+}
+
+.pill-button.selected {
+  background-color: #D62828;
+  /* Website Red */
+  color: white;
+  border-color: #D62828;
+  font-weight: 600;
+  box-shadow: 0 2px 4px rgba(214, 40, 40, 0.2);
+}
+
 /* Comments & Textareas */
 .comments-section {
   display: flex;
   flex-direction: column;
 }
 
-.section-label {
-  display: block;
-  font-weight: 600;
-  font-size: 1.1rem;
+.comments-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   margin-bottom: 12px;
-  color: #333;
 }
 
 .review-textarea {
   width: 100%;
-  min-height: 120px;
+  max-width: 650px;
+  /* Limit width */
+  min-height: 150px;
   padding: 16px;
   border-radius: 8px;
-  border: 1px solid #ddd;
+  border: 3px solid #fab6b6;
+  /* Even thicker border */
   font-family: inherit;
   font-size: 1rem;
   resize: vertical;
   transition: border-color 0.2s;
   box-sizing: border-box;
+  background-color: #f9f9f9;
 }
 
 .review-textarea:focus {
   outline: none;
-  border-color: #1976d2;
-  box-shadow: 0 0 0 3px rgba(25, 118, 210, 0.1);
+  border-color: #D62828;
+  /* Primary Red Focus */
+  background-color: white;
+  box-shadow: 0 0 0 3px rgba(214, 40, 40, 0.1);
+}
+
+.char-count {
+  text-align: right;
+  font-size: 0.85rem;
+  color: #888;
+  margin-top: 6px;
 }
 
 /* Photos */
 .photo-section {
-  /* No top border */
-  padding-top: 24px;
+  padding-top: 0;
 }
 
 .file-upload-container {
   width: 100%;
+  max-width: 100%;
+  /* Fill container */
 }
 
 .file-upload-label {
@@ -381,30 +378,39 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 40px;
-  border: 1px solid #d0d0d0;
+  padding: 30px;
+  border: 3px dashed #fab6b6;
+  /* Thicker dashed border */
   border-radius: 8px;
-  background-color: #fff;
+  background-color: #fcfcfc;
   cursor: pointer;
   transition: all 0.2s;
+  box-sizing: border-box;
+  /* Ensure padding is included in width */
+}
+
+.file-upload-label.drag-active {
+  background-color: #fff1f2;
+  border-color: #D62828;
 }
 
 .file-upload-label:hover {
-  background-color: #f8f8f8;
-  border-color: #b0b0b0;
+  background-color: #fff1f2;
+  /* Light red hover */
+  border-color: #D62828;
 }
 
 .upload-icon-wrapper {
-  margin-bottom: 12px;
+  margin-bottom: 8px;
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
 .upload-text {
-  font-size: 1rem;
+  font-size: 0.95rem;
   font-weight: 500;
-  color: #1a1a1a;
+  color: #666;
 }
 
 .photo-previews {
@@ -416,34 +422,36 @@
 
 .photo-preview-item {
   position: relative;
-  width: 100px;
-  height: 100px;
+  width: 80px;
+  height: 80px;
 }
 
 .photo-preview-item img {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  border-radius: 8px;
-  border: 2px solid #eee;
+  border-radius: 6px;
+  border: 1px solid #eee;
 }
 
 .remove-photo-btn {
   position: absolute;
-  top: -8px;
-  right: -8px;
-  background: #ff4d4f;
-  color: white;
-  border: none;
+  top: -6px;
+  right: -6px;
+  background: white;
+  color: #ff4d4f;
+  border: 1px solid #ddd;
   border-radius: 50%;
-  width: 24px;
-  height: 24px;
+  width: 20px;
+  height: 20px;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
   font-weight: bold;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  font-size: 1.2rem;
+  line-height: 1;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
 }
 
 /* Popup Styles */
@@ -454,7 +462,6 @@
   right: 0;
   bottom: 0;
   background-color: rgba(0, 0, 0, 0.5);
-  /* Dim background */
   display: flex;
   align-items: center;
   justify-content: center;
@@ -479,19 +486,15 @@
   font-size: 1.5rem;
   font-weight: 700;
   color: #1a1a1a;
-  /* Dark text */
   margin: 0 0 8px 0;
   border-bottom: none;
-  /* Override global h2 border */
   padding-bottom: 0;
-  /* Override global h2 padding */
 }
 
 .popup-subtitle {
   font-family: 'DM Sans', sans-serif;
   font-size: 1rem;
   color: #5f6368;
-  /* Grey text */
   margin: 0;
 }
 
@@ -507,15 +510,27 @@
   }
 }
 
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
 /* Submit Button */
 .submit-section {
   margin-top: 40px;
   display: flex;
-  justify-content: flex-end;
+  justify-content: flex-start;
+  /* Changed from flex-end */
 }
 
 .submit-review-btn {
-  background-color: #1a1a1a;
+  background-color: #D62828;
+  /* Primary Red */
   color: white;
   font-weight: 600;
   padding: 16px 40px;
@@ -527,9 +542,27 @@
 }
 
 .submit-review-btn:hover {
-  background-color: #333;
+  background-color: #b91c1c;
+  /* Darker Red */
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 4px 12px rgba(214, 40, 40, 0.25);
+}
+
+@media (max-width: 900px) {
+  .review-main-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .review-left-column {
+    align-items: center;
+    text-align: center;
+    position: static;
+  }
+
+  .review-dorm-image {
+    max-width: 600px;
+    margin: 0 auto;
+  }
 }
 
 @media (max-width: 600px) {
@@ -540,16 +573,6 @@
 
   .review-header h1 {
     font-size: 1.8rem;
-  }
-
-  .options-grid {
-    flex-direction: column;
-    align-items: stretch;
-  }
-
-  .option-button {
-    text-align: left;
-    max-width: none;
   }
 }
 

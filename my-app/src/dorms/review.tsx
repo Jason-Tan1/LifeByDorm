@@ -5,10 +5,6 @@ import NavBar from '../NavBarPages/navbar';
 import Star from '@mui/icons-material/Star';
 import StarBorder from '@mui/icons-material/StarBorder';
 import HomeIcon from '@mui/icons-material/Home';
-import SchoolIcon from '@mui/icons-material/School';
-import MeetingRoomIcon from '@mui/icons-material/MeetingRoom';
-import ThumbUpIcon from '@mui/icons-material/ThumbUp';
-import CloseIcon from '@mui/icons-material/Close';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import DefaultDormImage from '../assets/Default_Dorm.png';
 import { compressImage } from '../utils/imageUtils';
@@ -19,7 +15,6 @@ const API_BASE = isLocal ? '' : ((import.meta as any).env?.VITE_API_BASE || '');
 
 function Reviews() {
   const navigate = useNavigate();
-  // Removed currentPage state
   const [ratings, setRatings] = useState({
     room: 0,
     bathrooms: 0,
@@ -242,23 +237,12 @@ function Reviews() {
       .join(' ');
   };
 
-  const getYearLabel = (val: string) => {
-    switch (val) {
-      case '1': return 'First';
-      case '2': return 'Second';
-      case '3': return 'Third';
-      case '4': return 'Fourth+';
-      case '5': return 'Graduate';
-      default: return val;
-    }
-  };
-
   const yearOptions = [
-    { value: '1', label: 'First' },
-    { value: '2', label: 'Second' },
-    { value: '3', label: 'Third' },
-    { value: '4', label: 'Fourth+' },
-    { value: '5', label: 'Graduate' }
+    { value: '2026', label: '2026' },
+    { value: '2025', label: '2025' },
+    { value: '2024', label: '2024' },
+    { value: '2023', label: '2023' },
+    { value: '2022', label: '2022' }
   ];
 
   const roomTypeOptions = [
@@ -271,24 +255,50 @@ function Reviews() {
   ];
 
   const dormAgainOptions = [
-    { value: 'yes', label: 'Yes, I would' },
-    { value: 'no', label: 'No, I would not' }
+    { value: 'yes', label: 'Yes' },
+    { value: 'no', label: 'No' }
   ];
+
+  /* Drag and Drop Handlers */
+  const [isDragging, setIsDragging] = useState(false);
+
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragging(true);
+  };
+
+  const handleDragLeave = (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragging(false);
+  };
+
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragging(false);
+    
+    if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+      const newFiles = Array.from(e.dataTransfer.files);
+      setFiles((prevFiles) => [...prevFiles, ...newFiles]);
+
+      newFiles.forEach((file) => {
+        // Compress image before creating data URL if needed, 
+        // for now just read it for preview
+        const reader = new FileReader();
+        reader.onloadend = () => {
+          setFileDataUrls((prevUrls) => [...prevUrls, reader.result as string]);
+        };
+        reader.readAsDataURL(file);
+      });
+    }
+  };
 
   return (
     <div className='Review'>
+        {/* ... existing layout ... */}
       <NavBar />
-
-      {/* Hero Section */}
-      <div className="review-hero" style={{ backgroundImage: `url(${DefaultDormImage})` }}>
-        <div className="review-hero-overlay">
-          <h1>Rating {formatName(displayDormName)}</h1>
-        </div>
-      </div>
 
       <div className='review-page-content'>
 
-        {/* Breadcrumbs moved out of container to match screenshot layout */}
         <div className="breadcrumb-wrapper">
           <div className="dorm-breadcrumbs">
             <Link to="/" className="breadcrumb-home">
@@ -321,207 +331,183 @@ function Reviews() {
           </div>
         </div>
 
-        <div className='review-container'>
-
-          {/* Header removed from here */}
-
-          <div className="review-content">
-
-            {/* Sequential Steps Section - Refactored for Independent Editing */}
-            <div className="review-section sequential-section">
-
-              {/* Selected Badges Row (Always Visible if any exist) */}
-              {(selectedYear || selectedRoomType || wouldDormAgain) && (
-                <div className="selected-badges-row">
-                  {selectedYear && (
-                    <div className="selected-item-row fade-in">
-                      <div className="selected-item-icon"><SchoolIcon /></div>
-                      <span className="selected-item-text">{getYearLabel(selectedYear)}</span>
-                      <button
-                        type="button"
-                        className="selected-item-remove"
-                        onClick={() => setSelectedYear('')} // Only clears Year
-                      >
-                        <CloseIcon fontSize="small" />
-                      </button>
-                    </div>
-                  )}
-
-                  {selectedRoomType && (
-                    <div className="selected-item-row fade-in">
-                      <div className="selected-item-icon"><MeetingRoomIcon /></div>
-                      <span className="selected-item-text">
-                        {roomTypeOptions.find(o => o.value === selectedRoomType)?.label || selectedRoomType}
-                      </span>
-                      <button
-                        type="button"
-                        className="selected-item-remove"
-                        onClick={() => setSelectedRoomType('')} // Only clears Room
-                      >
-                        <CloseIcon fontSize="small" />
-                      </button>
-                    </div>
-                  )}
-
-                  {wouldDormAgain && (
-                    <div className="selected-item-row fade-in">
-                      <div className="selected-item-icon"><ThumbUpIcon /></div>
-                      <span className="selected-item-text">
-                        {wouldDormAgain === 'yes' ? 'Would Dorm Again: Yes' : 'Would Dorm Again: No'}
-                      </span>
-                      <button
-                        type="button"
-                        className="selected-item-remove"
-                        onClick={() => setWouldDormAgain('')} // Only clears Choice
-                      >
-                        <CloseIcon fontSize="small" />
-                      </button>
-                    </div>
-                  )}
+        <div className='review-main-layout'>
+            
+            {/* Left Column: Header & Image */}
+            <div className="review-left-column">
+                <h1 className="review-main-title">Rating<br />{formatName(displayDormName)}</h1>
+                <div className="dorm-info-card">
+                  <div className="review-dorm-image-container">
+                      <img src={DefaultDormImage} alt={displayDormName} className="review-dorm-image" />
+                  </div>
+                  <div className="dorm-info-text">
+                    <h3 className="dorm-name">{formatName(displayDormName)}</h3>
+                    {resolvedUniversity && <p className="dorm-university">{formatName(resolvedUniversity)}</p>}
+                  </div>
                 </div>
-              )}
-
-              {/* Active Input Area - Prioritizes first missing field */}
-              <div className="active-selection-area">
-                {!selectedYear ? (
-                  <div className="selection-step fade-in">
-                    <label className="step-label">What year were you?</label>
-                    <div className="options-grid">
-                      {yearOptions.map((opt) => (
-                        <button
-                          key={opt.value}
-                          type="button"
-                          className="option-button"
-                          onClick={() => setSelectedYear(opt.value)}
-                        >
-                          {opt.label}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-                ) : !selectedRoomType ? (
-                  <div className="selection-step fade-in">
-                    <label className="step-label">What was your room type?</label>
-                    <div className="options-grid">
-                      {roomTypeOptions.map((opt) => (
-                        <button
-                          key={opt.value}
-                          type="button"
-                          className="option-button"
-                          onClick={() => setSelectedRoomType(opt.value)}
-                        >
-                          {opt.label}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-                ) : !wouldDormAgain ? (
-                  <div className="selection-step fade-in">
-                    <label className="step-label">Would you dorm here again?</label>
-                    <div className="options-grid">
-                      {dormAgainOptions.map((opt) => (
-                        <button
-                          key={opt.value}
-                          type="button"
-                          className="option-button"
-                          onClick={() => setWouldDormAgain(opt.value)}
-                        >
-                          {opt.label}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-                ) : null}
-              </div>
-
             </div>
 
-            {/* Ratings Section */}
-            <div className="review-section ratings-grid">
-              <div className="rating-group">
-                <label>Room</label>
-                {renderStars('room')}
-              </div>
+            {/* Right Column: Form */}
+            <div className="review-right-column">
+                <div className="review-container">
+                    <div className="review-content">
+                        
+                         {/* Ratings Section */}
+                         <div className="review-section ratings-grid">
+                          <div className="rating-group">
+                            <label>Room</label>
+                            {renderStars('room')}
+                          </div>
 
-              <div className="rating-group">
-                <label>Bathroom</label>
-                {renderStars('bathrooms')}
-              </div>
+                          <div className="rating-group">
+                            <label>Bathroom</label>
+                            {renderStars('bathrooms')}
+                          </div>
 
-              <div className="rating-group">
-                <label>Building</label>
-                {renderStars('building')}
-              </div>
+                          <div className="rating-group">
+                            <label>Building</label>
+                            {renderStars('building')}
+                          </div>
 
-              <div className="rating-group">
-                <label>Amenities</label>
-                {renderStars('amenities')}
-              </div>
+                          <div className="rating-group">
+                            <label>Amenities</label>
+                            {renderStars('amenities')}
+                          </div>
 
-              <div className="rating-group">
-                <label>Location</label>
-                {renderStars('location')}
-              </div>
-            </div>
+                          <div className="rating-group">
+                            <label>Location</label>
+                            {renderStars('location')}
+                          </div>
+                        </div>
 
-            {/* Comments Section */}
-            <div className="review-section comments-section">
-              <label className="section-label">Comments</label>
-              <textarea
-                className="review-textarea"
-                placeholder="Share your experience living in this dorm... (Required)"
-                value={description}
-                onChange={e => setDescription(e.target.value)}
-              />
-            </div>
+                        {/* Selection Groups */}
+                        <div className="review-section selections-section">
+                            
+                            <div className="selection-group">
+                                <label className="section-label">What year were/are you?</label>
+                                <div className="pill-options">
+                                    {yearOptions.map((opt) => (
+                                        <button
+                                            key={opt.value}
+                                            type="button"
+                                            className={`pill-button ${selectedYear === opt.value ? 'selected' : ''}`}
+                                            onClick={() => setSelectedYear(opt.value)}
+                                        >
+                                            {opt.label}
+                                        </button>
+                                    ))}
+                                </div>
+                            </div>
 
-            {/* Photo Section */}
-            <div className="review-section photo-section">
-              <label className="section-label">Add a Photo</label>
+                            <div className="selection-group">
+                                <label className="section-label">Room Type</label>
+                                <div className="pill-options">
+                                    {roomTypeOptions.map((opt) => (
+                                        <button
+                                            key={opt.value}
+                                            type="button"
+                                            className={`pill-button ${selectedRoomType === opt.value ? 'selected' : ''}`}
+                                            onClick={() => setSelectedRoomType(opt.value)}
+                                        >
+                                            {opt.label}
+                                        </button>
+                                    ))}
+                                </div>
+                            </div>
 
-              <div className="file-upload-container">
-                <input
-                  type="file"
-                  id="file-upload"
-                  accept="image/*"
-                  multiple
-                  onChange={handleFileChange}
-                  style={{ display: 'none' }}
-                />
-                <label htmlFor="file-upload" className="file-upload-label">
-                  <div className="upload-icon-wrapper">
-                    <CloudUploadIcon style={{ fontSize: 32, color: '#445E75' }} />
-                  </div>
-                  <span className="upload-text">Click to browse files</span>
-                </label>
-              </div>
+                             <div className="selection-group">
+                                <label className="section-label">Would you dorm here again?</label>
+                                <div className="pill-options">
+                                    {dormAgainOptions.map((opt) => (
+                                        <button
+                                            key={opt.value}
+                                            type="button"
+                                            className={`pill-button ${wouldDormAgain === opt.value ? 'selected' : ''}`}
+                                            onClick={() => setWouldDormAgain(opt.value)}
+                                        >
+                                            {opt.label}
+                                        </button>
+                                    ))}
+                                </div>
+                            </div>
 
-              {fileDataUrls.length > 0 && (
-                <div className="photo-previews">
-                  {fileDataUrls.map((url, index) => (
-                    <div key={index} className="photo-preview-item">
-                      <img src={url} alt={`preview ${index + 1}`} />
-                      <button
-                        type="button"
-                        className="remove-photo-btn"
-                        onClick={() => removeImage(index)}
-                      >
-                        ×
-                      </button>
+                        </div>
+                        
+                        {/* Comments Section */}
+                        <div className="review-section comments-section">
+                          <div className="comments-header">
+                            {/* Removed Help Me Write button */}
+                          </div>
+                          <label className="section-label">Write your review</label>
+                          <textarea
+                            className="review-textarea"
+                            placeholder="Share your experience..."
+                            value={description}
+                            onChange={e => setDescription(e.target.value)}
+                          />
+                          <div className="char-count">
+                             {description.length}/25 min characters
+                          </div>
+                        </div>
+
+                        {/* Photo Section */}
+                        <div className="review-section photo-section">
+                          <label className="section-label">Add Photos <span className="optional-text">(Optional)</span></label>
+
+                          <div 
+                            className="file-upload-container"
+                            onDragOver={handleDragOver}
+                            onDragLeave={handleDragLeave}
+                            onDrop={handleDrop}
+                          >
+                            <input
+                              type="file"
+                              id="file-upload"
+                              accept="image/*"
+                              multiple
+                              onChange={handleFileChange}
+                              style={{ display: 'none' }}
+                            />
+                            <label 
+                                htmlFor="file-upload" 
+                                className={`file-upload-label ${isDragging ? 'drag-active' : ''}`}
+                            >
+                              <div className="upload-icon-wrapper">
+                                <CloudUploadIcon style={{ fontSize: 32, color: '#445E75' }} />
+                              </div>
+                              <span className="upload-text">Click to add photos<br/>or drag and drop</span>
+                            </label>
+                          </div>
+
+                          {fileDataUrls.length > 0 && (
+                            <div className="photo-previews">
+                              {fileDataUrls.map((url, index) => (
+                                <div key={index} className="photo-preview-item">
+                                  <img src={url} alt={`preview ${index + 1}`} />
+                                  <button
+                                    type="button"
+                                    className="remove-photo-btn"
+                                    onClick={() => removeImage(index)}
+                                  >
+                                    ×
+                                  </button>
+                                </div>
+                              ))}
+                            </div>
+                          )}
+                        </div>
+
+                        <div className="submit-section">
+                          <button type="button" className="submit-review-btn" onClick={handleSubmit}>
+                            Submit Review
+                          </button>
+                        </div>
+
                     </div>
-                  ))}
                 </div>
-              )}
             </div>
-
-            <div className="submit-section">
-              <button type="button" className="submit-review-btn" onClick={handleSubmit}>
-                Submit Review
-              </button>
-            </div>
-
-          </div>
         </div>
+
       </div>
       {/* Success Popup */}
       {showSuccessPopup && (
