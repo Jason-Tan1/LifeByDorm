@@ -304,7 +304,7 @@ function Reviews() {
     
     if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
       const newFiles = Array.from(e.dataTransfer.files);
-      setFiles((prevFiles) => [...prevFiles, ...newFiles]);
+
 
       newFiles.forEach((file) => {
         // Compress image before creating data URL if needed, 
