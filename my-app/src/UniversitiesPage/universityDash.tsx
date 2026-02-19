@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Link, useParams, useNavigate } from 'react-router-dom';
 import NavBar from '../NavBarPages/navbar';
 import Footer from '../homepage/footer';
@@ -40,6 +41,7 @@ const API_BASE = isLocal ? '' : ((import.meta as any).env?.VITE_API_BASE || '');
 
 // Main component for University Dashboard
 function UniversityDash() {
+  const { t } = useTranslation();
   const { universityName } = useParams();
   const navigate = useNavigate();
 
@@ -198,7 +200,7 @@ function UniversityDash() {
       <div className="university-dash">
         <NavBar />
         <div className="university-content">
-          <p>{error || 'University not found'}</p>
+          <p>{error || t('universityDash.notFound')}</p>
         </div>
       </div>
     );
@@ -217,7 +219,7 @@ function UniversityDash() {
               <HomeIcon style={{ fontSize: '1.2rem', color: '#1a1a1a' }} />
             </Link>
             <span className="breadcrumb-separator" style={{ margin: '0 8px', color: '#666' }}>›</span>
-            <span className="breadcrumb-current" style={{ fontWeight: 600, color: '#1a1a1a' }}>{university.name} Dorms</span>
+            <span className="breadcrumb-current" style={{ fontWeight: 600, color: '#1a1a1a' }}>{university.name} {t('universityDash.dorms')}</span>
           </div>
 
           <div className="university-image-container">
@@ -234,15 +236,15 @@ function UniversityDash() {
           </div>
 
           <div className="university-website-card">
-            <h2>Need more information?</h2>
-            <p>Visit the {university.name} website to learn more</p>
+            <h2>{t('universityDash.needInfo')}</h2>
+            <p>{t('universityDash.visitWebsite', { name: university.name })}</p>
             <a
               href={university.website || '#'}
               target="_blank"
               rel="noopener noreferrer"
               className="university-website-btn"
             >
-              Visit University Website
+              {t('universityDash.visitWebsiteBtn')}
             </a>
           </div>
 
@@ -262,13 +264,13 @@ function UniversityDash() {
 
           <div className="dorms-controls">
             <div className="search-section">
-              <label htmlFor="dorm-search">Search {dorms.length} Dorms: </label>
+              <label htmlFor="dorm-search">{t('universityDash.searchLabel', { count: dorms.length })} </label>
               <div className="search-bar-container">
                 <input
                   id="dorm-search"
                   type="text"
                   className="search-input"
-                  placeholder="Search for dorms..."
+                  placeholder={t('universityDash.searchPlaceholder')}
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                 />
@@ -279,19 +281,19 @@ function UniversityDash() {
             </div>
 
             <div className="filter-section">
-              <label htmlFor="filter-select">Filter by:</label>
+              <label htmlFor="filter-select">{t('universityDash.filterLabel')}</label>
               <select
                 id="filter-select"
                 className="filter-select"
                 value={filterOption}
                 onChange={(e) => setFilterOption(e.target.value)}
               >
-                <option value="most-reviewed">Most Reviewed</option>
-                <option value="least-reviewed">Least Reviewed</option>
-                <option value="highest-rated">Highest Rated</option>
-                <option value="lowest-rated">Lowest Rated</option>
-                <option value="a-z">A - Z</option>
-                <option value="z-a">Z - A</option>
+                <option value="most-reviewed">{t('universityDash.filterMostReviewed')}</option>
+                <option value="least-reviewed">{t('universityDash.filterLeastReviewed')}</option>
+                <option value="highest-rated">{t('universityDash.filterHighestRated')}</option>
+                <option value="lowest-rated">{t('universityDash.filterLowestRated')}</option>
+                <option value="a-z">{t('universityDash.filterAZ')}</option>
+                <option value="z-a">{t('universityDash.filterZA')}</option>
               </select>
             </div>
           </div>
@@ -312,7 +314,7 @@ function UniversityDash() {
                       <div className="dorm-rating" style={{ display: 'flex', alignItems: 'center', gap: '4px', marginTop: '8px' }}>
                         <Star style={{ fontSize: '1.15rem', color: '#FFD700' }} />
                         <span className="rating-number">
-                          {(dormRatings[dorm.name] ?? 0).toFixed(1)} ({reviewCounts[dorm.name] ?? 0} reviews)
+                          {(dormRatings[dorm.name] ?? 0).toFixed(1)} ({reviewCounts[dorm.name] ?? 0} {t('universityDash.reviews')})
                         </span>
                       </div>
                     </div>
@@ -325,7 +327,7 @@ function UniversityDash() {
                           navigate(`/review?university=${encodeURIComponent(universityName || '')}&dorm=${encodeURIComponent(dorm.name)}`);
                         }}
                       >
-                        Leave Review
+                        {t('universityDash.leaveReview')}
                       </button>
                     </div>
                   </div>
@@ -333,7 +335,7 @@ function UniversityDash() {
               ))
             ) : (
               <div className="no-results">
-                <p>No dorms found matching your search.</p>
+                <p>{t('universityDash.noResults')}</p>
               </div>
             )}
           </div>

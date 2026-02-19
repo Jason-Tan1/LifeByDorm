@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import NavBar from '../NavBarPages/navbar.tsx';
 import Footer from '../homepage/footer.tsx';
 import DormInfo from './DormInfo.tsx';
@@ -30,6 +31,7 @@ const API_BASE = isLocal ? '' : ((import.meta as any).env?.VITE_API_BASE || '');
 
 // Main component for Dorm Page
 function Dorms() {
+  const { t } = useTranslation();
   const { universityName, dormSlug } = useParams();
   const [dorm, setDorm] = useState<APIDorm | null>(null);
   const [univLocation, setUnivLocation] = useState<string | null>(null);
@@ -55,7 +57,7 @@ function Dorms() {
 
         if (!dormRes.ok) {
           if (dormRes.status === 404) {
-            throw new Error('Dorm not found');
+            throw new Error(t('dorms.notFound'));
           }
           throw new Error('Failed to fetch dorm data');
         }
@@ -69,7 +71,7 @@ function Dorms() {
         }
 
       } catch (e: any) {
-        setError(e?.message || 'Failed to load dorm');
+        setError(e?.message || t('dorms.notFound'));
       } finally {
         setLoading(false);
       }
@@ -216,7 +218,7 @@ function Dorms() {
       <div className="dorm-page">
         <NavBar />
         <div className="dorm-content">
-          <p>{error || 'Dorm not found'}</p>
+          <p>{error || t('dorms.notFound')}</p>
         </div>
         <Footer />
       </div>

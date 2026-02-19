@@ -1,4 +1,5 @@
 import Star from '@mui/icons-material/Star';
+import { useTranslation } from 'react-i18next';
 
 type APIDorm = {
   name: string;
@@ -41,15 +42,16 @@ function ReviewsList({
   openLightbox,
   handleLoadMore
 }: ReviewsListProps) {
+  const { t } = useTranslation();
   const totalReviews = reviews.length;
   const hasMoreReviews = visibleCount < totalReviews;
 
   return (
     <div className="reviews-list">
       {reviewsLoading ? (
-        <p>Loading reviews...</p>
+        <p>{t('dorms.loading')}</p>
       ) : reviews.length === 0 ? (
-        <p>No reviews yet. Be the first to leave a review!</p>
+        <p>{t('dorms.noReviews')}</p>
       ) : (
         <>
           <div className="reviews-grid">
@@ -65,12 +67,12 @@ function ReviewsList({
                   <div className="review-metadata">
                     <div className="review-metadata-row">
                       {review.createdAt && <span className="review-time">{formatReviewTime(review.createdAt)}</span>}
-                      {review.verified && <span className="verified-badge">✓ Verified Student</span>}
+                      {review.verified && <span className="verified-badge">✓ {t('dorms.verifiedStudent')}</span>}
                     </div>
                     <div className="review-metadata-row">
-                      <span>Year: {Array.isArray(review.year) ? review.year.map((y: number) => ['', 'Freshman', 'Sophomore', 'Junior', 'Senior', 'Graduate Student'][y]).join(', ') : review.year}</span>
-                      <span>Room Type: {Array.isArray(review.roomType) ? review.roomType.map((r: string) => r.charAt(0).toUpperCase() + r.slice(1)).join(', ') : (review.roomType?.charAt(0).toUpperCase() + review.roomType?.slice(1))}</span>
-                      <span>Would Dorm Again: {review.wouldDormAgain ? 'Yes' : 'No'}</span>
+                      <span>{t('dorms.year')}: {Array.isArray(review.year) ? review.year.map((y: number) => ['', t('dorms.years.1'), t('dorms.years.2'), t('dorms.years.3'), t('dorms.years.4'), t('dorms.years.5')][y]).join(', ') : review.year}</span>
+                      <span>{t('dorms.roomType')}: {Array.isArray(review.roomType) ? review.roomType.map((r: string) => r.charAt(0).toUpperCase() + r.slice(1)).join(', ') : (review.roomType?.charAt(0).toUpperCase() + review.roomType?.slice(1))}</span>
+                      <span>{t('dorms.wouldDormAgain')}: {review.wouldDormAgain ? t('common.yes') : t('common.no')}</span>
                     </div>
                   </div>
                 </div>
@@ -113,10 +115,10 @@ function ReviewsList({
                 className="load-more-button"
                 onClick={handleLoadMore}
               >
-                Load More Reviews
+                {t('dorms.loadMore')}
               </button>
               <span className="load-more-hint">
-                {totalReviews - visibleCount} more {totalReviews - visibleCount === 1 ? 'review' : 'reviews'} remaining
+                {t('dorms.moreRemaining', { count: totalReviews - visibleCount })}
               </span>
             </div>
           )}

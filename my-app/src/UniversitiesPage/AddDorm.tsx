@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation, Trans } from 'react-i18next';
 import CloseIcon from '@mui/icons-material/Close';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import './AddDorm.css';
@@ -15,6 +16,7 @@ interface AddDormProps {
 }
 
 function AddDorm({ universitySlug, universityName, onDormSubmitted }: AddDormProps) {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -28,7 +30,7 @@ function AddDorm({ universitySlug, universityName, onDormSubmitted }: AddDormPro
     // Check if user is logged in
     const token = localStorage.getItem('token');
     if (!token) {
-      setError('Please log in to submit a dorm');
+      setError(t('addDorm.loginError'));
       return;
     }
     setIsFormOpen(true);
@@ -50,14 +52,14 @@ function AddDorm({ universitySlug, universityName, onDormSubmitted }: AddDormPro
 
     const token = localStorage.getItem('token');
     if (!token) {
-      setError('Please log in to submit a dorm');
+      setError(t('addDorm.loginError'));
       setIsSubmitting(false);
       return;
     }
 
     // Validate required fields
     if (!dormName.trim()) {
-      setError('Dorm name is required');
+      setError(t('addDorm.nameRequired'));
       setIsSubmitting(false);
       return;
     }
@@ -112,8 +114,8 @@ function AddDorm({ universitySlug, universityName, onDormSubmitted }: AddDormPro
         <div className="add-dorm-success">
           <CheckCircleIcon className="success-icon" />
           <div>
-            <strong>Dorm submitted!</strong>
-            <p>Redirecting you to leave a review...</p>
+            <strong>{t('addDorm.successTitle')}</strong>
+            <p>{t('addDorm.successMsg')}</p>
           </div>
         </div>
       )}
@@ -128,10 +130,10 @@ function AddDorm({ universitySlug, universityName, onDormSubmitted }: AddDormPro
       {/* Add Dorm Call to Action Card */}
       {!isFormOpen && !submitSuccess && (
         <div className="add-dorm-cta-card">
-          <h2>Can't find your dorm?</h2>
-          <p>Write a review for a dorm not listed.</p>
+          <h2>{t('addDorm.title')}</h2>
+          <p>{t('addDorm.subtitle')}</p>
           <button className="add-dorm-btn" onClick={handleOpenForm}>
-            Add dorm
+            {t('addDorm.btnAdd')}
           </button>
         </div>
       )}
@@ -140,14 +142,18 @@ function AddDorm({ universitySlug, universityName, onDormSubmitted }: AddDormPro
       {isFormOpen && !submitSuccess && (
         <div className="add-dorm-form-container">
           <div className="add-dorm-form-header">
-            <h3>Submit a New Dorm</h3>
+            <h3>{t('addDorm.modalTitle')}</h3>
             <button className="close-btn" onClick={handleCloseForm} aria-label="Close form">
               <CloseIcon />
             </button>
           </div>
 
           <p className="form-subtitle">
-            Add a dorm to <strong>{universityName}</strong>. You will be redirected to write a review for it.
+            <Trans
+              i18nKey="addDorm.formSubtitle"
+              values={{ universityName }}
+              components={{ bold: <strong /> }}
+            />
           </p>
 
           {error && (
@@ -158,13 +164,13 @@ function AddDorm({ universitySlug, universityName, onDormSubmitted }: AddDormPro
 
           <form onSubmit={handleSubmit} className="add-dorm-form">
             <div className="form-group">
-              <label htmlFor="dorm-name">Dorm Name *</label>
+              <label htmlFor="dorm-name">{t('addDorm.labelName')}</label>
               <input
                 id="dorm-name"
                 type="text"
                 value={dormName}
                 onChange={(e) => setDormName(e.target.value)}
-                placeholder="e.g., Founders Hall"
+                placeholder={t('addDorm.placeholderName')}
                 required
                 disabled={isSubmitting}
                 autoFocus
@@ -178,14 +184,14 @@ function AddDorm({ universitySlug, universityName, onDormSubmitted }: AddDormPro
                 onClick={handleCloseForm}
                 disabled={isSubmitting}
               >
-                Cancel
+                {t('addDorm.cancel')}
               </button>
               <button
                 type="submit"
                 className="submit-btn"
                 disabled={isSubmitting}
               >
-                {isSubmitting ? 'Submitting...' : 'Next: Write Review'}
+                {isSubmitting ? t('addDorm.submitting') : t('addDorm.submit')}
               </button>
             </div>
           </form>

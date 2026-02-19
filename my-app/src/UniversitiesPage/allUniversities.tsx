@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import NavBar from '../NavBarPages/navbar';
 import Footer from '../homepage/footer';
 import './allUniversities.css';
@@ -7,6 +8,7 @@ import { useUniversityData } from '../context/UniversityDataContext';
 import PageLoader from '../components/PageLoader';
 
 function AllUniversities() {
+  const { t } = useTranslation();
   // Use shared context instead of making a separate API call
   const { universities, isLoading: loading, error } = useUniversityData();
 
@@ -19,13 +21,13 @@ function AllUniversities() {
       {/* Hero Section */}
       <div className="uni-hero" style={{ backgroundImage: `url(${DefaultCampusImage})` }}>
         <div className="uni-hero-overlay">
-          <h1>University List</h1>
+          <h1>{t('universityList.title')}</h1>
         </div>
       </div>
 
       <div className="all-universities-content">
         <h2 style={{ marginBottom: '20px', fontSize: '1.5rem', paddingBottom: '10px' }}>
-          All Universities ({universities.length})
+          {t('universityList.allUniversities')} ({universities.length})
         </h2>
         {error && <p>Error: {error}</p>}
         {!loading && !error && (

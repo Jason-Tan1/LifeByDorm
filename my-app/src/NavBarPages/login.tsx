@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import { Link } from 'react-router-dom'
+import { useTranslation, Trans } from 'react-i18next';
 import { useGoogleLogin } from '@react-oauth/google'
 import type { TokenResponse } from '@react-oauth/google'
 import axios from 'axios'
@@ -22,6 +23,7 @@ interface LoginModalProps {
 }
 
 function login({ isOpen, onClose }: LoginModalProps) {
+  const { t } = useTranslation();
   const [email, setEmail] = useState<string>("");
   const [verificationCode, setVerificationCode] = useState<string>("");
   const [showVerificationStep, setShowVerificationStep] = useState<boolean>(false);
@@ -122,7 +124,7 @@ function login({ isOpen, onClose }: LoginModalProps) {
               <img src={LBDLogo} alt="LifeByDorm Logo" />
             </div>
             <h1 className="login_tagline">
-              Become Verified and<br /> unlock the best of LifeByDorm.
+              {t('login.welcomeTagline')}
             </h1>
 
             <div className="login_options">
@@ -136,7 +138,7 @@ function login({ isOpen, onClose }: LoginModalProps) {
                   alt="Google"
                   className="google_icon"
                 />
-                Continue with Google
+                {t('login.continueGoogle')}
               </button>
 
               <button
@@ -145,7 +147,7 @@ function login({ isOpen, onClose }: LoginModalProps) {
                 disabled={loading}
               >
                 <MailOutlineIcon className="email_icon" />
-                Continue with email
+                {t('login.continueEmail')}
               </button>
             </div>
 
@@ -175,18 +177,18 @@ function login({ isOpen, onClose }: LoginModalProps) {
               disabled={loading}
             >
               <ArrowBackIcon />
-              <span>Back</span>
+              <span>{t('login.back')}</span>
             </button>
             <div className="email_header">
-              <h1>{showVerificationStep ? "Check your inbox" : "Sign in or Sign up"}</h1>
+              <h1>{showVerificationStep ? t('login.checkInbox') : t('login.signInUp')}</h1>
             </div>
 
             {!showVerificationStep ? (
               <div className="field_group">
-                <label className="field_label">Email address</label>
+                <label className="field_label">{t('login.emailLabel')}</label>
                 <input
                   type="email"
-                  placeholder="Email"
+                  placeholder={t('login.emailPlaceholder')}
                   name="email"
                   className="input_field"
                   value={email}
@@ -196,18 +198,22 @@ function login({ isOpen, onClose }: LoginModalProps) {
                   disabled={loading}
                 />
                 <p style={{ marginTop: '10px', fontSize: '13px', color: '#666' }}>
-                  We'll email you a code to sign in without a password.
+                  {t('login.emailHint')}
                 </p>
               </div>
             ) : (
               <div className="field_group">
-                <label className="field_label">Verification Code</label>
+                <label className="field_label">{t('login.codeLabel')}</label>
                 <p style={{ marginBottom: '15px', fontSize: '14px', color: '#555' }}>
-                  We sent a code to <strong>{email}</strong>. Enter it below.
+                  <Trans
+                    i18nKey="login.codeHint"
+                    values={{ email }}
+                    components={{ bold: <strong /> }}
+                  />
                 </p>
                 <input
                   type="text"
-                  placeholder="123456"
+                  placeholder={t('login.codePlaceholder')}
                   name="code"
                   className="input_field"
                   value={verificationCode}
@@ -228,13 +234,19 @@ function login({ isOpen, onClose }: LoginModalProps) {
 
             <div className="primary_action">
               <button type="submit" className="primary_button" disabled={loading}>
-                {loading ? (showVerificationStep ? "Verifying..." : "Sending...") : (showVerificationStep ? "Verify & Continue" : "Send Code")}
+                {loading ? (showVerificationStep ? t('login.verifying') : t('login.sending')) : (showVerificationStep ? t('login.verifyContinue') : t('login.sendCode'))}
               </button>
             </div>
 
             <div className="login_footer_small">
               <p>
-                By proceeding, you agree to our <Link to="/terms" target="_blank" rel="noopener noreferrer" className="footer_link">Terms of Use</Link> and confirm you have read our <Link to="/privacy" target="_blank" rel="noopener noreferrer" className="footer_link">Privacy and Cookie Statement</Link>.
+                <Trans
+                  i18nKey="login.terms"
+                  components={{ 
+                    terms: <Link to="/terms" target="_blank" rel="noopener noreferrer" className="footer_link" />,
+                    privacy: <Link to="/privacy" target="_blank" rel="noopener noreferrer" className="footer_link" />
+                  }}
+                />
               </p>
             </div>
           </form>

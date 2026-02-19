@@ -1,4 +1,5 @@
 import { useEffect, useState, useCallback, useRef } from 'react';
+import { useTranslation } from 'react-i18next';
 import './home.css';
 
 import { Link } from 'react-router-dom';
@@ -15,6 +16,7 @@ const isLocal = typeof window !== 'undefined' && (window.location.hostname === '
 const API_BASE = isLocal ? '' : ((import.meta as any).env?.VITE_API_BASE || '');
 
 function Home() {
+  const { t } = useTranslation();
   const [topUniversities, setTopUniversities] = useState<any[]>([]);
   const [topDorms, setTopDorms] = useState<any[]>([]);
   const [mostRatedDorms, setMostRatedDorms] = useState<any[]>([]);
@@ -183,7 +185,7 @@ function Home() {
         <div className="home-content">
           <div className="home-section">
             <h1>
-              Honest Dorm Reviews from Students Across Canada
+              {t('home.heroTitle')}
             </h1>
             <SearchBar />
           </div>
@@ -194,8 +196,8 @@ function Home() {
       <div className="featured-section">
         {/* Featured Universities Section */}
         <div className="featured-container">
-          <h2 className="featured-title">Most Rated Universities</h2>
-          <p className="featured-subtitle">Explore top universities and their housing options.</p>
+          <h2 className="featured-title">{t('home.mostRatedUniversities')}</h2>
+          <p className="featured-subtitle">{t('home.mostRatedUniversitiesSubtitle')}</p>
 
           <div className="slider-container">
             <button
@@ -219,10 +221,10 @@ function Home() {
                         <span className="icon"></span> {uni.name}
                       </h3>
                       <p className="featured-location">
-                        <span className="icon"></span> {uni.location?.replace(', Canada', '') || 'Location N/A'}
+                        <span className="icon"></span> {uni.location?.replace(', Canada', '') || t('home.locationNA')}
                       </p>
                       <p className="featured-location">
-                        <span className="icon"></span> {universityReviewCounts[uni.slug] ?? 0} {universityReviewCounts[uni.slug] === 1 ? 'review' : 'reviews'}
+                        <span className="icon"></span> {universityReviewCounts[uni.slug] ?? 0} {universityReviewCounts[uni.slug] === 1 ? t('home.review') : t('home.reviews')}
                       </p>
                     </div>
                   </Link>
@@ -240,8 +242,8 @@ function Home() {
 
         {/* Most Rated Dorms Section */}
         <div className="featured-container" style={{ marginTop: '40px' }}>
-          <h2 className="featured-title">Most Rated Dorms</h2>
-          <p className="featured-subtitle">Discover the most reviewed residences across campuses.</p>
+          <h2 className="featured-title">{t('home.mostRatedDorms')}</h2>
+          <p className="featured-subtitle">{t('home.mostRatedDormsSubtitle')}</p>
 
           <div className="slider-container">
             <button
@@ -268,7 +270,7 @@ function Home() {
                         <span className="icon"></span> {dorm.university}
                       </p>
                       <p className="featured-location">
-                        <span className="icon"></span> {dorm.reviewCount ?? 0} {dorm.reviewCount === 1 ? 'review' : 'reviews'}
+                        <span className="icon"></span> {dorm.reviewCount ?? 0} {dorm.reviewCount === 1 ? t('home.review') : t('home.reviews')}
                       </p>
                     </div>
                   </Link>
@@ -287,8 +289,8 @@ function Home() {
 
         {/* Top Rated Dorms Section */}
         <div className="featured-container" style={{ marginTop: '40px' }}>
-          <h2 className="featured-title">Top Rated Dorms</h2>
-          <p className="featured-subtitle">Check out highly-rated residences across campuses.</p>
+          <h2 className="featured-title">{t('home.topRatedDorms')}</h2>
+          <p className="featured-subtitle">{t('home.topRatedDormsSubtitle')}</p>
 
           <div className="slider-container">
             <button
@@ -315,7 +317,7 @@ function Home() {
                         <span className="icon"></span> {dorm.university}
                       </p>
                       <p className="featured-location">
-                        <span className="icon"></span> {(dormRatings[dorm.name] ?? 0).toFixed(1)} ({dormReviewCounts[dorm.name] ?? 0} {dormReviewCounts[dorm.name] === 1 ? 'review' : 'reviews'})
+                        <span className="icon"></span> {(dormRatings[dorm.name] ?? 0).toFixed(1)} ({dormReviewCounts[dorm.name] ?? 0} {dormReviewCounts[dorm.name] === 1 ? t('home.review') : t('home.reviews')})
                       </p>
                     </div>
                   </Link>

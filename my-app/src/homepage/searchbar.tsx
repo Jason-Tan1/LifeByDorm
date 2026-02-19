@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import './searchbar.css';
 import { FaSearch, FaExchangeAlt } from 'react-icons/fa';
 import { useUniversityData } from '../context/UniversityDataContext';
@@ -21,6 +22,7 @@ type Dorm = {
 };
 
 function SearchBar() {
+  const { t } = useTranslation();
   const [query, setQuery] = useState('');
   const [filteredUniversities, setFilteredUniversities] = useState<University[]>([]);
   const [filteredDorms, setFilteredDorms] = useState<Dorm[]>([]);
@@ -120,7 +122,7 @@ function SearchBar() {
           <input
             type="text"
             className="search-input"
-            placeholder={searchMode === 'universities' ? "Search for universities..." : "Search for dormitories..."}
+            placeholder={searchMode === 'universities' ? t('search.placeholderUniversities') : t('search.placeholderDorms')}
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             onKeyPress={handleKeyPress}
@@ -160,7 +162,7 @@ function SearchBar() {
       <div className="search-mode-toggle" onClick={toggleSearchMode}>
         <FaExchangeAlt className="toggle-icon" />
         <span>
-          {searchMode === 'universities' ? "Search dormitories" : "Search universities"}
+          {searchMode === 'universities' ? t('search.toggleToDorms') : t('search.toggleToUniversities')}
         </span>
       </div>
     </div>
