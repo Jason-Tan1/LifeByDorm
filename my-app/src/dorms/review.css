@@ -119,6 +119,8 @@
   align-self: start;
   /* Ensure it doesn't stretch */
   height: fit-content;
+  max-height: calc(100vh - 80px);
+  overflow-y: auto;
   padding-right: 40px;
   z-index: 10;
 }
