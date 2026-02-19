@@ -43,6 +43,22 @@ body {
   flex-wrap: wrap;
 }
 
+.navbar_text_btn {
+  background: transparent !important;
+  border: none !important;
+  margin: 0 10px;
+  font-weight: 700 !important;
+  /* Bold */
+  color: #333;
+  font-size: 1rem !important;
+}
+
+.navbar_text_btn:hover {
+  background-color: #f3f4f6 !important;
+  text-decoration: none;
+  border-radius: 8px;
+}
+
 /* General Styling for all buttons in the navbar */
 .navbar button {
   cursor: pointer;
