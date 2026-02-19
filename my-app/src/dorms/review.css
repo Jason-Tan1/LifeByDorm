@@ -111,11 +111,16 @@
   display: flex;
   flex-direction: column;
   gap: 24px;
-  /* Optional: make it sticky if the form is long */
+  /* Make it sticky */
+  position: -webkit-sticky;
+  /* Safari */
   position: sticky;
   top: 40px;
+  align-self: start;
+  /* Ensure it doesn't stretch */
   height: fit-content;
   padding-right: 40px;
+  z-index: 10;
 }
 
 .review-main-title {
