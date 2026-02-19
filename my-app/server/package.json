@@ -18,6 +18,7 @@
   "license": "ISC",
   "dependencies": {
     "@aws-sdk/client-s3": "^3.966.0",
+    "@aws-sdk/s3-request-presigner": "^3.993.0",
     "@types/compression": "^1.8.1",
     "@types/nodemailer": "^7.0.5",
     "@types/sanitize-html": "^2.16.0",
