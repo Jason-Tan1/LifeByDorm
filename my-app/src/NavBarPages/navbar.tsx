@@ -48,6 +48,9 @@ function navbar() {
       </div>
       {/* Navigation Bar Buttons */}
       <div className="navbar_actions">
+        <Link to="/universities">
+          <button className="navbar_text_btn">Universities</button>
+        </Link>
         <div className="navbar_login">
           {isLoggedIn ? (
             <div className="navbar_account_dropdown">
