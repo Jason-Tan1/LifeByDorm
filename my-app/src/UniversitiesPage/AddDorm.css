@@ -67,7 +67,8 @@
 }
 
 .add-dorm-cta-card .highlight-text {
-  color: #D62828; /* Using the site's primary red */
+  color: #D62828;
+  /* Using the site's primary red */
 }
 
 .add-dorm-cta-card p {
@@ -81,7 +82,8 @@
 .add-dorm-btn {
   display: inline-block;
   padding: 10px 24px;
-  background-color: #D62828; /* Standard red for main action button */
+  background-color: #D62828;
+  /* Standard red for main action button */
   color: white;
   border: none;
   border-radius: 6px;
@@ -197,8 +199,8 @@
 .form-group input:focus,
 .form-group textarea:focus {
   outline: none;
-  border-color: #4caf50;
-  box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.1);
+  border-color: #333;
+  box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.05);
   background: white;
 }
 

@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useTranslation, Trans } from 'react-i18next';
 import CloseIcon from '@mui/icons-material/Close';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import LoginModal from '../NavBarPages/login';
 import './AddDorm.css';
 
 // Use relative path '' on localhost to leverage the Vite proxy
@@ -22,6 +23,7 @@ function AddDorm({ universitySlug, universityName, onDormSubmitted }: AddDormPro
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitSuccess, setSubmitSuccess] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [showLoginModal, setShowLoginModal] = useState(false);
 
   // Form fields
   const [dormName, setDormName] = useState('');
@@ -30,7 +32,7 @@ function AddDorm({ universitySlug, universityName, onDormSubmitted }: AddDormPro
     // Check if user is logged in
     const token = localStorage.getItem('token');
     if (!token) {
-      setError(t('addDorm.loginError'));
+      setShowLoginModal(true);
       return;
     }
     setIsFormOpen(true);
@@ -52,7 +54,7 @@ function AddDorm({ universitySlug, universityName, onDormSubmitted }: AddDormPro
 
     const token = localStorage.getItem('token');
     if (!token) {
-      setError(t('addDorm.loginError'));
+      setShowLoginModal(true);
       setIsSubmitting(false);
       return;
     }
@@ -97,7 +99,8 @@ function AddDorm({ universitySlug, universityName, onDormSubmitted }: AddDormPro
         setDormName('');
         setSubmitSuccess(false);
         // Use universitySlug for the URL parameter to match existing behavior
-        navigate(`/review?university=${encodeURIComponent(universitySlug)}&dorm=${encodeURIComponent(dormName.trim())}`);
+        // Add isNewDorm=true so the review page knows to redirect back to Uni page
+        navigate(`/review?university=${encodeURIComponent(universitySlug)}&dorm=${encodeURIComponent(dormName.trim())}&isNewDorm=true`);
       }, 1500);
 
     } catch (err: any) {
@@ -197,6 +200,12 @@ function AddDorm({ universitySlug, universityName, onDormSubmitted }: AddDormPro
           </form>
         </div>
       )}
+
+      {/* Login Modal */}
+      <LoginModal 
+        isOpen={showLoginModal} 
+        onClose={() => setShowLoginModal(false)} 
+      />
     </div>
   );
 }

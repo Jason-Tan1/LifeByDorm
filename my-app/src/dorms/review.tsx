@@ -30,6 +30,8 @@ function Reviews() {
   const urlSearch = typeof window !== 'undefined' ? new URLSearchParams(window.location.search) : null;
   const queryUniversity = urlSearch ? urlSearch.get('university') : null;
   const queryDorm = urlSearch ? urlSearch.get('dorm') : null;
+  // Check if this is a new dorm review
+  const isNewDorm = urlSearch ? urlSearch.get('isNewDorm') === 'true' : false;
 
   const resolvedUniversity = queryUniversity || universityName;
   const resolvedDorm = queryDorm || dormName;
@@ -243,8 +245,14 @@ function Reviews() {
 
       // Navigate after delay
       setTimeout(() => {
-        if (university && dormSlug) {
-          navigate(`/universities/${encodeURIComponent(university)}/dorms/${dormSlug}`);
+        if (university) {
+            if (isNewDorm) {
+                // Return to University page for new dorms (since they might need approval)
+                navigate(`/universities/${encodeURIComponent(university)}`);
+            } else if (dormSlug) {
+                // Otherwise go to the dorm page
+                navigate(`/universities/${encodeURIComponent(university)}/dorms/${dormSlug}`);
+            }
         }
       }, 2000);
 
