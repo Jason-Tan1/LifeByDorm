@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import './review.css';
 import NavBar from '../NavBarPages/navbar';
 import Star from '@mui/icons-material/Star';
@@ -14,6 +15,7 @@ const isLocal = typeof window !== 'undefined' && (window.location.hostname === '
 const API_BASE = isLocal ? '' : ((import.meta as any).env?.VITE_API_BASE || '');
 
 function Reviews() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [ratings, setRatings] = useState({
     room: 0,
@@ -361,7 +363,7 @@ function Reviews() {
             
             {/* Left Column: Header & Image */}
             <div className="review-left-column">
-                <h1 className="review-main-title">Rating<br />{formatName(displayDormName)}</h1>
+                <h1 className="review-main-title">{t('review.rating')}<br />{formatName(displayDormName)}</h1>
                 <div className="dorm-info-card">
                   <div className="review-dorm-image-container">
                       <img src={dormImage || DefaultDormImage} alt={displayDormName} className="review-dorm-image" />
@@ -381,27 +383,27 @@ function Reviews() {
                          {/* Ratings Section */}
                          <div className="review-section ratings-grid">
                           <div className="rating-group">
-                            <label>Room</label>
+                            <label>{t('review.room')}</label>
                             {renderStars('room')}
                           </div>
 
                           <div className="rating-group">
-                            <label>Bathroom</label>
+                            <label>{t('review.bathroom')}</label>
                             {renderStars('bathrooms')}
                           </div>
 
                           <div className="rating-group">
-                            <label>Building</label>
+                            <label>{t('review.building')}</label>
                             {renderStars('building')}
                           </div>
 
                           <div className="rating-group">
-                            <label>Amenities</label>
+                            <label>{t('review.amenities')}</label>
                             {renderStars('amenities')}
                           </div>
 
                           <div className="rating-group">
-                            <label>Location</label>
+                            <label>{t('review.location')}</label>
                             {renderStars('location')}
                           </div>
                         </div>
@@ -410,7 +412,7 @@ function Reviews() {
                         <div className="review-section selections-section">
                             
                             <div className="selection-group">
-                                <label className="section-label">What year were/are you?</label>
+                                <label className="section-label">{t('review.yearQuestion')}</label>
                                 <div className="pill-options">
                                     {yearOptions.map((opt) => (
                                         <button
@@ -426,7 +428,7 @@ function Reviews() {
                             </div>
 
                             <div className="selection-group">
-                                <label className="section-label">Room Type</label>
+                                <label className="section-label">{t('review.roomType')}</label>
                                 <div className="pill-options">
                                     {roomTypeOptions.map((opt) => (
                                         <button
@@ -435,14 +437,14 @@ function Reviews() {
                                             className={`pill-button ${selectedRoomType === opt.value ? 'selected' : ''}`}
                                             onClick={() => setSelectedRoomType(opt.value)}
                                         >
-                                            {opt.label}
+                                            {t(`common.${opt.value}`, opt.label)}
                                         </button>
                                     ))}
                                 </div>
                             </div>
 
                              <div className="selection-group">
-                                <label className="section-label">Would you dorm here again?</label>
+                                <label className="section-label">{t('review.dormAgainQuestion')}</label>
                                 <div className="pill-options">
                                     {dormAgainOptions.map((opt) => (
                                         <button
@@ -451,7 +453,7 @@ function Reviews() {
                                             className={`pill-button ${wouldDormAgain === opt.value ? 'selected' : ''}`}
                                             onClick={() => setWouldDormAgain(opt.value)}
                                         >
-                                            {opt.label}
+                                            {t(`common.${opt.value}`, opt.label)}
                                         </button>
                                     ))}
                                 </div>
@@ -464,10 +466,10 @@ function Reviews() {
                           <div className="comments-header">
                             {/* Removed Help Me Write button */}
                           </div>
-                          <label className="section-label">Write your review</label>
+                          <label className="section-label">{t('review.writeReview')}</label>
                           <textarea
                             className="review-textarea"
-                            placeholder="Share your experience..."
+                            placeholder={t('review.shareExperience')}
                             value={description}
                             onChange={e => setDescription(e.target.value)}
                           />
@@ -478,7 +480,7 @@ function Reviews() {
 
                         {/* Photo Section */}
                         <div className="review-section photo-section">
-                          <label className="section-label">Add Photos <span className="optional-text">(Optional)</span></label>
+                          <label className="section-label">{t('review.addPhotos')} <span className="optional-text">{t('review.optional')}</span></label>
 
                           <div 
                             className="file-upload-container"
@@ -501,7 +503,7 @@ function Reviews() {
                               <div className="upload-icon-wrapper">
                                 <CloudUploadIcon style={{ fontSize: 32, color: '#445E75' }} />
                               </div>
-                              <span className="upload-text">Click to add photos<br/>or drag and drop</span>
+                              <span className="upload-text">{t('review.clickToAddPhotos')}</span>
                             </label>
                           </div>
 
@@ -525,7 +527,7 @@ function Reviews() {
 
                         <div className="submit-section">
                           <button type="button" className="submit-review-btn" onClick={handleSubmit}>
-                            Submit Review
+                            {t('review.submitReview')}
                           </button>
                         </div>
 
@@ -539,8 +541,8 @@ function Reviews() {
       {showSuccessPopup && (
         <div className="popup-overlay">
           <div className="popup-card">
-            <h2 className="popup-title">Review Submitted!</h2>
-            <p className="popup-subtitle">Thanks for sharing! Your review has been submitted for approval.</p>
+            <h2 className="popup-title">{t('review.reviewSubmitted')}</h2>
+            <p className="popup-subtitle">{t('review.thanksSharing')}</p>
           </div>
         </div>
       )}
@@ -549,11 +551,11 @@ function Reviews() {
         <div className="popup-overlay" onClick={() => setShowErrorPopup(false)}>
           <div className="popup-card popup-card-error" onClick={(e) => e.stopPropagation()}>
             <div className="popup-header-error">
-              <h2 className="popup-title" style={{ color: '#d32f2f' }}>Action Required</h2>
+              <h2 className="popup-title" style={{ color: '#d32f2f' }}>{t('review.actionRequired')}</h2>
               <button className="popup-close-btn" onClick={() => setShowErrorPopup(false)}>×</button>
             </div>
             <p className="popup-subtitle" style={{ whiteSpace: 'pre-line' }}>{errorMessage}</p>
-            <button className="popup-action-btn" onClick={() => setShowErrorPopup(false)}>Okay</button>
+            <button className="popup-action-btn" onClick={() => setShowErrorPopup(false)}>{t('review.okay')}</button>
           </div>
         </div>
       )}

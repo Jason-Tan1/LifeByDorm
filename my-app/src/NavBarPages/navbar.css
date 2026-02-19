@@ -39,14 +39,16 @@ body {
 .navbar_actions {
   display: flex;
   align-items: center;
-  gap: clamp(0.4rem, 1.5vw, 0.75rem);
+  gap: 2px;
+  /* Minimal gap */
   flex-wrap: wrap;
 }
 
 .navbar_text_btn {
   background: transparent !important;
   border: none !important;
-  margin: 0 10px;
+  margin: 0;
+  /* Remove margin entirely */
   font-weight: 700 !important;
   /* Bold */
   color: #333;
