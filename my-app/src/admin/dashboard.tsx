@@ -24,6 +24,7 @@ interface Review {
   images?: string[];
   createdAt?: string;
   status?: string;
+  user?: string;
 }
 
 interface PendingDorm {
@@ -294,7 +295,11 @@ function AdminDashboard() {
                       <p style={{ margin: '4px 0', color: '#666' }}>
                         <strong>Room Type:</strong> {formatRoomTypes(review.roomType)} |
                         <strong> Year:</strong> {formatYears(review.year)} |
+                        <strong> Year:</strong> {formatYears(review.year)} |
                         <strong> Would Dorm Again:</strong> {review.wouldDormAgain ? 'Yes' : 'No'}
+                      </p>
+                      <p style={{ margin: '4px 0', color: '#666' }}>
+                        <strong>Submitted by:</strong> {review.user || 'Unknown'}
                       </p>
                       <div style={{ marginTop: '12px' }}>
                         <strong>Ratings:</strong>
