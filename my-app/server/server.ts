@@ -16,7 +16,7 @@ import { University } from './models/universities';
 import { Dorm } from './models/dorm';
 import nodemailer from 'nodemailer';
 import helmet from 'helmet';
-import { uploadToS3 } from './s3';
+import { uploadToS3, getSignedFileUrl } from './s3';
 
 // Security: Check if running in production
 const isProduction = process.env.NODE_ENV === 'production';
@@ -1276,7 +1276,19 @@ app.get('/api/reviews/user', authenticationToken, async (req: AuthRequest, res: 
 app.get('/api/admin/reviews/pending', authenticationToken, requireAdmin, async (req: AuthRequest, res: Response) => {
   try {
     const pendingReviews = await UserReview.find({ status: 'pending' }).sort({ createdAt: -1 }).lean();
-    res.json(pendingReviews);
+    
+    // Sign image URLs so they can be viewed even if S3 block public access is on
+    const reviewsWithSignedUrls = await Promise.all(pendingReviews.map(async (review: any) => {
+      if (review.fileImage) {
+        review.fileImage = await getSignedFileUrl(review.fileImage);
+      }
+      if (review.images && review.images.length > 0) {
+        review.images = await Promise.all(review.images.map((img: string) => getSignedFileUrl(img)));
+      }
+      return review;
+    }));
+
+    res.json(reviewsWithSignedUrls);
   } catch (err) {
     console.error('Error fetching pending reviews', err);
     res.status(500).json({ message: 'Error fetching pending reviews' });
@@ -1355,7 +1367,16 @@ app.delete('/api/admin/reviews/:id', authenticationToken, requireAdmin, async (r
 app.get('/api/admin/dorms/pending', authenticationToken, requireAdmin, async (req: AuthRequest, res: Response) => {
   try {
     const pendingDorms = await Dorm.find({ status: 'pending' }).sort({ createdAt: -1 }).lean();
-    res.json(pendingDorms);
+
+    // Sign image URLs
+    const dormsWithSignedUrls = await Promise.all(pendingDorms.map(async (dorm: any) => {
+      if (dorm.imageUrl) {
+        dorm.imageUrl = await getSignedFileUrl(dorm.imageUrl);
+      }
+      return dorm;
+    }));
+
+    res.json(dormsWithSignedUrls);
   } catch (err) {
     console.error('Error fetching pending dorms', err);
     res.status(500).json({ message: 'Error fetching pending dorms' });

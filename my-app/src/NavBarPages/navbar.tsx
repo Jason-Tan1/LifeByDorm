@@ -63,7 +63,7 @@ function navbar() {
         
         {/* Language Switcher */}
         <div className="navbar_account_dropdown" style={{ marginRight: '10px' }}>
-          <button className="account_btn" onClick={() => setIsLangDropdownOpen(!isLangDropdownOpen)} style={{ display: 'flex', alignItems: 'center', gap: '4px', fontWeight: 700 }}>
+          <button className="account_btn" onClick={() => { setIsLangDropdownOpen(!isLangDropdownOpen); setIsDropdownOpen(false); }} style={{ display: 'flex', alignItems: 'center', gap: '4px', fontWeight: 700 }}>
             <LanguageIcon style={{ fontSize: '1.2rem', color: '#333' }} />
             <span style={{ color: '#ccc', margin: '0 2px' }}>|</span>
             {i18n.language === 'en' ? 'ENG' : 'FR'}
@@ -78,7 +78,7 @@ function navbar() {
         <div className="navbar_login">
           {isLoggedIn ? (
             <div className="navbar_account_dropdown">
-              <button className="account_btn icon_btn" onClick={() => setIsDropdownOpen(!isDropdownOpen)}>
+              <button className="account_btn icon_btn" onClick={() => { setIsDropdownOpen(!isDropdownOpen); setIsLangDropdownOpen(false); }}>
                 <MenuIcon />
               </button>
               {isDropdownOpen && (

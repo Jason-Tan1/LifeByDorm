@@ -1,4 +1,5 @@
-import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3';
+import { S3Client, PutObjectCommand, GetObjectCommand } from '@aws-sdk/client-s3';
+import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import dotenv from 'dotenv';
 import crypto from 'crypto';
 
@@ -94,7 +95,7 @@ export async function uploadToS3(base64Data: string, folder: string = 'uploads')
     Body: buffer,
     ContentType: contentType,
     // ensure the bucket/object can be read publicly if that's the intention
-    // ACL: 'public-read' // Note: Many new buckets block ACLs by default. Use Bucket Policy instead.
+    ACL: 'public-read' // Note: Many new buckets block ACLs by default. Use Bucket Policy instead.
   });
 
   try {
@@ -105,5 +106,38 @@ export async function uploadToS3(base64Data: string, folder: string = 'uploads')
   } catch (error) {
     console.error('Error uploading to S3:', error);
     throw new Error('Failed to upload image to S3');
+  }
+}
+/**
+ * Generates a presigned URL for a given S3 file key.
+ * Used for admin dashboard to view private/blocked-public-access images.
+ */
+export async function getSignedFileUrl(fileUrl: string): Promise<string> {
+  if (!s3Client || !bucketName || !fileUrl) {
+    return fileUrl;
+  }
+
+  try {
+    // Extract key from full URL if present
+    // URL format: https://<bucket>.s3.<region>.amazonaws.com/<key>
+    let key = fileUrl;
+    if (fileUrl.startsWith('http')) {
+        const urlObj = new URL(fileUrl);
+        // Pathname includes leading slash, remove it. 
+        // Also need to decodeURI in case key has spaces etc.
+        key = decodeURIComponent(urlObj.pathname.substring(1));
+    }
+
+    const command = new GetObjectCommand({
+      Bucket: bucketName,
+      Key: key,
+    });
+    
+    // URL expires in 1 hour (3600 seconds)
+    const signedUrl = await getSignedUrl(s3Client, command, { expiresIn: 3600 });
+    return signedUrl;
+  } catch (error) {
+    console.error('Error signing URL:', error);
+    return fileUrl; // Fallback to original URL
   }
 }
