@@ -70,7 +70,7 @@ function ReviewsList({
                       {review.verified && <span className="verified-badge">✓ {t('dorms.verifiedStudent')}</span>}
                     </div>
                     <div className="review-metadata-row">
-                      <span>{t('dorms.year')}: {Array.isArray(review.year) ? review.year.map((y: number) => ['', t('dorms.years.1'), t('dorms.years.2'), t('dorms.years.3'), t('dorms.years.4'), t('dorms.years.5')][y]).join(', ') : review.year}</span>
+                      <span>{t('dorms.year')}: {Array.isArray(review.year) ? review.year.map((y: number) => y > 10 ? y : ['', t('dorms.years.1'), t('dorms.years.2'), t('dorms.years.3'), t('dorms.years.4'), t('dorms.years.5')][y]).join(', ') : review.year}</span>
                       <span>{t('dorms.roomType')}: {Array.isArray(review.roomType) ? review.roomType.map((r: string) => r.charAt(0).toUpperCase() + r.slice(1)).join(', ') : (review.roomType?.charAt(0).toUpperCase() + review.roomType?.slice(1))}</span>
                       <span>{t('dorms.wouldDormAgain')}: {review.wouldDormAgain ? t('common.yes') : t('common.no')}</span>
                     </div>
