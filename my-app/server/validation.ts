@@ -92,4 +92,4 @@ export const reviewSchema = z.object({
     fileImage: z.union([z.string(), z.null()]).optional(),
     // images can be array of strings, null, undefined, or empty array
     images: z.union([z.array(z.string()), z.null()]).optional()
-}).passthrough(); // Use passthrough instead of strict to allow any extra fields
+}).strict();

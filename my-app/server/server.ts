@@ -110,11 +110,6 @@ const corsOptions = {
     // Allow requests with no origin (like mobile apps, curl, Postman)
     if (!origin) return callback(null, true);
 
-    // If FRONTEND_URL is set to '*', allow all origins
-    if (process.env.FRONTEND_URL === '*') {
-      return callback(null, true);
-    }
-
     // Check allowed origins list
     if (ALLOWED_ORIGINS.includes(origin)) {
       return callback(null, true);
@@ -485,7 +480,7 @@ app.post('/register', authLimiter, validate(registerSchema), async (req, res) =>
     }
 
     // Hash password
-    const hashedPassword = await bcrypt.hash(password, 10);
+    const hashedPassword = await bcrypt.hash(password, 12);
 
     // Create new user
     const user = new User({
@@ -585,7 +580,8 @@ app.post('/auth/send-code', authLimiter, validate(sendCodeSchema), async (req, r
     if (!email) return res.status(400).json({ message: 'Email is required' });
 
     // Security: Generate cryptographically secure 6-digit code
-    const verificationCode = generateSecureCode();
+    const rawCode = generateSecureCode();
+    const hashedCode = await bcrypt.hash(rawCode, 10);
     const verificationCodeExpires = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes
 
     // Find or create user
@@ -594,13 +590,13 @@ app.post('/auth/send-code', authLimiter, validate(sendCodeSchema), async (req, r
       // Create new user if not exists
       user = new User({
         email,
-        password: await bcrypt.hash(Math.random().toString(36), 10), // Random dummy password
-        verificationCode,
+        password: await bcrypt.hash(Math.random().toString(36), 12), // Random dummy password
+        verificationCode: hashedCode,
         verificationCodeExpires
       });
     } else {
       // Update existing user
-      user.verificationCode = verificationCode;
+      user.verificationCode = hashedCode;
       user.verificationCodeExpires = verificationCodeExpires;
     }
     await user.save();
@@ -626,12 +622,12 @@ app.post('/auth/send-code', authLimiter, validate(sendCodeSchema), async (req, r
           from: '"LifeByDorm" <support@lifebydorm.ca>',
           to: email,
           subject: 'Your Verification Code',
-          text: `Your verification code is: ${verificationCode}. It expires in 10 minutes.`,
+          text: `Your verification code is: ${rawCode}. It expires in 10 minutes.`,
           html: `
             <div style="font-family: Arial, sans-serif; padding: 20px; color: #333;">
               <h2 style="color: #1e3a5f;">Verify your LifeByDorm Login</h2>
               <p>Your verification code is:</p>
-              <h1 style="font-size: 32px; letter-spacing: 5px; background: #f4f4f4; padding: 10px; display: inline-block; border-radius: 5px;">${verificationCode}</h1>
+              <h1 style="font-size: 32px; letter-spacing: 5px; background: #f4f4f4; padding: 10px; display: inline-block; border-radius: 5px;">${rawCode}</h1>
               <p>This code expires in 10 minutes.</p>
               <p>If you didn't request this code, you can safely ignore this email.</p>
             </div>
@@ -645,14 +641,14 @@ app.post('/auth/send-code', authLimiter, validate(sendCodeSchema), async (req, r
         console.error('❌ Failed to send email:', emailError);
         // Fallback to console log in dev if email fails
         if (process.env.NODE_ENV !== 'production') {
-          console.log(`[Auth] FALLBACK: Code for ${email} is: ${verificationCode}`);
+          console.log(`[Auth] FALLBACK: Code for ${email} is: ${rawCode}`);
         }
         throw emailError; // Re-throw to handle in main catch
       }
     } else {
       console.warn('[Auth] No EMAIL_USER or EMAIL_PASS defined in environment variables');
       if (process.env.NODE_ENV !== 'production') {
-        console.log(`[Auth] No email credentials found. Code for ${email} is: ${verificationCode}`);
+        console.log(`[Auth] No email credentials found. Code for ${email} is: ${rawCode}`);
       }
     }
 
@@ -682,8 +678,15 @@ app.post('/auth/verify-code', authLimiter, validate(verifyCodeSchema), async (re
       return res.status(400).json({ message: 'Invalid or expired verification code' });
     }
 
-    // Security: Use timing-safe comparison to prevent timing attacks
-    if (!user.verificationCode || !safeCompare(user.verificationCode, code)) {
+    // Security: Compare verification code using bcrypt (codes are hashed in DB)
+    if (!user.verificationCode) {
+      if (!isProduction) {
+        console.log(`[Auth] Verification failed: No code stored`);
+      }
+      return res.status(400).json({ message: 'Invalid or expired verification code' });
+    }
+    const codeMatch = await bcrypt.compare(code, user.verificationCode);
+    if (!codeMatch) {
       if (!isProduction) {
         console.log(`[Auth] Verification failed: Code mismatch`);
       }
@@ -791,7 +794,7 @@ app.post('/auth/google', authLimiter, validate(googleAuthSchema), async (req, re
     if (!user) {
       user = new User({
         email,
-        password: await bcrypt.hash(Math.random().toString(36), 10), // Random password for OAuth users
+        password: await bcrypt.hash(Math.random().toString(36), 12), // Random password for OAuth users
         googleId,
         name,
         picture,
@@ -845,11 +848,8 @@ function authenticationToken(req: AuthRequest, res: Response, next: NextFunction
     req.user = verified;
     next();
   } catch (error) {
-    if (error instanceof Error) {
-      res.status(400).json({ message: error.message });
-    } else {
-      res.status(400).json({ message: 'Invalid token' });
-    }
+    // Security: Do not leak JWT error details (e.g. "jwt expired", "invalid signature")
+    res.status(401).json({ message: 'Invalid or expired token' });
   }
 }
 
@@ -1036,8 +1036,8 @@ app.get('/api/universities/:slug', async (req: Request, res: Response) => {
   }
 });
 
-// Debug: list all dorms
-app.get('/api/dorms', async (req: Request, res: Response) => {
+// List all dorms (admin only - includes all statuses)
+app.get('/api/dorms', authenticationToken, requireAdmin, async (req: AuthRequest, res: Response) => {
   try {
     const dorms = await Dorm.find({}).sort({ universitySlug: 1, name: 1 }).lean();
     res.json(dorms);
@@ -1321,6 +1321,7 @@ app.get('/api/admin/reviews/all', authenticationToken, requireAdmin, async (req:
 app.patch('/api/admin/reviews/:id/approve', authenticationToken, requireAdmin, async (req: AuthRequest, res: Response) => {
   try {
     const { id } = req.params;
+    if (!mongoose.Types.ObjectId.isValid(id)) return res.status(400).json({ message: 'Invalid ID format' });
     const review = await UserReview.findByIdAndUpdate(
       id,
       { status: 'approved' },
@@ -1340,6 +1341,7 @@ app.patch('/api/admin/reviews/:id/approve', authenticationToken, requireAdmin, a
 app.patch('/api/admin/reviews/:id/decline', authenticationToken, requireAdmin, async (req: AuthRequest, res: Response) => {
   try {
     const { id } = req.params;
+    if (!mongoose.Types.ObjectId.isValid(id)) return res.status(400).json({ message: 'Invalid ID format' });
     const review = await UserReview.findByIdAndDelete(id);
     if (!review) {
       return res.status(404).json({ message: 'Review not found' });
@@ -1355,6 +1357,7 @@ app.patch('/api/admin/reviews/:id/decline', authenticationToken, requireAdmin, a
 app.delete('/api/admin/reviews/:id', authenticationToken, requireAdmin, async (req: AuthRequest, res: Response) => {
   try {
     const { id } = req.params;
+    if (!mongoose.Types.ObjectId.isValid(id)) return res.status(400).json({ message: 'Invalid ID format' });
     const review = await UserReview.findByIdAndDelete(id);
     if (!review) {
       return res.status(404).json({ message: 'Review not found' });
@@ -1405,6 +1408,7 @@ app.get('/api/admin/dorms/all', authenticationToken, requireAdmin, async (req: A
 app.patch('/api/admin/dorms/:id/approve', authenticationToken, requireAdmin, async (req: AuthRequest, res: Response) => {
   try {
     const { id } = req.params;
+    if (!mongoose.Types.ObjectId.isValid(id)) return res.status(400).json({ message: 'Invalid ID format' });
     const dorm = await Dorm.findByIdAndUpdate(
       id,
       { status: 'approved' },
@@ -1425,6 +1429,7 @@ app.patch('/api/admin/dorms/:id/approve', authenticationToken, requireAdmin, asy
 app.patch('/api/admin/dorms/:id/decline', authenticationToken, requireAdmin, async (req: AuthRequest, res: Response) => {
   try {
     const { id } = req.params;
+    if (!mongoose.Types.ObjectId.isValid(id)) return res.status(400).json({ message: 'Invalid ID format' });
     const dorm = await Dorm.findByIdAndUpdate(
       id,
       { status: 'declined' },
@@ -1445,6 +1450,7 @@ app.patch('/api/admin/dorms/:id/decline', authenticationToken, requireAdmin, asy
 app.delete('/api/admin/dorms/:id', authenticationToken, requireAdmin, async (req: AuthRequest, res: Response) => {
   try {
     const { id } = req.params;
+    if (!mongoose.Types.ObjectId.isValid(id)) return res.status(400).json({ message: 'Invalid ID format' });
     const dorm = await Dorm.findByIdAndDelete(id);
     if (!dorm) {
       return res.status(404).json({ message: 'Dorm not found' });
