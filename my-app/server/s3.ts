@@ -12,21 +12,31 @@ const secretAccessKey = process.env.AWS_SECRET_ACCESS_KEY;
 
 let s3Client: S3Client | null = null;
 
-if (bucketName && region) {
-  const S3Config: any = { region };
+// Lazy initialization of S3 Client to prevent startup crashes if env vars are missing
+function getS3Client(): S3Client | null {
+  if (s3Client) return s3Client;
 
-  // Use explicit credentials if available (e.g. local development)
-  // Otherwise, if running on AWS Lambda, it will automatically use the IAM Role attached to the function
-  if (accessKeyId && secretAccessKey) {
-    S3Config.credentials = {
-      accessKeyId,
-      secretAccessKey
-    };
+  if (bucketName && region) {
+    const S3Config: any = { region };
+
+    if (accessKeyId && secretAccessKey) {
+      S3Config.credentials = {
+        accessKeyId,
+        secretAccessKey
+      };
+    }
+    
+    try {
+      s3Client = new S3Client(S3Config);
+      return s3Client;
+    } catch (error) {
+       console.error("Failed to initialize S3 Client:", error);
+       return null;
+    }
+  } else {
+    console.warn('⚠️ AWS S3 configuration missing (Bucket Name: ' + bucketName + ', Region: ' + region + '). File uploads will be skipped.');
+    return null;
   }
-
-  s3Client = new S3Client(S3Config);
-} else {
-  console.warn('⚠️ AWS S3 configuration missing (Bucket Name or Region). File uploads will be skipped.');
 }
 
 /**
@@ -56,7 +66,8 @@ function validateMimeType(mimeType: string): void {
  * Security: Validates MIME type before upload to prevent XSS via SVG, etc.
  */
 export async function uploadToS3(base64Data: string, folder: string = 'uploads'): Promise<string> {
-  if (!s3Client || !bucketName) {
+  const client = getS3Client();
+  if (!client || !bucketName) {
     if (base64Data.length < 200) return base64Data; // Likely already a URL or short string
     console.warn('AWS S3 not configured, storing base64 string directly (not recommended for production)');
     return base64Data;
@@ -99,7 +110,7 @@ export async function uploadToS3(base64Data: string, folder: string = 'uploads')
   });
 
   try {
-    await s3Client.send(command);
+    await client.send(command);
     // Return the URL
     // Format: https://<bucket>.s3.<region>.amazonaws.com/<key>
     return `https://${bucketName}.s3.${process.env.AWS_REGION}.amazonaws.com/${fileName}`;
@@ -113,7 +124,8 @@ export async function uploadToS3(base64Data: string, folder: string = 'uploads')
  * Used for admin dashboard to view private/blocked-public-access images.
  */
 export async function getSignedFileUrl(fileUrl: string): Promise<string> {
-  if (!s3Client || !bucketName || !fileUrl) {
+  const client = getS3Client();
+  if (!client || !bucketName || !fileUrl) {
     return fileUrl;
   }
 
@@ -134,7 +146,7 @@ export async function getSignedFileUrl(fileUrl: string): Promise<string> {
     });
     
     // URL expires in 1 hour (3600 seconds)
-    const signedUrl = await getSignedUrl(s3Client, command, { expiresIn: 3600 });
+    const signedUrl = await getSignedUrl(client, command, { expiresIn: 3600 });
     return signedUrl;
   } catch (error) {
     console.error('Error signing URL:', error);
