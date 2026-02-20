@@ -13,6 +13,7 @@
   margin: 0 auto;
   padding: clamp(10px, 2vw, 20px);
   gap: clamp(16px, 3vw, 40px);
+  align-items: flex-start;
 }
 
 /* Left side - Dorm Information */
@@ -23,6 +24,9 @@
   padding: 0;
   box-shadow: none;
   height: fit-content;
+  position: sticky;
+  top: 20px;
+  align-self: start;
 }
 
 .dorm-main-image {
