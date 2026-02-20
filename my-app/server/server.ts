@@ -169,6 +169,21 @@ app.use(helmet({
 // Enable gzip/deflate compression for all responses (70-90% size reduction)
 app.use(compression());
 
+// Debug route needs to be before DB middleware to work even if DB fails
+app.get('/api/debug/config', (req, res) => {
+  res.json({
+    timestamp: new Date().toISOString(),
+    hasAwsKey: !!process.env.AWS_ACCESS_KEY_ID,
+    hasAwsSecret: !!process.env.AWS_SECRET_ACCESS_KEY,
+    // Safely check if MONGO_URI is set without revealing it
+    hasMongoUri: !!process.env.MONGODB_URI, 
+    mongoUriStartsWith: process.env.MONGODB_URI ? process.env.MONGODB_URI.substring(0, 15) + '...' : 'undefined',
+    region: process.env.AWS_REGION,
+    bucket: process.env.AWS_BUCKET_NAME,
+    nodeEnv: process.env.NODE_ENV
+  });
+});
+
 // Increase JSON body size limit to allow base64 image uploads from the client.
 // The frontend encodes images as data URLs; increase the limit to 10mb.
 app.use(express.json({ limit: '10mb' }))
@@ -567,14 +582,24 @@ app.post('/login', authLimiter, validate(loginSchema), async (req, res) => {
   }
 });
 
-// Email Transporter Configuration
-const transporter = nodemailer.createTransport({
-  service: 'gmail',
-  auth: {
-    user: process.env.EMAIL_USER,
-    pass: process.env.EMAIL_PASS
+// Email Transporter Configuration (Lazy Load)
+let transporter: any = null;
+const getTransporter = () => {
+  if (!transporter) {
+    try {
+      transporter = nodemailer.createTransport({
+        service: 'gmail',
+        auth: {
+          user: process.env.EMAIL_USER,
+          pass: process.env.EMAIL_PASS
+        }
+      });
+    } catch (error) {
+       console.error('❌ Failed to create email transporter:', error);
+    }
   }
-});
+  return transporter;
+};
 
 // Send Verification Code
 app.post('/auth/send-code', authLimiter, validate(sendCodeSchema), async (req, res) => {
@@ -612,11 +637,14 @@ app.post('/auth/send-code', authLimiter, validate(sendCodeSchema), async (req, r
     }
 
     // Verify transporter connection on startup
-    transporter.verify(function (error, success) {
+    getTransporter().verify(function (error: Error | null, success: any) {
       if (error) {
         console.log('❌ Email Server Connect Failed immediately:', error.message);
+        console.log('   Host:', getTransporter().options.host);
       } else {
         console.log('✅ Email Server login succeeded! Ready to send.');
+        console.log('   Host:', getTransporter().options.host);
+        console.log('   User:', process.env.EMAIL_USER);
       }
     });
 
@@ -626,8 +654,8 @@ app.post('/auth/send-code', authLimiter, validate(sendCodeSchema), async (req, r
     // Send email if credentials are present, otherwise just log (for dev)
     if (process.env.EMAIL_USER && process.env.EMAIL_PASS) {
       try {
-        const info = await transporter.sendMail({
-          from: `"LifeByDorm" <${process.env.EMAIL_USER}>`,
+        const info = await getTransporter().sendMail({
+          from: '"LifeByDorm" <support@lifebydorm.ca>',
           to: email,
           subject: 'Your Verification Code',
           text: `Your verification code is: ${verificationCode}. It expires in 10 minutes.`,
@@ -1541,6 +1569,9 @@ process.on('unhandledRejection', (reason, promise) => {
 });
 
 // Start server if not running in Vercel or AWS Lambda
+
+
+// Start server if not running in Vercel or AWS Lambda
 if (process.env.VERCEL !== '1' && !process.env.AWS_LAMBDA_FUNCTION_NAME) {
   const PORT = process.env.PORT || 3000;
   app.listen(PORT, () => {
@@ -1549,5 +1580,6 @@ if (process.env.VERCEL !== '1' && !process.env.AWS_LAMBDA_FUNCTION_NAME) {
   });
 }
 
-export default app;
 
+
+export default app;
