@@ -80,6 +80,10 @@ console.log('Admin emails:', ADMIN_EMAILS.length ? ADMIN_EMAILS : 'none');
 
 const app = express()
 
+// Security: Enable trust proxy for AWS Lambda / API Gateway
+// Required for express-rate-limit to work correctly behind a proxy
+app.set('trust proxy', 1);
+
 // CORS configuration - restrict to trusted origins
 // Allowed origins: include FRONTEND_URL when set, and always include common localhost dev origins
 // Include common Vite dev ports (5173 and 4173) and localhost variants
