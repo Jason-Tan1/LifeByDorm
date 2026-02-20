@@ -647,6 +647,35 @@ app.post('/auth/send-code', authLimiter, validate(sendCodeSchema), async (req, r
         console.log('   User:', process.env.EMAIL_USER);
       }
     });
+    
+    // DEBUG ENDPOINT: Remove after fixing production issue
+    app.get('/api/test-email-config', async (req, res) => {
+      try {
+        const pass = process.env.EMAIL_PASS || '';
+        const user = process.env.EMAIL_USER;
+        
+        let verifyResult = 'Not Attempted';
+        try {
+           await getTransporter().verify();
+           verifyResult = 'Success';
+        } catch (err: any) {
+           verifyResult = `Failed: ${err.message}`;
+        }
+
+        res.json({
+          status: 'debug',
+          env: {
+            NODE_ENV: process.env.NODE_ENV,
+            EMAIL_USER: user ? user : 'MISSING/UNDEFINED',
+            EMAIL_PASS_LENGTH: pass.length,
+            EMAIL_PASS_STARTS_WITH: pass.substring(0, 2) + '***' // Safe mask
+          },
+          smtp_verify: verifyResult
+        });
+      } catch (error: any) {
+        res.status(500).json({ error: error.message });
+      }
+    });
 
     console.log(`[Auth] Verification code generated for ${email}`);
     console.log(`[Auth] Attempting to send email from: ${process.env.EMAIL_USER ? 'Set' : 'Missing'} to: ${email}`);
