@@ -42,5 +42,14 @@ const reviewSchema = new Schema<IReview>({
   verified: { type: Boolean, default: false }
 });
 
+// Performance: Compound index for the most common query pattern (university + dorm + status)
+reviewSchema.index({ university: 1, dorm: 1, status: 1 });
+// Performance: Index for sorting by createdAt (used by all listing queries)
+reviewSchema.index({ createdAt: -1 });
+// Performance: Index for user-specific review lookups
+reviewSchema.index({ user: 1 });
+// Performance: Index for admin pending reviews
+reviewSchema.index({ status: 1, createdAt: -1 });
+
 export const UserReview = model<IReview>('userreview', reviewSchema);
 export const userreview = UserReview;

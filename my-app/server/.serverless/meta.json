@@ -10,7 +10,7 @@
         "name": "aws",
         "runtime": "nodejs20.x",
         "region": "us-east-1",
-        "memorySize": 512,
+        "memorySize": 256,
         "timeout": 10,
         "environment": {
           "MONGODB_URI": "mongodb+srv://jatan2745:jasontan123@lifebydorm.ldp6omn.mongodb.net/lifebydorm?appName=LifeByDorm",
@@ -141,12 +141,12 @@
               "Properties": {
                 "Code": {
                   "S3Bucket": "serverless-framework-deployments-us-east-1-ae1440ea-d7ea",
-                  "S3Key": "serverless/lifebydorm-backend/dev/1771559659832-2026-02-20T03:54:19.832Z/lifebydorm-backend.zip"
+                  "S3Key": "serverless/lifebydorm-backend/dev/1771617203150-2026-02-20T19:53:23.150Z/lifebydorm-backend.zip"
                 },
                 "Handler": "lambda.handler",
                 "Runtime": "nodejs20.x",
                 "FunctionName": "lifebydorm-backend-dev-api",
-                "MemorySize": 512,
+                "MemorySize": 256,
                 "Timeout": 10,
                 "Environment": {
                   "Variables": {
@@ -157,8 +157,7 @@
                     "AWS_BUCKET_NAME": "lifebydorm-uploader",
                     "EMAIL_USER": "jatan2745@gmail.com",
                     "EMAIL_PASS": "mfpr jcrp krci olqf",
-                    "NODE_ENV": "production",
-                    "NODE_OPTIONS": "--enable-source-maps"
+                    "NODE_ENV": "production"
                   }
                 },
                 "Role": {
@@ -172,14 +171,14 @@
                 "ApiLogGroup"
               ]
             },
-            "ApiLambdaVersioneNVmPAh7dn3tu75EXmEUYPZr0WVaBXfi3dnWB2Eas": {
+            "ApiLambdaVersionVgHBOdrgS4EiRqYk30eVUK4ke3z38Eu4BZgL52l1ISo": {
               "Type": "AWS::Lambda::Version",
               "DeletionPolicy": "Retain",
               "Properties": {
                 "FunctionName": {
                   "Ref": "ApiLambdaFunction"
                 },
-                "CodeSha256": "KKhn0EpYdJ4WinGbTeVWpjTosPqnWMu6j2Ni+7ApbCE="
+                "CodeSha256": "N4cTA0paDXeuKeRUujuQglGYQizOXxgn/XwkvWHOcxY="
               }
             },
             "ApiGatewayRestApi": {
@@ -397,7 +396,7 @@
                 "ApiLambdaPermissionApiGateway"
               ]
             },
-            "ApiGatewayDeployment1771559644061": {
+            "ApiGatewayDeployment1771617186604": {
               "Type": "AWS::ApiGateway::Deployment",
               "Properties": {
                 "RestApiId": {
@@ -460,7 +459,7 @@
             "ApiLambdaFunctionQualifiedArn": {
               "Description": "Current Lambda function version",
               "Value": {
-                "Ref": "ApiLambdaVersioneNVmPAh7dn3tu75EXmEUYPZr0WVaBXfi3dnWB2Eas"
+                "Ref": "ApiLambdaVersionVgHBOdrgS4EiRqYk30eVUK4ke3z38Eu4BZgL52l1ISo"
               },
               "Export": {
                 "Name": "sls-lifebydorm-backend-dev-ApiLambdaFunctionQualifiedArn"
@@ -550,22 +549,19 @@
             }
           ],
           "name": "lifebydorm-backend-dev-api",
-          "environment": {
-            "NODE_OPTIONS": "--enable-source-maps"
-          },
           "package": {},
-          "memory": 512,
+          "memory": 256,
           "timeout": 10,
           "runtime": "nodejs20.x",
           "vpc": {},
-          "versionLogicalId": "ApiLambdaVersioneNVmPAh7dn3tu75EXmEUYPZr0WVaBXfi3dnWB2Eas"
+          "versionLogicalId": "ApiLambdaVersionVgHBOdrgS4EiRqYk30eVUK4ke3z38Eu4BZgL52l1ISo"
         }
       },
       "build": {
         "esbuild": {
           "bundle": true,
-          "minify": false,
-          "sourcemap": true,
+          "minify": true,
+          "sourcemap": false,
           "target": "node20",
           "platform": "node",
           "external": [
@@ -581,7 +577,7 @@
       "name": "aws",
       "runtime": "nodejs20.x",
       "region": "us-east-1",
-      "memorySize": 512,
+      "memorySize": 256,
       "timeout": 10,
       "environment": {
         "MONGODB_URI": "mongodb+srv://jatan2745:jasontan123@lifebydorm.ldp6omn.mongodb.net/lifebydorm?appName=LifeByDorm",
@@ -712,12 +708,12 @@
             "Properties": {
               "Code": {
                 "S3Bucket": "serverless-framework-deployments-us-east-1-ae1440ea-d7ea",
-                "S3Key": "serverless/lifebydorm-backend/dev/1771559659832-2026-02-20T03:54:19.832Z/lifebydorm-backend.zip"
+                "S3Key": "serverless/lifebydorm-backend/dev/1771617203150-2026-02-20T19:53:23.150Z/lifebydorm-backend.zip"
               },
               "Handler": "lambda.handler",
               "Runtime": "nodejs20.x",
               "FunctionName": "lifebydorm-backend-dev-api",
-              "MemorySize": 512,
+              "MemorySize": 256,
               "Timeout": 10,
               "Environment": {
                 "Variables": {
@@ -728,8 +724,7 @@
                   "AWS_BUCKET_NAME": "lifebydorm-uploader",
                   "EMAIL_USER": "jatan2745@gmail.com",
                   "EMAIL_PASS": "mfpr jcrp krci olqf",
-                  "NODE_ENV": "production",
-                  "NODE_OPTIONS": "--enable-source-maps"
+                  "NODE_ENV": "production"
                 }
               },
               "Role": {
@@ -743,14 +738,14 @@
               "ApiLogGroup"
             ]
           },
-          "ApiLambdaVersioneNVmPAh7dn3tu75EXmEUYPZr0WVaBXfi3dnWB2Eas": {
+          "ApiLambdaVersionVgHBOdrgS4EiRqYk30eVUK4ke3z38Eu4BZgL52l1ISo": {
             "Type": "AWS::Lambda::Version",
             "DeletionPolicy": "Retain",
             "Properties": {
               "FunctionName": {
                 "Ref": "ApiLambdaFunction"
               },
-              "CodeSha256": "KKhn0EpYdJ4WinGbTeVWpjTosPqnWMu6j2Ni+7ApbCE="
+              "CodeSha256": "N4cTA0paDXeuKeRUujuQglGYQizOXxgn/XwkvWHOcxY="
             }
           },
           "ApiGatewayRestApi": {
@@ -968,7 +963,7 @@
               "ApiLambdaPermissionApiGateway"
             ]
           },
-          "ApiGatewayDeployment1771559644061": {
+          "ApiGatewayDeployment1771617186604": {
             "Type": "AWS::ApiGateway::Deployment",
             "Properties": {
               "RestApiId": {
@@ -1031,7 +1026,7 @@
           "ApiLambdaFunctionQualifiedArn": {
             "Description": "Current Lambda function version",
             "Value": {
-              "Ref": "ApiLambdaVersioneNVmPAh7dn3tu75EXmEUYPZr0WVaBXfi3dnWB2Eas"
+              "Ref": "ApiLambdaVersionVgHBOdrgS4EiRqYk30eVUK4ke3z38Eu4BZgL52l1ISo"
             },
             "Export": {
               "Name": "sls-lifebydorm-backend-dev-ApiLambdaFunctionQualifiedArn"
@@ -1076,7 +1071,7 @@
       "serviceProvider": null,
       "instanceParameters": null
     },
-    "serviceRawFile": "service: lifebydorm-backend\r\n\r\nuseDotenv: true\r\n\r\nprovider:\r\n  name: aws\r\n  runtime: nodejs20.x\r\n  region: us-east-1\r\n  memorySize: 512\r\n  timeout: 10\r\n  environment:\r\n    MONGODB_URI: ${env:MONGODB_URI}\r\n    ACCESS_TOKEN_SECRET: ${env:ACCESS_TOKEN_SECRET}\r\n    ADMIN_EMAILS: ${env:ADMIN_EMAILS, ''}\r\n    FRONTEND_URL: ${env:FRONTEND_URL, ''}\r\n    AWS_BUCKET_NAME: ${env:AWS_BUCKET_NAME}\r\n    EMAIL_USER: ${env:EMAIL_USER}\r\n    EMAIL_PASS: ${env:EMAIL_PASS}\r\n    # AWS_REGION: ${env:AWS_REGION} # Reserved key, handled by provider.region\r\n    NODE_ENV: production\r\n\r\n  # Grant Lambda permission to access S3 properly using IAM roles\r\n  # (This is better than hardcoding keys in env vars)\r\n  iam:\r\n    role:\r\n      statements:\r\n        - Effect: Allow\r\n          Action:\r\n            - s3:PutObject\r\n            - s3:GetObject\r\n            - s3:DeleteObject\r\n          Resource: \"arn:aws:s3:::${env:AWS_BUCKET_NAME}/*\"\r\n\r\nfunctions:\r\n  api:\r\n    handler: lambda.handler\r\n    events:\r\n      - http:\r\n          path: /\r\n          method: ANY\r\n          cors: true\r\n      - http:\r\n          path: /{proxy+}\r\n          method: ANY\r\n          cors: true\r\n\r\nbuild:\r\n  esbuild:\r\n    bundle: true\r\n    minify: false\r\n    sourcemap: true\r\n    target: node20\r\n    platform: node\r\n    external:\r\n      - aws-sdk\r\n\r\nplugins:\r\n  - serverless-offline\r\n\r\n# custom:\r\n#  esbuild configuration is now under build.esbuild \r\n",
+    "serviceRawFile": "service: lifebydorm-backend\r\n\r\nuseDotenv: true\r\n\r\nprovider:\r\n  name: aws\r\n  runtime: nodejs20.x\r\n  region: us-east-1\r\n  memorySize: 256\r\n  timeout: 10\r\n  environment:\r\n    MONGODB_URI: ${env:MONGODB_URI}\r\n    ACCESS_TOKEN_SECRET: ${env:ACCESS_TOKEN_SECRET}\r\n    ADMIN_EMAILS: ${env:ADMIN_EMAILS, ''}\r\n    FRONTEND_URL: ${env:FRONTEND_URL, ''}\r\n    AWS_BUCKET_NAME: ${env:AWS_BUCKET_NAME}\r\n    EMAIL_USER: ${env:EMAIL_USER}\r\n    EMAIL_PASS: ${env:EMAIL_PASS}\r\n    # AWS_REGION: ${env:AWS_REGION} # Reserved key, handled by provider.region\r\n    NODE_ENV: production\r\n\r\n  # Grant Lambda permission to access S3 properly using IAM roles\r\n  # (This is better than hardcoding keys in env vars)\r\n  iam:\r\n    role:\r\n      statements:\r\n        - Effect: Allow\r\n          Action:\r\n            - s3:PutObject\r\n            - s3:GetObject\r\n            - s3:DeleteObject\r\n          Resource: \"arn:aws:s3:::${env:AWS_BUCKET_NAME}/*\"\r\n\r\nfunctions:\r\n  api:\r\n    handler: lambda.handler\r\n    events:\r\n      - http:\r\n          path: /\r\n          method: ANY\r\n          cors: true\r\n      - http:\r\n          path: /{proxy+}\r\n          method: ANY\r\n          cors: true\r\n\r\nbuild:\r\n  esbuild:\r\n    bundle: true\r\n    minify: true\r\n    sourcemap: false\r\n    target: node20\r\n    platform: node\r\n    external:\r\n      - aws-sdk\r\n\r\nplugins:\r\n  - serverless-offline\r\n\r\n# custom:\r\n#  esbuild configuration is now under build.esbuild \r\n",
     "command": [
       "deploy"
     ],
@@ -1089,12 +1084,12 @@
     "serviceProviderAwsCfStackName": "lifebydorm-backend-dev",
     "serviceProviderAwsCfStackId": "arn:aws:cloudformation:us-east-1:650122212159:stack/lifebydorm-backend-dev/7bc98cd0-fbc9-11f0-8edd-0affdbe436cb",
     "serviceProviderAwsCfStackCreated": "2026-01-27T21:45:23.348Z",
-    "serviceProviderAwsCfStackUpdated": "2026-02-01T00:28:17.494Z",
+    "serviceProviderAwsCfStackUpdated": "2026-02-20T04:21:48.023Z",
     "serviceProviderAwsCfStackStatus": "UPDATE_COMPLETE",
     "serviceProviderAwsCfStackOutputs": [
       {
         "OutputKey": "ApiLambdaFunctionQualifiedArn",
-        "OutputValue": "arn:aws:lambda:us-east-1:650122212159:function:lifebydorm-backend-dev-api:6",
+        "OutputValue": "arn:aws:lambda:us-east-1:650122212159:function:lifebydorm-backend-dev-api:8",
         "Description": "Current Lambda function version",
         "ExportName": "sls-lifebydorm-backend-dev-ApiLambdaFunctionQualifiedArn"
       },
@@ -1212,12 +1207,12 @@
           "Properties": {
             "Code": {
               "S3Bucket": "serverless-framework-deployments-us-east-1-ae1440ea-d7ea",
-              "S3Key": "serverless/lifebydorm-backend/dev/1771559659832-2026-02-20T03:54:19.832Z/lifebydorm-backend.zip"
+              "S3Key": "serverless/lifebydorm-backend/dev/1771617203150-2026-02-20T19:53:23.150Z/lifebydorm-backend.zip"
             },
             "Handler": "lambda.handler",
             "Runtime": "nodejs20.x",
             "FunctionName": "lifebydorm-backend-dev-api",
-            "MemorySize": 512,
+            "MemorySize": 256,
             "Timeout": 10,
             "Environment": {
               "Variables": {
@@ -1228,8 +1223,7 @@
                 "AWS_BUCKET_NAME": "lifebydorm-uploader",
                 "EMAIL_USER": "jatan2745@gmail.com",
                 "EMAIL_PASS": "mfpr jcrp krci olqf",
-                "NODE_ENV": "production",
-                "NODE_OPTIONS": "--enable-source-maps"
+                "NODE_ENV": "production"
               }
             },
             "Role": {
@@ -1243,14 +1237,14 @@
             "ApiLogGroup"
           ]
         },
-        "ApiLambdaVersioneNVmPAh7dn3tu75EXmEUYPZr0WVaBXfi3dnWB2Eas": {
+        "ApiLambdaVersionVgHBOdrgS4EiRqYk30eVUK4ke3z38Eu4BZgL52l1ISo": {
           "Type": "AWS::Lambda::Version",
           "DeletionPolicy": "Retain",
           "Properties": {
             "FunctionName": {
               "Ref": "ApiLambdaFunction"
             },
-            "CodeSha256": "KKhn0EpYdJ4WinGbTeVWpjTosPqnWMu6j2Ni+7ApbCE="
+            "CodeSha256": "N4cTA0paDXeuKeRUujuQglGYQizOXxgn/XwkvWHOcxY="
           }
         },
         "ApiGatewayRestApi": {
@@ -1468,7 +1462,7 @@
             "ApiLambdaPermissionApiGateway"
           ]
         },
-        "ApiGatewayDeployment1771559644061": {
+        "ApiGatewayDeployment1771617186604": {
           "Type": "AWS::ApiGateway::Deployment",
           "Properties": {
             "RestApiId": {
@@ -1531,7 +1525,7 @@
         "ApiLambdaFunctionQualifiedArn": {
           "Description": "Current Lambda function version",
           "Value": {
-            "Ref": "ApiLambdaVersioneNVmPAh7dn3tu75EXmEUYPZr0WVaBXfi3dnWB2Eas"
+            "Ref": "ApiLambdaVersionVgHBOdrgS4EiRqYk30eVUK4ke3z38Eu4BZgL52l1ISo"
           },
           "Export": {
             "Name": "sls-lifebydorm-backend-dev-ApiLambdaFunctionQualifiedArn"
