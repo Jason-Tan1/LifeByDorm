@@ -36,6 +36,8 @@ const dormSchema = new Schema<IDorm>({
 
 // Compound index for universitySlug + slug
 dormSchema.index({ universitySlug: 1, slug: 1 }, { unique: true });
+// Performance: Index for status-filtered queries
+dormSchema.index({ universitySlug: 1, status: 1 });
 
 export const Dorm = model<IDorm>('Dorm', dormSchema);
 export const dorm = Dorm;

@@ -64,7 +64,7 @@ import {
 } from './validation';
 
 dotenv.config();
-console.log('Loaded secret:', process.env.ACCESS_TOKEN_SECRET ? '✅ Loaded' : '❌ Missing');
+if (!isProduction) console.log('Loaded secret:', process.env.ACCESS_TOKEN_SECRET ? '✅ Loaded' : '❌ Missing');
 
 // Validate required environment variables
 if (!process.env.ACCESS_TOKEN_SECRET) {
@@ -76,7 +76,7 @@ if (!process.env.ACCESS_TOKEN_SECRET) {
 
 // Admin emails (comma-separated) read from env, e.g. ADMIN_EMAILS=admin@example.com,alice@org.com
 const ADMIN_EMAILS: string[] = (process.env.ADMIN_EMAILS || '').split(',').map(s => s.trim()).filter(Boolean);
-console.log('Admin emails:', ADMIN_EMAILS.length ? ADMIN_EMAILS : 'none');
+if (!isProduction) console.log('Admin emails:', ADMIN_EMAILS.length ? ADMIN_EMAILS : 'none');
 
 const app = express()
 
@@ -173,20 +173,7 @@ app.use(helmet({
 // Enable gzip/deflate compression for all responses (70-90% size reduction)
 app.use(compression());
 
-// Debug route needs to be before DB middleware to work even if DB fails
-app.get('/api/debug/config', (req, res) => {
-  res.json({
-    timestamp: new Date().toISOString(),
-    hasAwsKey: !!process.env.AWS_ACCESS_KEY_ID,
-    hasAwsSecret: !!process.env.AWS_SECRET_ACCESS_KEY,
-    // Safely check if MONGO_URI is set without revealing it
-    hasMongoUri: !!process.env.MONGODB_URI, 
-    mongoUriStartsWith: process.env.MONGODB_URI ? process.env.MONGODB_URI.substring(0, 15) + '...' : 'undefined',
-    region: process.env.AWS_REGION,
-    bucket: process.env.AWS_BUCKET_NAME,
-    nodeEnv: process.env.NODE_ENV
-  });
-});
+// Debug route (development only) - removed from production for security
 
 // Increase JSON body size limit to allow base64 image uploads from the client.
 // The frontend encodes images as data URLs; increase the limit to 10mb.
@@ -287,18 +274,20 @@ const connectDB = async () => {
   if (!cached.promise) {
     const opts = {
       bufferCommands: false, // Disable mongoose buffering
-      serverSelectionTimeoutMS: 5000,
-      socketTimeoutMS: 45000,
-      family: 4
+      serverSelectionTimeoutMS: 3000,
+      socketTimeoutMS: 30000,
+      family: 4,
+      maxPoolSize: 1,        // Lambda handles 1 request at a time
+      minPoolSize: 1,        // Keep 1 connection ready
+      maxIdleTimeMS: 270000, // Close idle connections after ~4.5 min (Lambda freezes at ~5 min)
     };
 
-    console.log('🔌 Connecting to MongoDB...');
-    // Log the URI (masked) to debugging
+    if (!isProduction) console.log('🔌 Connecting to MongoDB...');
     const uri = process.env.MONGODB_URI || 'mongodb://localhost:27017/lifebydorm';
-    console.log(`Target URI: ${uri.replace(/:([^:@]+)@/, ':****@')}`);
+    if (!isProduction) console.log(`Target URI: ${uri.replace(/:([^:@]+)@/, ':****@')}`);
 
     cached.promise = mongoose.connect(uri, opts).then((mongoose) => {
-      console.log('✅ MongoDB connected successfully');
+      if (!isProduction) console.log('✅ MongoDB connected successfully');
       connectionError = null;
       return mongoose;
     });
@@ -344,60 +333,57 @@ app.get('/api/stats/homepage', readOnlyLimiter, async (req: Request, res: Respon
   try {
     // Check cache first
     const cacheKey = 'homepage-stats';
-    const cached = getCached<any>(cacheKey);
-    if (cached) {
-      return res.json(cached);
+    const cachedResult = getCached<any>(cacheKey);
+    if (cachedResult) {
+      return res.json(cachedResult);
     }
 
-    // Fetch all universities
-    const universities = await University.find({}).lean();
+    // Use aggregation pipeline to compute stats on the database server
+    // instead of fetching entire collections into memory
+    const [universities, dorms, reviewStats] = await Promise.all([
+      University.find({}).lean(),
+      Dorm.find({
+        $or: [{ status: 'approved' }, { status: { $exists: false } }]
+      }).lean(),
+      UserReview.aggregate([
+        { $match: { $or: [{ status: 'approved' }, { status: { $exists: false } }] } },
+        { $group: {
+            _id: { university: '$university', dorm: '$dorm' },
+            avgRoom: { $avg: '$room' },
+            avgBathroom: { $avg: '$bathroom' },
+            avgBuilding: { $avg: '$building' },
+            avgAmenities: { $avg: '$amenities' },
+            avgLocation: { $avg: '$location' },
+            reviewCount: { $sum: 1 }
+        }}
+      ])
+    ]);
 
-    // Fetch all approved dorms
-    const dorms = await Dorm.find({
-      $or: [
-        { status: 'approved' },
-        { status: { $exists: false } }
-      ]
-    }).lean();
-
-    // Fetch all approved reviews
-    const reviews = await UserReview.find({
-      $or: [
-        { status: 'approved' },
-        { status: { $exists: false } }
-      ]
-    }).lean();
-
-    // Calculate university stats (review count per university)
+    // Build lookup maps from aggregation results
     const universityStats: { [slug: string]: { reviewCount: number } } = {};
+    const dormStats: { [key: string]: { avgRating: number; reviewCount: number; totalRating: number } } = {};
+
     universities.forEach((uni: any) => {
       universityStats[uni.slug] = { reviewCount: 0 };
     });
 
-    // Calculate dorm stats (avg rating and review count per dorm)
-    const dormStats: { [key: string]: { avgRating: number; reviewCount: number; totalRating: number } } = {};
+    reviewStats.forEach((stat: any) => {
+      const uni = stat._id.university;
+      const dorm = stat._id.dorm;
+      const overallAvg = (stat.avgRoom + stat.avgBathroom + stat.avgBuilding + stat.avgAmenities + stat.avgLocation) / 5;
 
-    reviews.forEach((review: any) => {
       // Count for university
-      if (review.university && universityStats[review.university]) {
-        universityStats[review.university].reviewCount++;
+      if (uni && universityStats[uni]) {
+        universityStats[uni].reviewCount += stat.reviewCount;
       }
 
-      // Calculate overall rating for dorm
-      const dormKey = `${review.university}:${review.dorm}`;
-      const overallRating = (review.room + review.bathroom + review.building + review.amenities + review.location) / 5;
-
-      if (!dormStats[dormKey]) {
-        dormStats[dormKey] = { avgRating: 0, reviewCount: 0, totalRating: 0 };
-      }
-      dormStats[dormKey].reviewCount++;
-      dormStats[dormKey].totalRating += overallRating;
-    });
-
-    // Calculate averages for dorms
-    Object.keys(dormStats).forEach(key => {
-      const stat = dormStats[key];
-      stat.avgRating = stat.reviewCount > 0 ? stat.totalRating / stat.reviewCount : 0;
+      // Stats for dorm
+      const dormKey = `${uni}:${dorm}`;
+      dormStats[dormKey] = {
+        avgRating: overallAvg,
+        reviewCount: stat.reviewCount,
+        totalRating: overallAvg * stat.reviewCount
+      };
     });
 
     // Prepare response with enriched data
@@ -480,34 +466,21 @@ app.get('/api/test', authenticationToken, requireAdmin, async (req: AuthRequest,
   }
 });
 
-interface Post {
-  username: string;
-  title: string;
-}
-
-const posts: Post[] = [
-  { username: 'Jason', title: 'Post 1' },
-  { username: 'Joey', title: 'Post 2' }
-];
-
 ///////////////////////////////////////////////////////////////////////////////////////////////////////
 //USER AUTHENTICATION ROUTES AND SET UP
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
-app.get('/posts', authenticationToken, (req: AuthRequest, res: Response) => {
-  res.json(posts.filter(post => post.username === req.user?.name))
-})
 
 // Register new user
 app.post('/register', authLimiter, validate(registerSchema), async (req, res) => {
   try {
     // OWASP: Logging - Do not log sensitive information like passwords
-    console.log('Received registration request for:', req.body.email);
+    if (!isProduction) console.log('Received registration request for:', req.body.email);
     const { email, password } = req.body;
 
     // Check if user already exists
     const existingUser = await User.findOne({ email });
     if (existingUser) {
-      console.log('User already exists:', email);
+      if (!isProduction) console.log('User already exists:', email);
       return res.status(400).json({ message: 'User already exists' });
     }
 
@@ -520,9 +493,9 @@ app.post('/register', authLimiter, validate(registerSchema), async (req, res) =>
       password: hashedPassword
     });
 
-    console.log('Saving new user:', email);
+    if (!isProduction) console.log('Saving new user:', email);
     const savedUser = await user.save();
-    console.log('User saved successfully:', savedUser._id);
+    if (!isProduction) console.log('User saved successfully:', savedUser._id);
 
     if (!process.env.ACCESS_TOKEN_SECRET) {
       throw new Error('ACCESS_TOKEN_SECRET is not defined');
@@ -633,56 +606,18 @@ app.post('/auth/send-code', authLimiter, validate(sendCodeSchema), async (req, r
     await user.save();
 
     // Security: Only log debug info in development
-    // Debug: Log email config in all environments to debug production issue
-    const pass = process.env.EMAIL_PASS || '';
-    console.log('[DEBUG] Email Auth Check:');
-    console.log(`- EMAIL_USER: '${process.env.EMAIL_USER}'`);
-    console.log(`- EMAIL_PASS Length: ${pass.length}`);
-    console.log(`- NODE_ENV: ${process.env.NODE_ENV}`);
+    if (!isProduction) {
+      const pass = process.env.EMAIL_PASS || '';
+      console.log('[DEBUG] Email Auth Check:');
+      console.log(`- EMAIL_USER: '${process.env.EMAIL_USER}'`);
+      console.log(`- EMAIL_PASS Length: ${pass.length}`);
+      console.log(`- NODE_ENV: ${process.env.NODE_ENV}`);
+    }
 
-    // Verify transporter connection on startup
-    getTransporter().verify(function (error: Error | null, success: any) {
-      if (error) {
-        console.log('❌ Email Server Connect Failed immediately:', error.message);
-        console.log('   Host:', getTransporter().options.host);
-      } else {
-        console.log('✅ Email Server login succeeded! Ready to send.');
-        console.log('   Host:', getTransporter().options.host);
-        console.log('   User:', process.env.EMAIL_USER);
-      }
-    });
-    
-    // DEBUG ENDPOINT: Remove after fixing production issue
-    app.get('/api/test-email-config', async (req, res) => {
-      try {
-        const pass = process.env.EMAIL_PASS || '';
-        const user = process.env.EMAIL_USER;
-        
-        let verifyResult = 'Not Attempted';
-        try {
-           await getTransporter().verify();
-           verifyResult = 'Success';
-        } catch (err: any) {
-           verifyResult = `Failed: ${err.message}`;
-        }
-
-        res.json({
-          status: 'debug',
-          env: {
-            NODE_ENV: process.env.NODE_ENV,
-            EMAIL_USER: user ? user : 'MISSING/UNDEFINED',
-            EMAIL_PASS_LENGTH: pass.length,
-            EMAIL_PASS_STARTS_WITH: pass.substring(0, 2) + '***' // Safe mask
-          },
-          smtp_verify: verifyResult
-        });
-      } catch (error: any) {
-        res.status(500).json({ error: error.message });
-      }
-    });
-
-    console.log(`[Auth] Verification code generated for ${email}`);
-    console.log(`[Auth] Attempting to send email from: ${process.env.EMAIL_USER ? 'Set' : 'Missing'} to: ${email}`);
+    if (!isProduction) {
+      console.log(`[Auth] Verification code generated for ${email}`);
+      console.log(`[Auth] Attempting to send email from: ${process.env.EMAIL_USER ? 'Set' : 'Missing'} to: ${email}`);
+    }
 
     // Send email if credentials are present, otherwise just log (for dev)
     if (process.env.EMAIL_USER && process.env.EMAIL_PASS) {
@@ -702,8 +637,10 @@ app.post('/auth/send-code', authLimiter, validate(sendCodeSchema), async (req, r
             </div>
           `
         });
-        console.log(`[Auth] Email sent successfully using ${process.env.EMAIL_USER}`);
-        console.log(`[Auth] Message ID: ${info.messageId}`);
+        if (!isProduction) {
+          console.log(`[Auth] Email sent successfully using ${process.env.EMAIL_USER}`);
+          console.log(`[Auth] Message ID: ${info.messageId}`);
+        }
       } catch (emailError) {
         console.error('❌ Failed to send email:', emailError);
         // Fallback to console log in dev if email fails
@@ -791,7 +728,14 @@ app.post('/auth/verify-code', authLimiter, validate(verifyCodeSchema), async (re
 });
 
 // Google OAuth login - simplified with ID token verification
-const googleClient = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
+// Performance: Lazy-initialize to avoid cold-start penalty when not used
+let _googleClient: OAuth2Client | null = null;
+function getGoogleClient(): OAuth2Client {
+  if (!_googleClient) {
+    _googleClient = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
+  }
+  return _googleClient;
+}
 
 app.post('/auth/google', authLimiter, validate(googleAuthSchema), async (req, res) => {
   try {
@@ -805,7 +749,7 @@ app.post('/auth/google', authLimiter, validate(googleAuthSchema), async (req, re
 
     if (credential) {
       // Verify the ID token
-      const ticket = await googleClient.verifyIdToken({
+      const ticket = await getGoogleClient().verifyIdToken({
         idToken: credential,
         audience: process.env.GOOGLE_CLIENT_ID,
       });
@@ -853,7 +797,7 @@ app.post('/auth/google', authLimiter, validate(googleAuthSchema), async (req, re
         picture,
       });
       await user.save();
-      console.log('New Google user created:', email);
+      if (!isProduction) console.log('New Google user created:', email);
     } else if (!(user as any).googleId) {
       (user as any).googleId = googleId;
       (user as any).name = name;
@@ -1179,8 +1123,10 @@ app.post('/api/reviews', validate(reviewSchema), async (req: Request, res: Respo
     let isVerified = false;
     let userEmail = '';
     const authHeader = req.headers.authorization;
-    console.log('🔑 Auth header present:', !!authHeader);
-    console.log('🔑 Auth header value:', authHeader ? authHeader.substring(0, 50) + '...' : '(none)');
+    if (!isProduction) {
+      console.log('🔑 Auth header present:', !!authHeader);
+      console.log('🔑 Auth header value:', authHeader ? authHeader.substring(0, 50) + '...' : '(none)');
+    }
 
     if (authHeader && authHeader.startsWith('Bearer ')) {
       const token = authHeader.split(' ')[1];
@@ -1189,23 +1135,25 @@ app.post('/api/reviews', validate(reviewSchema), async (req: Request, res: Respo
         isVerified = true;
         userEmail = decoded.name || '';
       } catch (err) {
-        console.log('🔑 Token verification failed:', err instanceof Error ? err.message : 'Unknown error');
+        if (!isProduction) console.log('🔑 Token verification failed:', err instanceof Error ? err.message : 'Unknown error');
         isVerified = false;
       }
     }
 
-    console.log('📥 Received review data:');
-    console.log('  - fileImage:', fileImage ? 'EXISTS' : 'NONE');
-    console.log('  - images:', images);
-    console.log('  - images length:', images ? images.length : 0);
-    console.log('  - verified:', isVerified);
-    console.log('  - user email:', userEmail || '(none)');
+    if (!isProduction) {
+      console.log('📥 Received review data:');
+      console.log('  - fileImage:', fileImage ? 'EXISTS' : 'NONE');
+      console.log('  - images:', images);
+      console.log('  - images length:', images ? images.length : 0);
+      console.log('  - verified:', isVerified);
+      console.log('  - user email:', userEmail || '(none)');
+    }
 
     // Process images: upload base64 strings to S3
     let processedFileImage = fileImage;
     if (fileImage && typeof fileImage === 'string' && fileImage.startsWith('data:')) {
       try {
-        console.log('📤 Uploading fileImage to S3...');
+        if (!isProduction) console.log('📤 Uploading fileImage to S3...');
         processedFileImage = await uploadToS3(fileImage, 'reviews/main');
       } catch (err) {
         console.error('❌ Failed to upload fileImage:', err);
@@ -1214,7 +1162,7 @@ app.post('/api/reviews', validate(reviewSchema), async (req: Request, res: Respo
 
     let processedImages = images || [];
     if (processedImages.length > 0) {
-      console.log(`📤 Uploading ${processedImages.length} additional images to S3...`);
+      if (!isProduction) console.log(`📤 Uploading ${processedImages.length} additional images to S3...`);
       processedImages = await Promise.all(processedImages.map(async (img: string) => {
         if (typeof img === 'string' && img.startsWith('data:')) {
           try {
@@ -1248,14 +1196,16 @@ app.post('/api/reviews', validate(reviewSchema), async (req: Request, res: Respo
     });
 
     const saved = await review.save();
-    console.log('✅ Saved review to DB:', {
-      id: saved._id,
-      university: saved.university,
-      dorm: saved.dorm,
-      imagesLength: saved.images ? saved.images.length : 0,
-      verified: saved.verified,
-      user: saved.user || '(none)'
-    });
+    if (!isProduction) {
+      console.log('✅ Saved review to DB:', {
+        id: saved._id,
+        university: saved.university,
+        dorm: saved.dorm,
+        imagesLength: saved.images ? saved.images.length : 0,
+        verified: saved.verified,
+        user: saved.user || '(none)'
+      });
+    }
     res.status(201).json(saved);
   } catch (err) {
     console.error('Error saving review', err);
@@ -1313,7 +1263,7 @@ app.get('/api/reviews', async (req: Request, res: Response) => {
 app.get('/api/reviews/user', authenticationToken, async (req: AuthRequest, res: Response) => {
   try {
     const userEmail = req.user?.name;
-    console.log('📋 Fetching reviews for user:', userEmail);
+    if (!isProduction) console.log('📋 Fetching reviews for user:', userEmail);
 
     if (!userEmail) {
       return res.status(401).json({ message: 'User not authenticated' });
@@ -1321,7 +1271,7 @@ app.get('/api/reviews/user', authenticationToken, async (req: AuthRequest, res: 
 
     // Find reviews by user email
     const reviews = await UserReview.find({ user: userEmail }).sort({ createdAt: -1 }).lean();
-    console.log('📋 Found', reviews.length, 'reviews for user:', userEmail);
+    if (!isProduction) console.log('📋 Found', reviews.length, 'reviews for user:', userEmail);
     res.json(reviews);
   } catch (err) {
     console.error('Error fetching user reviews', err);
@@ -1386,19 +1336,15 @@ app.patch('/api/admin/reviews/:id/approve', authenticationToken, requireAdmin, a
   }
 });
 
-// Decline a review (admin only)
+// Decline a review (admin only) - deletes the review permanently
 app.patch('/api/admin/reviews/:id/decline', authenticationToken, requireAdmin, async (req: AuthRequest, res: Response) => {
   try {
     const { id } = req.params;
-    const review = await UserReview.findByIdAndUpdate(
-      id,
-      { status: 'declined' },
-      { new: true }
-    );
+    const review = await UserReview.findByIdAndDelete(id);
     if (!review) {
       return res.status(404).json({ message: 'Review not found' });
     }
-    res.json({ message: 'Review declined', review });
+    res.json({ message: 'Review declined and removed' });
   } catch (err) {
     console.error('Error declining review', err);
     res.status(500).json({ message: 'Error declining review' });
@@ -1557,11 +1503,7 @@ if (process.env.NODE_ENV === 'production' && process.env.VERCEL !== '1') {
   console.log(`📁 Serving static files from: ${staticPath}`);
 }
 
-// Global Error Handler
-app.use((err: any, req: Request, res: Response, next: NextFunction) => {
-  console.error('❌ Unhandled Error:', err);
-  res.status(500).json({ message: 'Internal Server Error', error: process.env.NODE_ENV === 'development' ? err.message : undefined });
-});
+// Note: Duplicate global error handler removed — single handler at bottom of file
 
 // Handle Uncaught Exceptions
 process.on('uncaughtException', (err) => {
