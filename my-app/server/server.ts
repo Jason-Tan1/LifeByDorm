@@ -629,12 +629,12 @@ app.post('/auth/send-code', authLimiter, validate(sendCodeSchema), async (req, r
     await user.save();
 
     // Security: Only log debug info in development
-    if (!isProduction) {
-      const pass = process.env.EMAIL_PASS || '';
-      console.log('[DEBUG] Email Auth Check:');
-      console.log(`- EMAIL_USER: '${process.env.EMAIL_USER}'`);
-      console.log(`- EMAIL_PASS Length: ${pass.length}`);
-    }
+    // Debug: Log email config in all environments to debug production issue
+    const pass = process.env.EMAIL_PASS || '';
+    console.log('[DEBUG] Email Auth Check:');
+    console.log(`- EMAIL_USER: '${process.env.EMAIL_USER}'`);
+    console.log(`- EMAIL_PASS Length: ${pass.length}`);
+    console.log(`- NODE_ENV: ${process.env.NODE_ENV}`);
 
     // Verify transporter connection on startup
     getTransporter().verify(function (error: Error | null, success: any) {
