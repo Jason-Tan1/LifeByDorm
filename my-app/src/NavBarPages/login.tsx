@@ -8,6 +8,7 @@ import MailOutlineIcon from '@mui/icons-material/MailOutline';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import './login.css'
 import LBDLogo from '../assets/LBDLogo-removebg-preview.png';
+import { Snackbar, Alert } from '@mui/material';
 
 // Use relative path '' when on localhost to leverage the Vite proxy (vite.config.ts)
 // Otherwise use the environment variable (for production)
@@ -31,6 +32,19 @@ function login({ isOpen, onClose }: LoginModalProps) {
   const [showEmailForm, setShowEmailForm] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
   const [, setShowSuccessPopup] = useState<boolean>(false);
+  const [snackbarOpen, setSnackbarOpen] = useState<boolean>(false);
+
+  const showError = (msg: string) => {
+    setError(msg);
+    setSnackbarOpen(true);
+  };
+
+  const handleSnackbarClose = (event?: React.SyntheticEvent | Event, reason?: string) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+    setSnackbarOpen(false);
+  };
 
   // Custom Google Login Hook
   const loginWithGoogle = useGoogleLogin({
@@ -53,13 +67,13 @@ function login({ isOpen, onClose }: LoginModalProps) {
         }
       } catch (err: any) {
         console.error("Google Login Error:", err);
-        setError(err.response?.data?.message || 'Google sign-in failed');
+        showError(err.response?.data?.message || 'Google sign-in failed');
         setLoading(false);
       }
     },
     onError: (error) => {
       console.error("Google Login Failed:", error);
-      setError('Google sign-in failed');
+      showError('Google sign-in failed');
     }
   });
 
@@ -104,7 +118,7 @@ function login({ isOpen, onClose }: LoginModalProps) {
         }
       }
     } catch (err: any) {
-      setError(err.response?.data?.message || 'An error occurred');
+      showError(err.response?.data?.message || 'An error occurred');
     } finally {
       setLoading(false);
     }
@@ -151,11 +165,8 @@ function login({ isOpen, onClose }: LoginModalProps) {
               </button>
             </div>
 
-            {error && (
-              <div className="login_error">
-                <p>{error}</p>
-              </div>
-            )}
+
+            {/* Inline error removed, replaced by Snackbar */}
 
             <div className="login_footer">
               <p>
@@ -226,11 +237,8 @@ function login({ isOpen, onClose }: LoginModalProps) {
               </div>
             )}
 
-            {error && (
-              <div className="login_error">
-                <p>{error}</p>
-              </div>
-            )}
+
+            {/* Inline error removed, replaced by Snackbar */}
 
             <div className="primary_action">
               <button type="submit" className="primary_button" disabled={loading}>
@@ -252,6 +260,12 @@ function login({ isOpen, onClose }: LoginModalProps) {
           </form>
         )}
       </div>
+      
+      <Snackbar open={snackbarOpen} autoHideDuration={6000} onClose={handleSnackbarClose} anchorOrigin={{ vertical: 'top', horizontal: 'center' }}>
+        <Alert onClose={handleSnackbarClose} severity="error" sx={{ width: '100%' }}>
+          {error}
+        </Alert>
+      </Snackbar>
     </div>
   )
 }
