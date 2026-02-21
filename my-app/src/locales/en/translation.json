@@ -35,8 +35,6 @@
         "no": "No",
         "single": "Single",
         "double": "Double",
-        "triple": "Triple",
-        "quad": "Quad",
         "suite": "Suite",
         "other": "Other"
     },
@@ -100,11 +98,11 @@
         "loadMore": "Load More Reviews",
         "moreRemaining": "more {{count}} remaining",
         "years": {
-            "1": "Freshman",
-            "2": "Sophomore",
-            "3": "Junior",
-            "4": "Senior",
-            "5": "Graduate Student"
+            "1": "1st",
+            "2": "2nd",
+            "3": "3rd",
+            "4": "4th",
+            "5": "Other"
         }
     },
     "addDorm": {

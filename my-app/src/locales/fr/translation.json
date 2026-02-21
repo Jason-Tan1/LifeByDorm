@@ -35,8 +35,6 @@
         "no": "Non",
         "single": "Simple",
         "double": "Double",
-        "triple": "Triple",
-        "quad": "Quadruple",
         "suite": "Suite",
         "other": "Autre"
     },
@@ -100,11 +98,11 @@
         "loadMore": "Charger plus d'avis",
         "moreRemaining": "plus de {{count}} restant(s)",
         "years": {
-            "1": "Première année",
-            "2": "Deuxième année",
-            "3": "Troisième année",
-            "4": "Quatrième année",
-            "5": "Étudiant diplômé"
+            "1": "1ère",
+            "2": "2ème",
+            "3": "3ème",
+            "4": "4ème",
+            "5": "Autre"
         }
     },
     "addDorm": {
