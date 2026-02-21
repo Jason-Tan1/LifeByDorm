@@ -1280,6 +1280,89 @@ app.get('/api/reviews/user', authenticationToken, async (req: AuthRequest, res: 
 });
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
+// ADMIN ROUTES - Analytics
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+// Get dashboard analytics stats (admin only)
+app.get('/api/admin/stats', authenticationToken, requireAdmin, async (req: AuthRequest, res: Response) => {
+  try {
+    const now = new Date();
+    const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    const startOfWeek = new Date(startOfToday);
+    startOfWeek.setDate(startOfWeek.getDate() - 7);
+
+    // Run all queries in parallel for performance
+    const [
+      totalUsers,
+      newUsersThisWeek,
+      totalReviews,
+      reviewsToday,
+      reviewsThisWeek,
+      pendingReviews,
+      approvedReviews,
+      totalDorms,
+      topDorms,
+      topUniversities
+    ] = await Promise.all([
+      // Total users
+      User.countDocuments(),
+      // New users this week
+      User.countDocuments({ createdAt: { $gte: startOfWeek } }),
+      // Total reviews (all statuses)
+      UserReview.countDocuments(),
+      // Reviews submitted today
+      UserReview.countDocuments({ createdAt: { $gte: startOfToday } }),
+      // Reviews submitted this week
+      UserReview.countDocuments({ createdAt: { $gte: startOfWeek } }),
+      // Pending reviews
+      UserReview.countDocuments({ status: 'pending' }),
+      // Approved reviews
+      UserReview.countDocuments({ status: 'approved' }),
+      // Total dorms
+      Dorm.countDocuments({ status: 'approved' }),
+      // Top 5 most reviewed dorms
+      UserReview.aggregate([
+        { $match: { status: 'approved' } },
+        { $group: { _id: { dorm: '$dorm', university: '$university' }, count: { $sum: 1 } } },
+        { $sort: { count: -1 } },
+        { $limit: 5 },
+        { $project: { _id: 0, dorm: '$_id.dorm', university: '$_id.university', reviewCount: '$count' } }
+      ]),
+      // Top 5 most active universities
+      UserReview.aggregate([
+        { $match: { status: 'approved' } },
+        { $group: { _id: '$university', count: { $sum: 1 } } },
+        { $sort: { count: -1 } },
+        { $limit: 5 },
+        { $project: { _id: 0, university: '$_id', reviewCount: '$count' } }
+      ])
+    ]);
+
+    res.json({
+      users: {
+        total: totalUsers,
+        newThisWeek: newUsersThisWeek
+      },
+      reviews: {
+        total: totalReviews,
+        approved: approvedReviews,
+        pending: pendingReviews,
+        today: reviewsToday,
+        thisWeek: reviewsThisWeek
+      },
+      dorms: {
+        total: totalDorms
+      },
+      topDorms,
+      topUniversities
+    });
+  } catch (err) {
+    console.error('Error fetching admin stats', err);
+    res.status(500).json({ message: 'Error fetching stats' });
+  }
+});
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////
 // ADMIN ROUTES - Review Management
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 

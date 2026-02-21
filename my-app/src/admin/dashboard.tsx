@@ -41,13 +41,23 @@ interface PendingDorm {
   status?: string;
 }
 
+interface StatsData {
+  users: { total: number; newThisWeek: number };
+  reviews: { total: number; approved: number; pending: number; today: number; thisWeek: number };
+  dorms: { total: number };
+  topDorms: { dorm: string; university: string; reviewCount: number }[];
+  topUniversities: { university: string; reviewCount: number }[];
+}
+
 function AdminDashboard() {
   const navigate = useNavigate();
   const [pendingReviews, setPendingReviews] = useState<Review[]>([]);
   const [pendingDorms, setPendingDorms] = useState<PendingDorm[]>([]);
+  const [stats, setStats] = useState<StatsData | null>(null);
+  const [statsLoading, setStatsLoading] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
-  const [activeTab, setActiveTab] = useState<'reviews' | 'dorms'>('reviews');
+  const [activeTab, setActiveTab] = useState<'stats' | 'reviews' | 'dorms'>('stats');
 
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -67,6 +77,7 @@ function AdminDashboard() {
 
     fetchPendingReviews();
     fetchPendingDorms();
+    fetchStats();
   }, [navigate]);
 
   const fetchPendingReviews = async () => {
@@ -89,6 +100,23 @@ function AdminDashboard() {
       setError('Error loading reviews');
       setLoading(false);
       console.error(err);
+    }
+  };
+
+  const fetchStats = async () => {
+    try {
+      setStatsLoading(true);
+      const token = localStorage.getItem('token');
+      const response = await fetch(`${API_BASE}/api/admin/stats`, {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      if (!response.ok) throw new Error('Failed to fetch stats');
+      const data = await response.json();
+      setStats(data);
+    } catch (err) {
+      console.error('Error loading stats:', err);
+    } finally {
+      setStatsLoading(false);
     }
   };
 
@@ -205,10 +233,11 @@ function AdminDashboard() {
   };
 
   const formatYears = (year: number[] | number) => {
+    const labels = ['', '1st', '2nd', '3rd', '4th', 'Other'];
     if (Array.isArray(year)) {
-      return year.map(y => ['', 'Freshman', 'Sophomore', 'Junior', 'Senior', 'Graduate Student'][y]).join(', ');
+      return year.map(y => y > 10 ? y.toString() : (labels[y] || 'N/A')).join(', ');
     }
-    return ['', 'Freshman', 'Sophomore', 'Junior', 'Senior', 'Graduate Student'][year] || 'N/A';
+    return (year as number) > 10 ? year.toString() : (labels[year as number] || 'N/A');
   };
 
   const formatRoomTypes = (roomType: string[] | string) => {
@@ -227,6 +256,22 @@ function AdminDashboard() {
 
         {/* Tabs */}
         <div style={{ display: 'flex', gap: '8px', marginTop: '24px', marginBottom: '24px' }}>
+          <button
+            onClick={() => setActiveTab('stats')}
+            style={{
+              padding: '12px 24px',
+              backgroundColor: activeTab === 'stats' ? '#1976d2' : '#e0e0e0',
+              color: activeTab === 'stats' ? 'white' : '#333',
+              border: 'none',
+              borderRadius: '8px',
+              cursor: 'pointer',
+              fontWeight: '600',
+              fontSize: '14px',
+              transition: 'all 0.2s'
+            }}
+          >
+            📊 Stats
+          </button>
           <button
             onClick={() => setActiveTab('reviews')}
             style={{
@@ -260,6 +305,85 @@ function AdminDashboard() {
             Pending Dorms ({pendingDorms.length})
           </button>
         </div>
+
+        {/* Stats Tab Content */}
+        {activeTab === 'stats' && (
+          <div style={{ marginTop: '32px' }}>
+            <h2>📊 Analytics Overview</h2>
+            {statsLoading ? (
+              <p>Loading stats...</p>
+            ) : !stats ? (
+              <p>Unable to load stats.</p>
+            ) : (
+              <>
+                {/* Stat Cards Grid */}
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '16px', marginTop: '20px' }}>
+                  {[
+                    { label: 'Total Users', value: stats.users.total, icon: '👥', color: '#1976d2' },
+                    { label: 'New This Week', value: stats.users.newThisWeek, icon: '🆕', color: '#00897b' },
+                    { label: 'Total Reviews', value: stats.reviews.total, icon: '📝', color: '#7b1fa2' },
+                    { label: 'Reviews Today', value: stats.reviews.today, icon: '📅', color: '#e65100' },
+                    { label: 'Reviews This Week', value: stats.reviews.thisWeek, icon: '📆', color: '#2e7d32' },
+                    { label: 'Pending Approval', value: stats.reviews.pending, icon: '⏳', color: '#f57c00' },
+                    { label: 'Total Dorms', value: stats.dorms.total, icon: '🏠', color: '#5c6bc0' },
+                  ].map((stat) => (
+                    <div key={stat.label} style={{
+                      backgroundColor: '#fff',
+                      border: '1px solid #e0e0e0',
+                      borderRadius: '12px',
+                      padding: '20px',
+                      textAlign: 'center',
+                      boxShadow: '0 2px 8px rgba(0,0,0,0.06)',
+                      borderTop: `4px solid ${stat.color}`
+                    }}>
+                      <div style={{ fontSize: '28px', marginBottom: '8px' }}>{stat.icon}</div>
+                      <div style={{ fontSize: '32px', fontWeight: '700', color: stat.color }}>{stat.value}</div>
+                      <div style={{ fontSize: '13px', color: '#666', marginTop: '4px', fontWeight: '500' }}>{stat.label}</div>
+                    </div>
+                  ))}
+                </div>
+
+                {/* Top Lists */}
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px', marginTop: '32px' }}>
+                  {/* Top Dorms */}
+                  <div style={{ backgroundColor: '#fff', border: '1px solid #e0e0e0', borderRadius: '12px', padding: '20px', boxShadow: '0 2px 8px rgba(0,0,0,0.06)' }}>
+                    <h3 style={{ margin: '0 0 16px 0', fontSize: '16px' }}>🏆 Top 5 Most Reviewed Dorms</h3>
+                    {stats.topDorms.length === 0 ? (
+                      <p style={{ color: '#999' }}>No data yet.</p>
+                    ) : (
+                      <ol style={{ margin: 0, paddingLeft: '20px' }}>
+                        {stats.topDorms.map((d, i) => (
+                          <li key={i} style={{ padding: '8px 0', borderBottom: i < stats.topDorms.length - 1 ? '1px solid #f0f0f0' : 'none' }}>
+                            <strong>{d.dorm}</strong>
+                            <span style={{ color: '#666', fontSize: '13px' }}> — {d.university}</span>
+                            <span style={{ float: 'right', fontWeight: '700', color: '#1976d2' }}>{d.reviewCount} reviews</span>
+                          </li>
+                        ))}
+                      </ol>
+                    )}
+                  </div>
+
+                  {/* Top Universities */}
+                  <div style={{ backgroundColor: '#fff', border: '1px solid #e0e0e0', borderRadius: '12px', padding: '20px', boxShadow: '0 2px 8px rgba(0,0,0,0.06)' }}>
+                    <h3 style={{ margin: '0 0 16px 0', fontSize: '16px' }}>🎓 Top 5 Most Active Universities</h3>
+                    {stats.topUniversities.length === 0 ? (
+                      <p style={{ color: '#999' }}>No data yet.</p>
+                    ) : (
+                      <ol style={{ margin: 0, paddingLeft: '20px' }}>
+                        {stats.topUniversities.map((u, i) => (
+                          <li key={i} style={{ padding: '8px 0', borderBottom: i < stats.topUniversities.length - 1 ? '1px solid #f0f0f0' : 'none' }}>
+                            <strong>{u.university}</strong>
+                            <span style={{ float: 'right', fontWeight: '700', color: '#7b1fa2' }}>{u.reviewCount} reviews</span>
+                          </li>
+                        ))}
+                      </ol>
+                    )}
+                  </div>
+                </div>
+              </>
+            )}
+          </div>
+        )}
 
         {/* Reviews Tab Content */}
         {activeTab === 'reviews' && (
