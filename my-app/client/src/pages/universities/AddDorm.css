@@ -265,7 +265,6 @@
   cursor: not-allowed;
 }
 
-/* Responsive Design */
 @media (max-width: 768px) {
   .add-dorm-form-container {
     padding: 16px;
@@ -278,5 +277,28 @@
   .cancel-btn,
   .submit-btn {
     width: 100%;
+  }
+
+  /* Make the Add Dorm card smaller on mobile */
+  .add-dorm-cta-card {
+    padding: 16px;
+  }
+
+  .add-dorm-cta-card h2 {
+    font-size: 1.35rem;
+    /* Smaller heading */
+    margin-bottom: 6px;
+  }
+
+  .add-dorm-cta-card p {
+    font-size: 0.9rem;
+    /* Smaller paragraph */
+    margin-bottom: 14px;
+  }
+
+  .add-dorm-btn {
+    padding: 8px 16px;
+    /* Smaller button */
+    font-size: 0.9rem;
   }
 }

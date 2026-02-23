@@ -14,7 +14,7 @@
   --color-primary-active: #991b1b;
   --color-success: #4CAF50;
   --color-success-hover: #45a049;
-  
+
   /* Neutral Colors */
   --color-text-primary: #1a1a1a;
   --color-text-secondary: #444;
@@ -23,26 +23,26 @@
   --color-background: #f5f5f5;
   --color-surface: #ffffff;
   --color-border: #e2e8f0;
-  
+
   /* Shadows */
   --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.08);
   --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.1);
   --shadow-lg: 0 4px 16px rgba(0, 0, 0, 0.15);
   --shadow-input: 0 4px 15px rgba(0, 0, 0, 0.08);
-  
+
   /* Star Rating */
   --color-star: #f8c41b;
-  
+
   /* Z-Index Scale */
   --z-base: 1;
   --z-overlay: 10;
   --z-header-content: 20;
   --z-dropdown: 100;
   --z-modal: 1000;
-  
+
   /* Focus Ring */
   --focus-ring: 0 0 0 3px rgba(214, 40, 40, 0.4);
-  
+
   /* Border Radius */
   --radius-sm: 6px;
   --radius-md: 12px;
@@ -71,7 +71,8 @@
   padding: 0;
   box-shadow: none;
   height: fit-content;
-  min-width: 0; /* Prevent grid blowout */
+  min-width: 0;
+  /* Prevent grid blowout */
 }
 
 .university-image-container {
@@ -100,8 +101,9 @@
   bottom: 0;
   left: 0;
   width: 100%;
-  height: 70%; /* Increased for longer text */
-  background: linear-gradient(to top, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.5) 40%, rgba(0,0,0,0) 100%);
+  height: 70%;
+  /* Increased for longer text */
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.85) 0%, rgba(0, 0, 0, 0.5) 40%, rgba(0, 0, 0, 0) 100%);
   pointer-events: none;
   z-index: var(--z-overlay);
 }
@@ -127,11 +129,12 @@
   margin: 0 0 4px 0;
   text-align: left;
   font-weight: 800;
-  text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
   line-height: 1.2;
   /* Truncate very long names */
   display: -webkit-box;
   -webkit-line-clamp: 3;
+  line-clamp: 3;
   -webkit-box-orient: vertical;
   overflow: hidden;
   word-break: break-word;
@@ -142,7 +145,7 @@
   font-size: 0.95rem;
   margin: 4px 0 0 0;
   font-weight: 500;
-  text-shadow: 0 1px 3px rgba(0,0,0,0.5);
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
   display: flex;
   align-items: center;
   gap: 6px;
@@ -238,29 +241,32 @@
 }
 
 .search-section {
-  flex: 1 1 200px;
+  flex: 1 1 150px;
+  /* Reduced width for search */
   display: flex;
   flex-direction: column;
   gap: 8px;
 }
 
 .filter-section {
-  flex: 0 1 180px;
+  flex: 0 1 230px;
+  /* Increased width for filter */
   display: flex;
   flex-direction: column;
-  gap: 16px;
-  margin-bottom: 10px;
+  gap: 8px;
 }
 
-.search-section label, .filter-section label {
-  font-size: clamp(0.85rem, 2vw, 1rem);
-  font-weight: 500;
+.search-section label,
+.filter-section label {
+  font-size: clamp(1rem, 2.5vw, 1.2rem);
+  font-weight: 600;
   color: var(--color-text-primary);
 }
 
-.dorm-search-input, .filter-select {
-  padding: clamp(8px, 1.5vw, 12px) clamp(20px, 2vw, 24px);
-  font-size: clamp(0.85rem, 2vw, 1rem);
+.dorm-search-input,
+.filter-select {
+  padding: clamp(12px, 1.5vw, 16px) clamp(24px, 2vw, 28px);
+  font-size: clamp(1rem, 2.5vw, 1.15rem);
   border: 2px solid var(--color-border);
   border-radius: var(--radius-full);
   background: var(--color-surface);
@@ -268,12 +274,23 @@
   box-shadow: var(--shadow-input);
 }
 
-/* Accessible focus states - visible for keyboard users */
+.filter-select {
+  color: #000;
+  cursor: pointer;
+}
+
+/* Accessible focus states - removing all default outlines and blue rings */
 .dorm-search-input:focus,
-.filter-select:focus {
+.filter-select:focus,
+.dorm-search-input:hover,
+.filter-select:hover {
   outline: none;
-  border-color: var(--color-primary);
-  box-shadow: var(--focus-ring), var(--shadow-input);
+  background-color: var(--color-surface);
+  /* Keep it white on hover/focus */
+  border-color: #cbd5e1;
+  /* Neutral border instead of primary red or blue */
+  box-shadow: var(--shadow-input);
+  /* Keep the subtle default shadow */
 }
 
 .dorm-search-input::placeholder {
@@ -354,7 +371,8 @@
 .dorm-text-content {
   display: flex;
   flex-direction: column;
-  min-width: 0; /* Enables truncation if needed */
+  min-width: 0;
+  /* Enables truncation if needed */
 }
 
 .dorm-card-info h3 {
@@ -388,8 +406,8 @@
 .leave-review-btn-small {
   display: inline-block;
   padding: 8px 16px;
-  background-color: var(--color-surface);
-  color: var(--color-success);
+  background-color: var(--color-success);
+  color: var(--color-surface);
   border: 2px solid var(--color-success);
   border-radius: 20px;
   font-size: 0.9rem;
@@ -397,12 +415,13 @@
   text-decoration: none;
   white-space: nowrap;
   cursor: pointer;
-  transition: background-color 0.2s, color 0.2s, box-shadow 0.2s;
+  transition: background-color 0.2s, color 0.2s, border-color 0.2s, box-shadow 0.2s;
 }
 
 .leave-review-btn-small:hover {
-  background-color: var(--color-success);
-  color: var(--color-surface);
+  background-color: var(--color-success-hover);
+  border-color: var(--color-success-hover);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35);
 }
 
 .leave-review-btn-small:focus-visible {
@@ -449,17 +468,17 @@
   .university-content {
     grid-template-columns: 1fr;
   }
-  
+
   .university-info,
   .dorms-list {
     max-width: 100%;
     width: 100%;
   }
-  
+
   .dorms-controls {
     flex-direction: column;
   }
-  
+
   .search-section,
   .filter-section {
     width: 100%;
@@ -468,42 +487,94 @@
 }
 
 @media (max-width: 500px) {
+  /* ...existing dorm card classes... */
+
+  /* Make the Need Information card smaller on mobile */
+  .university-website-card {
+    padding: 16px;
+    margin-bottom: 16px;
+  }
+
+  .university-website-card h2 {
+    font-size: 1.35rem;
+    /* Smaller heading */
+    margin-bottom: 6px;
+  }
+
+  .university-website-card p {
+    font-size: 0.9rem;
+    /* Smaller paragraph */
+    margin-bottom: 14px;
+  }
+
+  .university-website-btn {
+    padding: 8px 16px;
+    /* Smaller button */
+    font-size: 0.9rem;
+    width: fit-content;
+    align-self: flex-start;
+  }
+
   .dorm-card {
-    flex-direction: column;
+    /* Keep it horizontal instead of column */
+    flex-direction: row;
+    height: 80px;
+    /* Optional: Fix height to match the screenshot proportion */
   }
-  
+
   .dorm-image {
-    width: 100%;
-    min-width: 100%;
-    aspect-ratio: 16 / 9;
+    /* Significantly smaller image width */
+    width: 100px;
+    min-width: 100px;
+    aspect-ratio: 4 / 3;
+    height: 100%;
+    /* Fill the card height */
+    object-fit: cover;
   }
-  
+
   .university-website-btn {
     width: 100%;
     text-align: center;
     box-sizing: border-box;
   }
-  
+
   .dorm-card-info {
-    flex-direction: column;
-    align-items: flex-start;
+    /* Keep info horizontal */
+    flex-direction: row;
+    align-items: center;
     gap: 12px;
+    padding: 8px 12px;
+    /* Smaller padding */
   }
-  
+
+  .dorm-text-content {
+    /* Let the text content expand to fill space before the button */
+    flex: 1;
+  }
+
   .dorm-card-info h3 {
-    /* Allow text to wrap on small screens */
+    /* Keep it single line if possible, or allow wrap conditionally */
     white-space: normal;
+    font-size: 0.95rem;
+    /* Slightly smaller text for mobile */
+    margin: 0 0 2px;
   }
-  
+
+  .dorm-rating {
+    margin-bottom: 0px;
+  }
+
   .dorm-action-area {
-    width: 100%;
-    margin-top: 4px;
+    /* Take up less width auto and stay right-aligned */
+    width: auto;
+    margin-top: 0;
   }
-  
+
   .leave-review-btn-small {
-    display: block;
-    text-align: center;
-    width: 100%;
+    /* Revert to inline block so it doesn't take full width */
+    display: inline-block;
+    padding: 6px 12px;
+    font-size: 0.8rem;
     box-sizing: border-box;
   }
 }

@@ -98,7 +98,9 @@ const ALLOWED_ORIGINS = [
   'http://127.0.0.1:5173',
   'http://localhost:4173',
   'http://127.0.0.1:4173',
-  'http://localhost:3000'
+  'http://localhost:3000',
+  'http://10.24.18.88:5173',
+  'http://10.24.18.88:3000'
 ].filter(Boolean);
 
 // Vercel preview deployment pattern for your project

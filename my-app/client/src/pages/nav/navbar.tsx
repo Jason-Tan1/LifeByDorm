@@ -57,10 +57,6 @@ function navbar() {
       </div>
       {/* Navigation Bar Buttons */}
       <div className="navbar_actions">
-        <Link to="/universities">
-          <button className="navbar_text_btn">{t('navbar.universities')}</button>
-        </Link>
-        
         {/* Language Switcher */}
         <div className="navbar_account_dropdown" style={{ marginRight: '10px' }}>
           <button className="account_btn" onClick={() => { setIsLangDropdownOpen(!isLangDropdownOpen); setIsDropdownOpen(false); }} style={{ display: 'flex', alignItems: 'center', gap: '4px', fontWeight: 700 }}>
@@ -69,10 +65,10 @@ function navbar() {
             {i18n.language === 'en' ? 'ENG' : 'FR'}
           </button>
           {isLangDropdownOpen && (
-             <div className="account_dropdown_content" style={{ display: 'block' }}>
-               <button onClick={() => changeLanguage('en')}>English</button>
-               <button onClick={() => changeLanguage('fr')}>French</button>
-             </div>
+            <div className="account_dropdown_content" style={{ display: 'block' }}>
+              <button onClick={() => changeLanguage('en')}>English</button>
+              <button onClick={() => changeLanguage('fr')}>French</button>
+            </div>
           )}
         </div>
         <div className="navbar_login">
