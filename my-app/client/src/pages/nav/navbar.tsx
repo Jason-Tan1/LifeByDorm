@@ -29,8 +29,29 @@ function navbar() {
       try {
         const payloadJson = token.split('.')[1];
         const decoded = JSON.parse(atob(payloadJson));
+
+        // Check if token has already expired
+        if (decoded.exp && decoded.exp * 1000 < Date.now()) {
+          localStorage.removeItem('token');
+          setIsLoggedIn(false);
+          setIsAdmin(false);
+          return;
+        }
+
         setIsLoggedIn(true);
         setIsAdmin(decoded?.role === 'admin');
+
+        // Set a timer to auto-logout when the token expires
+        if (decoded.exp) {
+          const msUntilExpiry = decoded.exp * 1000 - Date.now();
+          const logoutTimer = setTimeout(() => {
+            localStorage.removeItem('token');
+            setIsLoggedIn(false);
+            setIsAdmin(false);
+            window.location.href = '/';
+          }, msUntilExpiry);
+          return () => clearTimeout(logoutTimer);
+        }
       } catch (err) {
         setIsLoggedIn(false);
         setIsAdmin(false);

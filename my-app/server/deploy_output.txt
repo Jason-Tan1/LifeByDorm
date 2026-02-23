@@ -1,0 +1,6 @@
+
+Deploying "lifebydorm-backend" to stage "dev" (us-east-1)
+✖ Stack lifebydorm-backend-dev failed to deploy (0s)
+
+✖ Failed to resolve AWS account ID: The request signature we calculated does not match the signature you provided. Check your AWS Secret Access Key and signing method. Consult the service documentation for details.
+
