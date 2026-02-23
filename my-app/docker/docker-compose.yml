@@ -1,0 +1,116 @@
+# ==============================================================================
+# Docker Compose Configuration for LifeByDorm
+# Run: docker-compose -f docker/docker-compose.yml up --build
+# Build context is project root (parent of docker/)
+# ==============================================================================
+
+services:
+  # ============================================================================
+  # MongoDB Database
+  # ============================================================================
+  mongodb:
+    image: mongo:7.0
+    container_name: lifebydorm-mongodb
+    restart: unless-stopped
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_ROOT_USERNAME:-admin}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_ROOT_PASSWORD:-adminpassword}
+      MONGO_INITDB_DATABASE: lifebydorm
+    volumes:
+      - mongodb_data:/data/db
+      - ./mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
+    ports:
+      - "27017:27017"
+    networks:
+      - lifebydorm-network
+    healthcheck:
+      test: [ "CMD", "mongosh", "--eval", "db.adminCommand('ping')" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+  # ============================================================================
+  # Application (Frontend + Backend)
+  # ============================================================================
+  app:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+      args:
+        - VITE_API_BASE=/api
+        - VITE_GOOGLE_CLIENT_ID=${VITE_GOOGLE_CLIENT_ID:-}
+    container_name: lifebydorm-app
+    restart: unless-stopped
+    environment:
+      # Server configuration
+      NODE_ENV: production
+      PORT: 3000
+
+      # MongoDB connection
+      MONGODB_URI: mongodb://${MONGO_ROOT_USERNAME:-admin}:${MONGO_ROOT_PASSWORD:-adminpassword}@mongodb:27017/lifebydorm?authSource=admin
+
+      # Security
+      ACCESS_TOKEN_SECRET: ${ACCESS_TOKEN_SECRET:-your-super-secret-jwt-key-change-in-production}
+
+      # Google OAuth (optional)
+      GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID:-}
+
+      # Admin emails (comma-separated)
+      ADMIN_EMAILS: ${ADMIN_EMAILS:-}
+
+      # Frontend URL for CORS
+      FRONTEND_URL: ${FRONTEND_URL:-http://localhost:3000}
+
+      # AWS S3 (optional, for image uploads)
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID:-}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY:-}
+      AWS_REGION: ${AWS_REGION:-us-east-1}
+      AWS_S3_BUCKET: ${AWS_S3_BUCKET:-}
+    ports:
+      - "3000:3000"
+    depends_on:
+      mongodb:
+        condition: service_healthy
+    networks:
+      - lifebydorm-network
+    healthcheck:
+      test: [ "CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:3000/api/health" ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  # ============================================================================
+  # Database Seeder (one-time initialization)
+  # ============================================================================
+  seeder:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.dev
+    container_name: lifebydorm-seeder
+    environment:
+      MONGODB_URI: mongodb://${MONGO_ROOT_USERNAME:-admin}:${MONGO_ROOT_PASSWORD:-adminpassword}@mongodb:27017/lifebydorm?authSource=admin
+    depends_on:
+      mongodb:
+        condition: service_healthy
+    networks:
+      - lifebydorm-network
+    command: [ "npm", "run", "seed" ]
+    profiles:
+      - seed
+    working_dir: /app/server
+
+# ==============================================================================
+# Networks
+# ==============================================================================
+networks:
+  lifebydorm-network:
+    driver: bridge
+
+# ==============================================================================
+# Volumes
+# ==============================================================================
+volumes:
+  mongodb_data:
+    driver: local
