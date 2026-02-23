@@ -87,7 +87,7 @@ function UniversityDash() {
           dormsWithStats = await dormsStatsRes.json();
         } else {
           // Fallback to old method if new endpoint not available (404)
-          console.log('Falling back to old dorms endpoint');
+          // Fallback to old dorms endpoint
           const dormsRes = await fetch(`${API_BASE}/api/universities/${encodeURIComponent(universityName!)}/dorms`);
           if (!dormsRes.ok) {
             throw new Error(`Failed to load dorms: ${dormsRes.status}`);
@@ -254,7 +254,7 @@ function UniversityDash() {
             universityName={university.name}
             onDormSubmitted={() => {
               // Optionally refresh dorms list (though pending dorms won't show)
-              console.log('Dorm submitted successfully');
+              // Dorm submitted successfully
             }}
           />
         </div>
