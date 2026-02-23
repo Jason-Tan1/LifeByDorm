@@ -75,7 +75,7 @@ function Account() {
 
         if (response.ok) {
           const data = await response.json();
-          console.log('Fetched user reviews:', data);
+          // Reviews fetched successfully
           setReviews(data);
         } else {
           const errorData = await response.json().catch(() => ({}));

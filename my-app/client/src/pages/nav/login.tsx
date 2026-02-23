@@ -13,10 +13,8 @@ import { Snackbar, Alert } from '@mui/material';
 // Use relative path '' when on localhost to leverage the Vite proxy (vite.config.ts)
 // Otherwise use the environment variable (for production)
 const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
-const API_BASE = isLocal ? '' : ((import.meta as any).env?.VITE_API_BASE || 'http://localhost:3000');
+const API_BASE = isLocal ? '' : ((import.meta as any).env?.VITE_API_BASE || '');
 
-console.log('Login Component configured with API_BASE:', API_BASE || '(Relative Proxy)');
-console.log('Is Local:', isLocal);
 
 interface LoginModalProps {
   isOpen: boolean;
@@ -250,7 +248,7 @@ function login({ isOpen, onClose }: LoginModalProps) {
               <p>
                 <Trans
                   i18nKey="login.terms"
-                  components={{ 
+                  components={{
                     terms: <Link to="/terms" target="_blank" rel="noopener noreferrer" className="footer_link" />,
                     privacy: <Link to="/privacy" target="_blank" rel="noopener noreferrer" className="footer_link" />
                   }}
@@ -260,7 +258,7 @@ function login({ isOpen, onClose }: LoginModalProps) {
           </form>
         )}
       </div>
-      
+
       <Snackbar open={snackbarOpen} autoHideDuration={6000} onClose={handleSnackbarClose} anchorOrigin={{ vertical: 'top', horizontal: 'center' }}>
         <Alert onClose={handleSnackbarClose} severity="error" sx={{ width: '100%' }}>
           {error}

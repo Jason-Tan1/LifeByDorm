@@ -344,7 +344,8 @@ app.get('/api/stats/homepage', readOnlyLimiter, async (req: Request, res: Respon
       }).lean(),
       UserReview.aggregate([
         { $match: { $or: [{ status: 'approved' }, { status: { $exists: false } }] } },
-        { $group: {
+        {
+          $group: {
             _id: { university: '$university', dorm: '$dorm' },
             avgRoom: { $avg: '$room' },
             avgBathroom: { $avg: '$bathroom' },
@@ -352,7 +353,8 @@ app.get('/api/stats/homepage', readOnlyLimiter, async (req: Request, res: Respon
             avgAmenities: { $avg: '$amenities' },
             avgLocation: { $avg: '$location' },
             reviewCount: { $sum: 1 }
-        }}
+          }
+        }
       ])
     ]);
 
@@ -569,7 +571,7 @@ const getTransporter = () => {
         }
       });
     } catch (error) {
-       console.error('❌ Failed to create email transporter:', error);
+      console.error('❌ Failed to create email transporter:', error);
     }
   }
   return transporter;
@@ -1372,7 +1374,7 @@ app.get('/api/admin/stats', authenticationToken, requireAdmin, async (req: AuthR
 app.get('/api/admin/reviews/pending', authenticationToken, requireAdmin, async (req: AuthRequest, res: Response) => {
   try {
     const pendingReviews = await UserReview.find({ status: 'pending' }).sort({ createdAt: -1 }).lean();
-    
+
     // Sign image URLs so they can be viewed even if S3 block public access is on
     const reviewsWithSignedUrls = await Promise.all(pendingReviews.map(async (review: any) => {
       if (review.fileImage) {
@@ -1551,6 +1553,33 @@ app.delete('/api/admin/dorms/:id', authenticationToken, requireAdmin, async (req
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 // END ADMIN ROUTES - Dorm Management
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
+// CONTACT FORM ENDPOINT
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+app.post('/api/contact', apiLimiter, async (req: Request, res: Response) => {
+  try {
+    const { fullName, email, message } = req.body;
+    if (!fullName || !email || !message) {
+      return res.status(400).json({ message: 'All fields are required' });
+    }
+
+    if (process.env.EMAIL_USER && process.env.EMAIL_PASS) {
+      await getTransporter().sendMail({
+        from: '"LifeByDorm Contact" <support@lifebydorm.ca>',
+        to: process.env.EMAIL_USER, // Send to your own support email
+        replyTo: email,
+        subject: `New Contact Message from ${fullName}`,
+        text: `Name: ${fullName}\nEmail: ${email}\n\nMessage:\n${message}`,
+      });
+      res.status(200).json({ message: 'Message sent successfully' });
+    } else {
+      console.warn('⚠️ Contact form submitted but email credentials are missing.');
+      res.status(500).json({ message: 'Email service unavailable' });
+    }
+  } catch (err) {
+    console.error('Error sending contact email:', err);
+    res.status(500).json({ message: 'Failed to send message' });
+  }
+});
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 // HEALTH CHECK ENDPOINT (for Docker/Kubernetes health probes)
