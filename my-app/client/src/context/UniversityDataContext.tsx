@@ -2,7 +2,10 @@ import { createContext, useContext, useState, useEffect, useCallback, type React
 
 // Use relative path '' on localhost to leverage the Vite proxy (vite.config.ts)
 // Otherwise use the environment variable (for production)
-const isLocal = typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1');
+const isLocal = typeof window !== 'undefined' && 
+  (window.location.hostname === 'localhost' || 
+   window.location.hostname === '127.0.0.1' || 
+   window.location.hostname === '10.24.18.88');
 const API_BASE = isLocal ? '' : ((import.meta as any).env?.VITE_API_BASE || '');
 
 type University = {
