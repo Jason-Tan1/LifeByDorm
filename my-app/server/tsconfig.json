@@ -2,10 +2,12 @@
   "compilerOptions": {
     "target": "ES2020",
     "module": "CommonJS",
-    "lib": ["ES2020"],
+    "lib": [
+      "ES2020"
+    ],
     "jsx": "react",
     "outDir": "./dist",
-    "rootDir": "./",
+    "rootDir": "./src",
     "strict": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
@@ -14,9 +16,18 @@
     "resolveJsonModule": true,
     "baseUrl": ".",
     "paths": {
-      "*": ["node_modules/*"]
+      "*": [
+        "node_modules/*"
+      ]
     }
   },
-  "include": ["./**/*"],
-  "exclude": ["node_modules"]
+  "include": [
+    "src/**/*"
+  ],
+  "exclude": [
+    "node_modules",
+    "dist",
+    "tests",
+    "seed"
+  ]
 }
