@@ -1,8 +1,8 @@
-# LifeByDorm 🏠
+# LifeByDorm
 
 A comprehensive platform for students to discover, review, and compare university dormitories.
 
-## 🐳 Quick Start with Docker
+## Quick Start with Docker
 
 The easiest way to run this project is with Docker. No need to install Node.js, MongoDB, or any dependencies locally!
 
@@ -48,7 +48,7 @@ docker-compose -f docker-compose.dev.yml up --build
 
 ---
 
-## 🔧 Manual Setup (Without Docker)
+## Manual Setup (Without Docker)
 
 If you prefer to run without Docker:
 
@@ -95,7 +95,7 @@ npm run dev
 
 ---
 
-## 📁 Project Structure
+## Project Structure
 
 ```
 my-app/
@@ -119,7 +119,7 @@ my-app/
 
 ---
 
-## 🚀 Docker Commands Reference
+## Docker Commands Reference
 
 | Command | Description |
 |---------|-------------|
@@ -133,7 +133,7 @@ my-app/
 
 ---
 
-## 🔐 Environment Variables
+## Environment Variables
 
 | Variable | Description | Required |
 |----------|-------------|----------|
@@ -149,7 +149,7 @@ my-app/
 
 ---
 
-## 🧪 Testing
+## Testing
 
 ```bash
 # Run frontend tests
@@ -162,7 +162,7 @@ npm test
 
 ---
 
-## 📝 API Endpoints
+## API Endpoints
 
 | Endpoint | Method | Description |
 |----------|--------|-------------|
@@ -175,16 +175,16 @@ npm test
 
 ---
 
-## 🛠 Tech Stack
+## Tech Stack
 
-- **Frontend**: React 19, TypeScript, Vite, Material-UI
-- **Backend**: Express 5, TypeScript, Mongoose
+- **Frontend**: React 19, TypeScript, Vite, Material-UI, i18next
+- **Backend**: Express 5, TypeScript, Mongoose, Serverless Framework, AWS S3, Zod, Nodemailer
 - **Database**: MongoDB 7
 - **Authentication**: JWT, Google OAuth
 - **Containerization**: Docker, Docker Compose
 
 ---
 
-## 📄 License
+## License
 
 This project is licensed under the MIT License - see the [LICENSE](../LICENSE) file for details.

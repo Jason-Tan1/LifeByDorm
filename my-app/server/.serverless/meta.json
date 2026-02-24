@@ -13,13 +13,13 @@
         "memorySize": 256,
         "timeout": 10,
         "environment": {
-          "MONGODB_URI": "mongodb+srv://jatan2745:jasontan12345@lifebydorm.ldp6omn.mongodb.net/lifebydorm?appName=LifeByDorm",
+          "MONGODB_URI": "mongodb+srv://jatan2745:fcQ46m3lzTZcR3XP@lifebydorm.ldp6omn.mongodb.net/lifebydorm?appName=LifeByDorm",
           "ACCESS_TOKEN_SECRET": "<REDACTED>",
           "ADMIN_EMAILS": "",
           "FRONTEND_URL": "https://lifebydorm.ca",
           "AWS_BUCKET_NAME": "lifebydorm-uploader",
           "EMAIL_USER": "jatan2745@gmail.com",
-          "EMAIL_PASS": "pzgf yqqa ujbe zrxr",
+          "EMAIL_PASS": "exmx cojg pkox mqxa",
           "NODE_ENV": "production"
         },
         "iam": {
@@ -141,7 +141,7 @@
               "Properties": {
                 "Code": {
                   "S3Bucket": "serverless-framework-deployments-us-east-1-ae1440ea-d7ea",
-                  "S3Key": "serverless/lifebydorm-backend/dev/1771874929644-2026-02-23T19:28:49.644Z/lifebydorm-backend.zip"
+                  "S3Key": "serverless/lifebydorm-backend/dev/1771879764206-2026-02-23T20:49:24.206Z/lifebydorm-backend.zip"
                 },
                 "Handler": "src/lambda.handler",
                 "Runtime": "nodejs20.x",
@@ -150,13 +150,13 @@
                 "Timeout": 10,
                 "Environment": {
                   "Variables": {
-                    "MONGODB_URI": "mongodb+srv://jatan2745:jasontan12345@lifebydorm.ldp6omn.mongodb.net/lifebydorm?appName=LifeByDorm",
+                    "MONGODB_URI": "mongodb+srv://jatan2745:fcQ46m3lzTZcR3XP@lifebydorm.ldp6omn.mongodb.net/lifebydorm?appName=LifeByDorm",
                     "ACCESS_TOKEN_SECRET": "<REDACTED>",
                     "ADMIN_EMAILS": "",
                     "FRONTEND_URL": "https://lifebydorm.ca",
                     "AWS_BUCKET_NAME": "lifebydorm-uploader",
                     "EMAIL_USER": "jatan2745@gmail.com",
-                    "EMAIL_PASS": "pzgf yqqa ujbe zrxr",
+                    "EMAIL_PASS": "exmx cojg pkox mqxa",
                     "NODE_ENV": "production"
                   }
                 },
@@ -171,14 +171,14 @@
                 "ApiLogGroup"
               ]
             },
-            "ApiLambdaVersionyeypuNtlWyN12QAiN4hprCTVrd2T9sHNQnN4iTeU": {
+            "ApiLambdaVersionOveOOFdPPAeWW5gahOmxiD6fNzmJRWdf4fxjIL3R4": {
               "Type": "AWS::Lambda::Version",
               "DeletionPolicy": "Retain",
               "Properties": {
                 "FunctionName": {
                   "Ref": "ApiLambdaFunction"
                 },
-                "CodeSha256": "VAuy//zOsotQPZ64+aXEL9GaHCITOmRZGD0HIhxZXtE="
+                "CodeSha256": "ixR0zlj+btFg+ksQdv3xxIb5vRYq8Cui5eeydq0EhJQ="
               }
             },
             "ApiGatewayRestApi": {
@@ -396,7 +396,7 @@
                 "ApiLambdaPermissionApiGateway"
               ]
             },
-            "ApiGatewayDeployment1771874919619": {
+            "ApiGatewayDeployment1771879755274": {
               "Type": "AWS::ApiGateway::Deployment",
               "Properties": {
                 "RestApiId": {
@@ -459,7 +459,7 @@
             "ApiLambdaFunctionQualifiedArn": {
               "Description": "Current Lambda function version",
               "Value": {
-                "Ref": "ApiLambdaVersionyeypuNtlWyN12QAiN4hprCTVrd2T9sHNQnN4iTeU"
+                "Ref": "ApiLambdaVersionOveOOFdPPAeWW5gahOmxiD6fNzmJRWdf4fxjIL3R4"
               },
               "Export": {
                 "Name": "sls-lifebydorm-backend-dev-ApiLambdaFunctionQualifiedArn"
@@ -554,7 +554,7 @@
           "timeout": 10,
           "runtime": "nodejs20.x",
           "vpc": {},
-          "versionLogicalId": "ApiLambdaVersionyeypuNtlWyN12QAiN4hprCTVrd2T9sHNQnN4iTeU"
+          "versionLogicalId": "ApiLambdaVersionOveOOFdPPAeWW5gahOmxiD6fNzmJRWdf4fxjIL3R4"
         }
       },
       "build": {
@@ -580,13 +580,13 @@
       "memorySize": 256,
       "timeout": 10,
       "environment": {
-        "MONGODB_URI": "mongodb+srv://jatan2745:jasontan12345@lifebydorm.ldp6omn.mongodb.net/lifebydorm?appName=LifeByDorm",
+        "MONGODB_URI": "mongodb+srv://jatan2745:fcQ46m3lzTZcR3XP@lifebydorm.ldp6omn.mongodb.net/lifebydorm?appName=LifeByDorm",
         "ACCESS_TOKEN_SECRET": "<REDACTED>",
         "ADMIN_EMAILS": "",
         "FRONTEND_URL": "https://lifebydorm.ca",
         "AWS_BUCKET_NAME": "lifebydorm-uploader",
         "EMAIL_USER": "jatan2745@gmail.com",
-        "EMAIL_PASS": "pzgf yqqa ujbe zrxr",
+        "EMAIL_PASS": "exmx cojg pkox mqxa",
         "NODE_ENV": "production"
       },
       "iam": {
@@ -708,7 +708,7 @@
             "Properties": {
               "Code": {
                 "S3Bucket": "serverless-framework-deployments-us-east-1-ae1440ea-d7ea",
-                "S3Key": "serverless/lifebydorm-backend/dev/1771874929644-2026-02-23T19:28:49.644Z/lifebydorm-backend.zip"
+                "S3Key": "serverless/lifebydorm-backend/dev/1771879764206-2026-02-23T20:49:24.206Z/lifebydorm-backend.zip"
               },
               "Handler": "src/lambda.handler",
               "Runtime": "nodejs20.x",
@@ -717,13 +717,13 @@
               "Timeout": 10,
               "Environment": {
                 "Variables": {
-                  "MONGODB_URI": "mongodb+srv://jatan2745:jasontan12345@lifebydorm.ldp6omn.mongodb.net/lifebydorm?appName=LifeByDorm",
+                  "MONGODB_URI": "mongodb+srv://jatan2745:fcQ46m3lzTZcR3XP@lifebydorm.ldp6omn.mongodb.net/lifebydorm?appName=LifeByDorm",
                   "ACCESS_TOKEN_SECRET": "<REDACTED>",
                   "ADMIN_EMAILS": "",
                   "FRONTEND_URL": "https://lifebydorm.ca",
                   "AWS_BUCKET_NAME": "lifebydorm-uploader",
                   "EMAIL_USER": "jatan2745@gmail.com",
-                  "EMAIL_PASS": "pzgf yqqa ujbe zrxr",
+                  "EMAIL_PASS": "exmx cojg pkox mqxa",
                   "NODE_ENV": "production"
                 }
               },
@@ -738,14 +738,14 @@
               "ApiLogGroup"
             ]
           },
-          "ApiLambdaVersionyeypuNtlWyN12QAiN4hprCTVrd2T9sHNQnN4iTeU": {
+          "ApiLambdaVersionOveOOFdPPAeWW5gahOmxiD6fNzmJRWdf4fxjIL3R4": {
             "Type": "AWS::Lambda::Version",
             "DeletionPolicy": "Retain",
             "Properties": {
               "FunctionName": {
                 "Ref": "ApiLambdaFunction"
               },
-              "CodeSha256": "VAuy//zOsotQPZ64+aXEL9GaHCITOmRZGD0HIhxZXtE="
+              "CodeSha256": "ixR0zlj+btFg+ksQdv3xxIb5vRYq8Cui5eeydq0EhJQ="
             }
           },
           "ApiGatewayRestApi": {
@@ -963,7 +963,7 @@
               "ApiLambdaPermissionApiGateway"
             ]
           },
-          "ApiGatewayDeployment1771874919619": {
+          "ApiGatewayDeployment1771879755274": {
             "Type": "AWS::ApiGateway::Deployment",
             "Properties": {
               "RestApiId": {
@@ -1026,7 +1026,7 @@
           "ApiLambdaFunctionQualifiedArn": {
             "Description": "Current Lambda function version",
             "Value": {
-              "Ref": "ApiLambdaVersionyeypuNtlWyN12QAiN4hprCTVrd2T9sHNQnN4iTeU"
+              "Ref": "ApiLambdaVersionOveOOFdPPAeWW5gahOmxiD6fNzmJRWdf4fxjIL3R4"
             },
             "Export": {
               "Name": "sls-lifebydorm-backend-dev-ApiLambdaFunctionQualifiedArn"
@@ -1084,12 +1084,12 @@
     "serviceProviderAwsCfStackName": "lifebydorm-backend-dev",
     "serviceProviderAwsCfStackId": "arn:aws:cloudformation:us-east-1:650122212159:stack/lifebydorm-backend-dev/7bc98cd0-fbc9-11f0-8edd-0affdbe436cb",
     "serviceProviderAwsCfStackCreated": "2026-01-27T21:45:23.348Z",
-    "serviceProviderAwsCfStackUpdated": "2026-02-20T20:00:01.706Z",
+    "serviceProviderAwsCfStackUpdated": "2026-02-23T20:36:07.135Z",
     "serviceProviderAwsCfStackStatus": "UPDATE_COMPLETE",
     "serviceProviderAwsCfStackOutputs": [
       {
         "OutputKey": "ApiLambdaFunctionQualifiedArn",
-        "OutputValue": "arn:aws:lambda:us-east-1:650122212159:function:lifebydorm-backend-dev-api:10",
+        "OutputValue": "arn:aws:lambda:us-east-1:650122212159:function:lifebydorm-backend-dev-api:12",
         "Description": "Current Lambda function version",
         "ExportName": "sls-lifebydorm-backend-dev-ApiLambdaFunctionQualifiedArn"
       },
@@ -1207,7 +1207,7 @@
           "Properties": {
             "Code": {
               "S3Bucket": "serverless-framework-deployments-us-east-1-ae1440ea-d7ea",
-              "S3Key": "serverless/lifebydorm-backend/dev/1771874929644-2026-02-23T19:28:49.644Z/lifebydorm-backend.zip"
+              "S3Key": "serverless/lifebydorm-backend/dev/1771879764206-2026-02-23T20:49:24.206Z/lifebydorm-backend.zip"
             },
             "Handler": "src/lambda.handler",
             "Runtime": "nodejs20.x",
@@ -1216,13 +1216,13 @@
             "Timeout": 10,
             "Environment": {
               "Variables": {
-                "MONGODB_URI": "mongodb+srv://jatan2745:jasontan12345@lifebydorm.ldp6omn.mongodb.net/lifebydorm?appName=LifeByDorm",
+                "MONGODB_URI": "mongodb+srv://jatan2745:fcQ46m3lzTZcR3XP@lifebydorm.ldp6omn.mongodb.net/lifebydorm?appName=LifeByDorm",
                 "ACCESS_TOKEN_SECRET": "<REDACTED>",
                 "ADMIN_EMAILS": "",
                 "FRONTEND_URL": "https://lifebydorm.ca",
                 "AWS_BUCKET_NAME": "lifebydorm-uploader",
                 "EMAIL_USER": "jatan2745@gmail.com",
-                "EMAIL_PASS": "pzgf yqqa ujbe zrxr",
+                "EMAIL_PASS": "exmx cojg pkox mqxa",
                 "NODE_ENV": "production"
               }
             },
@@ -1237,14 +1237,14 @@
             "ApiLogGroup"
           ]
         },
-        "ApiLambdaVersionyeypuNtlWyN12QAiN4hprCTVrd2T9sHNQnN4iTeU": {
+        "ApiLambdaVersionOveOOFdPPAeWW5gahOmxiD6fNzmJRWdf4fxjIL3R4": {
           "Type": "AWS::Lambda::Version",
           "DeletionPolicy": "Retain",
           "Properties": {
             "FunctionName": {
               "Ref": "ApiLambdaFunction"
             },
-            "CodeSha256": "VAuy//zOsotQPZ64+aXEL9GaHCITOmRZGD0HIhxZXtE="
+            "CodeSha256": "ixR0zlj+btFg+ksQdv3xxIb5vRYq8Cui5eeydq0EhJQ="
           }
         },
         "ApiGatewayRestApi": {
@@ -1462,7 +1462,7 @@
             "ApiLambdaPermissionApiGateway"
           ]
         },
-        "ApiGatewayDeployment1771874919619": {
+        "ApiGatewayDeployment1771879755274": {
           "Type": "AWS::ApiGateway::Deployment",
           "Properties": {
             "RestApiId": {
@@ -1525,7 +1525,7 @@
         "ApiLambdaFunctionQualifiedArn": {
           "Description": "Current Lambda function version",
           "Value": {
-            "Ref": "ApiLambdaVersionyeypuNtlWyN12QAiN4hprCTVrd2T9sHNQnN4iTeU"
+            "Ref": "ApiLambdaVersionOveOOFdPPAeWW5gahOmxiD6fNzmJRWdf4fxjIL3R4"
           },
           "Export": {
             "Name": "sls-lifebydorm-backend-dev-ApiLambdaFunctionQualifiedArn"
