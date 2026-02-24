@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import NavBar from './navbar.tsx';
 import Footer from '../home/footer.tsx';
 import './contactme.css';
 import DefaultDormImage from '../../assets/Default_Dorm.png';
 
 function ContactMe() {
+  const { t } = useTranslation();
   const [formData, setFormData] = useState({
     fullName: '',
     email: '',
@@ -34,10 +36,10 @@ function ContactMe() {
         body: JSON.stringify(formData)
       });
       if (!response.ok) throw new Error('Failed to send message');
-      alert('Thank you for your message! We will get back to you soon.');
+      alert(t('contact.successAlert'));
       setFormData({ fullName: '', email: '', message: '' });
     } catch (err) {
-      alert('Sorry, there was an error sending your message. Please try emailing us directly.');
+      alert(t('contact.errorAlert'));
     } finally {
       setSubmitting(false);
     }
@@ -50,57 +52,57 @@ function ContactMe() {
       {/* Hero Section */}
       <div className="contact-hero" style={{ backgroundImage: `url(${DefaultDormImage})` }}>
         <div className="contact-hero-overlay">
-          <h1>Contact Us</h1>
+          <h1>{t('contact.title')}</h1>
         </div>
       </div>
 
       <div className="contact-content">
         <div className="contact-container">
           {/* h1 hidden by CSS but removed here effectively */}
-          <p className="contact-subtitle">Have a question or feedback? We'd love to hear from you!</p>
+          <p className="contact-subtitle">{t('contact.subtitle')}</p>
 
           <form className="contact-form" onSubmit={handleSubmit}>
             <div className="form-group">
-              <label htmlFor="fullName">Full Name</label>
+              <label htmlFor="fullName">{t('contact.fullNameLabel')}</label>
               <input
                 type="text"
                 id="fullName"
                 name="fullName"
                 value={formData.fullName}
                 onChange={handleChange}
-                placeholder="Enter your full name"
+                placeholder={t('contact.fullNamePlaceholder')}
                 required
               />
             </div>
 
             <div className="form-group">
-              <label htmlFor="email">Email</label>
+              <label htmlFor="email">{t('contact.emailLabel')}</label>
               <input
                 type="email"
                 id="email"
                 name="email"
                 value={formData.email}
                 onChange={handleChange}
-                placeholder="Enter your email address"
+                placeholder={t('contact.emailPlaceholder')}
                 required
               />
             </div>
 
             <div className="form-group">
-              <label htmlFor="message">Message</label>
+              <label htmlFor="message">{t('contact.messageLabel')}</label>
               <textarea
                 id="message"
                 name="message"
                 value={formData.message}
                 onChange={handleChange}
-                placeholder="Enter your message"
+                placeholder={t('contact.messagePlaceholder')}
                 rows={6}
                 required
               />
             </div>
 
             <button type="submit" className="submit-button">
-              Send Message
+              {t('contact.submitButton')}
             </button>
           </form>
         </div>

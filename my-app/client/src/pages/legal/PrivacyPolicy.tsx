@@ -1,110 +1,90 @@
-// import React from 'react';
+import { useTranslation } from 'react-i18next';
 import './legal.css';
 import NavBar from '../nav/navbar';
 import Footer from '../home/footer';
 import DefaultDormImage from '../../assets/Default_Dorm.png';
 
 function PrivacyPolicy() {
+  const { t } = useTranslation();
+
   return (
     <>
       <NavBar />
-      
+
       {/* Hero Section */}
       <div className="page-hero" style={{ backgroundImage: `url(${DefaultDormImage})` }}>
         <div className="page-hero-overlay">
-           <h1>Privacy Policy</h1>
+          <h1>{t('legal.privacyTitle')}</h1>
         </div>
       </div>
 
       <div className="legal-container">
-        <span className="legal-date">Last Updated: January 12, 2026</span>
+        <span className="legal-date">{t('legal.lastUpdatedPrivacy')}</span>
 
         <div className="legal-section">
-          <p>
-            At LifeByDorm, we value your privacy and are committed to protecting your personal information. 
-            This Privacy Policy explains how we collect, use, and safeguard your data when you use our website 
-            and services.
-          </p>
+          <p>{t('legal.privacyIntro')}</p>
         </div>
 
         <div className="legal-section">
-          <h2>1. Information We Collect</h2>
-          <p>We collect information that you provide directly to us:</p>
+          <h2>{t('legal.privacy1Title')}</h2>
+          <p>{t('legal.privacy1Text')}</p>
           <ul>
-            <li><strong>Account Information:</strong> When you sign up, we collect your email address and authentication details (such as Google OAuth tokens).</li>
-            <li><strong>User Content:</strong> Reviews, ratings, comments, and other content you post on the platform.</li>
-            <li><strong>Communications:</strong> Messages you send to us for support or inquiries.</li>
+            <li><strong>{t('legal.privacy1Bullet1Title')}</strong> {t('legal.privacy1Bullet1Text')}</li>
+            <li><strong>{t('legal.privacy1Bullet2Title')}</strong> {t('legal.privacy1Bullet2Text')}</li>
+            <li><strong>{t('legal.privacy1Bullet3Title')}</strong> {t('legal.privacy1Bullet3Text')}</li>
           </ul>
         </div>
 
         <div className="legal-section">
-          <h2>2. How We Use Your Information</h2>
-          <p>We use the collected information to:</p>
+          <h2>{t('legal.privacy2Title')}</h2>
+          <p>{t('legal.privacy2Text')}</p>
           <ul>
-            <li>Provide, maintain, and improve our services.</li>
-            <li>Verify your identity and prevent fraud.</li>
-            <li>Send you technical notices, updates, security alerts, and support messages.</li>
-            <li>Monitor and analyze trends, usage, and activities in connection with our services.</li>
+            <li>{t('legal.privacy2Bullet1')}</li>
+            <li>{t('legal.privacy2Bullet2')}</li>
+            <li>{t('legal.privacy2Bullet3')}</li>
+            <li>{t('legal.privacy2Bullet4')}</li>
           </ul>
         </div>
 
         <div className="legal-section">
-          <h2>3. Cookies and Tracking Technologies</h2>
-          <p>
-            We use local storage and cookies to maintain your login session and preferences. 
-            You can control cookies through your browser settings, but disabling them may affect 
-            your ability to use certain features of the site.
-          </p>
+          <h2>{t('legal.privacy3Title')}</h2>
+          <p>{t('legal.privacy3Text')}</p>
         </div>
 
         <div className="legal-section">
-          <h2>4. Data Sharing and Disclosure</h2>
-          <p>We do not sell your personal data. We may share your information in the following circumstances:</p>
+          <h2>{t('legal.privacy4Title')}</h2>
+          <p>{t('legal.privacy4Text')}</p>
           <ul>
-            <li><strong>With Your Consent:</strong> We share information when you give us specific permission to do so.</li>
-            <li><strong>Legal Requirements:</strong> We may disclose information if required by law or in response to valid requests by public authorities.</li>
-            <li><strong>Service Providers:</strong> We may use third-party vendors to help us provide our services (e.g., hosting, analytics), subject to confidentiality agreements.</li>
+            <li><strong>{t('legal.privacy4Bullet1Title')}</strong> {t('legal.privacy4Bullet1Text')}</li>
+            <li><strong>{t('legal.privacy4Bullet2Title')}</strong> {t('legal.privacy4Bullet2Text')}</li>
+            <li><strong>{t('legal.privacy4Bullet3Title')}</strong> {t('legal.privacy4Bullet3Text')}</li>
           </ul>
         </div>
 
         <div className="legal-section">
-          <h2>5. Data Security</h2>
-          <p>
-            We implement reasonable security measures to protect your personal information. 
-            However, no method of transmission over the Internet is 100% secure, and we cannot 
-            guarantee absolute security.
-          </p>
+          <h2>{t('legal.privacy5Title')}</h2>
+          <p>{t('legal.privacy5Text')}</p>
         </div>
 
         <div className="legal-section">
-          <h2>6. Third-Party Links</h2>
-          <p>
-            Our website may contain links to third-party websites. We are not responsible for the privacy 
-            practices or content of those third-party sites. We encourage you to review their privacy policies.
-          </p>
+          <h2>{t('legal.privacy6Title')}</h2>
+          <p>{t('legal.privacy6Text')}</p>
         </div>
 
         <div className="legal-section">
-          <h2>7. Children's Privacy</h2>
-          <p>
-            Our services are not intended for individuals under the age of 13. We do not knowingly 
-            collect personal information from children under 13. If we become aware that we have 
-            collected such information, we will take steps to delete it.
-          </p>
+          <h2>{t('legal.privacy7Title')}</h2>
+          <p>{t('legal.privacy7Text')}</p>
         </div>
 
         <div className="legal-section">
-          <h2>8. Updates to This Policy</h2>
-          <p>
-            We may update this Privacy Policy from time to time. We will notify you of any changes by 
-            posting the new Privacy Policy on this page and updating the "Last Updated" date.
-          </p>
+          <h2>{t('legal.privacy8Title')}</h2>
+          <p>{t('legal.privacy8Text')}</p>
         </div>
 
         <div className="legal-contact">
-          <h2>Contact Us</h2>
+          <h2>{t('legal.contactUs')}</h2>
           <p>
-            If you have any questions about this Privacy Policy, please contact us at: 
+            {t('legal.contactPrivacy')}
             <br />
             <strong>support@lifebydorm.ca</strong>
           </p>
