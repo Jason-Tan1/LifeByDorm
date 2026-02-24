@@ -1,66 +1,6 @@
 ﻿{
   "auditReportVersion": 2,
   "vulnerabilities": {
-    "@eslint/config-array": {
-      "name": "@eslint/config-array",
-      "severity": "high",
-      "isDirect": false,
-      "via": [
-        "minimatch"
-      ],
-      "effects": [
-        "eslint"
-      ],
-      "range": "<=0.22.0",
-      "nodes": [
-        "node_modules/@eslint/config-array"
-      ],
-      "fixAvailable": {
-        "name": "eslint",
-        "version": "10.0.2",
-        "isSemVerMajor": true
-      }
-    },
-    "@eslint/eslintrc": {
-      "name": "@eslint/eslintrc",
-      "severity": "high",
-      "isDirect": false,
-      "via": [
-        "minimatch"
-      ],
-      "effects": [
-        "eslint"
-      ],
-      "range": "0.0.1 || >=0.1.1",
-      "nodes": [
-        "node_modules/@eslint/eslintrc"
-      ],
-      "fixAvailable": {
-        "name": "eslint",
-        "version": "10.0.2",
-        "isSemVerMajor": true
-      }
-    },
-    "eslint": {
-      "name": "eslint",
-      "severity": "high",
-      "isDirect": true,
-      "via": [
-        "@eslint/config-array",
-        "@eslint/eslintrc",
-        "minimatch"
-      ],
-      "effects": [],
-      "range": "0.7.1 - 2.0.0-rc.1 || 4.1.0 - 10.0.0-rc.2",
-      "nodes": [
-        "node_modules/eslint"
-      ],
-      "fixAvailable": {
-        "name": "eslint",
-        "version": "10.0.2",
-        "isSemVerMajor": true
-      }
-    },
     "gaxios": {
       "name": "gaxios",
       "severity": "high",
@@ -114,22 +54,13 @@
         }
       ],
       "effects": [
-        "@eslint/config-array",
-        "@eslint/eslintrc",
-        "eslint",
         "glob"
       ],
       "range": "<10.2.1",
       "nodes": [
-        "node_modules/@eslint/eslintrc/node_modules/minimatch",
-        "node_modules/glob/node_modules/minimatch",
-        "node_modules/minimatch"
+        "node_modules/glob/node_modules/minimatch"
       ],
-      "fixAvailable": {
-        "name": "eslint",
-        "version": "10.0.2",
-        "isSemVerMajor": true
-      }
+      "fixAvailable": true
     },
     "rimraf": {
       "name": "rimraf",
@@ -153,17 +84,17 @@
       "info": 0,
       "low": 0,
       "moderate": 0,
-      "high": 7,
+      "high": 4,
       "critical": 0,
-      "total": 7
+      "total": 4
     },
     "dependencies": {
       "prod": 395,
-      "dev": 325,
+      "dev": 306,
       "optional": 51,
       "peer": 8,
       "peerOptional": 0,
-      "total": 721
+      "total": 702
     }
   }
 }
