@@ -71,7 +71,7 @@ function AdminDashboard() {
       }
     }
     if (!isAdmin) {
-      navigate('/login');
+      navigate('/?login=true');
       return;
     }
 

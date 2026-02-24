@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import MenuIcon from '@mui/icons-material/Menu';
 import LanguageIcon from '@mui/icons-material/Language';
 import LoginModal from './login';
@@ -16,11 +16,21 @@ function navbar() {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isLangDropdownOpen, setIsLangDropdownOpen] = useState(false);
   const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
 
   const changeLanguage = (lng: string) => {
     i18n.changeLanguage(lng);
     setIsLangDropdownOpen(false);
   };
+
+  // Auto-open login modal when redirected with ?login=true (e.g. from admin dashboard)
+  useEffect(() => {
+    if (searchParams.get('login') === 'true') {
+      setIsLoginModalOpen(true);
+      searchParams.delete('login');
+      setSearchParams(searchParams, { replace: true });
+    }
+  }, [searchParams, setSearchParams]);
 
   useEffect(() => {
     // Check token and determine login/admin status from JWT role claim
