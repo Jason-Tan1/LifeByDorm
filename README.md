@@ -1,6 +1,6 @@
 <div align="center">
 
-# 🏠 LifeByDorm
+# LifeByDorm
 
 **Your Guide to Canadian University Housing**
 
@@ -8,34 +8,40 @@
 
 ---
 
-## 📖 About The Project
+## About The Project
 
 **LifeByDorm** helps Canadian students find their ideal university dorm through authentic peer reviews and comprehensive listings. Students can search schools, compare dorms by ratings and reviews, and share their own experiences to help future residents make informed housing decisions.
 
 Finding the right dorm can be overwhelming. LifeByDorm bridges the gap by providing real student reviews, detailed ratings across multiple categories (room quality, bathrooms, building, amenities, location), and a streamlined interface to explore housing options at universities across Canada.
 
-## ✨ Key Features
+## Key Features
 
-- 🔍 **University Search** – Quickly find any Canadian university and explore their residence options
-- ⭐ **Detailed Ratings** – Reviews cover room quality, bathrooms, building condition, amenities, and location
-- 📝 **Student Reviews** – Read authentic experiences from students who lived in the dorms
-- 📸 **Photo Uploads** – See real photos of dorm rooms uploaded by reviewers
-- 🏫 **University Profiles** – View university stats including founding year, student population, and acceptance rate
-- 🛏️ **Dorm Listings** – Browse all available residences with descriptions, amenities, and room types
-- 👨‍💼 **Admin Dashboard** – Moderation tools for managing reviews and content
+- **University Search** – Quickly find any Canadian university and explore their residence options
+- **Detailed Ratings** – Reviews cover room quality, bathrooms, building condition, amenities, and location
+- **Student Reviews** – Read authentic experiences from students who lived in the dorms
+- **Photo Uploads** – See real photos of dorm rooms uploaded by reviewers
+- **University Profiles** – View university stats including founding year, student population, and acceptance rate
+- **Dorm Listings** – Browse all available residences with descriptions, amenities, and room types
+- **Admin Dashboard** – Moderation tools for managing reviews and content
 
-## 🛠️ Built With
+## Built With
 ### Frontend
 
 ![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=for-the-badge&logo=typescript&logoColor=white)
 ![React](https://img.shields.io/badge/React-61DAFB?style=for-the-badge&logo=react&logoColor=black)
 ![Vite](https://img.shields.io/badge/Vite-646CFF?style=for-the-badge&logo=vite&logoColor=white)
 ![CSS3](https://img.shields.io/badge/CSS3-1572B6?style=for-the-badge&logo=css3&logoColor=white)
+![Material UI](https://img.shields.io/badge/Material--UI-0081CB?style=for-the-badge&logo=mui&logoColor=white)
+![i18next](https://img.shields.io/badge/i18next-26A69A?style=for-the-badge&logo=i18next&logoColor=white)
 
 ### Backend & Services
 
 ![Node.js](https://img.shields.io/badge/Node.js-339933?style=for-the-badge&logo=nodedotjs&logoColor=white)
 ![Express.js](https://img.shields.io/badge/Express.js-000000?style=for-the-badge&logo=express&logoColor=white)
+![Serverless](https://img.shields.io/badge/Serverless-FD5750?style=for-the-badge&logo=serverless&logoColor=white)
+![AWS S3](https://img.shields.io/badge/Amazon_S3-569A31?style=for-the-badge&logo=amazons3&logoColor=white)
+![Zod](https://img.shields.io/badge/Zod-3068B7?style=for-the-badge&logo=zod&logoColor=white)
+![Nodemailer](https://img.shields.io/badge/Nodemailer-18A8D8?style=for-the-badge&logo=nodemailer&logoColor=white)
 
 ### Database
 
@@ -56,7 +62,7 @@ Finding the right dorm can be overwhelming. LifeByDorm bridges the gap by provid
 
 ![Vitest](https://img.shields.io/badge/Vitest-6E9F18?style=for-the-badge&logo=vitest&logoColor=white)
 
-## 🚀 Getting Started
+## Getting Started
 
 ### Installation
 
@@ -103,7 +109,7 @@ Finding the right dorm can be overwhelming. LifeByDorm bridges the gap by provid
    npm start
    ```
 
-## 💡 Usage
+## Usage
 
 1. **Search Universities** – Use the search bar to find Canadian universities
 2. **Browse Dorms** – Click on a university to see all available residences
@@ -111,6 +117,6 @@ Finding the right dorm can be overwhelming. LifeByDorm bridges the gap by provid
 4. **Write a Review** – Share your own dorm experience by rating categories and adding comments
 5. **Upload Photos** – Add photos to your review to help future students
 
-## 📄 License
+## License
 
 Distributed under the MIT License. See `LICENSE` for more information.
