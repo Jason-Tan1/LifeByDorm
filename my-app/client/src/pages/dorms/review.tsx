@@ -9,6 +9,7 @@ import HomeIcon from '@mui/icons-material/Home';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import DefaultDormImage from '../../assets/Default_Dorm.png';
 import { compressImage } from '../../utils/imageUtils';
+import LoginModal from '../nav/login';
 
 // Use relative path '' on localhost to leverage the Vite proxy
 const isLocal = typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1');
@@ -50,6 +51,15 @@ function Reviews() {
   const [showSuccessPopup, setShowSuccessPopup] = useState(false);
   const [showErrorPopup, setShowErrorPopup] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
+  const [showLoginModal, setShowLoginModal] = useState(false);
+
+  useEffect(() => {
+    // Check if user is logged in
+    const token = localStorage.getItem('token');
+    if (!token) {
+      setShowLoginModal(true);
+    }
+  }, []);
   const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10 MB
   const MAX_FILES = 5; // Maximum 5 images
 
@@ -63,7 +73,7 @@ function Reviews() {
         // Ensure we rely on a slug for the API logic
         // If resolvedDorm comes from a query param like "Centennial Hall", we need "centennial-hall"
         const dormSlug = resolvedDorm!.toLowerCase().replace(/\s+/g, '-');
-        
+
         const res = await fetch(`${API_BASE}/api/universities/${encodeURIComponent(resolvedUniversity!)}/dorms/${encodeURIComponent(dormSlug)}`);
         if (res.ok) {
           const data = await res.json();
@@ -246,13 +256,13 @@ function Reviews() {
       // Navigate after delay
       setTimeout(() => {
         if (university) {
-            if (isNewDorm) {
-                // Return to University page for new dorms (since they might need approval)
-                navigate(`/universities/${encodeURIComponent(university)}`);
-            } else if (dormSlug) {
-                // Otherwise go to the dorm page
-                navigate(`/universities/${encodeURIComponent(university)}/dorms/${dormSlug}`);
-            }
+          if (isNewDorm) {
+            // Return to University page for new dorms (since they might need approval)
+            navigate(`/universities/${encodeURIComponent(university)}`);
+          } else if (dormSlug) {
+            // Otherwise go to the dorm page
+            navigate(`/universities/${encodeURIComponent(university)}/dorms/${dormSlug}`);
+          }
         }
       }, 2000);
 
@@ -309,7 +319,7 @@ function Reviews() {
   const handleDrop = (e: React.DragEvent) => {
     e.preventDefault();
     setIsDragging(false);
-    
+
     if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
       const newFiles = Array.from(e.dataTransfer.files);
 
@@ -328,7 +338,7 @@ function Reviews() {
 
   return (
     <div className='Review'>
-        {/* ... existing layout ... */}
+      {/* ... existing layout ... */}
       <NavBar />
 
       <div className='review-page-content'>
@@ -366,180 +376,180 @@ function Reviews() {
         </div>
 
         <div className='review-main-layout'>
-            
-            {/* Left Column: Header & Image */}
-            <div className="review-left-column">
-                <h1 className="review-main-title">{t('review.rating')}<br />{formatName(displayDormName)}</h1>
-                <div className="dorm-info-card">
-                  <div className="review-dorm-image-container">
-                      <img src={dormImage || DefaultDormImage} alt={displayDormName} className="review-dorm-image" />
+
+          {/* Left Column: Header & Image */}
+          <div className="review-left-column">
+            <h1 className="review-main-title">{t('review.rating')}<br />{formatName(displayDormName)}</h1>
+            <div className="dorm-info-card">
+              <div className="review-dorm-image-container">
+                <img src={dormImage || DefaultDormImage} alt={displayDormName} className="review-dorm-image" />
+              </div>
+              <div className="dorm-info-text">
+                <h3 className="dorm-name">{formatName(displayDormName)}</h3>
+                {resolvedUniversity && <p className="dorm-university">{formatName(resolvedUniversity)}</p>}
+              </div>
+            </div>
+          </div>
+
+          {/* Right Column: Form */}
+          <div className="review-right-column">
+            <div className="review-container">
+              <div className="review-content">
+
+                {/* Ratings Section */}
+                <div className="review-section ratings-grid">
+                  <div className="rating-group">
+                    <label>{t('review.room')}</label>
+                    {renderStars('room')}
                   </div>
-                  <div className="dorm-info-text">
-                    <h3 className="dorm-name">{formatName(displayDormName)}</h3>
-                    {resolvedUniversity && <p className="dorm-university">{formatName(resolvedUniversity)}</p>}
+
+                  <div className="rating-group">
+                    <label>{t('review.bathroom')}</label>
+                    {renderStars('bathrooms')}
+                  </div>
+
+                  <div className="rating-group">
+                    <label>{t('review.building')}</label>
+                    {renderStars('building')}
+                  </div>
+
+                  <div className="rating-group">
+                    <label>{t('review.amenities')}</label>
+                    {renderStars('amenities')}
+                  </div>
+
+                  <div className="rating-group">
+                    <label>{t('review.location')}</label>
+                    {renderStars('location')}
                   </div>
                 </div>
-            </div>
 
-            {/* Right Column: Form */}
-            <div className="review-right-column">
-                <div className="review-container">
-                    <div className="review-content">
-                        
-                         {/* Ratings Section */}
-                         <div className="review-section ratings-grid">
-                          <div className="rating-group">
-                            <label>{t('review.room')}</label>
-                            {renderStars('room')}
-                          </div>
+                {/* Selection Groups */}
+                <div className="review-section selections-section">
 
-                          <div className="rating-group">
-                            <label>{t('review.bathroom')}</label>
-                            {renderStars('bathrooms')}
-                          </div>
+                  <div className="selection-group">
+                    <label className="section-label">{t('review.yearQuestion')}</label>
+                    <div className="pill-options">
+                      {yearOptions.map((opt) => (
+                        <button
+                          key={opt.value}
+                          type="button"
+                          className={`pill-button ${selectedYear === opt.value ? 'selected' : ''}`}
+                          onClick={() => setSelectedYear(opt.value)}
+                        >
+                          {opt.label}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
 
-                          <div className="rating-group">
-                            <label>{t('review.building')}</label>
-                            {renderStars('building')}
-                          </div>
+                  <div className="selection-group">
+                    <label className="section-label">{t('review.roomType')}</label>
+                    <div className="pill-options">
+                      {roomTypeOptions.map((opt) => (
+                        <button
+                          key={opt.value}
+                          type="button"
+                          className={`pill-button ${selectedRoomType === opt.value ? 'selected' : ''}`}
+                          onClick={() => setSelectedRoomType(opt.value)}
+                        >
+                          {t(`common.${opt.value}`, opt.label)}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
 
-                          <div className="rating-group">
-                            <label>{t('review.amenities')}</label>
-                            {renderStars('amenities')}
-                          </div>
+                  <div className="selection-group">
+                    <label className="section-label">{t('review.dormAgainQuestion')}</label>
+                    <div className="pill-options">
+                      {dormAgainOptions.map((opt) => (
+                        <button
+                          key={opt.value}
+                          type="button"
+                          className={`pill-button ${wouldDormAgain === opt.value ? 'selected' : ''}`}
+                          onClick={() => setWouldDormAgain(opt.value)}
+                        >
+                          {t(`common.${opt.value}`, opt.label)}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
 
-                          <div className="rating-group">
-                            <label>{t('review.location')}</label>
-                            {renderStars('location')}
-                          </div>
-                        </div>
+                </div>
 
-                        {/* Selection Groups */}
-                        <div className="review-section selections-section">
-                            
-                            <div className="selection-group">
-                                <label className="section-label">{t('review.yearQuestion')}</label>
-                                <div className="pill-options">
-                                    {yearOptions.map((opt) => (
-                                        <button
-                                            key={opt.value}
-                                            type="button"
-                                            className={`pill-button ${selectedYear === opt.value ? 'selected' : ''}`}
-                                            onClick={() => setSelectedYear(opt.value)}
-                                        >
-                                            {opt.label}
-                                        </button>
-                                    ))}
-                                </div>
-                            </div>
+                {/* Comments Section */}
+                <div className="review-section comments-section">
+                  <div className="comments-header">
+                    {/* Removed Help Me Write button */}
+                  </div>
+                  <label className="section-label">{t('review.writeReview')}</label>
+                  <textarea
+                    className="review-textarea"
+                    placeholder={t('review.shareExperience')}
+                    value={description}
+                    onChange={e => setDescription(e.target.value)}
+                  />
+                  <div className="char-count">
+                    {description.length}/25 min characters
+                  </div>
+                </div>
 
-                            <div className="selection-group">
-                                <label className="section-label">{t('review.roomType')}</label>
-                                <div className="pill-options">
-                                    {roomTypeOptions.map((opt) => (
-                                        <button
-                                            key={opt.value}
-                                            type="button"
-                                            className={`pill-button ${selectedRoomType === opt.value ? 'selected' : ''}`}
-                                            onClick={() => setSelectedRoomType(opt.value)}
-                                        >
-                                            {t(`common.${opt.value}`, opt.label)}
-                                        </button>
-                                    ))}
-                                </div>
-                            </div>
+                {/* Photo Section */}
+                <div className="review-section photo-section">
+                  <label className="section-label">{t('review.addPhotos')} <span className="optional-text">{t('review.optional')}</span></label>
 
-                             <div className="selection-group">
-                                <label className="section-label">{t('review.dormAgainQuestion')}</label>
-                                <div className="pill-options">
-                                    {dormAgainOptions.map((opt) => (
-                                        <button
-                                            key={opt.value}
-                                            type="button"
-                                            className={`pill-button ${wouldDormAgain === opt.value ? 'selected' : ''}`}
-                                            onClick={() => setWouldDormAgain(opt.value)}
-                                        >
-                                            {t(`common.${opt.value}`, opt.label)}
-                                        </button>
-                                    ))}
-                                </div>
-                            </div>
+                  <div
+                    className="file-upload-container"
+                    onDragOver={handleDragOver}
+                    onDragLeave={handleDragLeave}
+                    onDrop={handleDrop}
+                  >
+                    <input
+                      type="file"
+                      id="file-upload"
+                      accept="image/*"
+                      multiple
+                      onChange={handleFileChange}
+                      style={{ display: 'none' }}
+                    />
+                    <label
+                      htmlFor="file-upload"
+                      className={`file-upload-label ${isDragging ? 'drag-active' : ''}`}
+                    >
+                      <div className="upload-icon-wrapper">
+                        <CloudUploadIcon style={{ fontSize: 32, color: '#445E75' }} />
+                      </div>
+                      <span className="upload-text">{t('review.clickToAddPhotos')}</span>
+                    </label>
+                  </div>
 
-                        </div>
-                        
-                        {/* Comments Section */}
-                        <div className="review-section comments-section">
-                          <div className="comments-header">
-                            {/* Removed Help Me Write button */}
-                          </div>
-                          <label className="section-label">{t('review.writeReview')}</label>
-                          <textarea
-                            className="review-textarea"
-                            placeholder={t('review.shareExperience')}
-                            value={description}
-                            onChange={e => setDescription(e.target.value)}
-                          />
-                          <div className="char-count">
-                             {description.length}/25 min characters
-                          </div>
-                        </div>
-
-                        {/* Photo Section */}
-                        <div className="review-section photo-section">
-                          <label className="section-label">{t('review.addPhotos')} <span className="optional-text">{t('review.optional')}</span></label>
-
-                          <div 
-                            className="file-upload-container"
-                            onDragOver={handleDragOver}
-                            onDragLeave={handleDragLeave}
-                            onDrop={handleDrop}
+                  {fileDataUrls.length > 0 && (
+                    <div className="photo-previews">
+                      {fileDataUrls.map((url, index) => (
+                        <div key={index} className="photo-preview-item">
+                          <img src={url} alt={`preview ${index + 1}`} />
+                          <button
+                            type="button"
+                            className="remove-photo-btn"
+                            onClick={() => removeImage(index)}
                           >
-                            <input
-                              type="file"
-                              id="file-upload"
-                              accept="image/*"
-                              multiple
-                              onChange={handleFileChange}
-                              style={{ display: 'none' }}
-                            />
-                            <label 
-                                htmlFor="file-upload" 
-                                className={`file-upload-label ${isDragging ? 'drag-active' : ''}`}
-                            >
-                              <div className="upload-icon-wrapper">
-                                <CloudUploadIcon style={{ fontSize: 32, color: '#445E75' }} />
-                              </div>
-                              <span className="upload-text">{t('review.clickToAddPhotos')}</span>
-                            </label>
-                          </div>
-
-                          {fileDataUrls.length > 0 && (
-                            <div className="photo-previews">
-                              {fileDataUrls.map((url, index) => (
-                                <div key={index} className="photo-preview-item">
-                                  <img src={url} alt={`preview ${index + 1}`} />
-                                  <button
-                                    type="button"
-                                    className="remove-photo-btn"
-                                    onClick={() => removeImage(index)}
-                                  >
-                                    ×
-                                  </button>
-                                </div>
-                              ))}
-                            </div>
-                          )}
-                        </div>
-
-                        <div className="submit-section">
-                          <button type="button" className="submit-review-btn" onClick={handleSubmit}>
-                            {t('review.submitReview')}
+                            ×
                           </button>
                         </div>
-
+                      ))}
                     </div>
+                  )}
                 </div>
+
+                <div className="submit-section">
+                  <button type="button" className="submit-review-btn" onClick={handleSubmit}>
+                    {t('review.submitReview')}
+                  </button>
+                </div>
+
+              </div>
             </div>
+          </div>
         </div>
 
       </div>
@@ -565,6 +575,12 @@ function Reviews() {
           </div>
         </div>
       )}
+
+      {/* Login Modal */}
+      <LoginModal
+        isOpen={showLoginModal}
+        onClose={() => setShowLoginModal(false)}
+      />
     </div>
   );
 }
