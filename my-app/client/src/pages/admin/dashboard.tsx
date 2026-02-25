@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import NavBar from '../nav/navbar';
 import DefaultDorm from '../../assets/Default_Dorm.png';
+import './dashboard.css';
 
 // Use relative path '' on localhost to leverage the Vite proxy
 const isLocal = typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1');
@@ -399,17 +400,9 @@ function AdminDashboard() {
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: '20px', marginTop: '20px' }}>
               {pendingReviews.map(review => (
-                <div
-                  key={review._id}
-                  style={{
-                    border: '1px solid #ddd',
-                    borderRadius: '8px',
-                    padding: '20px',
-                    backgroundColor: '#f9f9f9'
-                  }}
-                >
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                    <div style={{ flex: 1 }}>
+                <div key={review._id} className="admin-card">
+                  <div className="admin-card-inner">
+                    <div className="admin-card-content">
                       <h3 style={{ margin: '0 0 8px 0' }}>
                         {review.dorm} - {review.university}
                       </h3>
@@ -437,18 +430,17 @@ function AdminDashboard() {
                       </div>
                       <div style={{ marginTop: '12px' }}>
                         <strong>Comments:</strong>
-                        <p style={{ marginTop: '4px', lineHeight: '1.5' }}>{review.description}</p>
+                        <p className="admin-review-text">{review.description}</p>
                       </div>
                       {review.images && review.images.length > 0 && (
                         <div style={{ marginTop: '12px' }}>
                           <strong>Images ({review.images.length}):</strong>
-                          <div style={{ display: 'flex', gap: '8px', marginTop: '8px', flexWrap: 'wrap' }}>
+                          <div className="admin-review-images">
                             {review.images.map((img, idx) => (
                               <img
                                 key={idx}
                                 src={img}
                                 alt={`Review ${idx + 1}`}
-                                style={{ width: '100px', height: '100px', objectFit: 'cover', borderRadius: '4px' }}
                               />
                             ))}
                           </div>
@@ -459,34 +451,16 @@ function AdminDashboard() {
                       </p>
                     </div>
 
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginLeft: '20px' }}>
+                    <div className="admin-card-actions">
                       <button
                         onClick={() => handleApprove(review._id)}
-                        style={{
-                          padding: '10px 20px',
-                          backgroundColor: '#4caf50',
-                          color: 'white',
-                          border: 'none',
-                          borderRadius: '6px',
-                          cursor: 'pointer',
-                          fontWeight: '600',
-                          fontSize: '14px'
-                        }}
+                        className="admin-action-btn admin-btn-approve"
                       >
                         ✓ Approve
                       </button>
                       <button
                         onClick={() => handleDecline(review._id)}
-                        style={{
-                          padding: '10px 20px',
-                          backgroundColor: '#f44336',
-                          color: 'white',
-                          border: 'none',
-                          borderRadius: '6px',
-                          cursor: 'pointer',
-                          fontWeight: '600',
-                          fontSize: '14px'
-                        }}
+                        className="admin-action-btn admin-btn-decline"
                       >
                         ✗ Decline
                       </button>
@@ -509,17 +483,9 @@ function AdminDashboard() {
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: '20px', marginTop: '20px' }}>
               {pendingDorms.map(dorm => (
-                <div
-                  key={dorm._id}
-                  style={{
-                    border: '1px solid #ddd',
-                    borderRadius: '8px',
-                    padding: '20px',
-                    backgroundColor: '#f9f9f9'
-                  }}
-                >
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                    <div style={{ flex: 1 }}>
+                <div key={dorm._id} className="admin-card">
+                  <div className="admin-card-inner">
+                    <div className="admin-card-content">
                       <h3 style={{ margin: '0 0 8px 0' }}>
                         {dorm.name}
                       </h3>
@@ -529,7 +495,7 @@ function AdminDashboard() {
                       {dorm.description && (
                         <div style={{ marginTop: '12px' }}>
                           <strong>Description:</strong>
-                          <p style={{ marginTop: '4px', lineHeight: '1.5' }}>{dorm.description}</p>
+                          <p className="admin-review-text">{dorm.description}</p>
                         </div>
                       )}
                       {dorm.amenities && dorm.amenities.length > 0 && (
@@ -544,11 +510,10 @@ function AdminDashboard() {
                       )}
                       <div style={{ marginTop: '12px' }}>
                         <strong>Image:</strong>
-                        <div style={{ marginTop: '8px' }}>
+                        <div className="admin-review-images">
                           <img
                             src={dorm.imageUrl || DefaultDorm}
                             alt={dorm.name}
-                            style={{ maxWidth: '200px', maxHeight: '150px', objectFit: 'cover', borderRadius: '4px' }}
                           />
                         </div>
                       </div>
@@ -557,34 +522,16 @@ function AdminDashboard() {
                       </p>
                     </div>
 
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginLeft: '20px' }}>
+                    <div className="admin-card-actions">
                       <button
                         onClick={() => handleApproveDorm(dorm._id)}
-                        style={{
-                          padding: '10px 20px',
-                          backgroundColor: '#4caf50',
-                          color: 'white',
-                          border: 'none',
-                          borderRadius: '6px',
-                          cursor: 'pointer',
-                          fontWeight: '600',
-                          fontSize: '14px'
-                        }}
+                        className="admin-action-btn admin-btn-approve"
                       >
                         ✓ Approve
                       </button>
                       <button
                         onClick={() => handleDeclineDorm(dorm._id)}
-                        style={{
-                          padding: '10px 20px',
-                          backgroundColor: '#f44336',
-                          color: 'white',
-                          border: 'none',
-                          borderRadius: '6px',
-                          cursor: 'pointer',
-                          fontWeight: '600',
-                          fontSize: '14px'
-                        }}
+                        className="admin-action-btn admin-btn-decline"
                       >
                         ✗ Decline
                       </button>
