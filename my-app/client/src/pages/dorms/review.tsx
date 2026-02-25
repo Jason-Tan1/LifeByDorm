@@ -48,7 +48,6 @@ function Reviews() {
 
   const [wouldDormAgain, setWouldDormAgain] = useState('');
   const [fileDataUrls, setFileDataUrls] = useState<string[]>([]);
-  const [showSuccessPopup, setShowSuccessPopup] = useState(false);
   const [showErrorPopup, setShowErrorPopup] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
   const [showLoginModal, setShowLoginModal] = useState(false);
@@ -247,24 +246,19 @@ function Reviews() {
       setWouldDormAgain('');
       setFileDataUrls([]);
 
-      // Show Success Popup
-      setShowSuccessPopup(true);
-
       const university = resolvedUniversity;
       const dormSlug = payload.dorm ? payload.dorm.toLowerCase().replace(/\s+/g, '-') : '';
 
-      // Navigate after delay
-      setTimeout(() => {
-        if (university) {
-          if (isNewDorm) {
-            // Return to University page for new dorms (since they might need approval)
-            navigate(`/universities/${encodeURIComponent(university)}`);
-          } else if (dormSlug) {
-            // Otherwise go to the dorm page
-            navigate(`/universities/${encodeURIComponent(university)}/dorms/${dormSlug}`);
-          }
+      // Navigate immediately with success state
+      if (university) {
+        if (isNewDorm) {
+          // Return to University page for new dorms (since they might need approval)
+          navigate(`/universities/${encodeURIComponent(university)}`);
+        } else if (dormSlug) {
+          // Otherwise go to the dorm page
+          navigate(`/universities/${encodeURIComponent(university)}/dorms/${dormSlug}`, { state: { reviewSubmitted: true } });
         }
-      }, 2000);
+      }
 
     } catch (err) {
       console.error(err);
@@ -553,15 +547,7 @@ function Reviews() {
         </div>
 
       </div>
-      {/* Success Popup */}
-      {showSuccessPopup && (
-        <div className="popup-overlay">
-          <div className="popup-card">
-            <h2 className="popup-title">{t('review.reviewSubmitted')}</h2>
-            <p className="popup-subtitle">{t('review.thanksSharing')}</p>
-          </div>
-        </div>
-      )}
+      {/* Success Popup Removed (Handled by Dorm page) */}
       {/* Error Popup */}
       {showErrorPopup && (
         <div className="popup-overlay" onClick={() => setShowErrorPopup(false)}>

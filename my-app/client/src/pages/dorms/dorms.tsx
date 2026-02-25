@@ -6,7 +6,7 @@ import DormInfo from './DormInfo.tsx';
 import ReviewsList from './ReviewsList.tsx';
 import './dorms.css';
 import '../nav/navbar.css';
-import { useParams } from 'react-router-dom';
+import { useParams, useLocation, useNavigate } from 'react-router-dom';
 
 
 import PageLoader from '../../components/PageLoader';
@@ -40,6 +40,20 @@ function Dorms() {
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [currentImages, setCurrentImages] = useState<string[]>([]);
+
+  // Toast state for review submission
+  const location = useLocation();
+  const navigate = useNavigate();
+  const [showSuccessToast, setShowSuccessToast] = useState(false);
+
+  useEffect(() => {
+    // Check if we were redirected here after submitting a review
+    if (location.state?.reviewSubmitted) {
+      setShowSuccessToast(true);
+      // Clean up the location state so it doesn't show again on refresh
+      navigate(location.pathname, { replace: true, state: {} });
+    }
+  }, [location, navigate]);
 
   useEffect(() => {
     if (!universityName || !dormSlug) return;
@@ -228,6 +242,20 @@ function Dorms() {
   return (
     <div className="dorm-page">
       <NavBar />
+
+      {/* Success Toast */}
+      {showSuccessToast && (
+        <div className="success-toast">
+          <div className="toast-content">
+            <span className="toast-icon">✓</span>
+            <div className="toast-text">
+              <h4>{t('review.reviewSubmitted')}</h4>
+              <p>{t('review.thanksSharing')}</p>
+            </div>
+            <button className="toast-close" onClick={() => setShowSuccessToast(false)}>×</button>
+          </div>
+        </div>
+      )}
 
       <div className="dorm-content">
         {/* Left side - Dorm Information */}
