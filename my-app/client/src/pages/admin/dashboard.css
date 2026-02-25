@@ -1,0 +1,103 @@
+/* Base Card Layout */
+.admin-card {
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 20px;
+    background-color: #f9f9f9;
+}
+
+.admin-card-inner {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 20px;
+}
+
+.admin-card-content {
+    flex: 1;
+    min-width: 0;
+    /* Prevents overflow of flex items */
+}
+
+/* Ensure long text wraps instead of breaking layout */
+.admin-review-text {
+    margin-top: 4px;
+    line-height: 1.5;
+    word-wrap: break-word;
+    white-space: pre-wrap;
+    overflow-wrap: break-word;
+}
+
+/* Review Images Grid */
+.admin-review-images {
+    display: flex;
+    gap: 8px;
+    margin-top: 8px;
+    flex-wrap: wrap;
+}
+
+.admin-review-images img {
+    width: 100px;
+    height: 100px;
+    object-fit: cover;
+    border-radius: 4px;
+}
+
+/* Action Buttons Container */
+.admin-card-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.admin-action-btn {
+    padding: 10px 20px;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 14px;
+    text-align: center;
+    width: 100%;
+}
+
+.admin-btn-approve {
+    background-color: #4caf50;
+}
+
+.admin-btn-decline {
+    background-color: #f44336;
+}
+
+/* Responsive Media Queries (Mobile & Small Tablets) */
+@media (max-width: 768px) {
+    .admin-card-inner {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 16px;
+    }
+
+    /* Action buttons take up full width on mobile */
+    .admin-card-actions {
+        flex-direction: row;
+        margin-left: 0;
+    }
+
+    .admin-card-actions button {
+        flex: 1;
+    }
+
+    /* Scale images intelligently to fit mobile widths */
+    .admin-review-images {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(45%, 1fr));
+        gap: 8px;
+    }
+
+    .admin-review-images img {
+        width: 100%;
+        height: auto;
+        aspect-ratio: 1 / 1;
+    }
+}
