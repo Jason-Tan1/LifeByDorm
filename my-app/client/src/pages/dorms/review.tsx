@@ -51,6 +51,7 @@ function Reviews() {
   const [showErrorPopup, setShowErrorPopup] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
   const [showLoginModal, setShowLoginModal] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
     // Check if user is logged in
@@ -174,98 +175,104 @@ function Reviews() {
   };
 
   const handleSubmit = async () => {
-    setShowErrorPopup(false);
-    setErrorMessage('');
-
-    const missing: string[] = [];
-    if (!selectedYear) missing.push('Year');
-    if (!selectedRoomType) missing.push('Room type');
-    if (!wouldDormAgain) missing.push('Would Dorm Again');
-    if (ratings.room <= 0) missing.push('Room rating');
-    if (ratings.bathrooms <= 0) missing.push('Bathroom rating');
-    if (ratings.building <= 0) missing.push('Building rating');
-    if (ratings.amenities <= 0) missing.push('Amenities rating');
-    if (ratings.location <= 0) missing.push('Location rating');
-    if (!description || description.trim().length < 5) missing.push('Comments (min 5 chars)');
-
-    if (missing.length > 0) {
-      setErrorMessage('Please fill out the following fields:\n' + missing.join(', '));
-      setShowErrorPopup(true);
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-      return;
-    }
-
-    // Validate university and dorm before submission
-    if (!resolvedUniversity || !resolvedDorm) {
-      setErrorMessage('Error: University or dorm information is missing. Please navigate from a dorm page.');
-      setShowErrorPopup(true);
-      return;
-    }
-
-    const payload = {
-      university: resolvedUniversity,
-      dorm: resolvedDorm,
-      room: ratings.room,
-      bathroom: ratings.bathrooms,
-      building: ratings.building,
-      amenities: ratings.amenities,
-      location: ratings.location,
-      description: description.trim(),
-      year: Number(selectedYear),
-      roomType: selectedRoomType,
-      wouldDormAgain: wouldDormAgain === 'yes',
-      ...(fileDataUrls.length > 0 && { fileImage: fileDataUrls[0] }),
-      ...(fileDataUrls.length > 0 && { images: fileDataUrls })
-    };
-
+    if (isSubmitting) return;
+    setIsSubmitting(true);
     try {
-      const token = localStorage.getItem('token');
-      const headers: Record<string, string> = { 'Content-Type': 'application/json' };
-      if (token) {
-        headers['Authorization'] = `Bearer ${token}`;
-      }
+      setShowErrorPopup(false);
+      setErrorMessage('');
 
-      const res = await fetch(`${API_BASE}/api/reviews`, {
-        method: 'POST',
-        headers,
-        body: JSON.stringify(payload)
-      });
-      const data = await res.json();
-      if (!res.ok) {
-        const serverMessage = data?.message || 'Failed to submit review';
-        setErrorMessage(serverMessage);
+      const missing: string[] = [];
+      if (!selectedYear) missing.push('Year');
+      if (!selectedRoomType) missing.push('Room type');
+      if (!wouldDormAgain) missing.push('Would Dorm Again');
+      if (ratings.room <= 0) missing.push('Room rating');
+      if (ratings.bathrooms <= 0) missing.push('Bathroom rating');
+      if (ratings.building <= 0) missing.push('Building rating');
+      if (ratings.amenities <= 0) missing.push('Amenities rating');
+      if (ratings.location <= 0) missing.push('Location rating');
+      if (!description || description.trim().length < 5) missing.push('Comments (min 5 chars)');
+
+      if (missing.length > 0) {
+        setErrorMessage('Please fill out the following fields:\n' + missing.join(', '));
         setShowErrorPopup(true);
-        throw new Error(serverMessage);
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        return;
       }
 
-      // Clear form
-      setRatings({ room: 0, bathrooms: 0, building: 0, amenities: 0, location: 0 });
-      setDescription('');
-      setSelectedYear('');
-      setSelectedRoomType('');
-      setWouldDormAgain('');
-      setFileDataUrls([]);
+      // Validate university and dorm before submission
+      if (!resolvedUniversity || !resolvedDorm) {
+        setErrorMessage('Error: University or dorm information is missing. Please navigate from a dorm page.');
+        setShowErrorPopup(true);
+        return;
+      }
 
-      const university = resolvedUniversity;
-      const dormSlug = payload.dorm ? payload.dorm.toLowerCase().replace(/\s+/g, '-') : '';
+      const payload = {
+        university: resolvedUniversity,
+        dorm: resolvedDorm,
+        room: ratings.room,
+        bathroom: ratings.bathrooms,
+        building: ratings.building,
+        amenities: ratings.amenities,
+        location: ratings.location,
+        description: description.trim(),
+        year: Number(selectedYear),
+        roomType: selectedRoomType,
+        wouldDormAgain: wouldDormAgain === 'yes',
+        ...(fileDataUrls.length > 0 && { fileImage: fileDataUrls[0] }),
+        ...(fileDataUrls.length > 0 && { images: fileDataUrls })
+      };
 
-      // Navigate immediately with success state
-      if (university) {
-        if (isNewDorm) {
-          // Return to University page for new dorms (since they might need approval)
-          navigate(`/universities/${encodeURIComponent(university)}`);
-        } else if (dormSlug) {
-          // Otherwise go to the dorm page
-          navigate(`/universities/${encodeURIComponent(university)}/dorms/${dormSlug}`, { state: { reviewSubmitted: true } });
+      try {
+        const token = localStorage.getItem('token');
+        const headers: Record<string, string> = { 'Content-Type': 'application/json' };
+        if (token) {
+          headers['Authorization'] = `Bearer ${token}`;
+        }
+
+        const res = await fetch(`${API_BASE}/api/reviews`, {
+          method: 'POST',
+          headers,
+          body: JSON.stringify(payload)
+        });
+        const data = await res.json();
+        if (!res.ok) {
+          const serverMessage = data?.message || 'Failed to submit review';
+          setErrorMessage(serverMessage);
+          setShowErrorPopup(true);
+          throw new Error(serverMessage);
+        }
+
+        // Clear form
+        setRatings({ room: 0, bathrooms: 0, building: 0, amenities: 0, location: 0 });
+        setDescription('');
+        setSelectedYear('');
+        setSelectedRoomType('');
+        setWouldDormAgain('');
+        setFileDataUrls([]);
+
+        const university = resolvedUniversity;
+        const dormSlug = payload.dorm ? payload.dorm.toLowerCase().replace(/\s+/g, '-') : '';
+
+        // Navigate immediately with success state
+        if (university) {
+          if (isNewDorm) {
+            // Return to University page for new dorms (since they might need approval)
+            navigate(`/universities/${encodeURIComponent(university)}`);
+          } else if (dormSlug) {
+            // Otherwise go to the dorm page
+            navigate(`/universities/${encodeURIComponent(university)}/dorms/${dormSlug}`, { state: { reviewSubmitted: true } });
+          }
+        }
+
+      } catch (err) {
+        console.error(err);
+        if (!showErrorPopup) { // Don't overwrite if we already set a specific server error
+          setErrorMessage('Error submitting review. Please try again.');
+          setShowErrorPopup(true);
         }
       }
-
-    } catch (err) {
-      console.error(err);
-      if (!showErrorPopup) { // Don't overwrite if we already set a specific server error
-        setErrorMessage('Error submitting review. Please try again.');
-        setShowErrorPopup(true);
-      }
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -536,8 +543,8 @@ function Reviews() {
                 </div>
 
                 <div className="submit-section">
-                  <button type="button" className="submit-review-btn" onClick={handleSubmit}>
-                    {t('review.submitReview')}
+                  <button type="button" className="submit-review-btn" onClick={handleSubmit} disabled={isSubmitting}>
+                    {isSubmitting ? t('review.submitting', 'Submitting...') : t('review.submitReview')}
                   </button>
                 </div>
 
