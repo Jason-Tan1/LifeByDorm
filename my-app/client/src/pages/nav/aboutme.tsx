@@ -1,4 +1,4 @@
-import NavBar from './navbar.tsx';
+  import NavBar from './navbar.tsx';
 import Footer from '../home/footer.tsx';
 import DefaultDormImage from '../../assets/Default_Dorm.png';
 import { useTranslation } from 'react-i18next';
