@@ -432,20 +432,29 @@ function AdminDashboard() {
                         <strong>Comments:</strong>
                         <p className="admin-review-text">{review.description}</p>
                       </div>
-                      {review.images && review.images.length > 0 && (
-                        <div style={{ marginTop: '12px' }}>
-                          <strong>Images ({review.images.length}):</strong>
-                          <div className="admin-review-images">
-                            {review.images.map((img, idx) => (
-                              <img
-                                key={idx}
-                                src={img}
-                                alt={`Review ${idx + 1}`}
-                              />
-                            ))}
+                      {(() => {
+                        const hasImagesArray = review.images && review.images.length > 0;
+                        const hasFileImage = !!review.fileImage;
+
+                        if (!hasImagesArray && !hasFileImage) return null;
+
+                        const imagesToShow = hasImagesArray ? review.images! : [review.fileImage!];
+
+                        return (
+                          <div style={{ marginTop: '12px' }}>
+                            <strong>Images ({imagesToShow.length}):</strong>
+                            <div className="admin-review-images">
+                              {imagesToShow.map((img, idx) => (
+                                <img
+                                  key={idx}
+                                  src={img}
+                                  alt={`Review ${idx + 1}`}
+                                />
+                              ))}
+                            </div>
                           </div>
-                        </div>
-                      )}
+                        );
+                      })()}
                       <p style={{ fontSize: '12px', color: '#999', marginTop: '12px' }}>
                         Submitted: {review.createdAt ? new Date(review.createdAt).toLocaleString() : 'Unknown'}
                       </p>

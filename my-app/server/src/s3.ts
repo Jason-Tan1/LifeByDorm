@@ -25,13 +25,13 @@ function getS3Client(): S3Client | null {
         secretAccessKey
       };
     }
-    
+
     try {
       s3Client = new S3Client(S3Config);
       return s3Client;
     } catch (error) {
-       console.error("Failed to initialize S3 Client:", error);
-       return null;
+      console.error("Failed to initialize S3 Client:", error);
+      return null;
     }
   } else {
     console.warn('⚠️ AWS S3 configuration missing (Bucket Name: ' + bucketName + ', Region: ' + region + '). File uploads will be skipped.');
@@ -134,17 +134,17 @@ export async function getSignedFileUrl(fileUrl: string): Promise<string> {
     // URL format: https://<bucket>.s3.<region>.amazonaws.com/<key>
     let key = fileUrl;
     if (fileUrl.startsWith('http')) {
-        const urlObj = new URL(fileUrl);
-        // Pathname includes leading slash, remove it. 
-        // Also need to decodeURI in case key has spaces etc.
-        key = decodeURIComponent(urlObj.pathname.substring(1));
+      const urlObj = new URL(fileUrl);
+      // Pathname includes leading slash, remove it. 
+      // Also need to decodeURI in case key has spaces etc.
+      key = decodeURIComponent(urlObj.pathname.substring(1));
     }
 
     const command = new GetObjectCommand({
       Bucket: bucketName,
       Key: key,
     });
-    
+
     // URL expires in 1 hour (3600 seconds)
     const signedUrl = await getSignedUrl(client, command, { expiresIn: 3600 });
     return signedUrl;

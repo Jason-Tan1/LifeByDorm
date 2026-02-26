@@ -6,31 +6,31 @@
     "imageUrl": "https://www.yorku.ca/housing/wp-content/uploads/sites/57/2022/02/Founders-Exterior-1024x682.jpg"
   },
   {
-    "name":"Tatham Hall",
+    "name": "Tatham Hall",
     "slug": "tatham-hall",
     "universitySlug": "york-university",
     "imageUrl": "https://www.yorku.ca/conference/wp-content/uploads/sites/191/2021/01/DSC_2434_5_6-scaled.jpg"
   },
   {
-    "name":"Vanier Residence",
+    "name": "Vanier Residence",
     "slug": "vanier-residence",
     "universitySlug": "york-university",
     "imageUrl": "https://www.yorku.ca/conference/wp-content/uploads/sites/191/2022/11/DSC_2710_1_2-scaled.jpg"
   },
   {
-    "name":"Winters Residence",
+    "name": "Winters Residence",
     "slug": "winters-residence",
     "universitySlug": "york-university",
     "imageUrl": "https://www.acotoronto.ca/images/buildings/Large/o524k7cSPY.jpg"
   },
   {
-    "name":"Bethune Residence",
+    "name": "Bethune Residence",
     "slug": "bethune-residence",
     "universitySlug": "york-university",
     "imageUrl": "https://www.yorku.ca/housing/wp-content/uploads/sites/57/2020/10/DSC_3598_599_600-1024x682.jpg"
   },
   {
-    "name":"Calumet Residence",
+    "name": "Calumet Residence",
     "slug": "calumet-residence",
     "universitySlug": "york-university",
     "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/8/89/CalumetResidence.jpg"
@@ -226,5 +226,65 @@
     "slug": "woodstock-hall",
     "universitySlug": "mcmaster-university",
     "imageUrl": null
+  },
+  {
+    "name": "Hilliard Residence",
+    "slug": "hilliard-residence",
+    "universitySlug": "york-university",
+    "imageUrl": null
+  },
+  {
+    "name": "Wood Residence",
+    "slug": "wood-residence",
+    "universitySlug": "york-university",
+    "imageUrl": null
+  },
+  {
+    "name": "Knox Residence",
+    "slug": "knox-residence",
+    "universitySlug": "university-of-toronto",
+    "imageUrl": null
+  },
+  {
+    "name": "CampusOne",
+    "slug": "campusone",
+    "universitySlug": "university-of-toronto",
+    "imageUrl": "https://cdn.hotelplanner.com/Common/Images/Hotels/3895233_1.jpg"
+  },
+  {
+    "name": "Oak House",
+    "slug": "oak-house",
+    "universitySlug": "university-of-toronto",
+    "imageUrl": "https://spacesandexperiences.utoronto.ca/wp-content/uploads/2023/09/oak-house-student-residence.jpeg"
+  },
+  {
+    "name": "University Family Housing",
+    "slug": "university-family-housing",
+    "universitySlug": "university-of-toronto",
+    "imageUrl": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTiqburzmP13F8MR4ZJqiwX_AkdE_mUBnVedg&s"
+  },
+  {
+    "name": "The Ivy",
+    "slug": "the-ivy",
+    "universitySlug": "university-of-toronto",
+    "imageUrl": null
+  },
+  {
+    "name": "Harmony Commons",
+    "slug": "harmony-commons",
+    "universitySlug": "university-of-toronto",
+    "imageUrl": null
+  },
+  {
+    "name": "UTSC Townhouses",
+    "slug": "utsc-townhouses",
+    "universitySlug": "university-of-toronto",
+    "imageUrl": "https://www.utsc.utoronto.ca/retail-conference/sites/utsc.utoronto.ca.retail-conference/files/styles/original_image/public/images/page/Townhouse_UTSC_0.jpg?itok=l9NZPixN"
+  },
+  {
+    "name": "Joan Foley Hall Apartments",
+    "slug": "joan-foley-hall-apartments",
+    "universitySlug": "university-of-toronto",
+    "imageUrl": "https://utsc.utoronto.ca/residences/sites/utsc.utoronto.ca.residences/files/styles/3_1_full_width_banner/public/images/page/Residences_28Feb2019_0048_0.jpg?h=b95cc791&itok=dHDqe6ts"
   }
 ]
