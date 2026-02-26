@@ -518,8 +518,7 @@
   .dorm-card {
     /* Keep it horizontal instead of column */
     flex-direction: row;
-    height: 80px;
-    /* Optional: Fix height to match the screenshot proportion */
+    min-height: 80px;
   }
 
   .dorm-image {
@@ -527,8 +526,8 @@
     width: 100px;
     min-width: 100px;
     aspect-ratio: 4 / 3;
-    height: 100%;
-    /* Fill the card height */
+    height: auto;
+    /* Fill the card height natively */
     object-fit: cover;
   }
 
@@ -542,9 +541,9 @@
     /* Keep info horizontal */
     flex-direction: row;
     align-items: center;
+    /* Better alignment for button and rating */
     gap: 12px;
-    padding: 8px 12px;
-    /* Smaller padding */
+    padding: 12px;
   }
 
   .dorm-text-content {
@@ -553,11 +552,13 @@
   }
 
   .dorm-card-info h3 {
-    /* Keep it single line if possible, or allow wrap conditionally */
+    /* Allow text wrapping fully for long dorm names */
     white-space: normal;
+    overflow: visible;
+    text-overflow: clip;
     font-size: 0.95rem;
-    /* Slightly smaller text for mobile */
-    margin: 0 0 2px;
+    margin: 0 0 4px;
+    line-height: 1.3;
   }
 
   .dorm-rating {
