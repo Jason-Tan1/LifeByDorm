@@ -404,7 +404,7 @@ app.get('/api/stats/homepage', readOnlyLimiter, async (req: Request, res: Respon
     // Sort and get top universities by review count
     const topUniversities = [...enrichedUniversities]
       .sort((a, b) => b.reviewCount - a.reviewCount)
-      .slice(0, 7);
+      .slice(0, 10);
 
     // Sort and get top dorms by rating
     const topRatedDorms = [...enrichedDorms]
@@ -412,12 +412,12 @@ app.get('/api/stats/homepage', readOnlyLimiter, async (req: Request, res: Respon
         if (b.avgRating === a.avgRating) return b.reviewCount - a.reviewCount;
         return b.avgRating - a.avgRating;
       })
-      .slice(0, 7);
+      .slice(0, 10);
 
     // Sort and get most reviewed dorms
     const mostReviewedDorms = [...enrichedDorms]
       .sort((a, b) => b.reviewCount - a.reviewCount)
-      .slice(0, 7);
+      .slice(0, 10);
 
     const result = {
       topUniversities,
