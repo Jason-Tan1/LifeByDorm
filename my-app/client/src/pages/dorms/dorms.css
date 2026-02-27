@@ -736,6 +736,75 @@
   font-size: 0.9rem;
 }
 
+.review-footer-actions {
+  display: flex;
+  justify-content: flex-end;
+  padding: 0 16px 16px 16px;
+  margin-top: auto;
+}
+
+.review-votes-container.reddit-style {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  background-color: transparent;
+  /* Subtle grey pill matching light mode style */
+  padding: 4px;
+  border-radius: 24px;
+}
+
+.vote-action-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  color: #878a8c;
+  padding: 4px;
+  border-radius: 50%;
+  transition: all 0.2s ease;
+  width: 32px;
+  height: 32px;
+}
+
+.vote-action-btn:hover {
+  background-color: rgba(0, 0, 0, 0.05);
+  /* very slightly darker on hover */
+}
+
+.vote-action-btn.upvote.active {
+  color: #D62828;
+}
+
+.vote-action-btn.upvote.active:hover {
+  background-color: rgba(214, 40, 40, 0.1);
+}
+
+.vote-action-btn.downvote.active {
+  color: #D62828;
+}
+
+.vote-action-btn.downvote.active:hover {
+  background-color: rgba(214, 40, 40, 0.1);
+}
+
+.vote-action-count {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #1a1a1a;
+  min-width: 20px;
+  text-align: center;
+}
+
+.vote-action-count.upvoted {
+  color: #D62828;
+}
+
+.vote-action-count.downvoted {
+  color: #D62828;
+}
+
 .book-review-button {
   width: 100%;
   padding: 12px;

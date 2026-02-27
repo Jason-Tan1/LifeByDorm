@@ -1,6 +1,18 @@
 import Star from '@mui/icons-material/Star';
 import { useTranslation } from 'react-i18next';
 
+const UpArrowIcon = ({ active }: { active: boolean }) => (
+  <svg width="24" height="24" viewBox="0 0 24 24" fill={active ? "currentColor" : "none"} stroke="currentColor" strokeWidth="2" strokeLinejoin="round">
+    <path d="M12 4 L4 12 h5 v8 h6 v-8 h5 Z" />
+  </svg>
+);
+
+const DownArrowIcon = ({ active }: { active: boolean }) => (
+  <svg width="24" height="24" viewBox="0 0 24 24" fill={active ? "currentColor" : "none"} stroke="currentColor" strokeWidth="2" strokeLinejoin="round">
+    <path d="M12 20 L4 12 h5 v-8 h6 v8 h5 Z" />
+  </svg>
+);
+
 type APIDorm = {
   name: string;
   slug: string;
@@ -26,6 +38,7 @@ interface ReviewsListProps {
   formatReviewTime: (createdAt: string) => string;
   openLightbox: (images: string[], index: number) => void;
   handleLoadMore: () => void;
+  handleVote: (reviewId: string, type: 'upvote' | 'downvote') => void;
 }
 
 function ReviewsList({
@@ -40,11 +53,20 @@ function ReviewsList({
   getRatingClass,
   formatReviewTime,
   openLightbox,
-  handleLoadMore
+  handleLoadMore,
+  handleVote
 }: ReviewsListProps) {
   const { t } = useTranslation();
   const totalReviews = reviews.length;
   const hasMoreReviews = visibleCount < totalReviews;
+
+  let currentUserId = '';
+  const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
+  if (token) {
+    try {
+      currentUserId = JSON.parse(atob(token.split('.')[1])).userId;
+    } catch (e) { }
+  }
 
   return (
     <div className="reviews-list">
@@ -104,6 +126,28 @@ function ReviewsList({
                     onClick={() => openLightbox([review.fileImage], 0)}
                   />
                 ) : null}
+
+                <div className="review-footer-actions">
+                  <div className="review-votes-container reddit-style">
+                    <button
+                      className={`vote-action-btn upvote ${review.upvotes?.includes(currentUserId) ? 'active' : ''}`}
+                      onClick={() => handleVote(review._id, 'upvote')}
+                      aria-label="Upvote review"
+                    >
+                      <UpArrowIcon active={!!review.upvotes?.includes(currentUserId)} />
+                    </button>
+                    <span className={`vote-action-count ${review.upvotes?.includes(currentUserId) ? 'upvoted' : review.downvotes?.includes(currentUserId) ? 'downvoted' : ''}`}>
+                      {Math.max(0, (review.upvotes?.length || 0) - (review.downvotes?.length || 0))}
+                    </span>
+                    <button
+                      className={`vote-action-btn downvote ${review.downvotes?.includes(currentUserId) ? 'active' : ''}`}
+                      onClick={() => handleVote(review._id, 'downvote')}
+                      aria-label="Downvote review"
+                    >
+                      <DownArrowIcon active={!!review.downvotes?.includes(currentUserId)} />
+                    </button>
+                  </div>
+                </div>
               </div>
             ))}
           </div>

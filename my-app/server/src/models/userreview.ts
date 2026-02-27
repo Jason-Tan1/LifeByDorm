@@ -20,6 +20,8 @@ export interface IReview extends Document {
   user?: string;
   status?: string;
   verified?: boolean;
+  upvotes?: string[];
+  downvotes?: string[];
 }
 
 const reviewSchema = new Schema<IReview>({
@@ -39,7 +41,9 @@ const reviewSchema = new Schema<IReview>({
   createdAt: { type: Date, default: Date.now },
   user: { type: String },
   status: { type: String, enum: ['pending', 'approved', 'declined'], default: 'pending' },
-  verified: { type: Boolean, default: false }
+  verified: { type: Boolean, default: false },
+  upvotes: { type: [String], default: [] },
+  downvotes: { type: [String], default: [] }
 });
 
 // Performance: Compound index for the most common query pattern (university + dorm + status)
