@@ -291,54 +291,90 @@
     "name": "Totem Park",
     "slug": "totem-park",
     "universitySlug": "university-of-british-columbia",
-    "imageUrl": null
+    "imageUrl": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTGrEBFm_41Iq_gGHKkuU5SxmGd1pZfGIVOTw&s"
   },
   {
     "name": "Place Vanier",
     "slug": "place-vanier",
     "universitySlug": "university-of-british-columbia",
-    "imageUrl": null
+    "imageUrl": "https://ubcproperties.com/wp-content/uploads/2023/08/33680017-2.jpg"
   },
   {
     "name": "Orchard Commons",
     "slug": "orchard-commons",
     "universitySlug": "university-of-british-columbia",
-    "imageUrl": null
+    "imageUrl": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRaffbkl4Ca1Q0hTp0nrIeaYVWaiqjtI_l4tA&s"
   },
   {
     "name": "Walter Gage",
     "slug": "walter-gage",
     "universitySlug": "university-of-british-columbia",
-    "imageUrl": null
+    "imageUrl": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQJC51LaI4UC7H4RA9OFfYr7ZDhebrMf-d8gA&s"
   },
   {
     "name": "Exchange",
     "slug": "exchange",
     "universitySlug": "university-of-british-columbia",
-    "imageUrl": null
+    "imageUrl": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTtOSSDGPq6qXLafijENZhHNbTfjDHwmn_pUg&s"
   },
   {
     "name": "Marine Drive",
     "slug": "marine-drive",
     "universitySlug": "university-of-british-columbia",
-    "imageUrl": null
+    "imageUrl": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTu6Mu1ZptEhEKwR750ssgNhburk7j6MblJRw&s"
   },
   {
     "name": "Ponderosa Commons",
     "slug": "ponderosa-commons",
     "universitySlug": "university-of-british-columbia",
-    "imageUrl": null
-  },
-  {
-    "name": "Thunderbird",
-    "slug": "thunderbird",
-    "universitySlug": "university-of-british-columbia",
-    "imageUrl": null
+    "imageUrl": "https://vancouver.housing.ubc.ca/wp-content/uploads/2014/01/Res_detail_PC_exterior1_1170x660.jpg"
   },
   {
     "name": "Acadia Park",
     "slug": "acadia-park",
     "universitySlug": "university-of-british-columbia",
+    "imageUrl": "https://vancouver.housing.ubc.ca/wp-content/uploads/2014/03/Res_detail_AP_2_720x4802.jpg"
+  },
+  {
+    "name": "Village 1",
+    "slug": "village-1",
+    "universitySlug": "university-of-waterloo",
+    "imageUrl": null
+  },
+  {
+    "name": "Ron Eydt Village",
+    "slug": "ron-eydt-village",
+    "universitySlug": "university-of-waterloo",
+    "imageUrl": null
+  },
+  {
+    "name": "Mackenzie King Village",
+    "slug": "mackenzie-king-village",
+    "universitySlug": "university-of-waterloo",
+    "imageUrl": null
+  },
+  {
+    "name": "UW Place",
+    "slug": "uw-place",
+    "universitySlug": "university-of-waterloo",
+    "imageUrl": null
+  },
+  {
+    "name": "Columbia Lake Village - South",
+    "slug": "columbia-lake-village-south",
+    "universitySlug": "university-of-waterloo",
+    "imageUrl": null
+  },
+  {
+    "name": "Columbia Lake Village - North",
+    "slug": "columbia-lake-village-north",
+    "universitySlug": "university-of-waterloo",
+    "imageUrl": null
+  },
+  {
+    "name": "Minota Hagey",
+    "slug": "minota-hagey",
+    "universitySlug": "university-of-waterloo",
     "imageUrl": null
   }
 ]
