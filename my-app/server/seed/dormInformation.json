@@ -286,5 +286,59 @@
     "slug": "joan-foley-hall-apartments",
     "universitySlug": "university-of-toronto",
     "imageUrl": "https://utsc.utoronto.ca/residences/sites/utsc.utoronto.ca.residences/files/styles/3_1_full_width_banner/public/images/page/Residences_28Feb2019_0048_0.jpg?h=b95cc791&itok=dHDqe6ts"
+  },
+  {
+    "name": "Totem Park",
+    "slug": "totem-park",
+    "universitySlug": "university-of-british-columbia",
+    "imageUrl": null
+  },
+  {
+    "name": "Place Vanier",
+    "slug": "place-vanier",
+    "universitySlug": "university-of-british-columbia",
+    "imageUrl": null
+  },
+  {
+    "name": "Orchard Commons",
+    "slug": "orchard-commons",
+    "universitySlug": "university-of-british-columbia",
+    "imageUrl": null
+  },
+  {
+    "name": "Walter Gage",
+    "slug": "walter-gage",
+    "universitySlug": "university-of-british-columbia",
+    "imageUrl": null
+  },
+  {
+    "name": "Exchange",
+    "slug": "exchange",
+    "universitySlug": "university-of-british-columbia",
+    "imageUrl": null
+  },
+  {
+    "name": "Marine Drive",
+    "slug": "marine-drive",
+    "universitySlug": "university-of-british-columbia",
+    "imageUrl": null
+  },
+  {
+    "name": "Ponderosa Commons",
+    "slug": "ponderosa-commons",
+    "universitySlug": "university-of-british-columbia",
+    "imageUrl": null
+  },
+  {
+    "name": "Thunderbird",
+    "slug": "thunderbird",
+    "universitySlug": "university-of-british-columbia",
+    "imageUrl": null
+  },
+  {
+    "name": "Acadia Park",
+    "slug": "acadia-park",
+    "universitySlug": "university-of-british-columbia",
+    "imageUrl": null
   }
 ]
