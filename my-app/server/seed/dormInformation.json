@@ -339,41 +339,83 @@
     "name": "Village 1",
     "slug": "village-1",
     "universitySlug": "university-of-waterloo",
-    "imageUrl": null
+    "imageUrl": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS2iGQ_onC8N7rKjUSAiJ6TSrWvNelgGnJwqA&s"
   },
   {
     "name": "Ron Eydt Village",
     "slug": "ron-eydt-village",
     "universitySlug": "university-of-waterloo",
-    "imageUrl": null
+    "imageUrl": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQtWDT_t3PuihxTmlDvoiujH1yuYx45rKe2xw&s"
   },
   {
     "name": "Mackenzie King Village",
     "slug": "mackenzie-king-village",
     "universitySlug": "university-of-waterloo",
-    "imageUrl": null
+    "imageUrl": "https://uwaterloo.ca/catering-event-services/sites/default/files/uploads/images/j21_1240.jpg"
   },
   {
     "name": "UW Place",
     "slug": "uw-place",
     "universitySlug": "university-of-waterloo",
-    "imageUrl": null
+    "imageUrl": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTc0n_3P4EoA1JeLmns10d9KUs0Vz0zYhmWbA&s"
   },
   {
     "name": "Columbia Lake Village - South",
     "slug": "columbia-lake-village-south",
     "universitySlug": "university-of-waterloo",
-    "imageUrl": null
+    "imageUrl": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTI9ykdfULlJyccL5O8vNiHJ4oT9OxFKAWd7Q&s"
   },
   {
     "name": "Columbia Lake Village - North",
     "slug": "columbia-lake-village-north",
     "universitySlug": "university-of-waterloo",
-    "imageUrl": null
+    "imageUrl": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQBVbZdbqiBPbU0FGM3csHHxAvvGJR4pi8TKg&s"
   },
   {
     "name": "Minota Hagey",
     "slug": "minota-hagey",
+    "universitySlug": "university-of-waterloo",
+    "imageUrl": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRPdwvODTIiOMqO_zcWK9TokWdb4tpyYYfJUg&s"
+  },
+  {
+    "name": "Beck Hall",
+    "slug": "beck-hall",
+    "universitySlug": "university-of-waterloo",
+    "imageUrl": null
+  },
+  {
+    "name": "Claudette Millar Hall",
+    "slug": "claudette-millar-hall",
+    "universitySlug": "university-of-waterloo",
+    "imageUrl": null
+  },
+  {
+    "name": "Eby Hall",
+    "slug": "eby-hall",
+    "universitySlug": "university-of-waterloo",
+    "imageUrl": null
+  },
+  {
+    "name": "Conrad Grebel University College",
+    "slug": "conrad-grebel-university-college",
+    "universitySlug": "university-of-waterloo",
+    "imageUrl": null
+  },
+  {
+    "name": "Renison University College",
+    "slug": "renison-university-college",
+    "universitySlug": "university-of-waterloo",
+    "imageUrl": null
+  },
+  {
+    "name": "St. Jerome's University College",
+    "slug": "st-jeromes-university-college",
+    "universitySlug": "university-of-waterloo",
+    "imageUrl": null
+  },
+  {
+    "name": "St. Paul's University College",
+    "slug": "st-pauls-university-college",
     "universitySlug": "university-of-waterloo",
     "imageUrl": null
   }
