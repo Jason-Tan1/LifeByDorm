@@ -7,7 +7,7 @@ import ReviewsList from './ReviewsList.tsx';
 import './dorms.css';
 import '../nav/navbar.css';
 import { useParams, useLocation, useNavigate } from 'react-router-dom';
-
+import LoginModal from '../nav/login';
 
 import PageLoader from '../../components/PageLoader';
 
@@ -45,6 +45,7 @@ function Dorms() {
   const location = useLocation();
   const navigate = useNavigate();
   const [showSuccessToast, setShowSuccessToast] = useState(false);
+  const [showLoginModal, setShowLoginModal] = useState(false);
 
   useEffect(() => {
     // Check if we were redirected here after submitting a review
@@ -186,6 +187,50 @@ function Dorms() {
     };
   };
 
+  const handleVote = async (reviewId: string, type: 'upvote' | 'downvote') => {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      setShowLoginModal(true);
+      return;
+    }
+
+    try {
+      const response = await fetch(`${API_BASE}/api/reviews/${reviewId}/vote`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({ type })
+      });
+
+      if (!response.ok) {
+        if (response.status === 401) {
+          setShowLoginModal(true);
+        }
+        throw new Error('Failed to vote');
+      }
+
+      const data = await response.json();
+
+      // Update local reviews state to reflect new votes
+      setReviews(prevReviews =>
+        prevReviews.map(review => {
+          if (review._id === reviewId) {
+            return {
+              ...review,
+              upvotes: data.upvotes,
+              downvotes: data.downvotes
+            };
+          }
+          return review;
+        })
+      );
+    } catch (e) {
+      console.error('Error voting:', e);
+    }
+  };
+
   // Load More logic - simple slice of reviews
   const visibleReviews = reviews.slice(0, visibleCount);
 
@@ -282,6 +327,7 @@ function Dorms() {
           formatReviewTime={formatReviewTime}
           openLightbox={openLightbox}
           handleLoadMore={handleLoadMore}
+          handleVote={handleVote}
         />
       </div>
 
@@ -305,6 +351,11 @@ function Dorms() {
           <div className="lightbox-counter">{currentImageIndex + 1} / {currentImages.length}</div>
         </div>
       )}
+
+      <LoginModal
+        isOpen={showLoginModal}
+        onClose={() => setShowLoginModal(false)}
+      />
 
       <Footer />
     </div>

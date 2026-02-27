@@ -1456,6 +1456,70 @@ app.delete('/api/admin/reviews/:id', authenticationToken, requireAdmin, async (r
   }
 });
 
+// Toggle upvote or downvote on a review
+app.post('/api/reviews/:id/vote', authenticationToken, async (req: AuthRequest, res: Response) => {
+  try {
+    const { id } = req.params;
+    const { type } = req.body; // 'upvote' or 'downvote'
+    const userId = req.user?.userId;
+
+    if (!userId) {
+      return res.status(401).json({ message: 'User not authenticated' });
+    }
+
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({ message: 'Invalid review ID format' });
+    }
+
+    if (type !== 'upvote' && type !== 'downvote') {
+      return res.status(400).json({ message: 'Invalid vote type. Must be upvote or downvote' });
+    }
+
+    const review = await UserReview.findById(id);
+    if (!review) {
+      return res.status(404).json({ message: 'Review not found' });
+    }
+
+    const upvotes = review.upvotes || [];
+    const downvotes = review.downvotes || [];
+
+    const hasUpvoted = upvotes.includes(userId);
+    const hasDownvoted = downvotes.includes(userId);
+
+    if (type === 'upvote') {
+      if (hasUpvoted) {
+        // Toggle off upvote
+        review.upvotes = upvotes.filter(idStr => idStr !== userId);
+      } else {
+        // Add upvote, remove downvote if exists
+        review.upvotes = [...upvotes, userId];
+        review.downvotes = downvotes.filter(idStr => idStr !== userId);
+      }
+    } else if (type === 'downvote') {
+      if (hasDownvoted) {
+        // Toggle off downvote
+        review.downvotes = downvotes.filter(idStr => idStr !== userId);
+      } else {
+        // Add downvote, remove upvote if exists
+        review.downvotes = [...downvotes, userId];
+        review.upvotes = upvotes.filter(idStr => idStr !== userId);
+      }
+    }
+
+    const updatedReview = await review.save();
+
+    // Return the updated upvotes and downvotes to the client
+    res.json({
+      message: 'Vote updated successfully',
+      upvotes: updatedReview.upvotes,
+      downvotes: updatedReview.downvotes
+    });
+  } catch (err) {
+    console.error('Error toggling vote', err);
+    res.status(500).json({ message: 'Error toggling vote' });
+  }
+});
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 // ADMIN ROUTES - Dorm Management
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
