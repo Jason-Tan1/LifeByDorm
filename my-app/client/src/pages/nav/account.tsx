@@ -103,11 +103,6 @@ function Account() {
     fetchUserReviews();
   }, []);
 
-  const calculateOverallRating = (review: Review) => {
-    const ratings = [review.room, review.bathroom, review.building, review.amenities, review.location];
-    return ratings.reduce((acc, rating) => acc + rating, 0) / ratings.length;
-  };
-
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('en-US', {
       year: 'numeric',
@@ -218,86 +213,100 @@ function Account() {
             </div>
           ) : (
             <div className="reviews-list">
-              {reviews.map(review => (
-                <div key={review._id} className="review-item review-card-style">
-                  <div className="review-header" style={{ padding: '0', display: 'flex', gap: '20px', alignItems: 'flex-start', marginBottom: '16px' }}>
-                    <div className="review-overall-rating" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px', flexShrink: 0 }}>
-                      <span className={`overall-rating-badge ${getRatingClass(calculateOverallRating(review))}`}>
-                        <Star className="rating-star-icon" />
-                        {calculateOverallRating(review).toFixed(1)}
-                      </span>
-                    </div>
+              {reviews.map(review => {
+                // If there's a pending edit, show the edited data on the account page
+                const pe = review.pendingEdit;
+                const displayRoom = pe ? pe.room : review.room;
+                const displayBathroom = pe ? pe.bathroom : review.bathroom;
+                const displayBuilding = pe ? pe.building : review.building;
+                const displayAmenities = pe ? pe.amenities : review.amenities;
+                const displayLocation = pe ? pe.location : review.location;
+                const displayDescription = pe ? pe.description : review.description;
+                const displayYear = pe ? pe.year : review.year;
+                const displayWouldDormAgain = pe ? pe.wouldDormAgain : review.wouldDormAgain;
+                const displayImages = pe ? pe.images : review.images;
+                const displayOverall = ((displayRoom + displayBathroom + displayBuilding + displayAmenities + displayLocation) / 5);
 
-                    <div className="review-metadata" style={{ display: 'flex', flexDirection: 'column', gap: '8px', flex: 1 }}>
-                      <div className="review-metadata-row" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                        <div className="review-dorm-info">
-                          <Link
-                            to={`/universities/${review.university}`}
-                            className="review-university"
-                            style={{ margin: '0 0 4px 0', fontSize: '0.85rem' }}
-                          >
-                            {review.university.split('-').map(word =>
-                              word.charAt(0).toUpperCase() + word.slice(1)
-                            ).join(' ')}
-                          </Link>
-                          <h3 className="review-dorm-name" style={{ margin: 0, fontSize: '1.25rem' }}>{review.dorm}</h3>
-                        </div>
-                        <span className={`status-badge status-${(review.status || 'pending').toLowerCase()}`}>
-                          {getStatusLabel(review.status)}
+                return (
+                  <div key={review._id} className="review-item review-card-style">
+                    <div className="review-header" style={{ padding: '0', display: 'flex', gap: '20px', alignItems: 'flex-start', marginBottom: '16px' }}>
+                      <div className="review-overall-rating" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '12px', flexShrink: 0, minWidth: '110px' }}>
+                        <span className={`overall-rating-badge ${getRatingClass(displayOverall)}`}>
+                          <Star className="rating-star-icon" />
+                          {displayOverall.toFixed(1)}
                         </span>
-                        {review.pendingEdit && (
+                        {review.pendingEdit ? (
                           <span className="edit-pending-badge">Edit Pending</span>
-                        )}
-                        {!review.pendingEdit && (
+                        ) : (
                           <button className="edit-review-btn" onClick={() => setEditingReview(review)}>
                             Edit
                           </button>
                         )}
                       </div>
 
-                      <div className="review-metadata-row" style={{ display: 'flex', gap: '24px', flexWrap: 'wrap', fontSize: '0.9rem', color: '#666' }}>
-                        <span className="review-time" style={{ fontStyle: 'italic' }}>Submitted on {formatDate(review.createdAt)}</span>
-                        <span>Year: {Array.isArray(review.year) ? review.year.join(', ') : review.year}</span>
-                        <span>Would dorm again: {review.wouldDormAgain ? 'Yes' : 'No'}</span>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="review-content" style={{ padding: '0' }}>
-                    <div className="review-item-details" style={{ borderBottom: 'none', paddingBottom: '0', marginBottom: '12px', display: 'flex', flexWrap: 'wrap', gap: '12px' }}>
-                      <span style={{ fontSize: '0.85rem', color: '#666', backgroundColor: '#f5f5f5', padding: '4px 10px', borderRadius: '4px' }}>Room: {review.room}/5</span>
-                      <span style={{ fontSize: '0.85rem', color: '#666', backgroundColor: '#f5f5f5', padding: '4px 10px', borderRadius: '4px' }}>Bathroom: {review.bathroom}/5</span>
-                      <span style={{ fontSize: '0.85rem', color: '#666', backgroundColor: '#f5f5f5', padding: '4px 10px', borderRadius: '4px' }}>Building: {review.building}/5</span>
-                      <span style={{ fontSize: '0.85rem', color: '#666', backgroundColor: '#f5f5f5', padding: '4px 10px', borderRadius: '4px' }}>Amenities: {review.amenities}/5</span>
-                      <span style={{ fontSize: '0.85rem', color: '#666', backgroundColor: '#f5f5f5', padding: '4px 10px', borderRadius: '4px' }}>Location: {review.location}/5</span>
-                    </div>
-
-                    <p className="review-description" style={{ color: '#444', lineHeight: 1.5, margin: '0 0 16px 0', fontSize: '0.95rem' }}>
-                      {review.description}
-                    </p>
-
-                    {review.images && review.images.length > 0 && (
-                      <div className="review-images-gallery" style={{ display: 'flex', gap: '12px' }}>
-                        {review.images!.slice(0, 3).map((img, idx) => (
-                          <div
-                            key={idx}
-                            className="review-gallery-image-wrapper"
-                            style={{ position: 'relative', width: '150px', height: '150px', flex: '0 0 auto', cursor: 'pointer' }}
-                            onClick={() => openLightbox(review.images as string[], idx)}
-                          >
-                            <img src={img} alt={`Review ${idx + 1}`} className="review-gallery-image" style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '8px' }} />
-                            {idx === 2 && review.images!.length > 3 && (
-                              <div className="review-image-overlay" style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', backgroundColor: 'rgba(0,0,0,0.6)', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white', fontSize: '1.2rem', fontWeight: 'bold' }}>
-                                +{review.images!.length - 3} more
-                              </div>
-                            )}
+                      <div className="review-metadata" style={{ display: 'flex', flexDirection: 'column', gap: '8px', flex: 1 }}>
+                        <div className="review-metadata-row" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                          <div className="review-dorm-info">
+                            <Link
+                              to={`/universities/${review.university}`}
+                              className="review-university"
+                              style={{ margin: '0 0 4px 0', fontSize: '0.85rem' }}
+                            >
+                              {review.university.split('-').map(word =>
+                                word.charAt(0).toUpperCase() + word.slice(1)
+                              ).join(' ')}
+                            </Link>
+                            <h3 className="review-dorm-name" style={{ margin: 0, fontSize: '1.25rem' }}>{review.dorm}</h3>
                           </div>
-                        ))}
+                          <span className={`status-badge status-${(review.status || 'pending').toLowerCase()}`}>
+                            {getStatusLabel(review.status)}
+                          </span>
+                        </div>
+
+                        <div className="review-metadata-row" style={{ display: 'flex', gap: '24px', flexWrap: 'wrap', fontSize: '0.9rem', color: '#666' }}>
+                          <span className="review-time" style={{ fontStyle: 'italic' }}>Submitted on {formatDate(review.createdAt)}</span>
+                          <span>Year: {Array.isArray(displayYear) ? displayYear.join(', ') : displayYear}</span>
+                          <span>Would dorm again: {displayWouldDormAgain ? 'Yes' : 'No'}</span>
+                        </div>
                       </div>
-                    )}
+                    </div>
+
+                    <div className="review-content" style={{ padding: '0' }}>
+                      <div className="review-item-details" style={{ borderBottom: 'none', paddingBottom: '0', marginBottom: '12px', display: 'flex', flexWrap: 'wrap', gap: '12px' }}>
+                        <span style={{ fontSize: '0.85rem', color: '#666', backgroundColor: '#f5f5f5', padding: '4px 10px', borderRadius: '4px' }}>Room: {displayRoom}/5</span>
+                        <span style={{ fontSize: '0.85rem', color: '#666', backgroundColor: '#f5f5f5', padding: '4px 10px', borderRadius: '4px' }}>Bathroom: {displayBathroom}/5</span>
+                        <span style={{ fontSize: '0.85rem', color: '#666', backgroundColor: '#f5f5f5', padding: '4px 10px', borderRadius: '4px' }}>Building: {displayBuilding}/5</span>
+                        <span style={{ fontSize: '0.85rem', color: '#666', backgroundColor: '#f5f5f5', padding: '4px 10px', borderRadius: '4px' }}>Amenities: {displayAmenities}/5</span>
+                        <span style={{ fontSize: '0.85rem', color: '#666', backgroundColor: '#f5f5f5', padding: '4px 10px', borderRadius: '4px' }}>Location: {displayLocation}/5</span>
+                      </div>
+
+                      <p className="review-description" style={{ color: '#444', lineHeight: 1.5, margin: '0 0 16px 0', fontSize: '0.95rem' }}>
+                        {displayDescription}
+                      </p>
+
+                      {displayImages && displayImages.length > 0 && (
+                        <div className="review-images-gallery" style={{ display: 'flex', gap: '12px' }}>
+                          {displayImages!.slice(0, 3).map((img: string, idx: number) => (
+                            <div
+                              key={idx}
+                              className="review-gallery-image-wrapper"
+                              style={{ position: 'relative', width: '150px', height: '150px', flex: '0 0 auto', cursor: 'pointer' }}
+                              onClick={() => openLightbox(displayImages as string[], idx)}
+                            >
+                              <img src={img} alt={`Review ${idx + 1}`} className="review-gallery-image" style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '8px' }} />
+                              {idx === 2 && displayImages!.length > 3 && (
+                                <div className="review-image-overlay" style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', backgroundColor: 'rgba(0,0,0,0.6)', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white', fontSize: '1.2rem', fontWeight: 'bold' }}>
+                                  +{displayImages!.length - 3} more
+                                </div>
+                              )}
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           )}
         </div>
