@@ -242,10 +242,6 @@ function AdminDashboard() {
     }
   };
 
-  const calculateOverallRating = (review: Review) => {
-    return ((review.room + review.bathroom + review.building + review.amenities + review.location) / 5).toFixed(1);
-  };
-
   const formatYears = (year: number[] | number) => {
     const labels = ['', '1st', '2nd', '3rd', '4th', 'Other'];
     if (Array.isArray(year)) {
@@ -412,89 +408,103 @@ function AdminDashboard() {
             )}
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: '20px', marginTop: '20px' }}>
-              {pendingReviews.map(review => (
-                <div key={review._id} className="admin-card">
-                  <div className="admin-card-inner">
-                    <div className="admin-card-content">
-                      <h3 style={{ margin: '0 0 8px 0' }}>
-                        {review.dorm} - {review.university}
-                        {review.pendingEdit ? (
-                          <span style={{ marginLeft: '10px', background: '#fff3e0', color: '#ef6c00', padding: '2px 10px', borderRadius: '12px', fontSize: '11px', fontWeight: 600, border: '1px solid #ffe0b2' }}>✏️ EDITED REVIEW</span>
-                        ) : (
-                          <span style={{ marginLeft: '10px', background: '#e8f5e9', color: '#2e7d32', padding: '2px 10px', borderRadius: '12px', fontSize: '11px', fontWeight: 600, border: '1px solid #c8e6c9' }}>🆕 NEW REVIEW</span>
-                        )}
-                      </h3>
-                      <p style={{ margin: '4px 0', color: '#666' }}>
-                        <strong>Overall Rating:</strong> {calculateOverallRating(review)} / 5.0
-                      </p>
-                      <p style={{ margin: '4px 0', color: '#666' }}>
-                        <strong>Room Type:</strong> {formatRoomTypes(review.roomType)} |
-                        <strong> Year:</strong> {formatYears(review.year)} |
-                        <strong> Year:</strong> {formatYears(review.year)} |
-                        <strong> Would Dorm Again:</strong> {review.wouldDormAgain ? 'Yes' : 'No'}
-                      </p>
-                      <p style={{ margin: '4px 0', color: '#666' }}>
-                        <strong>Submitted by:</strong> {review.user || 'Unknown'}
-                      </p>
-                      <div style={{ marginTop: '12px' }}>
-                        <strong>Ratings:</strong>
-                        <div style={{ display: 'flex', gap: '16px', marginTop: '8px', fontSize: '14px' }}>
-                          <span>Room: {review.room}/5</span>
-                          <span>Bathroom: {review.bathroom}/5</span>
-                          <span>Building: {review.building}/5</span>
-                          <span>Amenities: {review.amenities}/5</span>
-                          <span>Location: {review.location}/5</span>
-                        </div>
-                      </div>
-                      <div style={{ marginTop: '12px' }}>
-                        <strong>Comments:</strong>
-                        <p className="admin-review-text">{review.description}</p>
-                      </div>
-                      {(() => {
-                        const hasImagesArray = review.images && review.images.length > 0;
-                        const hasFileImage = !!review.fileImage;
+              {pendingReviews.map(review => {
+                const pe = review.pendingEdit;
+                const dRoom = pe ? pe.room : review.room;
+                const dBathroom = pe ? pe.bathroom : review.bathroom;
+                const dBuilding = pe ? pe.building : review.building;
+                const dAmenities = pe ? pe.amenities : review.amenities;
+                const dLocation = pe ? pe.location : review.location;
+                const dDescription = pe ? pe.description : review.description;
+                const dYear = pe ? pe.year : review.year;
+                const dRoomType = pe ? pe.roomType : review.roomType;
+                const dWouldDormAgain = pe ? pe.wouldDormAgain : review.wouldDormAgain;
+                const dImages = pe ? pe.images : review.images;
+                const dOverall = ((dRoom + dBathroom + dBuilding + dAmenities + dLocation) / 5).toFixed(1);
 
-                        if (!hasImagesArray && !hasFileImage) return null;
-
-                        const imagesToShow = hasImagesArray ? review.images! : [review.fileImage!];
-
-                        return (
-                          <div style={{ marginTop: '12px' }}>
-                            <strong>Images ({imagesToShow.length}):</strong>
-                            <div className="admin-review-images">
-                              {imagesToShow.map((img, idx) => (
-                                <img
-                                  key={idx}
-                                  src={img}
-                                  alt={`Review ${idx + 1}`}
-                                />
-                              ))}
-                            </div>
+                return (
+                  <div key={review._id} className="admin-card">
+                    <div className="admin-card-inner">
+                      <div className="admin-card-content">
+                        <h3 style={{ margin: '0 0 8px 0' }}>
+                          {review.dorm} - {review.university}
+                          {review.pendingEdit ? (
+                            <span style={{ marginLeft: '10px', background: '#fff3e0', color: '#ef6c00', padding: '2px 10px', borderRadius: '12px', fontSize: '11px', fontWeight: 600, border: '1px solid #ffe0b2' }}>✏️ EDITED REVIEW</span>
+                          ) : (
+                            <span style={{ marginLeft: '10px', background: '#e8f5e9', color: '#2e7d32', padding: '2px 10px', borderRadius: '12px', fontSize: '11px', fontWeight: 600, border: '1px solid #c8e6c9' }}>🆕 NEW REVIEW</span>
+                          )}
+                        </h3>
+                        <p style={{ margin: '4px 0', color: '#666' }}>
+                          <strong>Overall Rating:</strong> {dOverall} / 5.0
+                        </p>
+                        <p style={{ margin: '4px 0', color: '#666' }}>
+                          <strong>Room Type:</strong> {formatRoomTypes(dRoomType)} |
+                          <strong> Year:</strong> {formatYears(dYear)} |
+                          <strong> Would Dorm Again:</strong> {dWouldDormAgain ? 'Yes' : 'No'}
+                        </p>
+                        <p style={{ margin: '4px 0', color: '#666' }}>
+                          <strong>Submitted by:</strong> {review.user || 'Unknown'}
+                        </p>
+                        <div style={{ marginTop: '12px' }}>
+                          <strong>Ratings:</strong>
+                          <div style={{ display: 'flex', gap: '16px', marginTop: '8px', fontSize: '14px' }}>
+                            <span>Room: {dRoom}/5</span>
+                            <span>Bathroom: {dBathroom}/5</span>
+                            <span>Building: {dBuilding}/5</span>
+                            <span>Amenities: {dAmenities}/5</span>
+                            <span>Location: {dLocation}/5</span>
                           </div>
-                        );
-                      })()}
-                      <p style={{ fontSize: '12px', color: '#999', marginTop: '12px' }}>
-                        Submitted: {review.createdAt ? new Date(review.createdAt).toLocaleString() : 'Unknown'}
-                      </p>
-                    </div>
+                        </div>
+                        <div style={{ marginTop: '12px' }}>
+                          <strong>Comments:</strong>
+                          <p className="admin-review-text">{dDescription}</p>
+                        </div>
+                        {(() => {
+                          const hasImagesArray = dImages && dImages.length > 0;
+                          const hasFileImage = !!review.fileImage;
 
-                    <div className="admin-card-actions">
-                      <button
-                        onClick={() => handleApprove(review._id)}
-                        className="admin-action-btn admin-btn-approve"
-                      >
-                        ✓ Approve
-                      </button>
-                      <button
-                        onClick={() => handleDecline(review._id)}
-                        className="admin-action-btn admin-btn-decline"
-                      >
-                        ✗ Decline
-                      </button>
+                          if (!hasImagesArray && !hasFileImage) return null;
+
+                          const imagesToShow = hasImagesArray ? dImages! : [review.fileImage!];
+
+                          return (
+                            <div style={{ marginTop: '12px' }}>
+                              <strong>Images ({imagesToShow.length}):</strong>
+                              <div className="admin-review-images">
+                                {imagesToShow.map((img, idx) => (
+                                  <img
+                                    key={idx}
+                                    src={img}
+                                    alt={`Review ${idx + 1}`}
+                                  />
+                                ))}
+                              </div>
+                            </div>
+                          );
+                        })()}
+                        <p style={{ fontSize: '12px', color: '#999', marginTop: '12px' }}>
+                          Submitted: {review.createdAt ? new Date(review.createdAt).toLocaleString() : 'Unknown'}
+                        </p>
+                      </div>
+
+                      <div className="admin-card-actions">
+                        <button
+                          onClick={() => handleApprove(review._id)}
+                          className="admin-action-btn admin-btn-approve"
+                        >
+                          ✓ Approve
+                        </button>
+                        <button
+                          onClick={() => handleDecline(review._id)}
+                          className="admin-action-btn admin-btn-decline"
+                        >
+                          ✗ Decline
+                        </button>
+                      </div>
                     </div>
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           </div>
         )}
