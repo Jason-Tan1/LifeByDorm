@@ -390,6 +390,16 @@ function Reviews() {
                 {resolvedUniversity && <p className="dorm-university">{formatName(resolvedUniversity)}</p>}
               </div>
             </div>
+
+            {!localStorage.getItem('token') && (
+              <div className="verified-badge-notice">
+                <span className="info-icon">ⓘ</span>
+                <span>
+                  Reviewing without logging in? <br />
+                  <button type="button" className="login-link-btn" onClick={() => setShowLoginModal(true)}>Sign in</button> to get a <span className="verified-checkmark">Verified Badge ✓</span>
+                </span>
+              </div>
+            )}
           </div>
 
           {/* Right Column: Form */}
