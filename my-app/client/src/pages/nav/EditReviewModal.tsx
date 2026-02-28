@@ -148,7 +148,7 @@ function EditReviewModal({ review, onClose, onSaved }: EditReviewModalProps) {
             if (ratings.building <= 0) missing.push('Building rating');
             if (ratings.amenities <= 0) missing.push('Amenities rating');
             if (ratings.location <= 0) missing.push('Location rating');
-            if (!description || description.trim().length < 10) missing.push('Comments (min 10 chars)');
+            if (!description || description.trim().length < 25 || description.trim().length > 1500) missing.push('Comments (25-1500 chars)');
 
             if (missing.length > 0) {
                 setErrorMessage('Please fill out: ' + missing.join(', '));
@@ -326,9 +326,10 @@ function EditReviewModal({ review, onClose, onSaved }: EditReviewModalProps) {
                             placeholder="Share your experience..."
                             value={description}
                             onChange={e => setDescription(e.target.value)}
+                            maxLength={1500}
                         />
                         <div className="char-count">
-                            {description.length}/10 min characters
+                            {description.length}/1500 max characters (min 25)
                         </div>
                     </div>
 

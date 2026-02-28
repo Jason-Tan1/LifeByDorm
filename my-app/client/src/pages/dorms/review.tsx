@@ -190,7 +190,7 @@ function Reviews() {
       if (ratings.building <= 0) missing.push('Building rating');
       if (ratings.amenities <= 0) missing.push('Amenities rating');
       if (ratings.location <= 0) missing.push('Location rating');
-      if (!description || description.trim().length < 5) missing.push('Comments (min 5 chars)');
+      if (!description || description.trim().length < 25 || description.trim().length > 1500) missing.push('Comments (25-1500 chars)');
 
       if (missing.length > 0) {
         setErrorMessage('Please fill out the following fields:\n' + missing.join(', '));
@@ -489,9 +489,10 @@ function Reviews() {
                     placeholder={t('review.shareExperience')}
                     value={description}
                     onChange={e => setDescription(e.target.value)}
+                    maxLength={1500}
                   />
                   <div className="char-count">
-                    {description.length}/25 min characters
+                    {description.length}/1500 max characters (min 25)
                   </div>
                 </div>
 

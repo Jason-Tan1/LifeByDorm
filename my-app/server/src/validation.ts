@@ -75,7 +75,7 @@ export const reviewSchema = z.object({
   building: z.number().int().min(1).max(5),
   amenities: z.number().int().min(1).max(5),
   location: z.number().int().min(1).max(5),
-  description: z.string().min(10).max(3000).trim(),
+  description: z.string().min(25).max(1500).trim(),
   // Handle all possible year formats: number, string, array of numbers/strings
   year: z.union([
     z.number(),
@@ -100,7 +100,7 @@ export const editReviewSchema = z.object({
   building: z.number().int().min(1).max(5),
   amenities: z.number().int().min(1).max(5),
   location: z.number().int().min(1).max(5),
-  description: z.string().min(10).max(3000).trim(),
+  description: z.string().min(25).max(1500).trim(),
   year: z.union([z.number(), z.string(), z.array(z.union([z.number(), z.string()]))]),
   roomType: z.union([z.string(), z.array(z.string())]),
   wouldDormAgain: z.boolean().nullable().optional(),
