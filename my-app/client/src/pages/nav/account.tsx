@@ -117,6 +117,14 @@ function Account() {
     return 'rating-low';
   };
 
+  const formatYears = (year: number[] | number | string | string[]) => {
+    const labels = ['', '1st', '2nd', '3rd', '4th', 'Other'];
+    if (Array.isArray(year)) {
+      return year.map(y => labels[Number(y)] || y).join(', ');
+    }
+    return labels[Number(year)] || year;
+  };
+
   const getStatusLabel = (status: string = 'pending') => {
     switch (status.toLowerCase()) {
       case 'approved': return 'Accepted';
@@ -265,7 +273,7 @@ function Account() {
 
                         <div className="review-metadata-row" style={{ display: 'flex', gap: '24px', flexWrap: 'wrap', fontSize: '0.9rem', color: '#666' }}>
                           <span className="review-time" style={{ fontStyle: 'italic' }}>Submitted on {formatDate(review.createdAt)}</span>
-                          <span>Year: {Array.isArray(displayYear) ? displayYear.join(', ') : displayYear}</span>
+                          <span>Year: {formatYears(displayYear as any)}</span>
                           <span>Would dorm again: {displayWouldDormAgain ? 'Yes' : 'No'}</span>
                         </div>
                       </div>
