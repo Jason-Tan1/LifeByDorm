@@ -2,6 +2,21 @@ import { Schema, model, Document } from 'mongoose';
 
 const mongoose = require('mongoose');
 
+// Sub-document interface for pending edits
+export interface IPendingEdit {
+  room: number;
+  bathroom: number;
+  building: number;
+  amenities: number;
+  location: number;
+  description: string;
+  year: number[];
+  roomType: string[];
+  wouldDormAgain?: boolean;
+  images?: string[];
+  submittedAt: Date;
+}
+
 export interface IReview extends Document {
   university?: string;
   dorm?: string;
@@ -22,7 +37,22 @@ export interface IReview extends Document {
   verified?: boolean;
   upvotes?: string[];
   downvotes?: string[];
+  pendingEdit?: IPendingEdit;
 }
+
+const pendingEditSchema = new Schema<IPendingEdit>({
+  room: { type: Number, required: true },
+  bathroom: { type: Number, required: true },
+  building: { type: Number, required: true },
+  amenities: { type: Number, required: true },
+  location: { type: Number, required: true },
+  description: { type: String, required: true },
+  year: { type: [Number], required: true },
+  roomType: { type: [String], required: true },
+  wouldDormAgain: { type: Boolean, default: false },
+  images: { type: [String], default: [] },
+  submittedAt: { type: Date, default: Date.now }
+}, { _id: false });
 
 const reviewSchema = new Schema<IReview>({
   university: { type: String },
@@ -43,7 +73,8 @@ const reviewSchema = new Schema<IReview>({
   status: { type: String, enum: ['pending', 'approved', 'declined'], default: 'pending' },
   verified: { type: Boolean, default: false },
   upvotes: { type: [String], default: [] },
-  downvotes: { type: [String], default: [] }
+  downvotes: { type: [String], default: [] },
+  pendingEdit: { type: pendingEditSchema, default: undefined }
 });
 
 // Performance: Compound index for the most common query pattern (university + dorm + status)

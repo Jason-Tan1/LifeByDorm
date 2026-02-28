@@ -311,7 +311,189 @@
   color: #c62828;
 }
 
+/* Edit Review Modal */
+.edit-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+  padding: 20px;
+  animation: fadeIn 0.2s ease-out;
+}
 
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+.edit-modal-content {
+  background: white;
+  border-radius: 16px;
+  width: 100%;
+  max-width: 680px;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.edit-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 24px 28px 16px;
+  border-bottom: 1px solid #eee;
+  position: sticky;
+  top: 0;
+  background: white;
+  z-index: 1;
+  border-radius: 16px 16px 0 0;
+}
+
+.edit-modal-title {
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: #1a1a1a;
+  margin: 0 0 4px;
+}
+
+.edit-modal-subtitle {
+  font-size: 0.9rem;
+  color: #666;
+  margin: 0;
+}
+
+.edit-modal-close {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #666;
+  padding: 4px;
+  border-radius: 8px;
+  transition: background-color 0.2s;
+}
+
+.edit-modal-close:hover {
+  background-color: #f5f5f5;
+  color: #333;
+}
+
+.edit-modal-error {
+  background: #ffebee;
+  color: #c62828;
+  padding: 12px 28px;
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+.edit-modal-body {
+  padding: 24px 28px;
+  flex: 1;
+  overflow-y: auto;
+}
+
+.edit-modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  padding: 16px 28px;
+  border-top: 1px solid #eee;
+  position: sticky;
+  bottom: 0;
+  background: white;
+  border-radius: 0 0 16px 16px;
+}
+
+.edit-modal-cancel {
+  padding: 12px 24px;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-weight: 600;
+  font-family: 'DM Sans', sans-serif;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  color: #333;
+}
+
+.edit-modal-cancel:hover {
+  background: #f5f5f5;
+}
+
+.edit-modal-save {
+  padding: 12px 24px;
+  background: #D62828;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  font-family: 'DM Sans', sans-serif;
+  cursor: pointer;
+  color: white;
+  transition: background-color 0.2s;
+}
+
+.edit-modal-save:hover {
+  background: #B91C1C;
+}
+
+.edit-modal-save:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.edit-modal-note {
+  padding: 8px 28px 16px;
+  font-size: 0.8rem;
+  color: #888;
+  margin: 0;
+  text-align: center;
+  font-style: italic;
+}
+
+/* Edit Pending Badge */
+.edit-pending-badge {
+  background-color: #fff3e0;
+  color: #ef6c00;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  border: 1px solid #ffe0b2;
+}
+
+/* Edit Button */
+.edit-review-btn {
+  background: none;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  padding: 6px 14px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  cursor: pointer;
+  color: #555;
+  font-family: 'DM Sans', sans-serif;
+  transition: all 0.2s;
+}
+
+.edit-review-btn:hover {
+  border-color: #D62828;
+  color: #D62828;
+  background-color: #fff1f2;
+}
 
 /* Responsive */
 @media (max-width: 768px) {
