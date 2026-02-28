@@ -89,6 +89,44 @@
   font-weight: 500;
 }
 
+.account-actions {
+  margin-top: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.action-btn {
+  width: 100%;
+  padding: 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 1rem;
+  transition: background-color 0.2s, color 0.2s;
+}
+
+.logout-btn {
+  background: white;
+  border: 1px solid #ddd;
+  color: #333;
+}
+
+.logout-btn:hover {
+  background: #f5f5f5;
+}
+
+.delete-btn {
+  background: #D62828;
+  border: 1px solid #D62828;
+  color: white;
+}
+
+.delete-btn:hover {
+  background: #B91C1C;
+}
+
 /* Main Content */
 .account-main {
   flex: 1;
@@ -286,6 +324,16 @@
     width: 100%;
   }
 
+  /* Make account action buttons sit side-by-side on mobile */
+  .account-actions {
+    flex-direction: row;
+    justify-content: space-between;
+  }
+
+  .action-btn {
+    flex: 1;
+  }
+
   .review-item-header {
     flex-direction: column;
     gap: 12px;
@@ -299,5 +347,35 @@
     flex-direction: column;
     gap: 8px;
     align-items: flex-start;
+  }
+
+  /* Overrides for the new divider layout on mobile */
+  .review-header[style] {
+    flex-direction: column !important;
+    gap: 12px !important;
+    align-items: flex-start !important;
+  }
+
+  .review-overall-rating[style] {
+    align-items: flex-start !important;
+  }
+
+  .review-item-details[style] {
+    justify-content: flex-start !important;
+  }
+
+  .review-metadata-row[style] {
+    flex-direction: column !important;
+    gap: 8px !important;
+    align-items: flex-start !important;
+  }
+
+  .review-images-gallery[style] {
+    flex-wrap: wrap !important;
+  }
+
+  .review-gallery-image-wrapper[style] {
+    width: 100px !important;
+    height: 100px !important;
   }
 }
