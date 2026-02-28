@@ -60,7 +60,8 @@ import {
   verifyCodeSchema,
   googleAuthSchema,
   dormSchema,
-  reviewSchema
+  reviewSchema,
+  editReviewSchema
 } from './validation';
 
 dotenv.config();
@@ -1283,6 +1284,86 @@ app.get('/api/reviews/user', authenticationToken, async (req: AuthRequest, res: 
   }
 });
 
+// Edit a review (authenticated user, ownership check)
+// Stores the edit as a pendingEdit draft — the original stays live until admin approves
+app.put('/api/reviews/:id', authenticationToken, validate(editReviewSchema), async (req: AuthRequest, res: Response) => {
+  try {
+    const { id } = req.params;
+    const userEmail = req.user?.name;
+
+    if (!userEmail) {
+      return res.status(401).json({ message: 'User not authenticated' });
+    }
+
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({ message: 'Invalid review ID format' });
+    }
+
+    const review = await UserReview.findById(id);
+    if (!review) {
+      return res.status(404).json({ message: 'Review not found' });
+    }
+
+    // Ownership check: only the review author can edit
+    if (review.user !== userEmail) {
+      return res.status(403).json({ message: 'You can only edit your own reviews' });
+    }
+
+    // Don't allow editing if there's already a pending edit
+    if (review.pendingEdit) {
+      return res.status(409).json({ message: 'You already have a pending edit for this review. Please wait for admin approval.' });
+    }
+
+    const {
+      room, bathroom, building, amenities, location,
+      description, year, roomType, wouldDormAgain, images
+    } = req.body;
+
+    // Process new images: upload base64 strings to S3
+    let processedImages = images || [];
+    if (processedImages.length > 0) {
+      if (!isProduction) console.log(`📤 Uploading ${processedImages.length} edit images to S3...`);
+      processedImages = await Promise.all(processedImages.map(async (img: string) => {
+        if (typeof img === 'string' && img.startsWith('data:')) {
+          try {
+            return await uploadToS3(img, 'reviews/gallery');
+          } catch (err) {
+            console.error('❌ Failed to upload edit image:', err);
+            return img;
+          }
+        }
+        return img;
+      }));
+    }
+
+    // Store the edit as a pending draft
+    review.pendingEdit = {
+      room,
+      bathroom,
+      building,
+      amenities,
+      location,
+      description: sanitizeInput(description),
+      year: Array.isArray(year) ? year : [year],
+      roomType: Array.isArray(roomType) ? roomType : [roomType],
+      wouldDormAgain: wouldDormAgain ?? false,
+      images: processedImages,
+      submittedAt: new Date()
+    };
+
+    await review.save();
+
+    if (!isProduction) {
+      console.log('✅ Pending edit saved for review:', id);
+    }
+
+    res.json({ message: 'Edit submitted for review', review });
+  } catch (err) {
+    console.error('Error editing review', err);
+    res.status(500).json({ message: 'Error editing review' });
+  }
+});
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 // ADMIN ROUTES - Analytics
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1371,9 +1452,15 @@ app.get('/api/admin/stats', authenticationToken, requireAdmin, async (req: AuthR
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 // Get all pending reviews (admin only)
+// Includes brand-new pending reviews AND approved reviews with a pending edit
 app.get('/api/admin/reviews/pending', authenticationToken, requireAdmin, async (req: AuthRequest, res: Response) => {
   try {
-    const pendingReviews = await UserReview.find({ status: 'pending' }).sort({ createdAt: -1 }).lean();
+    const pendingReviews = await UserReview.find({
+      $or: [
+        { status: 'pending' },
+        { pendingEdit: { $exists: true, $ne: null } }
+      ]
+    }).sort({ createdAt: -1 }).lean();
 
     // Sign image URLs so they can be viewed even if S3 block public access is on
     const reviewsWithSignedUrls = await Promise.all(pendingReviews.map(async (review: any) => {
@@ -1382,6 +1469,12 @@ app.get('/api/admin/reviews/pending', authenticationToken, requireAdmin, async (
       }
       if (review.images && review.images.length > 0) {
         review.images = await Promise.all(review.images.map((img: string) => getSignedFileUrl(img)));
+      }
+      // Also sign pending edit images
+      if (review.pendingEdit && review.pendingEdit.images && review.pendingEdit.images.length > 0) {
+        review.pendingEdit.images = await Promise.all(
+          review.pendingEdit.images.map((img: string) => getSignedFileUrl(img))
+        );
       }
       return review;
     }));
@@ -1405,18 +1498,36 @@ app.get('/api/admin/reviews/all', authenticationToken, requireAdmin, async (req:
 });
 
 // Approve a review (admin only)
+// If the review has a pendingEdit, apply the edit fields to the main document
 app.patch('/api/admin/reviews/:id/approve', authenticationToken, requireAdmin, async (req: AuthRequest, res: Response) => {
   try {
     const { id } = req.params;
     if (!mongoose.Types.ObjectId.isValid(id)) return res.status(400).json({ message: 'Invalid ID format' });
-    const review = await UserReview.findByIdAndUpdate(
-      id,
-      { status: 'approved' },
-      { new: true }
-    );
+
+    const review = await UserReview.findById(id);
     if (!review) {
       return res.status(404).json({ message: 'Review not found' });
     }
+
+    // If there's a pending edit, apply the edit fields to the main review
+    if (review.pendingEdit) {
+      review.room = review.pendingEdit.room;
+      review.bathroom = review.pendingEdit.bathroom;
+      review.building = review.pendingEdit.building;
+      review.amenities = review.pendingEdit.amenities;
+      review.location = review.pendingEdit.location;
+      review.description = review.pendingEdit.description;
+      review.year = review.pendingEdit.year;
+      review.roomType = review.pendingEdit.roomType;
+      review.wouldDormAgain = review.pendingEdit.wouldDormAgain;
+      review.images = review.pendingEdit.images || [];
+      review.pendingEdit = undefined;
+      if (!isProduction) console.log('✅ Applied pending edit for review:', id);
+    }
+
+    review.status = 'approved';
+    await review.save();
+
     res.json({ message: 'Review approved', review });
   } catch (err) {
     console.error('Error approving review', err);
@@ -1424,15 +1535,29 @@ app.patch('/api/admin/reviews/:id/approve', authenticationToken, requireAdmin, a
   }
 });
 
-// Decline a review (admin only) - deletes the review permanently
+// Decline a review (admin only)
+// If the review has a pendingEdit, just clear the edit (keep original).
+// If it's a brand-new pending review, delete it permanently.
 app.patch('/api/admin/reviews/:id/decline', authenticationToken, requireAdmin, async (req: AuthRequest, res: Response) => {
   try {
     const { id } = req.params;
     if (!mongoose.Types.ObjectId.isValid(id)) return res.status(400).json({ message: 'Invalid ID format' });
-    const review = await UserReview.findByIdAndDelete(id);
+
+    const review = await UserReview.findById(id);
     if (!review) {
       return res.status(404).json({ message: 'Review not found' });
     }
+
+    // If this review has a pending edit, just clear the edit and keep the original
+    if (review.pendingEdit) {
+      review.pendingEdit = undefined;
+      await review.save();
+      if (!isProduction) console.log('🚫 Declined pending edit for review:', id, '— original preserved');
+      return res.json({ message: 'Edit declined, original review preserved', review });
+    }
+
+    // Otherwise it's a brand-new pending review — delete it
+    await UserReview.findByIdAndDelete(id);
     res.json({ message: 'Review declined and removed' });
   } catch (err) {
     console.error('Error declining review', err);

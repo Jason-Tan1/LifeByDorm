@@ -26,6 +26,19 @@ interface Review {
   createdAt?: string;
   status?: string;
   user?: string;
+  pendingEdit?: {
+    room: number;
+    bathroom: number;
+    building: number;
+    amenities: number;
+    location: number;
+    description: string;
+    year: number[];
+    roomType: string[];
+    wouldDormAgain?: boolean;
+    images?: string[];
+    submittedAt?: string;
+  };
 }
 
 interface PendingDorm {
@@ -405,6 +418,11 @@ function AdminDashboard() {
                     <div className="admin-card-content">
                       <h3 style={{ margin: '0 0 8px 0' }}>
                         {review.dorm} - {review.university}
+                        {review.pendingEdit ? (
+                          <span style={{ marginLeft: '10px', background: '#fff3e0', color: '#ef6c00', padding: '2px 10px', borderRadius: '12px', fontSize: '11px', fontWeight: 600, border: '1px solid #ffe0b2' }}>✏️ EDITED REVIEW</span>
+                        ) : (
+                          <span style={{ marginLeft: '10px', background: '#e8f5e9', color: '#2e7d32', padding: '2px 10px', borderRadius: '12px', fontSize: '11px', fontWeight: 600, border: '1px solid #c8e6c9' }}>🆕 NEW REVIEW</span>
+                        )}
                       </h3>
                       <p style={{ margin: '4px 0', color: '#666' }}>
                         <strong>Overall Rating:</strong> {calculateOverallRating(review)} / 5.0

@@ -3,6 +3,7 @@ import { useNavigate, Link } from 'react-router-dom';
 import NavBar from './navbar.tsx';
 import Footer from '../home/footer.tsx';
 import Star from '@mui/icons-material/Star';
+import EditReviewModal from './EditReviewModal.tsx';
 import './account.css';
 
 // Use relative path '' on localhost to leverage the Vite proxy
@@ -25,6 +26,7 @@ interface Review {
   createdAt: string;
   images?: string[];
   status?: string;
+  pendingEdit?: any;
 }
 
 function Account() {
@@ -38,6 +40,9 @@ function Account() {
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [currentImages, setCurrentImages] = useState<string[]>([]);
+
+  // Edit Modal State
+  const [editingReview, setEditingReview] = useState<Review | null>(null);
 
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -240,6 +245,14 @@ function Account() {
                         <span className={`status-badge status-${(review.status || 'pending').toLowerCase()}`}>
                           {getStatusLabel(review.status)}
                         </span>
+                        {review.pendingEdit && (
+                          <span className="edit-pending-badge">Edit Pending</span>
+                        )}
+                        {!review.pendingEdit && (
+                          <button className="edit-review-btn" onClick={() => setEditingReview(review)}>
+                            Edit
+                          </button>
+                        )}
                       </div>
 
                       <div className="review-metadata-row" style={{ display: 'flex', gap: '24px', flexWrap: 'wrap', fontSize: '0.9rem', color: '#666' }}>
@@ -309,6 +322,29 @@ function Account() {
           <button className="lightbox-arrow lightbox-arrow-right" onClick={(e) => { e.stopPropagation(); nextImage(); }}>›</button>
           <div className="lightbox-counter">{currentImageIndex + 1} / {currentImages.length}</div>
         </div>
+      )}
+
+      {/* Edit Review Modal */}
+      {editingReview && (
+        <EditReviewModal
+          review={editingReview}
+          onClose={() => setEditingReview(null)}
+          onSaved={async () => {
+            // Re-fetch reviews after edit
+            try {
+              const token = localStorage.getItem('token');
+              const res = await fetch(`${API_BASE}/api/reviews/user`, {
+                headers: { 'Authorization': `Bearer ${token}` }
+              });
+              if (res.ok) {
+                const data = await res.json();
+                setReviews(data);
+              }
+            } catch (err) {
+              console.error('Error refreshing reviews:', err);
+            }
+          }}
+        />
       )}
 
       <Footer />
