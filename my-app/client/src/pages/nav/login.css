@@ -57,21 +57,21 @@
     right: 20px;
     background: transparent;
     border: none;
-    font-size: 1.8rem;
+    font-size: 1.5rem;
     color: #666;
     cursor: pointer;
-    width: 40px;
-    height: 40px;
+    width: 30px;
+    height: 30px;
     display: flex;
     align-items: center;
     justify-content: center;
-    border-radius: 50%;
+    border-radius: 8px;
     transition: all 0.2s ease;
     line-height: 1;
 }
 
 .login_modal_close:hover {
-    background: #def2f1;
+    background: #f0f0f0;
     color: #1a1a1a;
 }
 
