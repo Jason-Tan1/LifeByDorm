@@ -87,7 +87,6 @@
   background-color: #fff1f2;
   color: #D62828;
   font-weight: 500;
-  border-left: 3px solid #D62828;
 }
 
 /* Main Content */
@@ -169,22 +168,24 @@
 .reviews-list {
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 0;
 }
 
-.review-item {
-  background: white;
-  border-radius: 12px;
-  padding: 24px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-}
-
-.review-item-header {
+.review-item.review-card-style {
   display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  margin-bottom: 16px;
+  flex-direction: column;
+  background: transparent;
+  border-radius: 0;
+  padding: 24px 0;
+  box-shadow: none;
+  border-bottom: 1px solid #e0e0e0;
 }
+
+.review-item.review-card-style:last-child {
+  border-bottom: none;
+}
+
+
 
 .review-dorm-info {
   flex: 1;
@@ -235,90 +236,44 @@
   border: 1px solid #c8e6c9;
 }
 
-.status-rejected, .status-declined {
+.status-rejected,
+.status-declined {
   background-color: #ffebee;
   color: #c62828;
   border: 1px solid #ffcdd2;
 }
 
-.review-rating {
+/* Badge classes to match dorms.css */
+.overall-rating-badge {
   display: flex;
   align-items: center;
   gap: 4px;
-  padding: 8px 12px;
-  border-radius: 8px;
+  font-size: 1.1rem;
   font-weight: 600;
-  font-size: 1rem;
+  padding: 6px 12px;
+  border-radius: 8px;
 }
 
-.review-rating.rating-high {
+.overall-rating-badge .rating-star-icon {
+  font-size: 1.1rem;
+}
+
+.overall-rating-badge.rating-high {
   background-color: #e8f5e9;
   color: #2e7d32;
 }
 
-.review-rating.rating-medium {
-  background-color: #fff3e0;
-  color: #ef6c00;
+.overall-rating-badge.rating-medium {
+  background-color: #fff8e1;
+  color: #f9a825;
 }
 
-.review-rating.rating-low {
+.overall-rating-badge.rating-low {
   background-color: #ffebee;
   color: #c62828;
 }
 
-.review-item-details {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 12px;
-  margin-bottom: 16px;
-  padding-bottom: 16px;
-  border-bottom: 1px solid #e0e0e0;
-}
 
-.review-item-details span {
-  font-size: 0.85rem;
-  color: #666;
-  background-color: #f5f5f5;
-  padding: 4px 10px;
-  border-radius: 4px;
-}
-
-.review-item-description {
-  color: #444;
-  line-height: 1.6;
-  margin-bottom: 16px;
-}
-
-.review-item-images {
-  display: flex;
-  gap: 12px;
-  margin-bottom: 16px;
-  align-items: center;
-}
-
-.review-item-images img {
-  width: 100px;
-  height: 100px;
-  object-fit: cover;
-  border-radius: 8px;
-}
-
-.more-images {
-  font-size: 0.85rem;
-  color: #666;
-}
-
-.review-item-footer {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  font-size: 0.85rem;
-  color: #666;
-}
-
-.review-would-dorm {
-  font-weight: 500;
-}
 
 /* Responsive */
 @media (max-width: 768px) {
