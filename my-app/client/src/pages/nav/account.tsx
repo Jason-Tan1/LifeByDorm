@@ -34,6 +34,11 @@ function Account() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  // Lightbox State
+  const [lightboxOpen, setLightboxOpen] = useState(false);
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [currentImages, setCurrentImages] = useState<string[]>([]);
+
   useEffect(() => {
     const token = localStorage.getItem('token');
     if (!token) {
@@ -120,6 +125,31 @@ function Account() {
     }
   };
 
+  // Lightbox Handlers
+  const openLightbox = (images: string[], index: number) => {
+    setCurrentImages(images);
+    setCurrentImageIndex(index);
+    setLightboxOpen(true);
+  };
+
+  const closeLightbox = () => {
+    setLightboxOpen(false);
+  };
+
+  const nextImage = () => {
+    setCurrentImageIndex((prev) => (prev + 1) % currentImages.length);
+  };
+
+  const prevImage = () => {
+    setCurrentImageIndex((prev) => (prev - 1 + currentImages.length) % currentImages.length);
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'ArrowRight') nextImage();
+    if (e.key === 'ArrowLeft') prevImage();
+    if (e.key === 'Escape') closeLightbox();
+  };
+
   return (
     <div className="account-page">
       <NavBar />
@@ -138,22 +168,12 @@ function Account() {
             <button className="nav-item active">My Reviews</button>
           </nav>
 
-          <div className="account-actions" style={{ marginTop: '20px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
+          <div className="account-actions">
             <button
               className="action-btn logout-btn"
               onClick={() => {
                 localStorage.removeItem('token');
                 window.location.href = '/';
-              }}
-              style={{
-                width: '100%',
-                padding: '12px',
-                background: 'white',
-                border: '1px solid #ddd',
-                borderRadius: '8px',
-                color: '#333',
-                cursor: 'pointer',
-                fontWeight: '600'
               }}
             >
               Log Out
@@ -165,19 +185,6 @@ function Account() {
                   alert('Account deletion request has been submitted. (Demo)');
                 }
               }}
-              style={{
-                width: '100%',
-                padding: '12px',
-                background: '#D62828',
-                border: '1px solid #D62828',
-                borderRadius: '8px',
-                color: 'white',
-                cursor: 'pointer',
-                fontWeight: '600',
-                transition: 'background-color 0.2s',
-              }}
-              onMouseOver={(e) => { e.currentTarget.style.backgroundColor = '#B91C1C'; }}
-              onMouseOut={(e) => { e.currentTarget.style.backgroundColor = '#D62828'; }}
             >
               Delete Account
             </button>
@@ -185,8 +192,6 @@ function Account() {
         </div>
 
         <div className="account-main">
-          <h1>My Dorm Reviews</h1>
-
           {loading ? (
             <p className="loading-text">Loading your reviews...</p>
           ) : error ? (
@@ -239,6 +244,7 @@ function Account() {
 
                       <div className="review-metadata-row" style={{ display: 'flex', gap: '24px', flexWrap: 'wrap', fontSize: '0.9rem', color: '#666' }}>
                         <span className="review-time" style={{ fontStyle: 'italic' }}>Submitted on {formatDate(review.createdAt)}</span>
+                        <span>Year: {Array.isArray(review.year) ? review.year.join(', ') : review.year}</span>
                         <span>Would dorm again: {review.wouldDormAgain ? 'Yes' : 'No'}</span>
                       </div>
                     </div>
@@ -260,7 +266,12 @@ function Account() {
                     {review.images && review.images.length > 0 && (
                       <div className="review-images-gallery" style={{ display: 'flex', gap: '12px' }}>
                         {review.images!.slice(0, 3).map((img, idx) => (
-                          <div key={idx} className="review-gallery-image-wrapper" style={{ position: 'relative', width: '150px', height: '150px', flex: '0 0 auto' }}>
+                          <div
+                            key={idx}
+                            className="review-gallery-image-wrapper"
+                            style={{ position: 'relative', width: '150px', height: '150px', flex: '0 0 auto', cursor: 'pointer' }}
+                            onClick={() => openLightbox(review.images as string[], idx)}
+                          >
                             <img src={img} alt={`Review ${idx + 1}`} className="review-gallery-image" style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '8px' }} />
                             {idx === 2 && review.images!.length > 3 && (
                               <div className="review-image-overlay" style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', backgroundColor: 'rgba(0,0,0,0.6)', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white', fontSize: '1.2rem', fontWeight: 'bold' }}>
@@ -278,6 +289,27 @@ function Account() {
           )}
         </div>
       </div>
+
+      {/* Lightbox Modal */}
+      {lightboxOpen && (
+        <div
+          className="lightbox-overlay"
+          onClick={closeLightbox}
+          onKeyDown={handleKeyDown}
+          tabIndex={0}
+        >
+          <button className="lightbox-close" onClick={closeLightbox}>×</button>
+          <button className="lightbox-arrow lightbox-arrow-left" onClick={(e) => { e.stopPropagation(); prevImage(); }}>‹</button>
+          <img
+            src={currentImages[currentImageIndex]}
+            alt="Full size"
+            className="lightbox-image"
+            onClick={(e) => e.stopPropagation()}
+          />
+          <button className="lightbox-arrow lightbox-arrow-right" onClick={(e) => { e.stopPropagation(); nextImage(); }}>›</button>
+          <div className="lightbox-counter">{currentImageIndex + 1} / {currentImages.length}</div>
+        </div>
+      )}
 
       <Footer />
     </div>
