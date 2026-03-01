@@ -2,511 +2,239 @@
   {
     "name": "York University",
     "slug": "york-university",
-    "founded": 1959,
     "location": "Toronto, Ontario, Canada",
-    "totalStudents": 55000,
-    "acceptanceRate": 53,
     "imageUrl": "https://www.yorku.ca/yfile/wp-content/uploads/sites/889/2023/08/aerial_ross-east.jpg",
-    "website": "https://www.yorku.ca",
-    "highlights": [
-      "Over 55,000 students from 178 countries",
-      "11 Faculties offering more than 200 programs",
-      "Modern campus with state-of-the-art facilities"
-    ]
+    "website": "https://www.yorku.ca"
   },
   {
     "name": "University of Toronto",
     "slug": "university-of-toronto",
-    "founded": 1827,
     "location": "Toronto, Ontario, Canada",
-    "totalStudents": 93000,
-    "acceptanceRate": 43,
     "imageUrl": "https://defygravitycampaign.utoronto.ca/wp-content/uploads/2024/10/landmark_frontcampusaerial-scaled-1.jpg",
-    "website": "https://www.utoronto.ca",
-    "highlights": [
-      "Ranked #1 in Canada and among top 20 globally",
-      "3 distinct campuses across the Greater Toronto Area",
-      "World-renowned research facilities"
-    ]
+    "website": "https://www.utoronto.ca"
   },
   {
     "name": "Western University",
     "slug": "western-university",
-    "founded": 1878,
     "location": "London, Ontario, Canada",
-    "totalStudents": 38000,
-    "acceptanceRate": 31,
     "imageUrl": "https://brand.westernu.ca/assets/img/assets/wallpaper/middlesex-wallpaper.jpg",
-    "website": "https://www.uwo.ca",
-    "highlights": [
-      "Beautiful 481-hectare campus",
-      "12 faculties and schools",
-      "Top-ranked student experience"
-    ]
+    "website": "https://www.uwo.ca"
   },
   {
     "name": "McGill University",
     "slug": "mcgill-university",
-    "founded": 1821,
     "location": "Montreal, Quebec, Canada",
-    "totalStudents": 40000,
-    "acceptanceRate": 46,
     "imageUrl": "https://reporter.mcgill.ca/wp-content/uploads/2018/10/McGill-fall-2018-web.jpg",
-    "website": "https://www.mcgill.ca",
-    "highlights": [
-      "Canada's most international university",
-      "Located in the heart of Montreal",
-      "Consistently ranked among top 50 universities worldwide"
-    ]
+    "website": "https://www.mcgill.ca"
   },
   {
     "name": "University of British Columbia",
     "slug": "university-of-british-columbia",
-    "founded": 1908,
     "location": "Vancouver, British Columbia, Canada",
-    "totalStudents": 71000,
-    "acceptanceRate": 52,
     "imageUrl": "https://images.unsplash.com/photo-1635295852796-f6867d868156?ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8dWJjfGVufDB8fDB8fHww&fm=jpg&q=60&w=3000",
-    "website": "https://www.ubc.ca",
-    "highlights": [
-      "Stunning campus on the Pacific Ocean",
-      "World-class research facilities",
-      "Two major campuses: Vancouver and Okanagan"
-    ]
+    "website": "https://www.ubc.ca"
   },
   {
     "name": "McMaster University",
     "slug": "mcmaster-university",
-    "founded": 1887,
     "location": "Hamilton, Ontario, Canada",
-    "totalStudents": 36000,
-    "acceptanceRate": 58,
     "imageUrl": "https://hamiltoncitymagazine.ca/app/uploads/2025/05/McMaster-campus-4-1024x576.jpeg",
-    "website": "https://www.mcmaster.ca",
-    "highlights": [
-      "Home of the McMaster Nuclear Reactor",
-      "Innovative problem-based learning approach",
-      "Strong focus on health sciences and engineering"
-    ]
+    "website": "https://www.mcmaster.ca"
   },
   {
     "name": "University of Alberta",
     "slug": "university-of-alberta",
-    "founded": 1908,
     "location": "Edmonton, Alberta, Canada",
-    "totalStudents": 40000,
-    "acceptanceRate": 58,
     "imageUrl": "https://abroadin.com/blog/wp-content/uploads/2023/01/about-us-campus-aerial.jpg",
-    "website": "https://www.ualberta.ca",
-    "highlights": [
-      "One of Canada's top research universities",
-      "Beautiful North Saskatchewan River valley campus",
-      "Strong in sciences, engineering, and business"
-    ]
+    "website": "https://www.ualberta.ca"
   },
   {
     "name": "Université de Montréal",
     "slug": "universite-de-montreal",
-    "founded": 1878,
     "location": "Montreal, Quebec, Canada",
-    "totalStudents": 67000,
-    "acceptanceRate": 57,
     "imageUrl": "https://www.umontreal.ca/public/www/_processed_/4/d/csm_udem_montagne-22_c8f730627c.jpg",
-    "website": "https://www.umontreal.ca",
-    "highlights": [
-      "Largest French-language university in the Americas",
-      "Renowned for health sciences and technology",
-      "Beautiful mountain-side campus"
-    ]
+    "website": "https://www.umontreal.ca"
   },
   {
     "name": "University of Waterloo",
     "slug": "university-of-waterloo",
-    "founded": 1957,
     "location": "Waterloo, Ontario, Canada",
-    "totalStudents": 42000,
-    "acceptanceRate": 53,
     "imageUrl": "https://educationontario.com/app/uploads/2022/03/Waterloo_sign_1000x700.jpg",
-    "website": "https://uwaterloo.ca",
-    "highlights": [
-      "World's largest co-op program",
-      "Leading in engineering, mathematics, and computer science",
-      "Strong connections to tech industry"
-    ]
+    "website": "https://uwaterloo.ca"
   },
   {
     "name": "University of Ottawa",
     "slug": "university-of-ottawa",
-    "founded": 1848,
     "location": "Ottawa, Ontario, Canada",
-    "totalStudents": 50000,
-    "acceptanceRate": 70,
     "imageUrl": "https://www.uottawa.ca/campus-life/sites/g/files/bhrskd281/files/styles/max_width_l_1470px/public/2022-11/Picture2_0.png?itok=Mu_P8PiY",
-    "website": "https://www.uottawa.ca",
-    "highlights": [
-      "Canada's largest bilingual university",
-      "Located in the nation's capital",
-      "Strong programs in law, health sciences, and public affairs"
-    ]
+    "website": "https://www.uottawa.ca"
   },
   {
     "name": "University of Calgary",
     "slug": "university-of-calgary",
-    "founded": 1966,
     "location": "Calgary, Alberta, Canada",
-    "totalStudents": 35000,
-    "acceptanceRate": 55,
     "imageUrl": "https://www.ucalgary.ca/live-uc-ucalgary-site/sites/default/files/styles/ucws_image_desktop/public/2022-06/DJI_0780-Pano-No%20Crane%20%281%29.jpg?itok=8D-SWe6R",
-    "website": "https://www.ucalgary.ca",
-    "highlights": [
-      "Young, entrepreneurial research university",
-      "Strong in energy, health, and veterinary medicine",
-      "Modern campus with excellent facilities"
-    ]
+    "website": "https://www.ucalgary.ca"
   },
   {
     "name": "Queen's University",
     "slug": "queens-university",
-    "founded": 1841,
     "location": "Kingston, Ontario, Canada",
-    "totalStudents": 25000,
-    "acceptanceRate": 40,
     "imageUrl": "https://www.timeshighereducation.com/cms-academic/sites/default/files/styles/profile_gallery_image/public/2024-08/01.%20queens_university_campus_1.jpg?itok=7KK7Heug",
-    "website": "https://www.queensu.ca",
-    "highlights": [
-      "Historic limestone campus",
-      "Strong sense of community and tradition",
-      "Excellence in business, engineering, and health sciences"
-    ]
+    "website": "https://www.queensu.ca"
   },
   {
     "name": "Simon Fraser University",
     "slug": "simon-fraser-university",
-    "founded": 1965,
     "location": "Burnaby, British Columbia, Canada",
-    "totalStudents": 37000,
-    "acceptanceRate": 59,
     "imageUrl": null,
-    "website": "https://www.sfu.ca",
-    "highlights": [
-      "Three campuses across Metro Vancouver",
-      "Strong co-op and community engagement programs",
-      "Leading in computing science and environmental studies"
-    ]
+    "website": "https://www.sfu.ca"
   },
   {
     "name": "University of Victoria",
     "slug": "university-of-victoria",
-    "founded": 1963,
     "location": "Victoria, British Columbia, Canada",
-    "totalStudents": 23000,
-    "acceptanceRate": 63,
-    "imageUrl": null,    
-    "website": "https://www.uvic.ca",
-    "highlights": [
-      "Beautiful coastal campus",
-      "Strong in ocean sciences and environmental studies",
-      "Excellent co-op programs"
-    ]
+    "imageUrl": null,
+    "website": "https://www.uvic.ca"
   },
   {
     "name": "Dalhousie University",
     "slug": "dalhousie-university",
-    "founded": 1818,
     "location": "Halifax, Nova Scotia, Canada",
-    "totalStudents": 20000,
-    "acceptanceRate": 73,
-     "imageUrl": null,
-    "website": "https://www.dal.ca",
-    "highlights": [
-      "Leading research university in Atlantic Canada",
-      "Strong in health sciences and ocean studies",
-      "Located in vibrant Halifax"
-    ]
+    "imageUrl": null,
+    "website": "https://www.dal.ca"
   },
   {
     "name": "University of Saskatchewan",
     "slug": "university-of-saskatchewan",
-    "founded": 1907,
     "location": "Saskatoon, Saskatchewan, Canada",
-    "totalStudents": 27000,
-    "acceptanceRate": 68,
-     "imageUrl": null,
-    "website": "https://www.usask.ca",
-    "highlights": [
-      "Beautiful riverside campus",
-      "Leader in agriculture and veterinary medicine",
-      "Home to Canada's only synchrotron facility"
-    ]
+    "imageUrl": null,
+    "website": "https://www.usask.ca"
   },
   {
     "name": "Université Laval",
     "slug": "universite-laval",
-    "founded": 1663,
     "location": "Quebec City, Quebec, Canada",
-    "totalStudents": 42000,
-    "acceptanceRate": 62,
-     "imageUrl": null,
-    "website": "https://www.ulaval.ca",
-    "highlights": [
-      "Oldest francophone university in North America",
-      "Comprehensive research university",
-      "Beautiful urban campus in Quebec City"
-    ]
+    "imageUrl": null,
+    "website": "https://www.ulaval.ca"
   },
   {
     "name": "University of Guelph",
     "slug": "university-of-guelph",
-    "founded": 1964,
     "location": "Guelph, Ontario, Canada",
-    "totalStudents": 30000,
-    "acceptanceRate": 65,
     "imageUrl": null,
-    "website": "https://www.uoguelph.ca",
-    "highlights": [
-      "Canada's #1 comprehensive university for student experience",
-      "Leader in agriculture, food sciences, and veterinary medicine",
-      "Beautiful historic campus"
-    ]
+    "website": "https://www.uoguelph.ca"
   },
   {
     "name": "Carleton University",
     "slug": "carleton-university",
-    "founded": 1942,
     "location": "Ottawa, Ontario, Canada",
-    "totalStudents": 31000,
-    "acceptanceRate": 69,
     "imageUrl": null,
-    "website": "https://carleton.ca",
-    "highlights": [
-      "Located in Canada's capital",
-      "Strong in journalism, public affairs, and technology",
-      "Underground tunnel system connecting campus"
-    ]
+    "website": "https://carleton.ca"
   },
   {
     "name": "Memorial University of Newfoundland",
     "slug": "memorial-university-of-newfoundland",
-    "founded": 1925,
     "location": "St. John's, Newfoundland and Labrador, Canada",
-    "totalStudents": 18000,
-    "acceptanceRate": 67,
     "imageUrl": null,
-    "website": "https://www.mun.ca",
-    "highlights": [
-      "Only university in Newfoundland and Labrador",
-      "Strong in ocean sciences and petroleum engineering",
-      "Affordable tuition for Canadian students"
-    ]
+    "website": "https://www.mun.ca"
   },
   {
     "name": "Université du Québec",
     "slug": "universite-du-quebec",
-    "founded": 1968,
     "location": "Quebec, Canada",
-    "totalStudents": 100000,
-    "acceptanceRate": 70,
     "imageUrl": null,
-    "website": "https://www.uquebec.ca",
-    "highlights": [
-      "University network across Quebec",
-      "Multiple campuses throughout the province",
-      "Accessible French-language education"
-    ]
+    "website": "https://www.uquebec.ca"
   },
   {
     "name": "University of Manitoba",
     "slug": "university-of-manitoba",
-    "founded": 1877,
     "location": "Winnipeg, Manitoba, Canada",
-    "totalStudents": 30000,
-    "acceptanceRate": 52,
     "imageUrl": null,
-    "website": "https://umanitoba.ca",
-    "highlights": [
-      "Western Canada's first university",
-      "Large urban campus",
-      "Strong in health sciences and engineering"
-    ]
+    "website": "https://umanitoba.ca"
   },
   {
     "name": "University of Windsor",
     "slug": "university-of-windsor",
-    "founded": 1857,
     "location": "Windsor, Ontario, Canada",
-    "totalStudents": 16000,
-    "acceptanceRate": 71,
     "imageUrl": null,
-    "website": "https://www.uwindsor.ca",
-    "highlights": [
-      "Located at Canada-US border",
-      "Strong automotive and engineering programs",
-      "Diverse international community"
-    ]
+    "website": "https://www.uwindsor.ca"
   },
   {
     "name": "Concordia University",
     "slug": "concordia-university",
-    "founded": 1974,
     "location": "Montreal, Quebec, Canada",
-    "totalStudents": 51000,
-    "acceptanceRate": 63,
     "imageUrl": null,
-    "website": "https://www.concordia.ca",
-    "highlights": [
-      "Two campuses in downtown Montreal",
-      "Strong in fine arts, business, and engineering",
-      "Innovative and entrepreneurial focus"
-    ]
+    "website": "https://www.concordia.ca"
   },
   {
     "name": "Toronto Metropolitan University",
     "slug": "toronto-metropolitan-university",
-    "founded": 1948,
     "location": "Toronto, Ontario, Canada",
-    "totalStudents": 45000,
-    "acceptanceRate": 80,
     "imageUrl": null,
-    "website": "https://www.torontomu.ca",
-    "highlights": [
-      "Downtown Toronto urban campus",
-      "Strong co-op and career-focused programs",
-      "Leader in innovation and entrepreneurship"
-    ]
+    "website": "https://www.torontomu.ca"
   },
   {
     "name": "University of New Brunswick",
     "slug": "university-of-new-brunswick",
-    "founded": 1785,
     "location": "Fredericton, New Brunswick, Canada",
-    "totalStudents": 10000,
-    "acceptanceRate": 66,
     "imageUrl": null,
-    "website": "https://www.unb.ca",
-    "highlights": [
-      "Canada's oldest English-language university",
-      "Two campuses: Fredericton and Saint John",
-      "Strong in engineering and forestry"
-    ]
+    "website": "https://www.unb.ca"
   },
   {
     "name": "Ontario Tech University",
     "slug": "ontario-tech-university",
-    "founded": 2002,
     "location": "Oshawa, Ontario, Canada",
-    "totalStudents": 10000,
-    "acceptanceRate": 82,
-    "imageUrl": null,
-    "website": "https://ontariotechu.ca",
-    "highlights": [
-      "Modern, technology-focused university",
-      "Laptop-based learning environment",
-      "Strong in STEM fields"
-    ]
+    "imageUrl": "https://dsai.ca/wp-content/uploads/Ontario-Tech-drone.jpg",
+    "website": "https://ontariotechu.ca"
   },
   {
     "name": "University of Regina",
     "slug": "university-of-regina",
-    "founded": 1974,
     "location": "Regina, Saskatchewan, Canada",
-    "totalStudents": 16000,
-    "acceptanceRate": 73,
     "imageUrl": null,
-    "website": "https://www.uregina.ca",
-    "highlights": [
-      "Urban campus in Saskatchewan's capital",
-      "Strong in business and kinesiology",
-      "Growing research institution"
-    ]
+    "website": "https://www.uregina.ca"
   },
   {
     "name": "Lakehead University",
     "slug": "lakehead-university",
-    "founded": 1965,
     "location": "Thunder Bay, Ontario, Canada",
-    "totalStudents": 9000,
-    "acceptanceRate": 83,
     "imageUrl": null,
-    "website": "https://www.lakeheadu.ca",
-    "highlights": [
-      "Beautiful natural setting",
-      "Small class sizes and personalized attention",
-      "Strong in natural resources and environment"
-    ]
+    "website": "https://www.lakeheadu.ca"
   },
   {
     "name": "Brock University",
     "slug": "brock-university",
-    "founded": 1964,
     "location": "St. Catharines, Ontario, Canada",
-    "totalStudents": 19000,
-    "acceptanceRate": 81,
     "imageUrl": null,
-    "website": "https://brocku.ca",
-    "highlights": [
-      "Located in the Niagara Region",
-      "Strong in business and education",
-      "Focus on experiential learning"
-    ]
+    "website": "https://brocku.ca"
   },
   {
     "name": "St Francis Xavier University",
     "slug": "st-francis-xavier-university",
-    "founded": 1853,
     "location": "Antigonish, Nova Scotia, Canada",
-    "totalStudents": 5000,
-    "acceptanceRate": 70,
     "imageUrl": null,
-    "website": "https://www.stfx.ca",
-    "highlights": [
-      "Small, close-knit community",
-      "Strong undergraduate focus",
-      "High student satisfaction"
-    ]
+    "website": "https://www.stfx.ca"
   },
   {
     "name": "University of Northern British Columbia",
     "slug": "university-of-northern-british-columbia",
-    "founded": 1990,
     "location": "Prince George, British Columbia, Canada",
-    "totalStudents": 4000,
-    "acceptanceRate": 77,
     "imageUrl": null,
-    "website": "https://www.unbc.ca",
-    "highlights": [
-      "Small university with personal attention",
-      "Beautiful northern BC setting",
-      "Focus on environmental and Indigenous studies"
-    ]
+    "website": "https://www.unbc.ca"
   },
   {
     "name": "Wilfrid Laurier University",
     "slug": "wilfrid-laurier-university",
-    "founded": 1911,
     "location": "Waterloo, Ontario, Canada",
-    "totalStudents": 20000,
-    "acceptanceRate": 72,
-    "imageUrl": null,
-    "website": "https://www.wlu.ca",
-    "highlights": [
-      "Strong sense of community",
-      "Excellence in business and music",
-      "Multiple campuses across Southern Ontario"
-    ]
+    "imageUrl": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSLrFlXH4mS711nYCnvOEA09QtKQynJXUbRpg&s",
+    "website": "https://www.wlu.ca"
   },
   {
     "name": "University of Lethbridge",
     "slug": "university-of-lethbridge",
-    "founded": 1967,
     "location": "Lethbridge, Alberta, Canada",
-    "totalStudents": 8700,
-    "acceptanceRate": 93,
     "imageUrl": null,
-    "website": "https://www.ulethbridge.ca",
-    "highlights": [
-      "Stunning prairie location",
-      "Liberal education philosophy",
-      "Strong in sciences and arts"
-    ]
+    "website": "https://www.ulethbridge.ca"
   }
 ]
