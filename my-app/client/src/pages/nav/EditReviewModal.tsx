@@ -111,8 +111,8 @@ function EditReviewModal({ review, onClose, onSaved }: EditReviewModalProps) {
         const compressionPromises = Array.from(files).map(async (file) => {
             try {
                 const compressedDataUrl = await compressImage(file, {
-                    maxWidth: 1200,
-                    maxHeight: 1200,
+                    maxWidth: 800,
+                    maxHeight: 800,
                     quality: 0.8,
                     outputType: 'image/jpeg'
                 });

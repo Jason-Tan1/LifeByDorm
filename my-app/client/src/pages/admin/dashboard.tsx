@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import NavBar from '../nav/navbar';
-import DefaultDorm from '../../assets/Default_Dorm.png';
+import DefaultDorm from '../../assets/Default_Dorm.webp';
 import './dashboard.css';
 
 // Use relative path '' on localhost to leverage the Vite proxy

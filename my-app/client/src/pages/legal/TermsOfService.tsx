@@ -2,7 +2,7 @@ import { useTranslation } from 'react-i18next';
 import './legal.css';
 import NavBar from '../nav/navbar';
 import Footer from '../home/footer';
-import DefaultDormImage from '../../assets/Default_Dorm.png';
+import DefaultDormImage from '../../assets/Default_Dorm.webp';
 
 function TermsOfService() {
   const { t } = useTranslation();

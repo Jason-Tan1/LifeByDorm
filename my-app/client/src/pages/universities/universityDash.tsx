@@ -9,8 +9,8 @@ import AddDorm from './AddDorm';
 import './universityDash.css';
 import '../home/searchbar.css';
 import { FaSearch } from 'react-icons/fa';
-import DefaultCampus from '../../assets/Default_Campus.png';
-import DefaultDorm from '../../assets/Default_Dorm.png';
+import DefaultCampus from '../../assets/Default_Campus.webp';
+import DefaultDorm from '../../assets/Default_Dorm.webp';
 import PageLoader from '../../components/PageLoader';
 
 // Define types for University and Dorm data from API

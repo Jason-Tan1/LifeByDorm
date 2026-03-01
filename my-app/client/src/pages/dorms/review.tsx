@@ -7,7 +7,7 @@ import Star from '@mui/icons-material/Star';
 import StarBorder from '@mui/icons-material/StarBorder';
 import HomeIcon from '@mui/icons-material/Home';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
-import DefaultDormImage from '../../assets/Default_Dorm.png';
+import DefaultDormImage from '../../assets/Default_Dorm.webp';
 import { compressImage } from '../../utils/imageUtils';
 import LoginModal from '../nav/login';
 
@@ -149,10 +149,10 @@ function Reviews() {
       }
 
       try {
-        // Compress image to max 1200px and 80% quality JPEG
+        // Compress image to max 800px and 80% quality JPEG
         const compressedDataUrl = await compressImage(file, {
-          maxWidth: 1200,
-          maxHeight: 1200,
+          maxWidth: 800,
+          maxHeight: 800,
           quality: 0.8,
           outputType: 'image/jpeg'
         });

@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import NavBar from '../nav/navbar';
 import Footer from '../home/footer';
 import './allUniversities.css';
-import DefaultCampusImage from '../../assets/Default_Campus.png';
+import DefaultCampusImage from '../../assets/Default_Campus.webp';
 import { useUniversityData } from '../../context/UniversityDataContext';
 import PageLoader from '../../components/PageLoader';
 
