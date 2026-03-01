@@ -1,6 +1,6 @@
-  import NavBar from './navbar.tsx';
+import NavBar from './navbar.tsx';
 import Footer from '../home/footer.tsx';
-import DefaultDormImage from '../../assets/Default_Dorm.png';
+import DefaultDormImage from '../../assets/Default_Dorm.webp';
 import { useTranslation } from 'react-i18next';
 import './aboutme.css';
 import '../legal/legal.css'; // Reusing the clean text formatting

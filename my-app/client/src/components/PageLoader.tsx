@@ -1,5 +1,5 @@
 import './PageLoader.css';
-import LBDLogo from '../assets/LBDLogo-removebg-preview.png';
+import LBDLogo from '../assets/LBDLogo.webp';
 
 const PageLoader = () => {
     return (

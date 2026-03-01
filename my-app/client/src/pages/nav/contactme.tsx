@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import NavBar from './navbar.tsx';
 import Footer from '../home/footer.tsx';
 import './contactme.css';
-import DefaultDormImage from '../../assets/Default_Dorm.png';
+import DefaultDormImage from '../../assets/Default_Dorm.webp';
 
 function ContactMe() {
   const { t } = useTranslation();

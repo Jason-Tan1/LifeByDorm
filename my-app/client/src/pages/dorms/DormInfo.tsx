@@ -5,7 +5,7 @@ import StarHalf from '@mui/icons-material/StarHalf';
 import StarBorder from '@mui/icons-material/StarBorder';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import HomeIcon from '@mui/icons-material/Home';
-import DefaultDorm from '../../assets/Default_Dorm.png';
+import DefaultDorm from '../../assets/Default_Dorm.webp';
 
 type APIDorm = {
   name: string;

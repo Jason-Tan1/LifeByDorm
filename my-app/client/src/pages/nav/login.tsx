@@ -7,7 +7,7 @@ import axios from 'axios'
 import MailOutlineIcon from '@mui/icons-material/MailOutline';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import './login.css'
-import LBDLogo from '../../assets/LBDLogo-removebg-preview.png';
+import LBDLogo from '../../assets/LBDLogo.webp';
 import { Snackbar, Alert } from '@mui/material';
 
 // Use relative path '' when on localhost to leverage the Vite proxy (vite.config.ts)

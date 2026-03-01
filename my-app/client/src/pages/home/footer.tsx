@@ -2,7 +2,7 @@
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import './footer.css';
-import LBDLogo from '../../assets/LBDLogo-removebg-preview.png';
+import LBDLogo from '../../assets/LBDLogo.webp';
 
 function Footer() {
   const { t } = useTranslation();

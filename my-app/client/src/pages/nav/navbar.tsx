@@ -6,7 +6,7 @@ import LoginModal from './login';
 import { useTranslation } from 'react-i18next';
 import './navbar.css'
 
-import LBDLogo from '../../assets/LBDLogo-removebg-preview.png';
+import LBDLogo from '../../assets/LBDLogo.webp';
 
 function navbar() {
   const { t, i18n } = useTranslation();

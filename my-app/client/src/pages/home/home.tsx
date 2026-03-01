@@ -8,8 +8,8 @@ import SearchBar from './searchbar.tsx';
 import Footer from './footer.tsx';
 import { useUniversityData } from '../../context/UniversityDataContext';
 import { SkeletonSlider } from '../../components/SkeletonCard';
-import DefaultCampus from '../../assets/Default_Campus.png';
-import DefaultDorm from '../../assets/Default_Dorm.png';
+import DefaultCampus from '../../assets/Default_Campus.webp';
+import DefaultDorm from '../../assets/Default_Dorm.webp';
 import GiveawayBanner from './GiveawayBanner';
 
 // Use relative path '' on localhost to leverage the Vite proxy
