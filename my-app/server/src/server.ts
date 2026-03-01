@@ -362,6 +362,7 @@ app.get('/api/stats/homepage', readOnlyLimiter, async (req: Request, res: Respon
     // Build lookup maps from aggregation results
     const universityStats: { [slug: string]: { reviewCount: number } } = {};
     const dormStats: { [key: string]: { avgRating: number; reviewCount: number; totalRating: number } } = {};
+    let totalReviewsCount = 0;
 
     universities.forEach((uni: any) => {
       universityStats[uni.slug] = { reviewCount: 0 };
@@ -384,6 +385,8 @@ app.get('/api/stats/homepage', readOnlyLimiter, async (req: Request, res: Respon
         reviewCount: stat.reviewCount,
         totalRating: overallAvg * stat.reviewCount
       };
+
+      totalReviewsCount += stat.reviewCount;
     });
 
     // Prepare response with enriched data
@@ -425,7 +428,8 @@ app.get('/api/stats/homepage', readOnlyLimiter, async (req: Request, res: Respon
       topRatedDorms,
       mostReviewedDorms,
       universityStats,
-      dormStats
+      dormStats,
+      totalReviewsCount
     };
 
     // Cache the result

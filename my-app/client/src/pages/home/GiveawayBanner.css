@@ -1,0 +1,293 @@
+/* --- Giveaway Banner Styles --- */
+.giveaway-banner-container {
+    width: 100%;
+    background: linear-gradient(90deg, #1a1a1a 0%, #2d2d2d 100%);
+    color: #ffffff;
+    padding: 12px 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    position: relative;
+    z-index: 50;
+    /* Ensure it floats properly if needed below NavBar */
+}
+
+.giveaway-banner-content {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    max-width: 1200px;
+    width: 100%;
+    flex-wrap: wrap;
+    text-align: center;
+}
+
+.giveaway-gift-icon {
+    font-size: 1.2rem;
+    line-height: 1;
+}
+
+.giveaway-text {
+    font-size: 0.95rem;
+    font-weight: 500;
+    font-family: 'DM Sans', sans-serif;
+    letter-spacing: 0.3px;
+}
+
+.giveaway-text strong {
+    color: #4caf50;
+    /* Signature Green */
+    font-weight: 700;
+}
+
+.giveaway-rules-btn {
+    background: transparent;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    color: #ffffff;
+    padding: 4px 12px;
+    border-radius: 50px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    transition: all 0.2s ease;
+    font-family: inherit;
+    margin-left: 8px;
+}
+
+.giveaway-rules-btn:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: #ffffff;
+}
+
+.giveaway-arrow {
+    transition: transform 0.2s ease;
+}
+
+.giveaway-rules-btn:hover .giveaway-arrow {
+    transform: translateX(3px);
+}
+
+/* --- Giveaway Rules Modal Styles --- */
+.giveaway-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(4px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+    padding: 20px;
+    animation: giveawayOverlayFadeIn 0.3s ease;
+}
+
+.giveaway-modal-container {
+    background: #ffffff;
+    border-radius: 20px;
+    width: 100%;
+    max-width: 480px;
+    box-shadow: 0 24px 48px rgba(0, 0, 0, 0.2);
+    position: relative;
+    overflow: hidden;
+    animation: giveawayModalSlideUp 0.3s ease cubic-bezier(0.16, 1, 0.3, 1);
+    font-family: 'DM Sans', sans-serif;
+}
+
+.giveaway-modal-close {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    background: rgba(0, 0, 0, 0.05);
+    border: none;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    font-size: 1.4rem;
+    color: #666;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    line-height: 1;
+}
+
+.giveaway-modal-close:hover {
+    background: rgba(0, 0, 0, 0.1);
+    color: #1a1a1a;
+}
+
+.giveaway-modal-header {
+    background: linear-gradient(135deg, #1a1a1a 0%, #2a2a2a 100%);
+    padding: 30px 24px 24px;
+    text-align: center;
+    color: white;
+}
+
+.giveaway-modal-icon {
+    font-size: 3rem;
+    display: block;
+    margin-bottom: 12px;
+    filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.2));
+}
+
+.giveaway-modal-header h2 {
+    margin: 0;
+    font-size: 1.8rem;
+    font-weight: 800;
+    letter-spacing: -0.5px;
+}
+
+.giveaway-modal-body {
+    padding: 24px 32px 32px;
+}
+
+.giveaway-modal-intro {
+    text-align: center;
+    font-size: 0.95rem;
+    color: #444;
+    line-height: 1.6;
+    margin: 0 0 24px 0;
+}
+
+.giveaway-modal-intro strong {
+    color: #1a1a1a;
+}
+
+.giveaway-rules-list {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    margin-bottom: 32px;
+}
+
+.giveaway-rule-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+    background: #f8f9fa;
+    padding: 16px;
+    border-radius: 12px;
+    border: 1px solid #eaeaea;
+}
+
+.giveaway-rule-number {
+    background: #d32f2f;
+    /* Signature Red */
+    color: white;
+    min-width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 0.9rem;
+    flex-shrink: 0;
+}
+
+.giveaway-rule-text {
+    flex: 1;
+}
+
+.giveaway-rule-text strong {
+    display: block;
+    font-size: 1.05rem;
+    color: #1a1a1a;
+    margin-bottom: 4px;
+}
+
+.giveaway-rule-text p {
+    margin: 0;
+    font-size: 0.85rem;
+    color: #666;
+    line-height: 1.5;
+}
+
+.giveaway-modal-footer {
+    text-align: center;
+}
+
+.giveaway-modal-action-btn {
+    background: #4caf50;
+    /* Signature Green */
+    color: white;
+    border: none;
+    padding: 14px 32px;
+    border-radius: 50px;
+    font-size: 1.05rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    width: 100%;
+    box-shadow: 0 4px 12px rgba(76, 175, 80, 0.2);
+}
+
+.giveaway-modal-action-btn:hover {
+    background: #43a047;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(76, 175, 80, 0.3);
+}
+
+/* Animations */
+@keyframes giveawayOverlayFadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes giveawayModalSlideUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px) scale(0.98);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+/* Responsive Styles */
+@media (max-width: 768px) {
+    .giveaway-banner-content {
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .giveaway-rules-btn {
+        margin-left: 0;
+        margin-top: 4px;
+    }
+}
+
+@media (max-width: 480px) {
+    .giveaway-modal-body {
+        padding: 24px;
+    }
+
+    .giveaway-rule-item {
+        padding: 12px;
+        gap: 12px;
+    }
+
+    .giveaway-modal-header {
+        padding: 24px 20px 20px;
+    }
+
+    .giveaway-modal-icon {
+        font-size: 2.5rem;
+    }
+}

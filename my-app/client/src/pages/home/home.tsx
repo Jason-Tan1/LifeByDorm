@@ -10,6 +10,7 @@ import { useUniversityData } from '../../context/UniversityDataContext';
 import { SkeletonSlider } from '../../components/SkeletonCard';
 import DefaultCampus from '../../assets/Default_Campus.png';
 import DefaultDorm from '../../assets/Default_Dorm.png';
+import GiveawayBanner from './GiveawayBanner';
 
 // Use relative path '' on localhost to leverage the Vite proxy
 const isLocal = typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1');
@@ -23,6 +24,7 @@ function Home() {
   const [dormRatings, setDormRatings] = useState<{ [dormName: string]: number }>({});
   const [dormReviewCounts, setDormReviewCounts] = useState<{ [dormName: string]: number }>({});
   const [universityReviewCounts, setUniversityReviewCounts] = useState<{ [universitySlug: string]: number }>({});
+  const [totalReviewsCount, setTotalReviewsCount] = useState<number>(0);
   const [universityScrollPosition, setUniversityScrollPosition] = useState(0);
   const [mostRatedDormsScrollPosition, setMostRatedDormsScrollPosition] = useState(0);
   const [dormScrollPosition, setDormScrollPosition] = useState(0);
@@ -87,6 +89,11 @@ function Home() {
 
         // Set most reviewed dorms (already sorted and limited to 7)
         setMostRatedDorms(stats.mostReviewedDorms);
+
+        // Set total review count for the site
+        if (stats.totalReviewsCount !== undefined) {
+          setTotalReviewsCount(stats.totalReviewsCount);
+        }
       } catch (e) {
         console.error('Failed to fetch data', e);
       } finally {
@@ -181,6 +188,7 @@ function Home() {
   return (
     <div className="home">
       <NavBar />
+      <GiveawayBanner totalReviews={totalReviewsCount} />
       <div className="home-container">
         <div className="home-content">
           <div className="home-section">

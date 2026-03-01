@@ -16,5 +16,8 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "dependencies": {}
+  "dependencies": {},
+  "overrides": {
+    "minimatch": "^10.2.1"
+  }
 }
