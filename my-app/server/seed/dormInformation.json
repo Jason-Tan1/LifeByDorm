@@ -634,5 +634,395 @@
     "slug": "maritime-hall",
     "universitySlug": "university-of-guelph",
     "imageUrl": "https://interhall.org/files/maratime-hall.jpg?auto=format&fit=crop&crop=faces&w=630"
+  },
+  {
+    "name": "Dundas House",
+    "slug": "dundas-house",
+    "universitySlug": "carleton-university",
+    "imageUrl": null
+  },
+  {
+    "name": "Glengarry House",
+    "slug": "glengarry-house",
+    "universitySlug": "carleton-university",
+    "imageUrl": null
+  },
+  {
+    "name": "Grenville House",
+    "slug": "grenville-house",
+    "universitySlug": "carleton-university",
+    "imageUrl": null
+  },
+  {
+    "name": "Lanark House",
+    "slug": "lanark-house",
+    "universitySlug": "carleton-university",
+    "imageUrl": null
+  },
+  {
+    "name": "Lennox and Addington House",
+    "slug": "lennox-and-addington-house",
+    "universitySlug": "carleton-university",
+    "imageUrl": null
+  },
+  {
+    "name": "Renfrew House",
+    "slug": "renfrew-house",
+    "universitySlug": "carleton-university",
+    "imageUrl": null
+  },
+  {
+    "name": "Rideau House",
+    "slug": "rideau-house",
+    "universitySlug": "carleton-university",
+    "imageUrl": null
+  },
+  {
+    "name": "Russell House",
+    "slug": "russell-house",
+    "universitySlug": "carleton-university",
+    "imageUrl": null
+  },
+  {
+    "name": "Stormont House",
+    "slug": "stormont-house",
+    "universitySlug": "carleton-university",
+    "imageUrl": null
+  },
+  {
+    "name": "Frontenac House",
+    "slug": "frontenac-house",
+    "universitySlug": "carleton-university",
+    "imageUrl": null
+  },
+  {
+    "name": "Leeds House",
+    "slug": "leeds-house",
+    "universitySlug": "carleton-university",
+    "imageUrl": null
+  },
+  {
+    "name": "Prescott House",
+    "slug": "prescott-house",
+    "universitySlug": "carleton-university",
+    "imageUrl": null
+  },
+  {
+    "name": "45 Mann",
+    "slug": "45-mann",
+    "universitySlug": "university-of-ottawa",
+    "imageUrl": null
+  },
+  {
+    "name": "90U",
+    "slug": "90u",
+    "universitySlug": "university-of-ottawa",
+    "imageUrl": null
+  },
+  {
+    "name": "Annex",
+    "slug": "annex",
+    "universitySlug": "university-of-ottawa",
+    "imageUrl": null
+  },
+  {
+    "name": "Friel",
+    "slug": "friel",
+    "universitySlug": "university-of-ottawa",
+    "imageUrl": null
+  },
+  {
+    "name": "Henderson",
+    "slug": "henderson",
+    "universitySlug": "university-of-ottawa",
+    "imageUrl": null
+  },
+  {
+    "name": "Hyman Soloway",
+    "slug": "hyman-soloway",
+    "universitySlug": "university-of-ottawa",
+    "imageUrl": null
+  },
+  {
+    "name": "LeBlanc",
+    "slug": "leblanc",
+    "universitySlug": "university-of-ottawa",
+    "imageUrl": null
+  },
+  {
+    "name": "Marchand",
+    "slug": "marchand",
+    "universitySlug": "university-of-ottawa",
+    "imageUrl": null
+  },
+  {
+    "name": "Rideau",
+    "slug": "rideau",
+    "universitySlug": "university-of-ottawa",
+    "imageUrl": null
+  },
+  {
+    "name": "Stanton",
+    "slug": "stanton",
+    "universitySlug": "university-of-ottawa",
+    "imageUrl": null
+  },
+  {
+    "name": "Thompson",
+    "slug": "thompson",
+    "universitySlug": "university-of-ottawa",
+    "imageUrl": null
+  },
+  {
+    "name": "Pitman Hall",
+    "slug": "pitman-hall",
+    "universitySlug": "toronto-metropolitan-university",
+    "imageUrl": null
+  },
+  {
+    "name": "International Living Learning Centre",
+    "slug": "international-living-learning-centre",
+    "universitySlug": "toronto-metropolitan-university",
+    "imageUrl": null
+  },
+  {
+    "name": "Daphne Cockwell Health Sciences Complex",
+    "slug": "daphne-cockwell-health-sciences-complex",
+    "universitySlug": "toronto-metropolitan-university",
+    "imageUrl": null
+  },
+  {
+    "name": "East West Towers",
+    "slug": "east-west-towers",
+    "universitySlug": "simon-fraser-university",
+    "imageUrl": null
+  },
+  {
+    "name": "North Towers",
+    "slug": "north-towers",
+    "universitySlug": "simon-fraser-university",
+    "imageUrl": null
+  },
+  {
+    "name": "McTaggart-Cowan Hall",
+    "slug": "mctaggart-cowan-hall",
+    "universitySlug": "simon-fraser-university",
+    "imageUrl": null
+  },
+  {
+    "name": "Shell House",
+    "slug": "shell-house",
+    "universitySlug": "simon-fraser-university",
+    "imageUrl": null
+  },
+  {
+    "name": "The Townhouse Complex",
+    "slug": "the-townhouse-complex",
+    "universitySlug": "simon-fraser-university",
+    "imageUrl": null
+  },
+  {
+    "name": "Courtyard Residence",
+    "slug": "courtyard-residence",
+    "universitySlug": "simon-fraser-university",
+    "imageUrl": null
+  },
+  {
+    "name": "Hamilton Hall",
+    "slug": "hamilton-hall",
+    "universitySlug": "simon-fraser-university",
+    "imageUrl": null
+  },
+  {
+    "name": "Charles Chang Innovation Centre",
+    "slug": "charles-chang-innovation-centre",
+    "universitySlug": "simon-fraser-university",
+    "imageUrl": null
+  },
+  {
+    "name": "Aurora Hall",
+    "slug": "aurora-hall",
+    "universitySlug": "university-of-calgary",
+    "imageUrl": null
+  },
+  {
+    "name": "Cascade Hall",
+    "slug": "cascade-hall",
+    "universitySlug": "university-of-calgary",
+    "imageUrl": null
+  },
+  {
+    "name": "Crowsnest Hall",
+    "slug": "crowsnest-hall",
+    "universitySlug": "university-of-calgary",
+    "imageUrl": null
+  },
+  {
+    "name": "International House",
+    "slug": "international-house",
+    "universitySlug": "university-of-calgary",
+    "imageUrl": null
+  },
+  {
+    "name": "Kananaskis Hall",
+    "slug": "kananaskis-hall",
+    "universitySlug": "university-of-calgary",
+    "imageUrl": null
+  },
+  {
+    "name": "Rundle Hall",
+    "slug": "rundle-hall",
+    "universitySlug": "university-of-calgary",
+    "imageUrl": null
+  },
+  {
+    "name": "Glacier Hall",
+    "slug": "glacier-hall",
+    "universitySlug": "university-of-calgary",
+    "imageUrl": null
+  },
+  {
+    "name": "Olympus Hall",
+    "slug": "olympus-hall",
+    "universitySlug": "university-of-calgary",
+    "imageUrl": null
+  },
+  {
+    "name": "Varsity Courts",
+    "slug": "varsity-courts",
+    "universitySlug": "university-of-calgary",
+    "imageUrl": null
+  },
+  {
+    "name": "Yamnuska Hall",
+    "slug": "yamnuska-hall",
+    "universitySlug": "university-of-calgary",
+    "imageUrl": null
+  },
+  {
+    "name": "Lister Residence",
+    "slug": "lister-residence",
+    "universitySlug": "university-of-alberta",
+    "imageUrl": null
+  },
+  {
+    "name": "Nîpisîy House",
+    "slug": "n-pis-y-house",
+    "universitySlug": "university-of-alberta",
+    "imageUrl": null
+  },
+  {
+    "name": "Pinecrest House",
+    "slug": "pinecrest-house",
+    "universitySlug": "university-of-alberta",
+    "imageUrl": null
+  },
+  {
+    "name": "Tamarack House",
+    "slug": "tamarack-house",
+    "universitySlug": "university-of-alberta",
+    "imageUrl": null
+  },
+  {
+    "name": "Graduate Residence",
+    "slug": "graduate-residence",
+    "universitySlug": "university-of-alberta",
+    "imageUrl": null
+  },
+  {
+    "name": "International House",
+    "slug": "international-house",
+    "universitySlug": "university-of-alberta",
+    "imageUrl": null
+  },
+  {
+    "name": "Alder House",
+    "slug": "alder-house",
+    "universitySlug": "university-of-alberta",
+    "imageUrl": null
+  },
+  {
+    "name": "Linden House",
+    "slug": "linden-house",
+    "universitySlug": "university-of-alberta",
+    "imageUrl": null
+  },
+  {
+    "name": "Peter Lougheed Hall",
+    "slug": "peter-lougheed-hall",
+    "universitySlug": "university-of-alberta",
+    "imageUrl": null
+  },
+  {
+    "name": "Aspen House",
+    "slug": "aspen-house",
+    "universitySlug": "university-of-alberta",
+    "imageUrl": null
+  },
+  {
+    "name": "Maple House",
+    "slug": "maple-house",
+    "universitySlug": "university-of-alberta",
+    "imageUrl": null
+  },
+  {
+    "name": "HUB Residence",
+    "slug": "hub-residence",
+    "universitySlug": "university-of-alberta",
+    "imageUrl": null
+  },
+  {
+    "name": "Marges House",
+    "slug": "marges-house",
+    "universitySlug": "university-of-alberta",
+    "imageUrl": null
+  },
+  {
+    "name": "Elseys House",
+    "slug": "elseys-house",
+    "universitySlug": "university-of-alberta",
+    "imageUrl": null
+  },
+  {
+    "name": "Theme Community House",
+    "slug": "theme-community-house",
+    "universitySlug": "university-of-alberta",
+    "imageUrl": null
+  },
+  {
+    "name": "Résidence Saint-Jean",
+    "slug": "r-sidence-saint-jean",
+    "universitySlug": "university-of-alberta",
+    "imageUrl": null
+  },
+  {
+    "name": "Hoyme Complex",
+    "slug": "hoyme-complex",
+    "universitySlug": "university-of-alberta",
+    "imageUrl": null
+  },
+  {
+    "name": "Ravine Complex",
+    "slug": "ravine-complex",
+    "universitySlug": "university-of-alberta",
+    "imageUrl": null
+  },
+  {
+    "name": "Hingston Hall",
+    "slug": "hingston-hall",
+    "universitySlug": "concordia-university",
+    "imageUrl": null
+  },
+  {
+    "name": "Jesuit Residence",
+    "slug": "jesuit-residence",
+    "universitySlug": "concordia-university",
+    "imageUrl": null
+  },
+  {
+    "name": "Grey Nuns",
+    "slug": "grey-nuns",
+    "universitySlug": "concordia-university",
+    "imageUrl": null
   }
 ]

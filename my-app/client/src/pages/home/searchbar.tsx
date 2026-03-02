@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import './searchbar.css';
-import { FaSearch, FaExchangeAlt } from 'react-icons/fa';
+import { FaSearch } from 'react-icons/fa';
 import { useUniversityData } from '../../context/UniversityDataContext';
 import { useDebouncedValue } from '../../hooks/useDebounce';
 
@@ -27,7 +27,7 @@ function SearchBar() {
   const [filteredUniversities, setFilteredUniversities] = useState<University[]>([]);
   const [filteredDorms, setFilteredDorms] = useState<Dorm[]>([]);
   const [showDropdown, setShowDropdown] = useState(false);
-  const [searchMode, setSearchMode] = useState<'universities' | 'dorms'>('universities');
+  const [searchMode] = useState<'universities' | 'dorms'>('universities');
   const [allDorms, setAllDorms] = useState<Dorm[]>([]);
   const [isLoadingDorms, setIsLoadingDorms] = useState(false);
   const navigate = useNavigate();
@@ -42,8 +42,11 @@ function SearchBar() {
   useEffect(() => {
     if (searchMode === 'dorms' && debouncedQuery.trim().length >= 2 && allDorms.length === 0 && !isLoadingDorms) {
       setIsLoadingDorms(true);
-      fetch(`${API_BASE}/api/dorms`)
-        .then(res => res.json())
+      fetch(`${API_BASE}/api/dorms/search`)
+        .then(res => {
+          if (!res.ok) throw new Error(`HTTP ${res.status}`);
+          return res.json();
+        })
         .then(data => setAllDorms(data))
         .catch(err => console.error('Failed to fetch dorms', err))
         .finally(() => setIsLoadingDorms(false));
@@ -103,10 +106,12 @@ function SearchBar() {
     setShowDropdown(false);
   };
 
+  /*
   const toggleSearchMode = () => {
     setSearchMode(prev => prev === 'universities' ? 'dorms' : 'universities');
     setQuery(''); // Clear query when switching to avoid confusion
   };
+  */
 
   const handleKeyPress = (event: React.KeyboardEvent) => {
     if (event.key === 'Enter') {
@@ -159,12 +164,14 @@ function SearchBar() {
         )}
       </div>
 
+      {/* 
       <div className="search-mode-toggle" onClick={toggleSearchMode}>
         <FaExchangeAlt className="toggle-icon" />
         <span>
           {searchMode === 'universities' ? t('search.toggleToDorms') : t('search.toggleToUniversities')}
         </span>
       </div>
+      */}
     </div>
   );
 }
