@@ -7,36 +7,36 @@
 }
 
 .uni-hero {
-    position: relative;
-    width: 100%;
-    height: 350px;
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+  position: relative;
+  width: 100%;
+  height: 350px;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .uni-hero-overlay {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba(0, 0, 0, 0.4);
-    display: flex;
-    align-items: center;
-    justify-content: center;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .uni-hero h1 {
-    color: white;
-    font-size: clamp(2rem, 5vw, 3rem);
-    font-weight: 700;
-    text-shadow: 0 2px 8px rgba(0,0,0,0.5);
-    margin: 0;
-    text-align: center;
+  color: white;
+  font-size: clamp(2rem, 5vw, 3rem);
+  font-weight: 700;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+  margin: 0;
+  text-align: center;
 }
 
 .all-universities-content {
@@ -60,12 +60,14 @@
 .university-list li {
   margin-bottom: clamp(10px, 2vw, 15px);
   padding: clamp(10px, 2vw, 15px);
-  background: #f8f9fa;
+  background: transparent;
   border-radius: 8px;
   transition: background-color 0.2s;
 }
 
-.university-list li:hover { background: #e9ecef; }
+.university-list li:hover {
+  background: transparent;
+}
 
 .university-list a {
   text-decoration: none;
@@ -75,7 +77,9 @@
   display: block;
 }
 
-.university-list a:hover { color: #B91C1C; }
+.university-list a:hover {
+  color: #B91C1C;
+}
 
 .university-list .location {
   color: #666;
@@ -89,4 +93,3 @@
   font-size: clamp(0.75rem, 1.8vw, 0.9rem);
   font-style: italic;
 }
-

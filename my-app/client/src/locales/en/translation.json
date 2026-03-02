@@ -17,7 +17,7 @@
         "roomType": "Room Type",
         "dormAgainQuestion": "Would you dorm here again?",
         "writeReview": "Write your review",
-        "shareExperience": "Share your experience...",
+        "shareExperience": "Share your experience... Consider mentioning: Room layout, noise levels, proximity to classes, RA helpfulness, wifi speed, common area cleanliness, etc.",
         "addPhotos": "Add Photos",
         "optional": "(Optional)",
         "clickToAddPhotos": "Click to add photos or drag and drop",
@@ -59,14 +59,14 @@
     "footer": {
         "about": "About",
         "contactMe": "Contact Me",
-        "universityList": "University List",
+        "universityList": "All Schools",
         "terms": "Terms & Conditions",
         "privacy": "Privacy Policy",
         "rightsReserved": "LifeByDorm. All rights reserved."
     },
     "universityList": {
-        "title": "University List",
-        "allUniversities": "All Universities"
+        "title": "All Schools",
+        "allUniversities": "All Schools"
     },
     "universityDash": {
         "dorms": "Dorms",

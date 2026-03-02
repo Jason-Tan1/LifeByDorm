@@ -42,6 +42,18 @@
     "imageUrl": "https://central.apps01.yorku.ca/maps/wp-content/uploads/2010/06/stong-res-2-copy.jpg"
   },
   {
+    "name": "Quad Residence",
+    "slug": "quad-residence",
+    "universitySlug": "york-university",
+    "imageUrl": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQn1aPJmoN4LxyP7Ic5teHF_JOjQTQ2gcscWA&s"
+  },
+  {
+    "name": "Pond Residence",
+    "slug": "pond-residence",
+    "universitySlug": "york-university",
+    "imageUrl": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQudX_L3ICqAgR_lituZ-MUxcYQp2V5vNxS8g&s"
+  },
+  {
     "name": "Chestnut Residence",
     "slug": "chestnut-residence",
     "universitySlug": "university-of-toronto",
@@ -96,6 +108,18 @@
     "imageUrl": "https://gradhouse.utoronto.ca/wp-content/uploads/uoft-gradhouse-1-1024x683.jpg"
   },
   {
+    "name": "Erindale Hall",
+    "slug": "erindale-hall",
+    "universitySlug": "university-of-toronto",
+    "imageUrl": "https://dkemhji6i1k0x.cloudfront.net/000_clients/291852/file/2918523tQgXLla.jpg"
+  },
+  {
+    "name": "Oscar Peterson Hall",
+    "slug": "oscar-peterson-hall",
+    "universitySlug": "university-of-toronto",
+    "imageUrl": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTAaW8Ti4l6CIC8sxJYWimyaMSe6sFtFkXZFw&s"
+  },
+  {
     "name": "Saugeen-Maitland Hall",
     "slug": "saugeen-maitland-hall",
     "universitySlug": "western-university",
@@ -129,7 +153,7 @@
     "name": "Alumni House",
     "slug": "alumni-house",
     "universitySlug": "western-university",
-    "imageUrl": "https://lh3.googleusercontent.com/gps-cs-s/AG0ilSz5l437vItgHZh8SsKnzuggC3sElkLolSNrm88ZE1VCy29Oe9SGG8kCj0Lwd_n8qd41Hx2TiOLFpHNTQeEsy_O_vrqNRaz7kFmYn-GbZj9OgrwQURCuYtMGqiYrGAY9oDJ8ejzH=s1360-w1360-h1020-rw"
+    "imageUrl": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTmdHH9i26oFXQ16jbdhn1t3CMLtxdR7vwWvA&s"
   },
   {
     "name": "Elgin Hall",
@@ -165,85 +189,85 @@
     "name": "Bates Residence",
     "slug": "bates-residence",
     "universitySlug": "mcmaster-university",
-    "imageUrl": null
+    "imageUrl": "https://housing.mcmaster.ca/app/uploads/2018/06/Bates-1.jpg"
   },
   {
     "name": "Brandon Hall",
     "slug": "brandon-hall",
     "universitySlug": "mcmaster-university",
-    "imageUrl": null
+    "imageUrl": "https://housing.mcmaster.ca/building/brandon-hall/"
   },
   {
     "name": "Edwards Hall",
     "slug": "edwards-hall",
     "universitySlug": "mcmaster-university",
-    "imageUrl": null
+    "imageUrl": "https://housing.mcmaster.ca/app/uploads/2018/06/Edwards.jpg"
   },
   {
     "name": "Hedden Hall",
     "slug": "hedden-hall",
     "universitySlug": "mcmaster-university",
-    "imageUrl": null
+    "imageUrl": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTIAuQZc8cQS31ikbMw5nk5uPtWfcsi8Rt5hw&s"
   },
   {
     "name": "Les Prince Hall",
     "slug": "les-prince-hall",
     "universitySlug": "mcmaster-university",
-    "imageUrl": null
+    "imageUrl": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQqsHEx6thELP1nYoz52gAbKVtfdMdzjJ8tww&s"
   },
   {
     "name": "Matthews Hall",
     "slug": "matthews-hall",
     "universitySlug": "mcmaster-university",
-    "imageUrl": null
+    "imageUrl": "https://housing.mcmaster.ca/app/uploads/2018/06/Matthews.jpg"
   },
   {
     "name": "McKay Hall",
     "slug": "mckay-hall",
     "universitySlug": "mcmaster-university",
-    "imageUrl": null
+    "imageUrl": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT2H3vdt8d010vMbdrzLJVnwaX-WeVGrnkBGA&s"
   },
   {
     "name": "Moulton Hall",
     "slug": "moulton-hall",
     "universitySlug": "mcmaster-university",
-    "imageUrl": null
+    "imageUrl": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRY1xqw4qnR96l_aq_jTk3jzPnuC5fPVLkeYw&s"
   },
   {
     "name": "Wallingford Hall",
     "slug": "wallingford-hall",
     "universitySlug": "mcmaster-university",
-    "imageUrl": null
+    "imageUrl": "https://housing.mcmaster.ca/app/uploads/2018/06/Wallingford.jpg"
   },
   {
     "name": "Whidden Hall",
     "slug": "whidden-hall",
     "universitySlug": "mcmaster-university",
-    "imageUrl": null
+    "imageUrl": "https://housing.mcmaster.ca/app/uploads/2018/06/Whidden.jpg"
   },
   {
     "name": "Woodstock Hall",
     "slug": "woodstock-hall",
     "universitySlug": "mcmaster-university",
-    "imageUrl": null
+    "imageUrl": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ0Tl_pnJAuNGyzj_R6Dgs2fK0XZzJvSrTeDg&s"
   },
   {
     "name": "Hilliard Residence",
     "slug": "hilliard-residence",
     "universitySlug": "york-university",
-    "imageUrl": null
+    "imageUrl": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSlcaG9Nxr7D0A1bgfsJzOANYbyHXt5KTx92Q&s"
   },
   {
     "name": "Wood Residence",
     "slug": "wood-residence",
     "universitySlug": "york-university",
-    "imageUrl": null
+    "imageUrl": "https://www.yorku.ca/housing/wp-content/uploads/sites/57/2026/01/DSC_1943_4_5-scaled.jpg"
   },
   {
     "name": "Knox Residence",
     "slug": "knox-residence",
     "universitySlug": "university-of-toronto",
-    "imageUrl": null
+    "imageUrl": "https://knoxresidence.utoronto.ca/wp-content/uploads/2023/10/courtyard4-knox-reside.jpg"
   },
   {
     "name": "CampusOne",
@@ -267,13 +291,13 @@
     "name": "The Ivy",
     "slug": "the-ivy",
     "universitySlug": "university-of-toronto",
-    "imageUrl": null
+    "imageUrl": "https://spacesandexperiences.utoronto.ca/wp-content/uploads/2023/09/oak-house-student-residence.jpeg"
   },
   {
     "name": "Harmony Commons",
     "slug": "harmony-commons",
     "universitySlug": "university-of-toronto",
-    "imageUrl": null
+    "imageUrl": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTGnnjSIK3MkG2tYKdDiox8iIo7wGHaVG49Ng&s"
   },
   {
     "name": "UTSC Townhouses",
@@ -292,6 +316,12 @@
     "slug": "totem-park",
     "universitySlug": "university-of-british-columbia",
     "imageUrl": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTGrEBFm_41Iq_gGHKkuU5SxmGd1pZfGIVOTw&s"
+  },
+  {
+    "name": "Brock Commons Tallwood House",
+    "slug": "brock-commons-tallwood-house",
+    "universitySlug": "university-of-british-columbia",
+    "imageUrl": "https://livinglabs.ubc.ca/sites/default/files/styles/slider_main_1009x558/public/2022-08/Brock-_0001_36357661945_145ee15386_k.jpg?itok=DtN-x8UF"
   },
   {
     "name": "Place Vanier",
@@ -381,13 +411,13 @@
     "name": "Beck Hall",
     "slug": "beck-hall",
     "universitySlug": "university-of-waterloo",
-    "imageUrl": null
+    "imageUrl": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTc0n_3P4EoA1JeLmns10d9KUs0Vz0zYhmWbA&s"
   },
   {
     "name": "Claudette Millar Hall",
     "slug": "claudette-millar-hall",
     "universitySlug": "university-of-waterloo",
-    "imageUrl": null
+    "imageUrl": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSXEtDRzxq7umBzF09OTYzLyFOflPsQQnQfVQ&s"
   },
   {
     "name": "Eby Hall",
@@ -399,24 +429,210 @@
     "name": "Conrad Grebel University College",
     "slug": "conrad-grebel-university-college",
     "universitySlug": "university-of-waterloo",
-    "imageUrl": null
+    "imageUrl": "https://uwaterloo.ca/grebel/sites/default/files/uploads/images/1-dsc_6547_1.jpg"
   },
   {
     "name": "Renison University College",
     "slug": "renison-university-college",
     "universitySlug": "university-of-waterloo",
-    "imageUrl": null
+    "imageUrl": "https://www.edufind.info/sites/default/files/photos/Renison_University_College.jpg"
   },
   {
     "name": "St. Jerome's University College",
     "slug": "st-jeromes-university-college",
     "universitySlug": "university-of-waterloo",
-    "imageUrl": null
+    "imageUrl": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRIdkXjQ99yFq057Wfr78FgvpyF3p8H0RJ_qg&s"
   },
   {
     "name": "St. Paul's University College",
     "slug": "st-pauls-university-college",
     "universitySlug": "university-of-waterloo",
+    "imageUrl": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSn7ygNVhN7VLiXqelPhZ0D5ko0MXm2y_EwyQ&s   "
+  },
+  {
+    "name": "Bouckaert Hall",
+    "slug": "bouckaert-hall",
+    "universitySlug": "wilfrid-laurier-university",
+    "imageUrl": "https://www.wlu.ca/future-students/undergraduate/residence/assets/images/students-walking-outside-residence.jpg"
+  },
+  {
+    "name": "Bricker Residence",
+    "slug": "bricker-residence",
+    "universitySlug": "wilfrid-laurier-university",
+    "imageUrl": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQT1gQUeE5UuomNYXus9YuXdOqQJxnLx1E1DA&s"
+  },
+  {
+    "name": "CH Little House",
+    "slug": "ch-little-house",
+    "universitySlug": "wilfrid-laurier-university",
+    "imageUrl": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSmPJ9hxm5miA5eF8szILYQ7Mtp0_uMTWYepw&s"
+  },
+  {
+    "name": "Clara Conrad Hall",
+    "slug": "clara-conrad-hall",
+    "universitySlug": "wilfrid-laurier-university",
+    "imageUrl": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTYNs_tkcSmZN2VBl7ipngrHIKx2A76RL4tmg&s"
+  },
+  {
+    "name": "Euler Residence",
+    "slug": "euler-residence",
+    "universitySlug": "wilfrid-laurier-university",
     "imageUrl": null
+  },
+  {
+    "name": "Ezra Residence",
+    "slug": "ezra-residence",
+    "universitySlug": "wilfrid-laurier-university",
+    "imageUrl": "https://ezra-brickerapartments.ca/wp-content/uploads/2021/05/hero-image.jpg"
+  },
+  {
+    "name": "King Street Residence",
+    "slug": "king-street-residence",
+    "universitySlug": "wilfrid-laurier-university",
+    "imageUrl": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQDmJQp8oI3N2URn8mzDttow_twj3uemk5cCg&s"
+  },
+  {
+    "name": "Leupold Residence",
+    "slug": "leupold-residence",
+    "universitySlug": "wilfrid-laurier-university",
+    "imageUrl": null
+  },
+  {
+    "name": "Macdonald House",
+    "slug": "macdonald-house",
+    "universitySlug": "wilfrid-laurier-university",
+    "imageUrl": "https://www.wlu.ca/information-for/community-members/conference-services/assets/images/accomodation-bricker-banner.jpg"
+  },
+  {
+    "name": "Marshall Street",
+    "slug": "marshall-street",
+    "universitySlug": "wilfrid-laurier-university",
+    "imageUrl": null
+  },
+  {
+    "name": "Regina Residence",
+    "slug": "regina-residence",
+    "universitySlug": "wilfrid-laurier-university",
+    "imageUrl": null
+  },
+  {
+    "name": "Spruce Street",
+    "slug": "spruce-street",
+    "universitySlug": "wilfrid-laurier-university",
+    "imageUrl": null
+  },
+  {
+    "name": "University Place",
+    "slug": "university-place",
+    "universitySlug": "wilfrid-laurier-university",
+    "imageUrl": null
+  },
+  {
+    "name": "Waterloo College Hall",
+    "slug": "waterloo-college-hall",
+    "universitySlug": "wilfrid-laurier-university",
+    "imageUrl": null
+  },
+  {
+    "name": "Willison Hall",
+    "slug": "willison-hall",
+    "universitySlug": "wilfrid-laurier-university",
+    "imageUrl": null
+  },
+  {
+    "name": "Johnston Hall",
+    "slug": "johnston-hall",
+    "universitySlug": "university-of-guelph",
+    "imageUrl": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRolqdWvozLpK7DxUINHOBZ7Qu0BRyVyQLFOQ&s"
+  },
+  {
+    "name": "Mills Hall",
+    "slug": "mills-hall",
+    "universitySlug": "university-of-guelph",
+    "imageUrl": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSofOTvhmSu6ho1RqTfeWgWaZyAKeRCHa7rwQ&s"
+  },
+  {
+    "name": "Watson Hall",
+    "slug": "watson-hall",
+    "universitySlug": "university-of-guelph",
+    "imageUrl": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQewX5gX08V9C8omJRpFLAQC6CK34r89pDExw&s"
+  },
+  {
+    "name": "Maids Hall",
+    "slug": "maids-hall",
+    "universitySlug": "university-of-guelph",
+    "imageUrl": "https://interhall.org/files/artz-haus.gif?auto=format&fit=crop&crop=faces&w=630"
+  },
+  {
+    "name": "Lambton Hall",
+    "slug": "lambton-hall-guelph",
+    "universitySlug": "university-of-guelph",
+    "imageUrl": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSW31uvm0-VMwzBy8XQok_JMD4SAFJdjlX55w&s"
+  },
+  {
+    "name": "Lennox Addington Hall",
+    "slug": "lennox-addington-hall",
+    "universitySlug": "university-of-guelph",
+    "imageUrl": "https://cdn.uoguelph.ca/.netlify/images?url=https%3A%2F%2Fapi.liveugconthub.uoguelph.dev%2Fsites%2Fdefault%2Ffiles%2F2024-10%2Fresidence-lennox-addington.jpg&cd=edacf851a745c6d01fed5e9885133db5"
+  },
+  {
+    "name": "Dundas Hall",
+    "slug": "dundas-hall",
+    "universitySlug": "university-of-guelph",
+    "imageUrl": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSL04MLPrcb0N9uFZiUGGZFkopJB60dMQ5LDg&s"
+  },
+  {
+    "name": "Lanark Hall",
+    "slug": "lanark-hall",
+    "universitySlug": "university-of-guelph",
+    "imageUrl": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSL04MLPrcb0N9uFZiUGGZFkopJB60dMQ5LDg&s"
+  },
+  {
+    "name": "Glengarry Hall",
+    "slug": "glengarry-hall",
+    "universitySlug": "university-of-guelph",
+    "imageUrl": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSL04MLPrcb0N9uFZiUGGZFkopJB60dMQ5LDg&s"
+  },
+  {
+    "name": "East Village Townhouses",
+    "slug": "east-village-townhouses",
+    "universitySlug": "university-of-guelph",
+    "imageUrl": "https://cdn.uoguelph.ca/.netlify/images?url=https%3A%2F%2Fapi.liveugconthub.uoguelph.dev%2Fsites%2Fdefault%2Ffiles%2F2024-10%2Fresidence-east-townhouse.jpg&cd=b88cd9d8667ac8d294e9dd951c60e4dd"
+  },
+  {
+    "name": "West Village Townhouses",
+    "slug": "west-village-townhouses",
+    "universitySlug": "university-of-guelph",
+    "imageUrl": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSRDuydu7htpNqSZxRIazQe3-ZKBCj6HqHxUA&s"
+  },
+  {
+    "name": "University Houses",
+    "slug": "university-houses",
+    "universitySlug": "university-of-guelph",
+    "imageUrl": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQXByqd74Jmc9ctsCOp3E9K0rpmStAvSJg16A&s"
+  },
+  {
+    "name": "Wellington Woods",
+    "slug": "wellington-woods",
+    "universitySlug": "university-of-guelph",
+    "imageUrl": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRtAFx3gJRvtMVqD7b9Wce8O3HpXTFIC0POlg&s"
+  },
+  {
+    "name": "Mountain Hall",
+    "slug": "mountain-hall",
+    "universitySlug": "university-of-guelph",
+    "imageUrl": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTmBk25NPIX0PFaHItfx8kLex3WH9H35LkJug&s"
+  },
+  {
+    "name": "Prairie Hall",
+    "slug": "prairie-hall",
+    "universitySlug": "university-of-guelph",
+    "imageUrl": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRAM_Ag-0WLX4mubq_EhNFe37s6ZF9o4iP3UA&s"
+  },
+  {
+    "name": "Maritime Hall",
+    "slug": "maritime-hall",
+    "universitySlug": "university-of-guelph",
+    "imageUrl": "https://interhall.org/files/maratime-hall.jpg?auto=format&fit=crop&crop=faces&w=630"
   }
 ]

@@ -87,21 +87,21 @@
     "name": "Simon Fraser University",
     "slug": "simon-fraser-university",
     "location": "Burnaby, British Columbia, Canada",
-    "imageUrl": null,
+    "imageUrl": "https://sfss.ca/wp-content/uploads/2021/11/image-1.jpg",
     "website": "https://www.sfu.ca"
   },
   {
     "name": "University of Victoria",
     "slug": "university-of-victoria",
     "location": "Victoria, British Columbia, Canada",
-    "imageUrl": null,
+    "imageUrl": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTmprqHOoURFzm2GiDKiY7vsLFWwRgxEipuZg&s",
     "website": "https://www.uvic.ca"
   },
   {
     "name": "Dalhousie University",
     "slug": "dalhousie-university",
     "location": "Halifax, Nova Scotia, Canada",
-    "imageUrl": null,
+    "imageUrl": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTvXV8hxk3BKaf0avl85WzGltnQNpZ8-xb6hw&s",
     "website": "https://www.dal.ca"
   },
   {
@@ -122,14 +122,14 @@
     "name": "University of Guelph",
     "slug": "university-of-guelph",
     "location": "Guelph, Ontario, Canada",
-    "imageUrl": null,
+    "imageUrl": "https://cdn.uoguelph.ca/.netlify/images?url=https%3A%2F%2Fapi.liveugconthub.uoguelph.dev%2Fsites%2Fdefault%2Ffiles%2F2024-02%2Funiversity-of-guelph-campus.jpg&cd=bc6c298f133885487c966474f070dbd5",
     "website": "https://www.uoguelph.ca"
   },
   {
     "name": "Carleton University",
     "slug": "carleton-university",
     "location": "Ottawa, Ontario, Canada",
-    "imageUrl": null,
+    "imageUrl": "https://carleton.ca/duc/wp-content/uploads/campus-resources-header-1600x700-2.jpg",
     "website": "https://carleton.ca"
   },
   {
@@ -171,7 +171,7 @@
     "name": "Toronto Metropolitan University",
     "slug": "toronto-metropolitan-university",
     "location": "Toronto, Ontario, Canada",
-    "imageUrl": null,
+    "imageUrl": "https://www.torontomu.ca/content/dam/international/renaming/intl-renaming-1520x710.jpg",
     "website": "https://www.torontomu.ca"
   },
   {
