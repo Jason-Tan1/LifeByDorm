@@ -323,7 +323,7 @@ function EditReviewModal({ review, onClose, onSaved }: EditReviewModalProps) {
                         <label className="section-label">Your Review</label>
                         <textarea
                             className="review-textarea"
-                            placeholder="Share your experience..."
+                            placeholder="Share your experience... Consider mentioning: Room layout, noise levels, proximity to classes, RA helpfulness, wifi speed, common area cleanliness, etc."
                             value={description}
                             onChange={e => setDescription(e.target.value)}
                             maxLength={1500}
