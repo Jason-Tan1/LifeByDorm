@@ -1045,6 +1045,20 @@ app.get('/api/universities/:slug', async (req: Request, res: Response) => {
   }
 });
 
+// Public endpoint: search approved dorms (lightweight, no auth required)
+app.get('/api/dorms/search', async (req: Request, res: Response) => {
+  try {
+    const dorms = await Dorm.find(
+      { $or: [{ status: 'approved' }, { status: { $exists: false } }] },
+      { name: 1, slug: 1, universitySlug: 1, _id: 0 }
+    ).sort({ name: 1 }).lean();
+    res.json(dorms);
+  } catch (err) {
+    console.error('Error fetching dorms for search', err);
+    res.status(500).json({ message: 'Error fetching dorms' });
+  }
+});
+
 // List all dorms (admin only - includes all statuses)
 app.get('/api/dorms', authenticationToken, requireAdmin, async (req: AuthRequest, res: Response) => {
   try {
