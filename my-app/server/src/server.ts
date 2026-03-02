@@ -1397,8 +1397,8 @@ app.get('/api/admin/stats', authenticationToken, requireAdmin, async (req: AuthR
       User.countDocuments(),
       // New users this week
       User.countDocuments({ createdAt: { $gte: startOfWeek } }),
-      // Total reviews (all statuses)
-      UserReview.countDocuments(),
+      // Total reviews (approved + legacy only — matches what users see)
+      UserReview.countDocuments({ $or: [{ status: 'approved' }, { status: { $exists: false } }] }),
       // Reviews submitted today
       UserReview.countDocuments({ createdAt: { $gte: startOfToday } }),
       // Reviews submitted this week
@@ -1514,6 +1514,7 @@ app.patch('/api/admin/reviews/:id/approve', authenticationToken, requireAdmin, a
     }
 
     // If there's a pending edit, apply the edit fields to the main review
+    // Note: Do NOT change the status — it's already 'approved'
     if (review.pendingEdit) {
       review.room = review.pendingEdit.room;
       review.bathroom = review.pendingEdit.bathroom;
@@ -1527,9 +1528,11 @@ app.patch('/api/admin/reviews/:id/approve', authenticationToken, requireAdmin, a
       review.images = review.pendingEdit.images || [];
       review.pendingEdit = undefined;
       if (!isProduction) console.log('✅ Applied pending edit for review:', id);
+    } else {
+      // Only set status to approved for brand-new pending reviews
+      review.status = 'approved';
     }
 
-    review.status = 'approved';
     await review.save();
 
     res.json({ message: 'Review approved', review });
