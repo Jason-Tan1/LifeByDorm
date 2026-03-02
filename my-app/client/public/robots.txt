@@ -2,4 +2,4 @@ User-agent: *
 Allow: /
 
 # Sitemap
-Sitemap: https://lifebydorm.com/sitemap.xml
+Sitemap: https://www.lifebydorm.ca/sitemap.xml
