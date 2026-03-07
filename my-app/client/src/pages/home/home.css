@@ -238,6 +238,18 @@ textarea {
 .slider-card {
   flex: 0 0 230px;
   min-width: 230px;
+  scroll-snap-align: center;
+}
+
+@media (max-width: 600px) {
+  .slider-card {
+    flex: 0 0 100%;
+    min-width: 100%;
+  }
+
+  .slider-wrapper {
+    scroll-snap-type: x mandatory;
+  }
 }
 
 @media (min-width: 768px) {

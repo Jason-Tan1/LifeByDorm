@@ -22,7 +22,7 @@ const GiveawayModal: React.FC<GiveawayModalProps> = ({ isOpen, onClose }) => {
 
                 <div className="giveaway-modal-body">
                     <p className="giveaway-modal-intro">
-                        Help us reach <strong>500 total reviews</strong>! Once we hit the milestone, we will randomly select one eligible reviewer to win a <strong>$25 Amazon Gift Card</strong>!
+                        Help us reach <strong>250 total reviews</strong>! Once we hit the milestone, we will randomly select one eligible reviewer to win a <strong>$25 Amazon Gift Card</strong>!
                     </p>
 
                     <div className="giveaway-rules-list">

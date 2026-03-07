@@ -13,9 +13,8 @@ const GiveawayBanner: React.FC<GiveawayBannerProps> = ({ totalReviews }) => {
         <>
             <div className="giveaway-banner-container">
                 <div className="giveaway-banner-content">
-                    <span className="giveaway-gift-icon">🎁</span>
                     <span className="giveaway-text">
-                        <strong>$25 Amazon Gift Card Giveaway!</strong> at 500 reviews — currently ({totalReviews}/500)
+                        <strong>$25 Amazon Gift Card Giveaway!</strong> at 250 reviews currently ({totalReviews}/250)
                     </span>
                     <button
                         className="giveaway-rules-btn"

@@ -2,48 +2,152 @@
 
 .footer {
   background-color: #ffffff;
-  color: #000000;
-  padding: clamp(1rem, 3vw, 2rem) 0;
+  /* Restore white background to the outer wrapper */
   width: 100%;
+  padding: 0 4% 4% 4%;
+  /* Padding applied to create the border effect */
   margin-top: auto;
   font-family: 'DM Sans', sans-serif;
+  box-sizing: border-box;
 }
 
 .footer-content {
+  background-color: #1f1f1f;
+  /* Apply the dark grey/black background */
+  color: #eeeeee;
   max-width: 1200px;
   margin: 0 auto;
-  padding: 0 4%;
-  text-align: center;
+  padding: 40px 4% 20px 4%;
+  /* Apply padding inside the grey box */
+  display: flex;
+  justify-content: space-between;
+  gap: 40px;
+  border-radius: 12px 12px 0 0;
+  /* Restore rounded corners */
+}
+
+/* Left Side Styles */
+.footer-left {
+  flex: 1;
+  max-width: 500px;
 }
 
 .footer-logo {
-  height: 80px; 
+  height: 60px;
   width: auto;
-  margin-bottom: 0.5rem;
+  margin-bottom: 20px;
+  /* Add brightness if the logo is dark on a dark background */
+  /* filter: brightness(0) invert(1); */
 }
 
-.footer-links {
+.footer-description {
+  font-size: 0.95rem;
+  line-height: 1.5;
+  color: #cccccc;
+  margin-bottom: 25px;
+}
+
+.footer-description a {
+  color: #eeeeee;
+  text-decoration: underline;
+}
+
+.footer-description a:hover {
+  color: #ffffff;
+}
+
+/* Right Side Styles */
+.footer-right {
   display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: clamp(0.5rem, 2vw, 1rem);
-  margin-bottom: 1rem;
-  flex-wrap: wrap;
+  gap: 60px;
+}
+
+.footer-link-column {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
 }
 
 .footer-link {
-  color: #000000;
+  color: #eeeeee;
   text-decoration: none;
-  font-size: clamp(0.85rem, 2vw, 1rem);
-  transition: color 0.3s ease;
+  font-size: 0.95rem;
+  font-weight: 500;
+  transition: color 0.2s ease;
 }
 
-.footer-separator { color: #000000; font-size: 1rem; }
-.footer-link:hover { text-decoration: underline; }
-.footer-content p { margin: 0; font-size: clamp(0.8rem, 1.8vw, 0.9rem); color: #000000; }
+.footer-link.with-icon {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.footer-icon {
+  font-size: 1.1rem;
+}
+
+.footer-link:hover {
+  text-decoration: underline;
+  color: #ffffff;
+}
+
+/* Bottom Legal Section */
+.footer-bottom {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 4% 30px 4%;
+  display: flex;
+  justify-content: flex-end;
+  background-color: #1f1f1f;
+  /* Extend the background color down */
+  border-bottom-left-radius: 12px;
+  border-bottom-right-radius: 12px;
+}
+
+.footer-bottom-content {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 15px;
+}
+
+.hiring-box {
+  font-size: 0.85rem;
+  color: #eeeeee;
+  display: inline-block;
+}
+
+.hiring-box a {
+  color: #ffffff;
+  text-decoration: underline;
+  font-weight: 600;
+}
+
+.footer-bottom p {
+  margin: 0;
+  font-size: 0.85rem;
+  color: #aaaaaa;
+}
+
+@media (max-width: 900px) {
+  .footer-content {
+    flex-direction: column;
+    gap: 40px;
+  }
+
+  .footer-left {
+    max-width: 100%;
+  }
+
+  .footer-bottom {
+    justify-content: center;
+    text-align: center;
+  }
+}
 
 @media (max-width: 480px) {
-  .footer-separator { display: none; }
-  .footer-links { flex-direction: column; gap: 0.5rem; }
+  .footer-right {
+    flex-direction: column;
+    gap: 30px;
+  }
 }
-
