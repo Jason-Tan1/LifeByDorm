@@ -4,12 +4,16 @@ body {
   font-family: 'DM Sans', sans-serif;
   background-color: #fffafa;
   margin: 0;
+  width: 100%;
+  overflow-x: hidden;
+  overflow-y: overlay;
 }
 
 /* Custom Modern Scrollbar */
 ::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+  width: 5px;
+  height: 5px;
+  background: transparent;
 }
 
 ::-webkit-scrollbar-track {
@@ -17,12 +21,12 @@ body {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #d1d5db;
+  background: rgba(0, 0, 0, 0.3);
   border-radius: 10px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #9ca3af;
+  background: rgba(0, 0, 0, 0.5);
 }
 
 /* Main Navbar Container */
