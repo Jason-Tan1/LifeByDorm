@@ -1,0 +1,191 @@
+﻿diff --git a/my-app/server/seed/dormInformation.json b/my-app/server/seed/dormInformation.json
+index aa22977c..8ceecc8d 100644
+--- a/my-app/server/seed/dormInformation.json
++++ b/my-app/server/seed/dormInformation.json
+@@ -1024,5 +1024,185 @@
+     "slug": "grey-nuns",
+     "universitySlug": "concordia-university",
+     "imageUrl": null
++  },
++  {
++    "name": "South Village",
++    "slug": "south-village",
++    "universitySlug": "ontario-tech-university",
++    "imageUrl": null
++  },
++  {
++    "name": "Simcoe Village",
++    "slug": "simcoe-village",
++    "universitySlug": "ontario-tech-university",
++    "imageUrl": null
++  },
++  {
++    "name": "West Village",
++    "slug": "west-village",
++    "universitySlug": "ontario-tech-university",
++    "imageUrl": null
++  },
++  {
++    "name": "Howe Hall",
++    "slug": "howe-hall",
++    "universitySlug": "dalhousie-university",
++    "imageUrl": null
++  },
++  {
++    "name": "Risley Hall",
++    "slug": "risley-hall",
++    "universitySlug": "dalhousie-university",
++    "imageUrl": null
++  },
++  {
++    "name": "Shirreff Hall",
++    "slug": "shirreff-hall",
++    "universitySlug": "dalhousie-university",
++    "imageUrl": null
++  },
++  {
++    "name": "LeMarchant Place",
++    "slug": "lemarchant-place",
++    "universitySlug": "dalhousie-university",
++    "imageUrl": null
++  },
++  {
++    "name": "Gerard Hall",
++    "slug": "gerard-hall",
++    "universitySlug": "dalhousie-university",
++    "imageUrl": null
++  },
++  {
++    "name": "Glengary Apartments",
++    "slug": "glengary-apartments",
++    "universitySlug": "dalhousie-university",
++    "imageUrl": null
++  },
++  {
++    "name": "O'Brien Hall",
++    "slug": "obrien-hall",
++    "universitySlug": "dalhousie-university",
++    "imageUrl": null
++  },
++  {
++    "name": "Chapman House",
++    "slug": "chapman-house",
++    "universitySlug": "dalhousie-university",
++    "imageUrl": null
++  },
++  {
++    "name": "Fraser House",
++    "slug": "fraser-house",
++    "universitySlug": "dalhousie-university",
++    "imageUrl": null
++  },
++  {
++    "name": "Trueman House",
++    "slug": "trueman-house",
++    "universitySlug": "dalhousie-university",
++    "imageUrl": null
++  },
++  {
++    "name": "Cluett Hall",
++    "slug": "cluett-hall",
++    "universitySlug": "memorial-university-of-newfoundland",
++    "imageUrl": null
++  },
++  {
++    "name": "Shiwak Hall",
++    "slug": "shiwak-hall",
++    "universitySlug": "memorial-university-of-newfoundland",
++    "imageUrl": null
++  },
++  {
++    "name": "Barnes House",
++    "slug": "barnes-house",
++    "universitySlug": "memorial-university-of-newfoundland",
++    "imageUrl": null
++  },
++  {
++    "name": "Blackall House",
++    "slug": "blackall-house",
++    "universitySlug": "memorial-university-of-newfoundland",
++    "imageUrl": null
++  },
++  {
++    "name": "Bowater House",
++    "slug": "bowater-house",
++    "universitySlug": "memorial-university-of-newfoundland",
++    "imageUrl": null
++  },
++  {
++    "name": "Burke House",
++    "slug": "burke-house",
++    "universitySlug": "memorial-university-of-newfoundland",
++    "imageUrl": null
++  },
++  {
++    "name": "Carnell House",
++    "slug": "carnell-house",
++    "universitySlug": "memorial-university-of-newfoundland",
++    "imageUrl": null
++  },
++  {
++    "name": "Curtis House",
++    "slug": "curtis-house",
++    "universitySlug": "memorial-university-of-newfoundland",
++    "imageUrl": null
++  },
++  {
++    "name": "Doyle House",
++    "slug": "doyle-house",
++    "universitySlug": "memorial-university-of-newfoundland",
++    "imageUrl": null
++  },
++  {
++    "name": "Hatcher House",
++    "slug": "hatcher-house",
++    "universitySlug": "memorial-university-of-newfoundland",
++    "imageUrl": null
++  },
++  {
++    "name": "Rothermere House",
++    "slug": "rothermere-house",
++    "universitySlug": "memorial-university-of-newfoundland",
++    "imageUrl": null
++  },
++  {
++    "name": "Squires House",
++    "slug": "squires-house",
++    "universitySlug": "memorial-university-of-newfoundland",
++    "imageUrl": null
++  },
++  {
++    "name": "Baltimore Court",
++    "slug": "baltimore-court",
++    "universitySlug": "memorial-university-of-newfoundland",
++    "imageUrl": null
++  },
++  {
++    "name": "Cabot Court",
++    "slug": "cabot-court",
++    "universitySlug": "memorial-university-of-newfoundland",
++    "imageUrl": null
++  },
++  {
++    "name": "Cartier Court",
++    "slug": "cartier-court",
++    "universitySlug": "memorial-university-of-newfoundland",
++    "imageUrl": null
++  },
++  {
++    "name": "Gilbert Court",
++    "slug": "gilbert-court",
++    "universitySlug": "memorial-university-of-newfoundland",
++    "imageUrl": null
++  },
++  {
++    "name": "Guy Court",
++    "slug": "guy-court",
++    "universitySlug": "memorial-university-of-newfoundland",
++    "imageUrl": null
+   }
+ ]
+\ No newline at end of file

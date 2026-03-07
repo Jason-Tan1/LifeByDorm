@@ -411,7 +411,9 @@ app.get('/api/stats/homepage', readOnlyLimiter, async (req: Request, res: Respon
       .slice(0, 10);
 
     // Sort and get top dorms by rating
+    // Only include dorms with at least 3 reviews to prevent outliers from topping the list
     const topRatedDorms = [...enrichedDorms]
+      .filter(dorm => dorm.reviewCount >= 3)
       .sort((a, b) => {
         if (b.avgRating === a.avgRating) return b.reviewCount - a.reviewCount;
         return b.avgRating - a.avgRating;

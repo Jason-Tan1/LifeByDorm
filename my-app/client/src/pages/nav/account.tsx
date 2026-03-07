@@ -294,7 +294,7 @@ function Account() {
 
                       {displayImages && displayImages.length > 0 && (
                         <div className="review-images-gallery" style={{ display: 'flex', gap: '12px' }}>
-                          {displayImages!.slice(0, 3).map((img: string, idx: number) => (
+                          {displayImages.slice(0, 3).map((img: string, idx: number) => (
                             <div
                               key={idx}
                               className="review-gallery-image-wrapper"
@@ -302,9 +302,9 @@ function Account() {
                               onClick={() => openLightbox(displayImages as string[], idx)}
                             >
                               <img src={img} alt={`Review ${idx + 1}`} className="review-gallery-image" style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '8px' }} />
-                              {idx === 2 && displayImages!.length > 3 && (
+                              {idx === 2 && displayImages.length > 3 && (
                                 <div className="review-image-overlay" style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', backgroundColor: 'rgba(0,0,0,0.6)', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white', fontSize: '1.2rem', fontWeight: 'bold' }}>
-                                  +{displayImages!.length - 3} more
+                                  +{displayImages.length - 3} more
                                 </div>
                               )}
                             </div>

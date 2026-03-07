@@ -1,0 +1,17 @@
+﻿commit 84646c7f150dd7f532c282b18f1c13b34b6a65ae
+Author: Jason Tan <jatan2745@gmail.com>
+Date:   Mon Mar 2 17:40:59 2026 -0500
+
+    Fix: Sitemap URLS for Google Search Console
+
+commit 7ca63ea09017ad414e0750e628208ef1d533e5af
+Author: Jason Tan <jatan2745@gmail.com>
+Date:   Mon Mar 2 17:35:58 2026 -0500
+
+    Add google verification file
+
+commit a4d6c78a23dd90c22d689e7be91c8bf31c5d0cde
+Author: Jason Tan <jatan2745@gmail.com>
+Date:   Mon Mar 2 17:32:25 2026 -0500
+
+    Add: SEO's for google site discovery
