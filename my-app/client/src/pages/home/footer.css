@@ -151,3 +151,20 @@
     gap: 30px;
   }
 }
+
+/* Scaling for larger monitors */
+@media (min-width: 1600px) {
+
+  .footer-content,
+  .footer-bottom {
+    max-width: 1600px;
+  }
+}
+
+@media (min-width: 1920px) {
+
+  .footer-content,
+  .footer-bottom {
+    max-width: 1800px;
+  }
+}
