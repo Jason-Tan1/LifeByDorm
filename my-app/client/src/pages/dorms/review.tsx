@@ -317,23 +317,42 @@ function Reviews() {
     setIsDragging(false);
   };
 
-  const handleDrop = (e: React.DragEvent) => {
+  const handleDrop = async (e: React.DragEvent) => {
     e.preventDefault();
     setIsDragging(false);
 
     if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
       const newFiles = Array.from(e.dataTransfer.files);
 
+      if (newFiles.length > MAX_FILES) {
+        alert(`You can only upload up to ${MAX_FILES} images.`);
+        return;
+      }
 
-      newFiles.forEach((file) => {
-        // Compress image before creating data URL if needed, 
-        // for now just read it for preview
-        const reader = new FileReader();
-        reader.onloadend = () => {
-          setFileDataUrls((prevUrls) => [...prevUrls, reader.result as string]);
-        };
-        reader.readAsDataURL(file);
+      const compressionPromises = newFiles.map(async (file) => {
+        if (file.size > MAX_FILE_SIZE) {
+          alert(`File "${file.name}" is too large. Maximum file size is 10 MB.`);
+          return null;
+        }
+
+        try {
+          const compressedDataUrl = await compressImage(file, {
+            maxWidth: 800,
+            maxHeight: 800,
+            quality: 0.8,
+            outputType: 'image/jpeg'
+          });
+          return compressedDataUrl;
+        } catch (err) {
+          console.error(`Failed to compress ${file.name}:`, err);
+          return null;
+        }
       });
+
+      const results = await Promise.all(compressionPromises);
+      const validResults = results.filter((url): url is string => url !== null);
+
+      setFileDataUrls(prev => [...prev, ...validResults]);
     }
   };
 

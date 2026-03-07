@@ -275,7 +275,7 @@ function Home() {
                         <span className="icon"></span> {dorm.name}
                       </h3>
                       <p className="featured-location">
-                        <span className="icon"></span> {dorm.university}
+                        <span className="icon"></span> {universities.find((u) => u.slug === dorm.universitySlug)?.name || dorm.universitySlug}
                       </p>
                       <p className="featured-location">
                         <span className="icon"></span> {dorm.reviewCount ?? 0} {dorm.reviewCount === 1 ? t('home.review') : t('home.reviews')}
@@ -322,7 +322,7 @@ function Home() {
                         <span className="icon"></span> {dorm.name}
                       </h3>
                       <p className="featured-location">
-                        <span className="icon"></span> {dorm.university}
+                        <span className="icon"></span> {universities.find((u) => u.slug === dorm.universitySlug)?.name || dorm.universitySlug}
                       </p>
                       <p className="featured-location">
                         <span className="icon"></span> {(dormRatings[dorm.name] ?? 0).toFixed(1)} ({dormReviewCounts[dorm.name] ?? 0} {dormReviewCounts[dorm.name] === 1 ? t('home.review') : t('home.reviews')})
