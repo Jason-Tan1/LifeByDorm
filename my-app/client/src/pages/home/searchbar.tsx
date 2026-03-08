@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import './searchbar.css';
@@ -31,12 +31,24 @@ function SearchBar() {
   const [allDorms, setAllDorms] = useState<Dorm[]>([]);
   const [isLoadingDorms, setIsLoadingDorms] = useState(false);
   const navigate = useNavigate();
+  const wrapperRef = useRef<HTMLDivElement>(null);
 
   // Debounce the query to reduce unnecessary filtering/fetching
   const debouncedQuery = useDebouncedValue(query, 200);
 
   // Use shared context for universities - no duplicate fetch!
   const { universities } = useUniversityData();
+
+  // Close dropdown when clicking outside the search bar
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (wrapperRef.current && !wrapperRef.current.contains(event.target as Node)) {
+        setShowDropdown(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
   // Fetch dorms only when needed: dorm mode + user typing at least 2 chars + not already loaded
   useEffect(() => {
@@ -113,14 +125,25 @@ function SearchBar() {
   };
   */
 
-  const handleKeyPress = (event: React.KeyboardEvent) => {
+  const handleKeyDown = (event: React.KeyboardEvent) => {
     if (event.key === 'Enter') {
       handleSearch();
     }
   };
 
+  // Re-open dropdown when input is focused and there are results
+  const handleFocus = () => {
+    if (query.trim() !== '') {
+      if (searchMode === 'universities' && filteredUniversities.length > 0) {
+        setShowDropdown(true);
+      } else if (searchMode === 'dorms' && filteredDorms.length > 0) {
+        setShowDropdown(true);
+      }
+    }
+  };
+
   return (
-    <div className="search-bar-wrapper">
+    <div className="search-bar-wrapper" ref={wrapperRef}>
       {/* Group Search Bar and Dropdown together for correct positioning */}
       <div className="search-input-group">
         <div className="search-bar-container">
@@ -130,7 +153,8 @@ function SearchBar() {
             placeholder={searchMode === 'universities' ? t('search.placeholderUniversities') : t('search.placeholderDorms')}
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            onKeyPress={handleKeyPress}
+            onKeyDown={handleKeyDown}
+            onFocus={handleFocus}
           />
           <button className="search-button" onClick={handleSearch}>
             <FaSearch />
@@ -144,6 +168,7 @@ function SearchBar() {
                 <div
                   key={uni.slug}
                   className="search-dropdown-item"
+                  onMouseDown={(e) => e.preventDefault()}
                   onClick={() => handleSelectUniversity(uni.slug)}
                 >
                   {uni.name}
@@ -154,6 +179,7 @@ function SearchBar() {
                 <div
                   key={`${dorm.universitySlug}-${dorm.slug}`}
                   className="search-dropdown-item"
+                  onMouseDown={(e) => e.preventDefault()}
                   onClick={() => handleSelectDorm(dorm)}
                 >
                   <div className="dorm-name">{dorm.name}</div>
