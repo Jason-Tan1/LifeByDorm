@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link, useParams, useNavigate } from 'react-router-dom';
 import NavBar from '../nav/navbar';
@@ -12,6 +12,7 @@ import { FaSearch } from 'react-icons/fa';
 import DefaultCampus from '../../assets/Default_Campus.webp';
 import DefaultDorm from '../../assets/Default_Dorm.webp';
 import PageLoader from '../../components/PageLoader';
+import { useSEO } from '../../hooks/useSEO';
 
 // Define types for University and Dorm data from API
 type APIUniversity = {
@@ -54,6 +55,39 @@ function UniversityDash() {
   const [dormRatings, setDormRatings] = useState<{ [dormName: string]: number }>({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
+  // SEO: Dynamic title, description, canonical, and structured data
+  const formatName = (slug: string) => slug?.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ') || '';
+  const uniDisplayName = university?.name || formatName(universityName || '');
+
+  const universityJsonLd = useMemo(() => {
+    if (!university) return undefined;
+    return [
+      {
+        '@context': 'https://schema.org',
+        '@type': 'CollegeOrUniversity',
+        name: university.name,
+        url: university.website || undefined,
+        address: university.location ? { '@type': 'PostalAddress', addressLocality: university.location } : undefined,
+        ...(university.imageUrl ? { image: university.imageUrl } : {})
+      },
+      {
+        '@context': 'https://schema.org',
+        '@type': 'BreadcrumbList',
+        itemListElement: [
+          { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://www.lifebydorm.ca/' },
+          { '@type': 'ListItem', position: 2, name: `${university.name} Dorms`, item: `https://www.lifebydorm.ca/universities/${universityName}` }
+        ]
+      }
+    ];
+  }, [university, universityName]);
+
+  useSEO({
+    title: `${uniDisplayName} Dorm Reviews & Residence Photos`,
+    description: `Read real student reviews and see photos of dorms at ${uniDisplayName}. Compare ${dorms.length} residences to find your perfect campus home.`,
+    canonicalPath: `/universities/${universityName}`,
+    jsonLd: universityJsonLd
+  });
 
   // Fetch university and dorm data when component mounts or universityName changes
   useEffect(() => {
@@ -210,7 +244,7 @@ function UniversityDash() {
   return (
     <div className="university-dash">
       <NavBar />
-      <div className="university-content">
+      <main className="university-content">
         {/* Left side - University Information */}
         <div className="university-info">
           {/* Breadcrumbs */}
@@ -225,7 +259,7 @@ function UniversityDash() {
           <div className="university-image-container">
             <img
               src={university.imageUrl || DefaultCampus}
-              alt={university.name}
+              alt={`${university.name} campus photo`}
               className="university-main-image"
             />
             <div className="university-image-overlay"></div>
@@ -307,7 +341,7 @@ function UniversityDash() {
                   className="dorm-card"
                   style={{ textDecoration: 'none', color: 'inherit' }}
                 >
-                  <img src={(dorm.imageUrl && dorm.imageUrl !== '' && dorm.imageUrl !== 'null') ? dorm.imageUrl : DefaultDorm} alt={dorm.name} className="dorm-image" loading="lazy" />
+                  <img src={(dorm.imageUrl && dorm.imageUrl !== '' && dorm.imageUrl !== 'null') ? dorm.imageUrl : DefaultDorm} alt={`${dorm.name} residence at ${uniDisplayName}`} className="dorm-image" loading="lazy" />
                   <div className="dorm-card-info">
                     <div className="dorm-text-content">
                       <h3>{dorm.name}</h3>
@@ -340,7 +374,7 @@ function UniversityDash() {
             )}
           </div>
         </div>
-      </div>
+      </main>
       <Footer />
     </div>
   );

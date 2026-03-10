@@ -5,11 +5,18 @@ import Footer from '../home/footer';
 import './allUniversities.css';
 import { useUniversityData } from '../../context/UniversityDataContext';
 import PageLoader from '../../components/PageLoader';
+import { useSEO } from '../../hooks/useSEO';
 
 function AllUniversities() {
   const { t } = useTranslation();
   // Use shared context instead of making a separate API call
   const { universities, isLoading: loading, error } = useUniversityData();
+
+  useSEO({
+    title: 'All Canadian Universities — Dorm Reviews',
+    description: `Browse dorm reviews for ${universities.length || '50+'} Canadian universities. Find real student photos and ratings for every residence.`,
+    canonicalPath: '/universities'
+  });
 
   if (loading) return <PageLoader />;
 

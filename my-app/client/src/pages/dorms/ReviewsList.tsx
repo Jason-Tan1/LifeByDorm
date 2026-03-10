@@ -109,7 +109,7 @@ function ReviewsList({
                         className={`review-gallery-image-wrapper img-idx-${idx}`}
                         onClick={() => openLightbox(review.images, idx)}
                       >
-                        <img src={img} alt={`Dorm ${idx + 1}`} className="review-gallery-image" />
+                        <img src={img} alt={`Student review photo ${idx + 1}`} className="review-gallery-image" />
                         {idx === 1 && review.images.length > 2 && (
                           <div className="review-image-overlay mobile-overlay">
                             +{review.images.length - 2} more
@@ -126,7 +126,7 @@ function ReviewsList({
                 ) : review.fileImage ? (
                   <img
                     src={review.fileImage}
-                    alt="Dorm"
+                    alt="Student review photo of dorm room"
                     className="review-image"
                     onClick={() => openLightbox([review.fileImage], 0)}
                   />

@@ -4,9 +4,16 @@ import NavBar from './navbar.tsx';
 import Footer from '../home/footer.tsx';
 import './contactme.css';
 import '../legal/legal.css';
+import { useSEO } from '../../hooks/useSEO';
 
 function ContactMe() {
   const { t } = useTranslation();
+
+  useSEO({
+    title: 'Contact Us',
+    description: 'Have questions or feedback about LifeByDorm? Reach out to us. We would love to hear from students across Canada.',
+    canonicalPath: '/contactme'
+  });
   const [formData, setFormData] = useState({
     fullName: '',
     email: '',

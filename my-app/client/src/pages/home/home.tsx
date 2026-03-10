@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback, useRef } from 'react';
+import { useEffect, useState, useCallback, useRef, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import './home.css';
 
@@ -11,6 +11,7 @@ import { SkeletonSlider } from '../../components/SkeletonCard';
 import DefaultCampus from '../../assets/Default_Campus.webp';
 import DefaultDorm from '../../assets/Default_Dorm.webp';
 import GiveawayBanner from './GiveawayBanner';
+import { useSEO } from '../../hooks/useSEO';
 
 // Use relative path '' on localhost to leverage the Vite proxy
 const isLocal = typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1');
@@ -18,6 +19,27 @@ const API_BASE = isLocal ? '' : ((import.meta as any).env?.VITE_API_BASE || '');
 
 function Home() {
   const { t } = useTranslation();
+
+  // SEO: Dynamic title, description, and structured data for homepage
+  const homepageJsonLd = useMemo(() => ({
+    '@context': 'https://schema.org',
+    '@type': 'WebSite',
+    name: 'LifeByDorm',
+    url: 'https://www.lifebydorm.ca',
+    description: 'Real student photos and dorm reviews for Canadian universities.',
+    potentialAction: {
+      '@type': 'SearchAction',
+      target: 'https://www.lifebydorm.ca/universities/{search_term_string}',
+      'query-input': 'required name=search_term_string'
+    }
+  }), []);
+
+  useSEO({
+    title: 'LifeByDorm | Real Student Photos & Dorm Reviews for Canadian Schools',
+    description: 'Read real, unbiased dorm reviews and see authentic photos from students at Canadian universities. Find the best college residences before you move in on LifeByDorm.',
+    canonicalPath: '/',
+    jsonLd: homepageJsonLd
+  });
   const [topUniversities, setTopUniversities] = useState<any[]>([]);
   const [topDorms, setTopDorms] = useState<any[]>([]);
   const [mostRatedDorms, setMostRatedDorms] = useState<any[]>([]);
@@ -201,7 +223,7 @@ function Home() {
       </div>
 
       {/* Featured Section */}
-      <div className="featured-section">
+      <main className="featured-section">
         {/* Featured Universities Section */}
         <div className="featured-container">
           <h2 className="featured-title">{t('home.mostRatedUniversities')}</h2>
@@ -222,7 +244,7 @@ function Home() {
                 topUniversities.map(uni => (
                   <Link key={uni.slug} to={`/universities/${uni.slug}`} className="featured-card slider-card">
                     <div className="featured-image-container">
-                      <img src={uni.imageUrl || DefaultCampus} alt={uni.name} className="featured-image" loading="lazy" />
+                      <img src={uni.imageUrl || DefaultCampus} alt={`${uni.name} campus photo`} className="featured-image" loading="lazy" />
                     </div>
                     <div className="featured-info">
                       <h3 className="featured-university-name">
@@ -268,7 +290,7 @@ function Home() {
                 mostRatedDorms.map(dorm => (
                   <Link key={`${dorm.universitySlug}-${dorm.slug}`} to={`/universities/${dorm.universitySlug}/dorms/${dorm.slug}`} className="featured-card slider-card">
                     <div className="featured-image-container">
-                      <img src={dorm.imageUrl || DefaultDorm} alt={dorm.name} className="featured-image" loading="lazy" />
+                      <img src={dorm.imageUrl || DefaultDorm} alt={`${dorm.name} residence photo`} className="featured-image" loading="lazy" />
                     </div>
                     <div className="featured-info">
                       <h3 className="featured-university-name">
@@ -315,7 +337,7 @@ function Home() {
                 topDorms.map(dorm => (
                   <Link key={`${dorm.universitySlug}-${dorm.slug}`} to={`/universities/${dorm.universitySlug}/dorms/${dorm.slug}`} className="featured-card slider-card">
                     <div className="featured-image-container">
-                      <img src={dorm.imageUrl || DefaultDorm} alt={dorm.name} className="featured-image" loading="lazy" />
+                      <img src={dorm.imageUrl || DefaultDorm} alt={`${dorm.name} residence photo`} className="featured-image" loading="lazy" />
                     </div>
                     <div className="featured-info">
                       <h3 className="featured-university-name">
@@ -341,7 +363,7 @@ function Home() {
           </div>
         </div>
 
-      </div>
+      </main>
 
       <Footer />
     </div>

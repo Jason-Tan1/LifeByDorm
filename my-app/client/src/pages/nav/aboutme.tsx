@@ -3,9 +3,16 @@ import Footer from '../home/footer.tsx';
 import { useTranslation } from 'react-i18next';
 import './aboutme.css';
 import '../legal/legal.css'; // Reusing the clean text formatting
+import { useSEO } from '../../hooks/useSEO';
 
 function AboutMe() {
   const { t } = useTranslation();
+
+  useSEO({
+    title: 'About LifeByDorm — Our Mission',
+    description: 'LifeByDorm is an independent platform built by students, for students. We provide genuine reviews and insights on university accommodations across Canada.',
+    canonicalPath: '/aboutme'
+  });
 
   return (
     <div className="about-page legal-page-wrapper">

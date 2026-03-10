@@ -2,9 +2,16 @@ import { useTranslation } from 'react-i18next';
 import './legal.css';
 import NavBar from '../nav/navbar';
 import Footer from '../home/footer';
+import { useSEO } from '../../hooks/useSEO';
 
 function PrivacyPolicy() {
   const { t } = useTranslation();
+
+  useSEO({
+    title: 'Privacy Policy',
+    description: 'Learn how LifeByDorm collects, uses, and protects your personal information. Read our full Privacy Policy.',
+    canonicalPath: '/privacy'
+  });
 
   return (
     <div className="legal-page-wrapper">

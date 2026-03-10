@@ -79,7 +79,7 @@ function DormInfo({ dorm, reviews, universityName, universityLocation, calculate
       <div className="dorm-image-container">
         <img
           src={dorm.imageUrl && dorm.imageUrl.trim() !== '' ? dorm.imageUrl : DefaultDorm}
-          alt={dorm.name}
+          alt={`Photo of ${dorm.name} residence${universityName ? ` at ${universityName.split('-').map((w: string) => w.charAt(0).toUpperCase() + w.slice(1)).join(' ')}` : ''}`}
           className="dorm-main-image"
           loading="eager"
         />

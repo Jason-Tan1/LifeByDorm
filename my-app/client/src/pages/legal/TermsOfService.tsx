@@ -2,9 +2,16 @@ import { useTranslation } from 'react-i18next';
 import './legal.css';
 import NavBar from '../nav/navbar';
 import Footer from '../home/footer';
+import { useSEO } from '../../hooks/useSEO';
 
 function TermsOfService() {
   const { t } = useTranslation();
+
+  useSEO({
+    title: 'Terms of Service',
+    description: 'Read the Terms of Service for LifeByDorm. Learn about the rules and guidelines for using our dorm review platform.',
+    canonicalPath: '/terms'
+  });
 
   return (
     <div className="legal-page-wrapper">

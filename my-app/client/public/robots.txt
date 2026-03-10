@@ -1,5 +1,13 @@
 User-agent: *
 Allow: /
 
+# Prevent indexing of non-public pages
+Disallow: /admin/
+Disallow: /admin
+Disallow: /account
+Disallow: /review
+Disallow: /navbar
+Disallow: /searchbar
+
 # Sitemap
 Sitemap: https://www.lifebydorm.ca/sitemap.xml

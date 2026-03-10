@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import NavBar from '../nav/navbar.tsx';
 import Footer from '../home/footer.tsx';
@@ -10,6 +10,7 @@ import { useParams, useLocation, useNavigate } from 'react-router-dom';
 import LoginModal from '../nav/login';
 
 import PageLoader from '../../components/PageLoader';
+import { useSEO } from '../../hooks/useSEO';
 
 //Define types for Dorm data from API (IMPORTANT)
 type APIDorm = {
@@ -99,6 +100,55 @@ function Dorms() {
   const [reviewsLoading, setReviewsLoading] = useState(false);
   const [visibleCount, setVisibleCount] = useState(10);
   const reviewsPerLoad = 10;
+
+  // SEO: Dynamic title, description, canonical, and structured data for dorm page
+  const formatName = (slug: string) => slug?.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ') || '';
+  const dormDisplayName = dorm?.name || formatName(dormSlug || '');
+  const uniDisplayName = formatName(universityName || '');
+  const avgRating = reviews.length > 0
+    ? (reviews.reduce((sum: number, r: any) => sum + ([r.room, r.bathroom, r.building, r.amenities, r.location].reduce((a: number, b: number) => a + b, 0) / 5), 0) / reviews.length)
+    : 0;
+
+  const dormJsonLd = useMemo(() => {
+    if (!dorm) return undefined;
+    const schemas: Record<string, unknown>[] = [
+      {
+        '@context': 'https://schema.org',
+        '@type': 'Place',
+        name: dorm.name,
+        description: dorm.description || `Student residence at ${uniDisplayName}`,
+        ...(dorm.imageUrl ? { image: dorm.imageUrl } : {}),
+        ...(reviews.length > 0 ? {
+          aggregateRating: {
+            '@type': 'AggregateRating',
+            ratingValue: avgRating.toFixed(1),
+            bestRating: '5',
+            worstRating: '1',
+            ratingCount: reviews.length.toString()
+          }
+        } : {})
+      },
+      {
+        '@context': 'https://schema.org',
+        '@type': 'BreadcrumbList',
+        itemListElement: [
+          { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://www.lifebydorm.ca/' },
+          { '@type': 'ListItem', position: 2, name: `${uniDisplayName} Dorms`, item: `https://www.lifebydorm.ca/universities/${universityName}` },
+          { '@type': 'ListItem', position: 3, name: dorm.name, item: `https://www.lifebydorm.ca/universities/${universityName}/dorms/${dormSlug}` }
+        ]
+      }
+    ];
+    return schemas;
+  }, [dorm, reviews.length, avgRating, universityName, dormSlug, uniDisplayName]);
+
+  useSEO({
+    title: `${dormDisplayName} at ${uniDisplayName} — Reviews & Photos`,
+    description: reviews.length > 0
+      ? `${dormDisplayName} at ${uniDisplayName} has a ${avgRating.toFixed(1)}/5 rating from ${reviews.length} student reviews. See real photos and detailed ratings.`
+      : `Read student reviews and see real photos of ${dormDisplayName} at ${uniDisplayName}. Get insights before you move in.`,
+    canonicalPath: `/universities/${universityName}/dorms/${dormSlug}`,
+    jsonLd: dormJsonLd
+  });
 
   // Fetch reviews for this dorm
   useEffect(() => {
@@ -302,7 +352,7 @@ function Dorms() {
         </div>
       )}
 
-      <div className="dorm-content">
+      <main className="dorm-content">
         {/* Left side - Dorm Information */}
         <DormInfo
           dorm={dorm}
@@ -329,7 +379,7 @@ function Dorms() {
           handleLoadMore={handleLoadMore}
           handleVote={handleVote}
         />
-      </div>
+      </main>
 
       {/* Lightbox Modal */}
       {lightboxOpen && (
@@ -343,7 +393,7 @@ function Dorms() {
           <button className="lightbox-arrow lightbox-arrow-left" onClick={(e) => { e.stopPropagation(); prevImage(); }}>‹</button>
           <img
             src={currentImages[currentImageIndex]}
-            alt="Full size"
+            alt={`Full size photo of ${dormDisplayName}`}
             className="lightbox-image"
             onClick={(e) => e.stopPropagation()}
           />
