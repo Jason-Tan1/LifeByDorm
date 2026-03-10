@@ -3,7 +3,6 @@ import { useTranslation } from 'react-i18next';
 import NavBar from '../nav/navbar';
 import Footer from '../home/footer';
 import './allUniversities.css';
-import DefaultCampusImage from '../../assets/Default_Campus.webp';
 import { useUniversityData } from '../../context/UniversityDataContext';
 import PageLoader from '../../components/PageLoader';
 
@@ -15,20 +14,16 @@ function AllUniversities() {
   if (loading) return <PageLoader />;
 
   return (
-    <div className="all-universities-page">
+    <div className="all-universities-page legal-page-wrapper">
       <NavBar />
 
-      {/* Hero Section */}
-      <div className="uni-hero" style={{ backgroundImage: `url(${DefaultCampusImage})` }}>
-        <div className="uni-hero-overlay">
-          <h1>{t('universityList.title')}</h1>
+      <div className="legal-container contact-clean-container" style={{ maxWidth: '1200px' }}>
+        <h1 className="legal-page-title">{t('universityList.title')}</h1>
+        <div className="legal-section">
+          <h2>
+            {t('universityList.allUniversities')} ({universities.length})
+          </h2>
         </div>
-      </div>
-
-      <div className="all-universities-content">
-        <h2 style={{ marginBottom: '20px', fontSize: '1.5rem', paddingBottom: '10px' }}>
-          {t('universityList.allUniversities')} ({universities.length})
-        </h2>
         {error && <p>Error: {error}</p>}
         {!loading && !error && (
           <ul className="university-list">
@@ -43,6 +38,7 @@ function AllUniversities() {
           </ul>
         )}
       </div>
+
       <Footer />
     </div>
   );

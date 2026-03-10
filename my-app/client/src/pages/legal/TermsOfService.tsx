@@ -2,23 +2,16 @@ import { useTranslation } from 'react-i18next';
 import './legal.css';
 import NavBar from '../nav/navbar';
 import Footer from '../home/footer';
-import DefaultDormImage from '../../assets/Default_Dorm.webp';
 
 function TermsOfService() {
   const { t } = useTranslation();
 
   return (
-    <>
+    <div className="legal-page-wrapper">
       <NavBar />
 
-      {/* Hero Section */}
-      <div className="page-hero" style={{ backgroundImage: `url(${DefaultDormImage})` }}>
-        <div className="page-hero-overlay">
-          <h1>{t('legal.termsTitle')}</h1>
-        </div>
-      </div>
-
       <div className="legal-container">
+        <h1 className="legal-page-title">{t('legal.termsTitle')}</h1>
         <span className="legal-date">{t('legal.lastUpdatedTerms')}</span>
 
         <div className="legal-section">
@@ -88,7 +81,7 @@ function TermsOfService() {
         </div>
       </div>
       <Footer />
-    </>
+    </div>
   );
 }
 

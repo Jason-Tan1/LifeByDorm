@@ -2,23 +2,16 @@ import { useTranslation } from 'react-i18next';
 import './legal.css';
 import NavBar from '../nav/navbar';
 import Footer from '../home/footer';
-import DefaultDormImage from '../../assets/Default_Dorm.webp';
 
 function PrivacyPolicy() {
   const { t } = useTranslation();
 
   return (
-    <>
+    <div className="legal-page-wrapper">
       <NavBar />
 
-      {/* Hero Section */}
-      <div className="page-hero" style={{ backgroundImage: `url(${DefaultDormImage})` }}>
-        <div className="page-hero-overlay">
-          <h1>{t('legal.privacyTitle')}</h1>
-        </div>
-      </div>
-
       <div className="legal-container">
+        <h1 className="legal-page-title">{t('legal.privacyTitle')}</h1>
         <span className="legal-date">{t('legal.lastUpdatedPrivacy')}</span>
 
         <div className="legal-section">
@@ -91,7 +84,7 @@ function PrivacyPolicy() {
         </div>
       </div>
       <Footer />
-    </>
+    </div>
   );
 }
 

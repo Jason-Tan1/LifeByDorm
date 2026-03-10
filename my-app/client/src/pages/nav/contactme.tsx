@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import NavBar from './navbar.tsx';
 import Footer from '../home/footer.tsx';
 import './contactme.css';
-import DefaultDormImage from '../../assets/Default_Dorm.webp';
+import '../legal/legal.css';
 
 function ContactMe() {
   const { t } = useTranslation();
@@ -46,66 +46,57 @@ function ContactMe() {
   };
 
   return (
-    <div className="contact-page">
+    <div className="contact-page legal-page-wrapper">
       <NavBar />
 
-      {/* Hero Section */}
-      <div className="contact-hero" style={{ backgroundImage: `url(${DefaultDormImage})` }}>
-        <div className="contact-hero-overlay">
-          <h1>{t('contact.title')}</h1>
-        </div>
-      </div>
+      <div className="legal-container contact-clean-container">
+        <h1 className="legal-page-title">{t('contact.title')}</h1>
+        <p className="contact-subtitle">{t('contact.subtitle')}</p>
 
-      <div className="contact-content">
-        <div className="contact-container">
-          {/* h1 hidden by CSS but removed here effectively */}
-          <p className="contact-subtitle">{t('contact.subtitle')}</p>
+        <form className="contact-form" onSubmit={handleSubmit}>
+          <div className="form-group">
+            <label htmlFor="fullName">{t('contact.fullNameLabel')}</label>
+            <input
+              type="text"
+              id="fullName"
+              name="fullName"
+              value={formData.fullName}
+              onChange={handleChange}
+              placeholder={t('contact.fullNamePlaceholder')}
+              required
+            />
+          </div>
 
-          <form className="contact-form" onSubmit={handleSubmit}>
-            <div className="form-group">
-              <label htmlFor="fullName">{t('contact.fullNameLabel')}</label>
-              <input
-                type="text"
-                id="fullName"
-                name="fullName"
-                value={formData.fullName}
-                onChange={handleChange}
-                placeholder={t('contact.fullNamePlaceholder')}
-                required
-              />
-            </div>
+          <div className="form-group">
+            <label htmlFor="email">{t('contact.emailLabel')}</label>
+            <input
+              type="email"
+              id="email"
+              name="email"
+              value={formData.email}
+              onChange={handleChange}
+              placeholder={t('contact.emailPlaceholder')}
+              required
+            />
+          </div>
 
-            <div className="form-group">
-              <label htmlFor="email">{t('contact.emailLabel')}</label>
-              <input
-                type="email"
-                id="email"
-                name="email"
-                value={formData.email}
-                onChange={handleChange}
-                placeholder={t('contact.emailPlaceholder')}
-                required
-              />
-            </div>
+          <div className="form-group">
+            <label htmlFor="message">{t('contact.messageLabel')}</label>
+            <textarea
+              id="message"
+              name="message"
+              value={formData.message}
+              onChange={handleChange}
+              placeholder={t('contact.messagePlaceholder')}
+              rows={6}
+              required
+            />
+          </div>
 
-            <div className="form-group">
-              <label htmlFor="message">{t('contact.messageLabel')}</label>
-              <textarea
-                id="message"
-                name="message"
-                value={formData.message}
-                onChange={handleChange}
-                placeholder={t('contact.messagePlaceholder')}
-                rows={6}
-                required
-              />
-            </div>
-
-            <button type="submit" className="submit-button">
-              {t('contact.submitButton')}
-            </button>
-          </form>
-        </div>
+          <button type="submit" className="submit-button">
+            {t('contact.submitButton')}
+          </button>
+        </form>
       </div>
 
       <Footer />

@@ -1,6 +1,5 @@
 import NavBar from './navbar.tsx';
 import Footer from '../home/footer.tsx';
-import DefaultDormImage from '../../assets/Default_Dorm.webp';
 import { useTranslation } from 'react-i18next';
 import './aboutme.css';
 import '../legal/legal.css'; // Reusing the clean text formatting
@@ -9,17 +8,11 @@ function AboutMe() {
   const { t } = useTranslation();
 
   return (
-    <div className="about-page">
+    <div className="about-page legal-page-wrapper">
       <NavBar />
 
-      {/* Hero Section */}
-      <div className="about-hero" style={{ backgroundImage: `url(${DefaultDormImage})` }}>
-        <div className="about-hero-overlay">
-          <h1>{t('about.title')}</h1>
-        </div>
-      </div>
-
       <div className="legal-container">
+        <h1 className="legal-page-title">{t('about.title')}</h1>
 
         <div className="legal-section">
           <h2>{t('about.missionTitle')}</h2>
