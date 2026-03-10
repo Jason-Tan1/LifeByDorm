@@ -490,6 +490,15 @@
   transition: transform 0.2s;
 }
 
+/* Base overlay visibility */
+.mobile-overlay {
+  display: none !important;
+}
+
+.desktop-overlay {
+  display: flex !important;
+}
+
 .review-header {
   padding: 16px;
   display: flex;
@@ -1162,6 +1171,30 @@ h2 {
   .load-more-button {
     padding: 12px 24px;
     font-size: 0.95rem;
+  }
+
+  .review-images-gallery {
+    padding: 0 16px 16px;
+    justify-content: space-between;
+  }
+
+  .review-images-gallery .review-gallery-image-wrapper {
+    width: calc(50% - 6px);
+    /* Half width minus half the gap */
+    height: clamp(120px, 40vw, 160px);
+  }
+
+  .review-gallery-image-wrapper.img-idx-2 {
+    display: none !important;
+    /* Hide 3rd image on mobile */
+  }
+
+  .mobile-overlay {
+    display: flex !important;
+  }
+
+  .desktop-overlay {
+    display: none !important;
   }
 }
 

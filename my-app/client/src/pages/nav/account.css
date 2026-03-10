@@ -560,14 +560,31 @@
   }
 
   .review-images-gallery[style] {
-    flex-wrap: wrap !important;
+    flex-wrap: nowrap !important;
+    justify-content: space-between !important;
   }
 
   .review-gallery-image-wrapper[style] {
-    width: 100px !important;
-    height: 100px !important;
+    width: calc(50% - 6px) !important;
+    height: clamp(100px, 35vw, 150px) !important;
+  }
+
+  .review-gallery-image-wrapper.img-idx-2[style],
+  .review-gallery-image-wrapper.img-idx-2 {
+    display: none !important;
+  }
+
+  .review-image-overlay.mobile-overlay[style],
+  .review-image-overlay.mobile-overlay {
+    display: flex !important;
+  }
+
+  .review-image-overlay.desktop-overlay[style],
+  .review-image-overlay.desktop-overlay {
+    display: none !important;
   }
 }
+
 /* Lightbox Styles added for image gallery */
 .lightbox-overlay {
   position: fixed;

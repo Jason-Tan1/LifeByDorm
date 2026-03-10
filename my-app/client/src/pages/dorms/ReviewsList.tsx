@@ -106,12 +106,17 @@ function ReviewsList({
                     {review.images.slice(0, 3).map((img: string, idx: number) => (
                       <div
                         key={idx}
-                        className="review-gallery-image-wrapper"
+                        className={`review-gallery-image-wrapper img-idx-${idx}`}
                         onClick={() => openLightbox(review.images, idx)}
                       >
                         <img src={img} alt={`Dorm ${idx + 1}`} className="review-gallery-image" />
+                        {idx === 1 && review.images.length > 2 && (
+                          <div className="review-image-overlay mobile-overlay">
+                            +{review.images.length - 2} more
+                          </div>
+                        )}
                         {idx === 2 && review.images.length > 3 && (
-                          <div className="review-image-overlay">
+                          <div className="review-image-overlay desktop-overlay">
                             +{review.images.length - 3} more
                           </div>
                         )}
