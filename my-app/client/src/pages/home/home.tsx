@@ -11,6 +11,7 @@ import { SkeletonSlider } from '../../components/SkeletonCard';
 import DefaultCampus from '../../assets/Default_Campus.webp';
 import DefaultDorm from '../../assets/Default_Dorm.webp';
 import GiveawayBanner from './GiveawayBanner';
+import UniversityBanner from './UniversityBanner';
 import { useSEO } from '../../hooks/useSEO';
 
 // Use relative path '' on localhost to leverage the Vite proxy
@@ -221,6 +222,9 @@ function Home() {
           </div>
         </div>
       </div>
+      
+      {/* University Banner Section */}
+      <UniversityBanner />
 
       {/* Featured Section */}
       <main className="featured-section">
