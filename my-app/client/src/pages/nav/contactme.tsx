@@ -45,7 +45,7 @@ function ContactMe() {
       if (!response.ok) throw new Error('Failed to send message');
       alert(t('contact.successAlert'));
       setFormData({ fullName: '', email: '', message: '' });
-    } catch (err) {
+    } catch (_err) {
       alert(t('contact.errorAlert'));
     } finally {
       setSubmitting(false);

@@ -65,7 +65,7 @@ function ReviewsList({
   if (token) {
     try {
       currentUserId = JSON.parse(atob(token.split('.')[1])).userId;
-    } catch (e) { }
+    } catch (_e) { /* token decode failed */ }
   }
 
   return (

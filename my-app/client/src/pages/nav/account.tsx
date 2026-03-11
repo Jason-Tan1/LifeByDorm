@@ -63,7 +63,7 @@ function Account() {
       }
 
       setUserEmail(decoded?.name || decoded?.email || '');
-    } catch (err) {
+    } catch (_err) {
       localStorage.removeItem('token');
       navigate('/');
     }
