@@ -1,4 +1,4 @@
-import { useEffect, useState, useMemo } from 'react';
+import { useEffect, useState, useMemo, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link, useParams, useNavigate } from 'react-router-dom';
 import NavBar from '../nav/navbar';
@@ -51,10 +51,25 @@ function UniversityDash() {
   const [filteredDorms, setFilteredDorms] = useState<APIDorm[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [filterOption, setFilterOption] = useState('most-reviewed');
+  const [isFilterDropdownOpen, setIsFilterDropdownOpen] = useState(false);
+  const filterRef = useRef<HTMLDivElement>(null);
   const [reviewCounts, setReviewCounts] = useState<{ [dormName: string]: number }>({});
   const [dormRatings, setDormRatings] = useState<{ [dormName: string]: number }>({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (filterRef.current && !filterRef.current.contains(event.target as Node)) {
+        setIsFilterDropdownOpen(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [filterRef]);
 
   // SEO: Dynamic title, description, canonical, and structured data
   const formatName = (slug: string) => slug?.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ') || '';
@@ -314,21 +329,32 @@ function UniversityDash() {
               </div>
             </div>
 
-            <div className="filter-section">
-              <label htmlFor="filter-select">{t('universityDash.filterLabel')}</label>
-              <select
-                id="filter-select"
-                className="filter-select"
-                value={filterOption}
-                onChange={(e) => setFilterOption(e.target.value)}
-              >
-                <option value="most-reviewed">{t('universityDash.filterMostReviewed')}</option>
-                <option value="least-reviewed">{t('universityDash.filterLeastReviewed')}</option>
-                <option value="highest-rated">{t('universityDash.filterHighestRated')}</option>
-                <option value="lowest-rated">{t('universityDash.filterLowestRated')}</option>
-                <option value="a-z">{t('universityDash.filterAZ')}</option>
-                <option value="z-a">{t('universityDash.filterZA')}</option>
-              </select>
+            <div className="filter-section" ref={filterRef}>
+              <label>{t('universityDash.filterLabel')}</label>
+              <div className="custom-filter-dropdown">
+                <button
+                  id="filter-select"
+                  className="filter-button"
+                  onClick={() => setIsFilterDropdownOpen(!isFilterDropdownOpen)}
+                >
+                  {filterOption === 'most-reviewed' && t('universityDash.filterMostReviewed')}
+                  {filterOption === 'least-reviewed' && t('universityDash.filterLeastReviewed')}
+                  {filterOption === 'highest-rated' && t('universityDash.filterHighestRated')}
+                  {filterOption === 'lowest-rated' && t('universityDash.filterLowestRated')}
+                  {filterOption === 'a-z' && t('universityDash.filterAZ')}
+                  {filterOption === 'z-a' && t('universityDash.filterZA')}
+                </button>
+                {isFilterDropdownOpen && (
+                  <div className="filter-dropdown-menu">
+                    <button onClick={() => { setFilterOption('most-reviewed'); setIsFilterDropdownOpen(false); }}>{t('universityDash.filterMostReviewed')}</button>
+                    <button onClick={() => { setFilterOption('least-reviewed'); setIsFilterDropdownOpen(false); }}>{t('universityDash.filterLeastReviewed')}</button>
+                    <button onClick={() => { setFilterOption('highest-rated'); setIsFilterDropdownOpen(false); }}>{t('universityDash.filterHighestRated')}</button>
+                    <button onClick={() => { setFilterOption('lowest-rated'); setIsFilterDropdownOpen(false); }}>{t('universityDash.filterLowestRated')}</button>
+                    <button onClick={() => { setFilterOption('a-z'); setIsFilterDropdownOpen(false); }}>{t('universityDash.filterAZ')}</button>
+                    <button onClick={() => { setFilterOption('z-a'); setIsFilterDropdownOpen(false); }}>{t('universityDash.filterZA')}</button>
+                  </div>
+                )}
+              </div>
             </div>
           </div>
 
