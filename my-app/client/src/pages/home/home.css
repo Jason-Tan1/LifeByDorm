@@ -139,43 +139,52 @@ textarea {
 }
 
 .featured-container {
+  width: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+.featured-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   max-width: 1600px;
-  margin: 0 auto;
+  margin: 0 auto 20px;
   padding: 0 4%;
 }
 
 @media (min-width: 1600px) {
-  .featured-container {
+  .featured-header {
     max-width: 1700px;
     padding: 0 5%;
   }
 }
 
 @media (min-width: 1920px) {
-  .featured-container {
+  .featured-header {
     max-width: 1900px;
     padding: 0 6%;
   }
 }
 
 .featured-title {
-  font-size: 2.3rem;
+  font-size: 1.8rem; /* Reduced from 2.3rem */
   font-weight: 800;
-  text-align: center;
+  text-align: left;
   color: #333333;
-  margin-bottom: 15px;
+  margin-bottom: 0;
   border-bottom: none;
 }
 
 @media (min-width: 1600px) {
   .featured-title {
-    font-size: 2.5rem;
+    font-size: 2.0rem; /* Reduced from 2.5rem */
   }
 }
 
 @media (min-width: 1920px) {
   .featured-title {
-    font-size: 2.7rem;
+    font-size: 2.2rem; /* Reduced from 2.7rem */
   }
 }
 
@@ -185,7 +194,7 @@ textarea {
   }
 
   .featured-title {
-    font-size: 1.8rem;
+    font-size: 1.5rem; /* Reduced from 1.8rem */
   }
 
   .featured-subtitle {
@@ -199,7 +208,7 @@ textarea {
   }
 
   .featured-title {
-    font-size: 1.5rem;
+    font-size: 1.3rem; /* Reduced from 1.5rem */
   }
 }
 
@@ -211,12 +220,15 @@ textarea {
   border-bottom: none;
 }
 
+.slider-controls {
+  display: flex;
+  gap: 12px;
+}
+
 /* Slider Container */
 .slider-container {
   position: relative;
-  display: flex;
-  align-items: center;
-  gap: 20px;
+  width: 100%;
 }
 
 .slider-wrapper {
@@ -228,7 +240,8 @@ textarea {
   /* Firefox */
   -ms-overflow-style: none;
   /* IE and Edge */
-  padding: 10px 0;
+  padding: 10px 4%;
+  scroll-padding-left: 4%;
 }
 
 .slider-wrapper::-webkit-scrollbar {
@@ -243,12 +256,8 @@ textarea {
 }
 
 @media (max-width: 600px) {
-  .slider-card {
-    flex: 0 0 100%;
-    min-width: 100%;
-  }
-
   .slider-wrapper {
+    /* Kept mandatory scroll snapping, removed the rule that expanded cards to 100% width! */
     scroll-snap-type: x mandatory;
   }
 }
@@ -289,15 +298,14 @@ textarea {
 }
 
 .slider-button:hover:not(:disabled) {
-  background-color: #ffffff;
-  color: #D62828;
-  border-color: #D62828;
-  transform: translateY(-2px);
-  box-shadow: 0 8px 16px rgba(214, 40, 40, 0.15);
+  background-color: #fcfcfc;
+  color: #1a1a1a;
+  border-color: rgba(0, 0, 0, 0.15);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
 }
 
 .slider-button:active:not(:disabled) {
-  transform: translateY(0);
+  background-color: #f0f0f0;
 }
 
 .slider-button:disabled {
@@ -322,12 +330,16 @@ textarea {
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   }
 
+  .featured-header {
+    gap: 15px; /* Ensures the title and the buttons don't crash into each other when the screen shrinks */
+  }
+
   .slider-button-left {
-    margin-right: -10px;
+    margin-right: 0px; /* Removed negative margins that squished them together */
   }
 
   .slider-button-right {
-    margin-left: -10px;
+    margin-left: 0px; /* Removed negative margins that squished them together */
   }
 
   .slider-container {

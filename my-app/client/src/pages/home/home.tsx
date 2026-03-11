@@ -222,7 +222,7 @@ function Home() {
           </div>
         </div>
       </div>
-      
+
       {/* University Banner Section */}
       <UniversityBanner />
 
@@ -230,17 +230,26 @@ function Home() {
       <main className="featured-section">
         {/* Featured Universities Section */}
         <div className="featured-container">
-          <h2 className="featured-title">{t('home.mostRatedUniversities')}</h2>
-          <p className="featured-subtitle">{t('home.mostRatedUniversitiesSubtitle')}</p>
+          <div className="featured-header">
+            <h2 className="featured-title">{t('home.mostRatedUniversities')}</h2>
+            <div className="slider-controls">
+              <button
+                className="slider-button slider-button-left"
+                onClick={() => scrollUniversities('left')}
+                disabled={universityScrollPosition === 0}
+              >
+                ‹
+              </button>
+              <button
+                className="slider-button slider-button-right"
+                onClick={() => scrollUniversities('right')}
+              >
+                ›
+              </button>
+            </div>
+          </div>
 
           <div className="slider-container">
-            <button
-              className="slider-button slider-button-left"
-              onClick={() => scrollUniversities('left')}
-              disabled={universityScrollPosition === 0}
-            >
-              ‹
-            </button>
             <div className="slider-wrapper" id="university-slider">
               {isLoading ? (
                 <SkeletonSlider count={4} />
@@ -265,28 +274,31 @@ function Home() {
                 ))
               )}
             </div>
-            <button
-              className="slider-button slider-button-right"
-              onClick={() => scrollUniversities('right')}
-            >
-              ›
-            </button>
           </div>
         </div>
 
         {/* Most Rated Dorms Section */}
         <div className="featured-container" style={{ marginTop: '40px' }}>
-          <h2 className="featured-title">{t('home.mostRatedDorms')}</h2>
-          <p className="featured-subtitle">{t('home.mostRatedDormsSubtitle')}</p>
+          <div className="featured-header">
+            <h2 className="featured-title">{t('home.mostRatedDorms')}</h2>
+            <div className="slider-controls">
+              <button
+                className="slider-button slider-button-left"
+                onClick={() => scrollMostRatedDorms('left')}
+                disabled={mostRatedDormsScrollPosition === 0}
+              >
+                ‹
+              </button>
+              <button
+                className="slider-button slider-button-right"
+                onClick={() => scrollMostRatedDorms('right')}
+              >
+                ›
+              </button>
+            </div>
+          </div>
 
           <div className="slider-container">
-            <button
-              className="slider-button slider-button-left"
-              onClick={() => scrollMostRatedDorms('left')}
-              disabled={mostRatedDormsScrollPosition === 0}
-            >
-              ‹
-            </button>
             <div className="slider-wrapper" id="most-rated-dorms-slider">
               {isLoading ? (
                 <SkeletonSlider count={4} />
@@ -311,29 +323,32 @@ function Home() {
                 ))
               )}
             </div>
-            <button
-              className="slider-button slider-button-right"
-              onClick={() => scrollMostRatedDorms('right')}
-            >
-              ›
-            </button>
           </div>
         </div>
 
 
         {/* Top Rated Dorms Section */}
         <div className="featured-container" style={{ marginTop: '40px' }}>
-          <h2 className="featured-title">{t('home.topRatedDorms')}</h2>
-          <p className="featured-subtitle">{t('home.topRatedDormsSubtitle')}</p>
+          <div className="featured-header">
+            <h2 className="featured-title">{t('home.topRatedDorms')}</h2>
+            <div className="slider-controls">
+              <button
+                className="slider-button slider-button-left"
+                onClick={() => scrollDorms('left')}
+                disabled={dormScrollPosition === 0}
+              >
+                ‹
+              </button>
+              <button
+                className="slider-button slider-button-right"
+                onClick={() => scrollDorms('right')}
+              >
+                ›
+              </button>
+            </div>
+          </div>
 
           <div className="slider-container">
-            <button
-              className="slider-button slider-button-left"
-              onClick={() => scrollDorms('left')}
-              disabled={dormScrollPosition === 0}
-            >
-              ‹
-            </button>
             <div className="slider-wrapper" id="dorm-slider">
               {isLoading ? (
                 <SkeletonSlider count={4} />
@@ -358,12 +373,6 @@ function Home() {
                 ))
               )}
             </div>
-            <button
-              className="slider-button slider-button-right"
-              onClick={() => scrollDorms('right')}
-            >
-              ›
-            </button>
           </div>
         </div>
 
