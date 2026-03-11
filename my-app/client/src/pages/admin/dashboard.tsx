@@ -80,7 +80,7 @@ function AdminDashboard() {
       try {
         const payload = JSON.parse(atob(token.split('.')[1]));
         isAdmin = payload?.role === 'admin';
-      } catch (err) {
+      } catch (_err) {
         isAdmin = false;
       }
     }

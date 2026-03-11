@@ -8,7 +8,7 @@ import './navbar.css'
 
 import LBDLogo from '../../assets/LBDLogo.webp';
 
-function navbar() {
+function Navbar() {
   const { t, i18n } = useTranslation();
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
@@ -62,7 +62,7 @@ function navbar() {
           }, msUntilExpiry);
           return () => clearTimeout(logoutTimer);
         }
-      } catch (err) {
+      } catch (_err) {
         setIsLoggedIn(false);
         setIsAdmin(false);
       }
@@ -128,4 +128,4 @@ function navbar() {
   )
 }
 
-export default navbar
+export default Navbar

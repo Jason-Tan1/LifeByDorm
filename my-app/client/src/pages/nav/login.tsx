@@ -21,7 +21,7 @@ interface LoginModalProps {
   onClose: () => void;
 }
 
-function login({ isOpen, onClose }: LoginModalProps) {
+function Login({ isOpen, onClose }: LoginModalProps) {
   const { t } = useTranslation();
   const [email, setEmail] = useState<string>("");
   const [verificationCode, setVerificationCode] = useState<string>("");
@@ -268,4 +268,4 @@ function login({ isOpen, onClose }: LoginModalProps) {
   )
 }
 
-export default login
+export default Login
