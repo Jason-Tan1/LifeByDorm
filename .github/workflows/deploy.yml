@@ -84,7 +84,7 @@ jobs:
 
       - name: Install Serverless Framework
         if: steps.check.outputs.has_aws == 'true'
-        run: npm install -g serverless
+        run: npm install -g serverless@3
 
       - name: Deploy
         if: steps.check.outputs.has_aws == 'true'
