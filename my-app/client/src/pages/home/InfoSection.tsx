@@ -10,8 +10,8 @@ const InfoSection: React.FC = () => {
           <h2 className="info-title">We're LifeByDorm</h2>
           <p className="info-description">
             We're a dorm review platform built by students, for students. Our vision is to become
-            the universal hub for Canadian campus living by empowering students to share real experiences,
-            see authentic photos, and choose their perfect home with confidence.
+            the universal hub for Canadian university living by empowering students to share real experiences,
+            share authentic photos, and choose their perfect home with confidence.
           </p>
         </div>
 
