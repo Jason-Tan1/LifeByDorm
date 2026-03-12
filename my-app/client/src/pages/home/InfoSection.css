@@ -1,0 +1,201 @@
+.info-section-container {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  margin: 60px 0;
+  padding: 0 20px;
+}
+
+.info-section-content {
+  width: 100%;
+  max-width: 1200px;
+  background-color: #ffe5e5; /* Light red/pink background */
+  border-radius: 20px;
+  display: flex;
+  align-items: stretch;
+  overflow: hidden;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+}
+
+.info-left {
+  flex: 1;
+  padding: 60px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.info-title {
+  font-size: 2.5rem;
+  font-weight: 800;
+  color: #1a1a1a;
+  margin-bottom: 20px;
+  font-family: 'Inter', sans-serif;
+}
+
+.info-description {
+  font-size: 1.15rem;
+  color: #333;
+  line-height: 1.6;
+  margin-bottom: 30px;
+  max-width: 90%;
+}
+
+.info-primary-btn {
+  align-self: flex-start;
+  background-color: #1a1a1a;
+  color: #fff;
+  border: none;
+  padding: 12px 30px;
+  border-radius: 50px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s, transform 0.2s;
+}
+
+.info-primary-btn:hover {
+  background-color: #333;
+  transform: translateY(-2px);
+}
+
+/* Right Card */
+.info-right-card {
+  flex: 1;
+  background-color: #8b0000; /* Deep dark red to fit LifeByDorm theme */
+  border-radius: 20px;
+  margin: 30px;
+  padding: 40px;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  overflow: hidden;
+  color: white;
+}
+
+
+/* Custom LifeByDorm Graphic: Floating Dorm Review Card */
+.info-card-graphic {
+  position: relative;
+  margin: 0 auto;
+  width: 400px;
+  height: 350px;
+  z-index: 1;
+  perspective: 1000px;
+}
+
+.graphic-dorm-card {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) rotate(-5deg);
+  width: 280px;
+  background-color: white;
+  border-radius: 16px;
+  padding: 15px;
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(255, 255, 255, 0.1);
+  z-index: 2;
+  transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.info-card-graphic:hover .graphic-dorm-card {
+  transform: translate(-50%, -50%) rotate(0deg) scale(1.05);
+}
+
+.graphic-dorm-image {
+  width: 100%;
+  height: 160px;
+  background-color: #f0f0f0;
+  background-size: cover;
+  background-position: center;
+  border-radius: 10px;
+  margin-bottom: 15px;
+}
+
+.graphic-dorm-details {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.graphic-dorm-title {
+  font-family: 'Inter', sans-serif;
+  font-size: 1.1rem;
+  font-weight: 800;
+  color: #1a1a1a;
+}
+
+.graphic-dorm-stars {
+  color: #ffb400;
+  font-size: 1.2rem;
+  letter-spacing: 3px;
+}
+
+/* Abstract Accents */
+.graphic-accent-pill {
+  position: absolute;
+  background-color: rgba(255, 255, 255, 0.15);
+  border-radius: 50px;
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.graphic-accent-1 {
+  width: 100px;
+  height: 40px;
+  top: 50px;
+  left: 20px;
+  transform: rotate(15deg);
+  z-index: 1;
+}
+
+.graphic-accent-2 {
+  width: 150px;
+  height: 30px;
+  bottom: 40px;
+  right: 10px;
+  transform: rotate(-10deg);
+  z-index: 3;
+}
+
+/* Responsive adjustments */
+@media (max-width: 968px) {
+  .info-section-content {
+    flex-direction: column;
+  }
+  
+  .info-left {
+    padding: 40px 30px;
+  }
+  
+  .info-right-card {
+    margin: 0 30px 30px 30px;
+    padding: 30px;
+  }
+  
+  .info-card-graphic {
+    position: relative;
+    right: 0;
+    top: 0;
+    transform: none;
+    height: 180px;
+    width: 100%;
+    margin-top: 0;
+  }
+
+  .graphic-dorm-card {
+    transform: translate(-50%, -50%) rotate(0deg) scale(0.85);
+  }
+
+  .graphic-accent-1 {
+    top: 20px;
+    left: 20px;
+  }
+
+  .graphic-accent-2 {
+    bottom: 20px;
+    right: 20px;
+  }
+}

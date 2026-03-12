@@ -12,6 +12,7 @@ import DefaultCampus from '../../assets/Default_Campus.webp';
 import DefaultDorm from '../../assets/Default_Dorm.webp';
 import GiveawayBanner from './GiveawayBanner';
 import UniversityBanner from './UniversityBanner';
+import InfoSection from './InfoSection';
 import { useSEO } from '../../hooks/useSEO';
 
 // Use relative path '' on localhost to leverage the Vite proxy
@@ -375,7 +376,8 @@ function Home() {
             </div>
           </div>
         </div>
-
+        {/* LifeByDorm Info Section Banner */}
+        <InfoSection />
       </main>
 
       <Footer />
