@@ -98,8 +98,8 @@ jobs:
           AWS_BUCKET_NAME: ${{ secrets.AWS_BUCKET_NAME }}
           EMAIL_USER: ${{ secrets.EMAIL_USER }}
           EMAIL_PASS: ${{ secrets.EMAIL_PASS }}
-          ADMIN_EMAILS: ${{ secrets.ADMIN_EMAILS }}
-          FRONTEND_URL: ${{ secrets.FRONTEND_URL }}
+          ADMIN_EMAILS: ${{ vars.ADMIN_EMAILS }}
+          FRONTEND_URL: ${{ vars.FRONTEND_URL }}
 
   deploy-docker:
     name: Build & Push Docker Image
