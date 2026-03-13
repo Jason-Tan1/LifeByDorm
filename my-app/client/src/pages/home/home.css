@@ -37,6 +37,7 @@ textarea {
   width: 100%;
   display: flex;
   flex-direction: column;
+  overflow-x: clip;
 }
 
 /* Background image section - only for the hero area */
@@ -152,6 +153,7 @@ textarea {
   max-width: 1600px;
   margin: 0 auto 20px;
   padding: 0 4%;
+  min-width: 0;
 }
 
 @media (min-width: 1600px) {
@@ -176,6 +178,8 @@ textarea {
   color: #333333;
   margin-bottom: 0;
   border-bottom: none;
+  min-width: 0;
+  overflow-wrap: anywhere;
 }
 
 @media (min-width: 1600px) {
@@ -250,6 +254,7 @@ textarea {
   /* IE and Edge */
   padding: 10px 4%;
   scroll-padding-left: 4%;
+  overscroll-behavior-x: contain;
 }
 
 .slider-wrapper::-webkit-scrollbar {
@@ -331,6 +336,20 @@ textarea {
 }
 
 @media (max-width: 768px) {
+  .home > .home-container {
+    min-height: 560px;
+    height: auto;
+    padding: 0 5%;
+  }
+
+  .home-container {
+    padding-top: 15vh;
+  }
+
+  .home-section {
+    margin-bottom: 12vh;
+  }
+
   .slider-button {
     width: 40px;
     height: 40px;
@@ -341,6 +360,7 @@ textarea {
   .featured-header {
     gap: 15px;
     /* Ensures the title and the buttons don't crash into each other when the screen shrinks */
+    align-items: center;
   }
 
   .slider-button-left {
@@ -355,6 +375,60 @@ textarea {
 
   .slider-container {
     gap: 15px;
+  }
+
+  .slider-wrapper {
+    gap: 16px;
+    padding: 10px 5%;
+    scroll-padding-left: 5%;
+  }
+
+  .slider-card {
+    flex: 0 0 min(74vw, 260px);
+    min-width: min(74vw, 260px);
+  }
+}
+
+@media (max-width: 900px) {
+  .featured-header {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+    column-gap: 10px;
+  }
+
+  .featured-title {
+    margin: 0;
+  }
+}
+
+@media (max-width: 600px) {
+  .featured-header {
+    margin-bottom: 14px;
+    padding: 0 4%;
+  }
+
+  .slider-controls {
+    gap: 8px;
+    justify-self: end;
+  }
+
+  .slider-button {
+    width: 34px;
+    height: 34px;
+    font-size: 1rem;
+    padding-bottom: 1px;
+  }
+
+  .slider-wrapper {
+    gap: 12px;
+    padding: 8px 4%;
+    scroll-padding-left: 4%;
+  }
+
+  .slider-card {
+    flex: 0 0 min(82vw, 260px);
+    min-width: min(82vw, 260px);
   }
 }
 
