@@ -159,6 +159,73 @@ function Navbar() {
     </div>
   );
 
+  const renderMobileMenuContent = () => (
+    <>
+      <div className="mobile_menu_section">
+        <p className="mobile_menu_label">Language</p>
+        <button
+          className={`mobile_menu_item ${i18n.language === 'en' ? 'active' : ''}`}
+          onClick={() => changeLanguage('en')}
+        >
+          English
+        </button>
+        <button
+          className={`mobile_menu_item ${i18n.language === 'fr' ? 'active' : ''}`}
+          onClick={() => changeLanguage('fr')}
+        >
+          French
+        </button>
+      </div>
+
+      <div className="mobile_menu_section">
+        <p className="mobile_menu_label">Account</p>
+        {isLoggedIn ? (
+          <>
+            {isAdmin && (
+              <button
+                className="mobile_menu_item"
+                onClick={() => {
+                  navigate('/admin/dashboard');
+                  closeAllMenus();
+                }}
+              >
+                {t('navbar.dashboard')}
+              </button>
+            )}
+            <button
+              className="mobile_menu_item"
+              onClick={() => {
+                navigate('/account');
+                closeAllMenus();
+              }}
+            >
+              {t('navbar.myAccount')}
+            </button>
+            <button
+              className="mobile_menu_item"
+              onClick={() => {
+                handleLogout();
+                closeAllMenus();
+              }}
+            >
+              {t('navbar.logOut')}
+            </button>
+          </>
+        ) : (
+          <button
+            className="mobile_menu_item mobile_sign_in"
+            onClick={() => {
+              setIsLoginModalOpen(true);
+              closeAllMenus();
+            }}
+          >
+            {t('navbar.signIn')}
+          </button>
+        )}
+      </div>
+    </>
+  );
+
   return (
     <div className="navbar">
       {/* Navigation Bar Logo */}
@@ -187,8 +254,7 @@ function Navbar() {
 
       {/* Mobile Navigation Buttons */}
       <div className={`navbar_actions_mobile ${isMobileMenuOpen ? 'open' : ''}`}>
-        {renderLanguageSwitcher()}
-        {renderAuthActions()}
+        {renderMobileMenuContent()}
       </div>
       <LoginModal isOpen={isLoginModalOpen} onClose={() => setIsLoginModalOpen(false)} />
     </div>

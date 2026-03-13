@@ -86,6 +86,57 @@ body {
   display: none;
 }
 
+.mobile_menu_section {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.mobile_menu_section + .mobile_menu_section {
+  border-top: 1px solid #f3f4f6;
+  padding-top: 8px;
+  margin-top: 2px;
+}
+
+.mobile_menu_label {
+  margin: 0;
+  font-size: 0.7rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #6b7280;
+  padding: 4px 8px;
+}
+
+.navbar_actions_mobile .mobile_menu_item {
+  width: 100%;
+  background: #ffffff;
+  color: #374151;
+  text-align: left;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  padding: 8px 10px;
+  font-weight: 600;
+}
+
+.navbar_actions_mobile .mobile_menu_item:hover {
+  background: #f9fafb;
+}
+
+.navbar_actions_mobile .mobile_menu_item.active {
+  border-color: #fee2e2;
+  background: #fff1f2;
+  color: #b91c1c;
+}
+
+.navbar_actions_mobile .mobile_sign_in {
+  background: #d62828;
+  color: #ffffff;
+}
+
+.navbar_actions_mobile .mobile_sign_in:hover {
+  background: #b91c1c;
+}
+
 .navbar_text_btn {
   background: transparent !important;
   border: none !important;
@@ -255,21 +306,6 @@ body {
   .navbar_actions_mobile .language-dropdown {
     margin-right: 0;
     width: 100%;
-  }
-
-  .navbar_actions_mobile .navbar_login,
-  .navbar_actions_mobile .navbar_account_dropdown,
-  .navbar_actions_mobile .account_btn,
-  .navbar_actions_mobile .navbar_login button {
-    width: 100%;
-  }
-
-  .navbar_actions_mobile .account_dropdown_content {
-    position: static;
-    margin-top: 6px;
-    min-width: 0;
-    box-shadow: none;
-    border: 1px solid #f0f0f0;
   }
 }
 
