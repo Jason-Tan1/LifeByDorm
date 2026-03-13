@@ -5,3 +5,7 @@
 !.env.example
 !.env.production.example
 node_modules/
+.vercel
+.env*.local
+
+admins.json

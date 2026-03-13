@@ -15,6 +15,7 @@ function Navbar() {
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isLangDropdownOpen, setIsLangDropdownOpen] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
 
@@ -78,6 +79,86 @@ function Navbar() {
     setIsAdmin(false);
     navigate('/');
   };
+
+  const closeAllMenus = () => {
+    setIsDropdownOpen(false);
+    setIsLangDropdownOpen(false);
+    setIsMobileMenuOpen(false);
+  };
+
+  const renderLanguageSwitcher = () => (
+    <div className="navbar_account_dropdown language-dropdown">
+      <button
+        className="account_btn"
+        onClick={() => {
+          setIsLangDropdownOpen(!isLangDropdownOpen);
+          setIsDropdownOpen(false);
+        }}
+        style={{ display: 'flex', alignItems: 'center', gap: '4px', fontWeight: 700 }}
+      >
+        <LanguageIcon style={{ fontSize: '1.2rem', color: '#333' }} />
+        <span style={{ color: '#ccc', margin: '0 2px' }}>|</span>
+        {i18n.language === 'en' ? 'ENG' : 'FR'}
+      </button>
+      {isLangDropdownOpen && (
+        <div className="account_dropdown_content" style={{ display: 'block' }}>
+          <button onClick={() => changeLanguage('en')}>English</button>
+          <button onClick={() => changeLanguage('fr')}>French</button>
+        </div>
+      )}
+    </div>
+  );
+
+  const renderAuthActions = () => (
+    <div className="navbar_login">
+      {isLoggedIn ? (
+        <div className="navbar_account_dropdown">
+          <button
+            className="account_btn icon_btn"
+            onClick={() => {
+              setIsDropdownOpen(!isDropdownOpen);
+              setIsLangDropdownOpen(false);
+            }}
+          >
+            <MenuIcon />
+          </button>
+          {isDropdownOpen && (
+            <div className="account_dropdown_content" style={{ display: 'block' }}>
+              {isAdmin && (
+                <button
+                  onClick={() => {
+                    navigate('/admin/dashboard');
+                    closeAllMenus();
+                  }}
+                >
+                  {t('navbar.dashboard')}
+                </button>
+              )}
+              <button
+                onClick={() => {
+                  navigate('/account');
+                  closeAllMenus();
+                }}
+              >
+                {t('navbar.myAccount')}
+              </button>
+              <button onClick={() => { handleLogout(); closeAllMenus(); }}>{t('navbar.logOut')}</button>
+            </div>
+          )}
+        </div>
+      ) : (
+        <button
+          onClick={() => {
+            setIsLoginModalOpen(true);
+            setIsMobileMenuOpen(false);
+          }}
+        >
+          {t('navbar.signIn')}
+        </button>
+      )}
+    </div>
+  );
+
   return (
     <div className="navbar">
       {/* Navigation Bar Logo */}
@@ -86,42 +167,28 @@ function Navbar() {
           <img src={LBDLogo} alt="LifeByDorm Logo" />
         </Link>
       </div>
-      {/* Navigation Bar Buttons */}
-      <div className="navbar_actions">
-        {/* Language Switcher */}
-        <div className="navbar_account_dropdown" style={{ marginRight: '10px' }}>
-          <button className="account_btn" onClick={() => { setIsLangDropdownOpen(!isLangDropdownOpen); setIsDropdownOpen(false); }} style={{ display: 'flex', alignItems: 'center', gap: '4px', fontWeight: 700 }}>
-            <LanguageIcon style={{ fontSize: '1.2rem', color: '#333' }} />
-            <span style={{ color: '#ccc', margin: '0 2px' }}>|</span>
-            {i18n.language === 'en' ? 'ENG' : 'FR'}
-          </button>
-          {isLangDropdownOpen && (
-            <div className="account_dropdown_content" style={{ display: 'block' }}>
-              <button onClick={() => changeLanguage('en')}>English</button>
-              <button onClick={() => changeLanguage('fr')}>French</button>
-            </div>
-          )}
-        </div>
-        <div className="navbar_login">
-          {isLoggedIn ? (
-            <div className="navbar_account_dropdown">
-              <button className="account_btn icon_btn" onClick={() => { setIsDropdownOpen(!isDropdownOpen); setIsLangDropdownOpen(false); }}>
-                <MenuIcon />
-              </button>
-              {isDropdownOpen && (
-                <div className="account_dropdown_content" style={{ display: 'block' }}>
-                  {isAdmin && (
-                    <button onClick={() => { navigate('/admin/dashboard'); setIsDropdownOpen(false); }}>{t('navbar.dashboard')}</button>
-                  )}
-                  <button onClick={() => { navigate('/account'); setIsDropdownOpen(false); }}>{t('navbar.myAccount')}</button>
-                  <button onClick={handleLogout}>{t('navbar.logOut')}</button>
-                </div>
-              )}
-            </div>
-          ) : (
-            <button onClick={() => setIsLoginModalOpen(true)}>{t('navbar.signIn')}</button>
-          )}
-        </div>
+      <button
+        className="mobile_menu_toggle"
+        aria-label="Open menu"
+        onClick={() => {
+          setIsMobileMenuOpen(!isMobileMenuOpen);
+          setIsDropdownOpen(false);
+          setIsLangDropdownOpen(false);
+        }}
+      >
+        <MenuIcon />
+      </button>
+
+      {/* Desktop Navigation Buttons */}
+      <div className="navbar_actions navbar_actions_desktop">
+        {renderLanguageSwitcher()}
+        {renderAuthActions()}
+      </div>
+
+      {/* Mobile Navigation Buttons */}
+      <div className={`navbar_actions_mobile ${isMobileMenuOpen ? 'open' : ''}`}>
+        {renderLanguageSwitcher()}
+        {renderAuthActions()}
       </div>
       <LoginModal isOpen={isLoginModalOpen} onClose={() => setIsLoginModalOpen(false)} />
     </div>

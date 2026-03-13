@@ -10,10 +10,10 @@ const universities = [
   { name: 'McGill University', url: 'https://www.uniscope.ca/_next/image?url=%2Flogos%2Fmcgill-logo.png&w=256&q=75', isHorizontal: false },
   { name: 'University of British Columbia', url: 'https://ires.ubc.ca/files/2019/10/ubc-logo.png', isHorizontal: false },
   { name: 'University of Waterloo', url: 'https://upload.wikimedia.org/wikipedia/en/thumb/6/6e/University_of_Waterloo_seal.svg/1200px-University_of_Waterloo_seal.svg.png', isHorizontal: false },
-  { name: 'McMaster University', url: 'https://uniscope.ca/logos/mcmaster-logo.png', isHorizontal: true },
+  { name: 'University ofhttps://www.frog3d.com/wp-content/uploads/2022/11/york-university.png', url: 'https://www.ipsa.org/sites/default/files/news-announcements/joboffer/logo-186377.png', isHorizontal: true },
   { name: 'Western University', url: 'https://uniscope.ca/logos/western-logo2.png', isHorizontal: true },
   { name: "Queen's University", url: 'https://www.uniscope.ca/_next/image?url=%2Flogos%2Fqueens-logo.png&w=256&q=75', isHorizontal: true },
-  { name: "York University", url: "https://iconlogovector.com/uploads/images/2025/09/sm-68b4e52edd034-York-University.webp", isHorizontal: true },
+  { name: "York University", url: "https://www.frog3d.com/wp-content/uploads/2022/11/york-university.png", isHorizontal: true },
   { name: "Wilfrid Laurier University", url: "https://www.uniscope.ca/_next/image?url=%2Flogos%2Flaurier-logo.png&w=256&q=75", isHorizontal: false },
   { name: "University of Guelph", url: "https://www.uniscope.ca/_next/image?url=%2Flogos%2Fguelph-crest.webp&w=256&q=75", isHorizontal: false }
 ];

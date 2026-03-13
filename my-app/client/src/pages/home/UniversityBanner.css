@@ -37,12 +37,21 @@
   filter: grayscale(0%);
 }
 
-.university-logo.logo-standard,
+.university-logo.logo-standard {
+  max-height: 80px;
+  min-height: 60px;
+  max-width: 140px;
+  min-width: 70px;
+  width: auto;
+  object-fit: contain;
+  margin: 0;
+}
+
 .university-logo.logo-horizontal {
-  height: 80px;
-  /* Increased from 50px to 80px for significantly larger logos */
-  max-width: 200px;
-  /* Proportional increase to max-width */
+  max-height: 80px;
+  min-height: 50px;
+  max-width: 250px;
+  min-width: 120px;
   width: auto;
   object-fit: contain;
   margin: 0;
@@ -64,9 +73,13 @@
     gap: 20px;
   }
 
-  .university-logo.logo-standard,
+  .university-logo.logo-standard {
+    height: 50px;
+    max-width: 80px;
+  }
+
   .university-logo.logo-horizontal {
     height: 50px;
-    /* Increased mobile size proportionately */
+    max-width: 150px;
   }
 }
