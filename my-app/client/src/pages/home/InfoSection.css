@@ -210,8 +210,13 @@
 
 @media (max-width: 480px) {
   .info-section-container {
-    padding: 0 10px;
+    padding: 0;
     box-sizing: border-box;
+  }
+
+  .info-section-content {
+    width: 100%;
+    max-width: 100%;
   }
 
   .info-left {
