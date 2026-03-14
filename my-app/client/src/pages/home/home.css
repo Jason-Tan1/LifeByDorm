@@ -150,24 +150,11 @@ textarea {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  max-width: 1600px;
-  margin: 0 auto 20px;
+  width: 100%;
+  margin: 0 0 20px;
   padding: 0 4%;
+  box-sizing: border-box;
   min-width: 0;
-}
-
-@media (min-width: 1600px) {
-  .featured-header {
-    max-width: 1700px;
-    padding: 0 5%;
-  }
-}
-
-@media (min-width: 1920px) {
-  .featured-header {
-    max-width: 1900px;
-    padding: 0 6%;
-  }
 }
 
 .featured-title {
@@ -359,6 +346,7 @@ textarea {
 
   .featured-header {
     gap: 15px;
+    padding: 0 5%;
     /* Ensures the title and the buttons don't crash into each other when the screen shrinks */
     align-items: center;
   }

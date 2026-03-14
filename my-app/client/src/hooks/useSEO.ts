@@ -11,7 +11,7 @@ const SITE_NAME = 'LifeByDorm';
 const BASE_URL = 'https://www.lifebydorm.ca';
 const DEFAULT_TITLE = 'LifeByDorm | Real Student Photos & Dorm Reviews for Canadian Schools';
 const DEFAULT_DESCRIPTION =
-    'Read real, unbiased dorm reviews and see authentic photos from students at Canadian universities. Find the best college residences before you move in on LifeByDorm.';
+    'Read real, unbiased dorm reviews and see authentic photos from students at Canadian universities. Find the best university residences before you move in on LifeByDorm.';
 
 /**
  * Custom hook to manage per-page SEO metadata.
