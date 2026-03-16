@@ -1,5 +1,6 @@
 import { useEffect, useState, useCallback, useRef, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
+import Star from '@mui/icons-material/Star';
 import './home.css';
 
 import { Link } from 'react-router-dom';
@@ -24,6 +25,7 @@ type RecentVerifiedReview = {
   university: string;
   dorm: string;
   universitySlug: string;
+  universityName?: string;
   dormSlug: string;
   dormImageUrl?: string | null;
   description: string;
@@ -34,6 +36,8 @@ type RecentVerifiedReview = {
   building: number;
   amenities: number;
   location: number;
+  user?: string;
+  userInitial?: string;
 };
 
 function Home() {
@@ -69,8 +73,8 @@ function Home() {
   const [universityScrollPosition, setUniversityScrollPosition] = useState(0);
   const [mostRatedDormsScrollPosition, setMostRatedDormsScrollPosition] = useState(0);
   const [dormScrollPosition, setDormScrollPosition] = useState(0);
+  const [recentReviewsScrollPosition, setRecentReviewsScrollPosition] = useState(0);
   const [recentVerifiedReviews, setRecentVerifiedReviews] = useState<RecentVerifiedReview[]>([]);
-  const [recentReviewsPage, setRecentReviewsPage] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
 
 
@@ -159,7 +163,7 @@ function Home() {
     if (!container) return;
 
     // Find the first card to measure its width
-    const firstCard = container.querySelector('.slider-card') as HTMLElement;
+    const firstCard = (container.querySelector('.slider-card') || container.firstElementChild) as HTMLElement;
     if (!firstCard) return;
 
     // Calculate total item width (card + gap)
@@ -206,19 +210,23 @@ function Home() {
     const uniSlider = document.getElementById('university-slider');
     const mostRatedSlider = document.getElementById('most-rated-dorms-slider');
     const dormSlider = document.getElementById('dorm-slider');
+    const recentReviewsSlider = document.getElementById('recent-reviews-slider');
 
     const onUniScroll = () => handleScroll('university-slider', setUniversityScrollPosition);
     const onMostRatedScroll = () => handleScroll('most-rated-dorms-slider', setMostRatedDormsScrollPosition);
     const onDormScroll = () => handleScroll('dorm-slider', setDormScrollPosition);
+    const onRecentReviewsScroll = () => handleScroll('recent-reviews-slider', setRecentReviewsScrollPosition);
 
     uniSlider?.addEventListener('scroll', onUniScroll, { passive: true });
     mostRatedSlider?.addEventListener('scroll', onMostRatedScroll, { passive: true });
     dormSlider?.addEventListener('scroll', onDormScroll, { passive: true });
+    recentReviewsSlider?.addEventListener('scroll', onRecentReviewsScroll, { passive: true });
 
     return () => {
       uniSlider?.removeEventListener('scroll', onUniScroll);
       mostRatedSlider?.removeEventListener('scroll', onMostRatedScroll);
       dormSlider?.removeEventListener('scroll', onDormScroll);
+      recentReviewsSlider?.removeEventListener('scroll', onRecentReviewsScroll);
     };
   }, []);
 
@@ -234,10 +242,14 @@ function Home() {
     scrollContainer('dorm-slider', direction, setDormScrollPosition);
   };
 
-  const getRatingClass = (rating: number): 'high' | 'medium' | 'low' => {
-    if (rating >= 4.0) return 'high';
-    if (rating >= 3.0) return 'medium';
-    return 'low';
+  const scrollRecentReviews = (direction: 'left' | 'right') => {
+    scrollContainer('recent-reviews-slider', direction, setRecentReviewsScrollPosition);
+  };
+
+  const getRatingClass = (rating: number): string => {
+    if (rating >= 4.0) return 'rating-high';
+    if (rating >= 3.0) return 'rating-medium';
+    return 'rating-low';
   };
 
   const calculateReviewRating = (review: RecentVerifiedReview) => {
@@ -245,26 +257,32 @@ function Home() {
     return ratings.reduce((sum, value) => sum + value, 0) / ratings.length;
   };
 
-  const formatReviewDate = (dateString: string) => {
-    const date = new Date(dateString);
-    return date.toLocaleDateString('en-CA', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric'
-    });
+  const getAvatarColor = (identifier: string) => {
+    const colors = [
+      '#EF4444', // red-500
+      '#F97316', // orange-500
+      '#F59E0B', // amber-500
+      '#84CC16', // lime-500
+      '#10B981', // emerald-500
+      '#06B6D4', // cyan-500
+      '#3B82F6', // blue-500
+      '#6366F1', // indigo-500
+      '#8B5CF6', // violet-500
+      '#D946EF', // fuchsia-500
+      '#F43F5E'  // rose-500
+    ];
+    let hash = 0;
+    for (let i = 0; i < identifier.length; i++) {
+      hash = identifier.charCodeAt(i) + ((hash << 5) - hash);
+    }
+    const index = Math.abs(hash) % colors.length;
+    return colors[index];
   };
 
-  const REVIEWS_PER_PAGE = 8;
-  const maxRecentReviewsPage = Math.max(0, Math.ceil(recentVerifiedReviews.length / REVIEWS_PER_PAGE) - 1);
-  const paginatedRecentReviews = recentVerifiedReviews.slice(
-    recentReviewsPage * REVIEWS_PER_PAGE,
-    recentReviewsPage * REVIEWS_PER_PAGE + REVIEWS_PER_PAGE
-  );
-
-  useEffect(() => {
-    setRecentReviewsPage(0);
-  }, [recentVerifiedReviews.length]);
-
+  const formatUniversityName = (name: string) => {
+    if (!name) return '';
+    return name.replace(/-/g, ' ').replace(/\b\w/g, (l) => l.toUpperCase());
+  };
   return (
     <div className="home">
       <NavBar />
@@ -442,16 +460,15 @@ function Home() {
             <div className="slider-controls">
               <button
                 className="slider-button slider-button-left"
-                onClick={() => setRecentReviewsPage((prev) => Math.max(0, prev - 1))}
-                disabled={recentReviewsPage === 0 || recentVerifiedReviews.length <= REVIEWS_PER_PAGE}
+                onClick={() => scrollRecentReviews('left')}
+                disabled={recentReviewsScrollPosition === 0}
                 aria-label="Previous reviews"
               >
                 ‹
               </button>
               <button
                 className="slider-button slider-button-right"
-                onClick={() => setRecentReviewsPage((prev) => Math.min(maxRecentReviewsPage, prev + 1))}
-                disabled={recentReviewsPage >= maxRecentReviewsPage || recentVerifiedReviews.length <= REVIEWS_PER_PAGE}
+                onClick={() => scrollRecentReviews('right')}
                 aria-label="Next reviews"
               >
                 ›
@@ -461,63 +478,52 @@ function Home() {
 
           <div className="recent-reviews-content-pad">
             {isLoading ? (
-              <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-4">
+              <div className="slider-wrapper recent-reviews-slider-wrapper" id="recent-reviews-slider">
                 {Array.from({ length: 8 }).map((_, index) => (
-                  <div key={index} className="h-[330px] animate-pulse rounded-2xl border border-[#d8d5ce] bg-white" />
+                  <div key={index} className="recent-review-slider-card h-[330px] animate-pulse rounded-2xl border border-[#d8d5ce] bg-white" />
                 ))}
               </div>
-            ) : paginatedRecentReviews.length === 0 ? (
+            ) : recentVerifiedReviews.length === 0 ? (
               <p className="rounded-2xl border border-[#d8d5ce] bg-white px-5 py-8 text-center text-[#565656]">
                 No verified reviews available yet.
               </p>
             ) : (
-              <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-4">
-                {paginatedRecentReviews.map((review) => {
+              <div className="slider-wrapper recent-reviews-slider-wrapper" id="recent-reviews-slider">
+                {recentVerifiedReviews.map((review) => {
                   const rating = calculateReviewRating(review);
                   const ratingClass = getRatingClass(rating);
-                  const starFillClass = ratingClass === 'high'
-                    ? 'bg-[#10b981] text-white'
-                    : ratingClass === 'medium'
-                      ? 'bg-[#84cc16] text-white'
-                      : 'bg-[#ef4444] text-white';
-                  const roundedStars = Math.max(1, Math.min(5, Math.round(rating)));
+                  const avatarSource = String(review.userInitial || review.user || '').trim();
+                  const avatarInitial = (avatarSource.match(/[A-Za-z0-9]/)?.[0] || 'A').toUpperCase();
 
                   return (
                     <Link
                       key={review._id}
                       to={`/universities/${review.universitySlug}/dorms/${review.dormSlug}`}
-                      className="group flex min-h-[292px] flex-col overflow-hidden rounded-[18px] border border-[#d1cdc5] bg-white transition hover:-translate-y-0.5 hover:shadow-md"
+                      className="recent-review-slider-card group flex min-h-[268px] flex-col overflow-hidden rounded-[18px] border border-[#d1cdc5] bg-white transition hover:-translate-y-0.5 hover:shadow-md"
                     >
-                      <div className="flex items-start gap-3 px-4 pt-4">
-                        <img
-                          src={review.dormImageUrl || DefaultDorm}
-                          alt={`${review.dorm} dorm`}
-                          className="h-11 w-11 shrink-0 rounded-full border border-[#d9d5ce] object-cover"
-                          loading="lazy"
-                        />
+                      <div className="flex items-start gap-3 px-4 pt-3">
+                        <div
+                          className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full text-lg font-bold text-white shadow-sm"
+                          style={{ backgroundColor: getAvatarColor(review._id) }}
+                        >
+                          {avatarInitial}
+                        </div>
 
-                        <div className="flex flex-col gap-2">
-                          <div className="flex items-center gap-[3px]">
-                            {Array.from({ length: 5 }).map((_, index) => (
-                              <span
-                                key={index}
-                                className={`inline-flex h-[22px] w-[22px] items-center justify-center text-[12px] leading-none ${index < roundedStars ? starFillClass : 'bg-[#d9d8e1] text-[#f3f3f7]'}`}
-                              >
-                                ★
-                              </span>
-                            ))}
-                          </div>
+                        <div className="review-overall-rating">
+                          <span className={`overall-rating-badge ${ratingClass}`}>
+                            <Star className="rating-star-icon" />
+                            {rating.toFixed(1)}
+                          </span>
                         </div>
                       </div>
 
-                      <div className="px-4 pb-4 pt-3">
-                        <p className="text-[34px] leading-none text-[#ececec]">“</p>
-                        <p className="-mt-2 text-[1.02rem] leading-[1.35] text-[#343434]">
-                          {review.description.length > 220 ? `${review.description.slice(0, 220)}...` : review.description}
+                      <div className="px-4 pb-3 pt-2">
+                        <p className="text-[1.02rem] leading-[1.35] text-[#343434]">
+                          {review.description.length > 185 ? `${review.description.slice(0, 185)}...` : review.description}
                         </p>
                       </div>
 
-                      <div className="mt-auto flex items-center gap-3 border-t border-[#dedad3] bg-[#f9f8f6] px-4 py-3">
+                      <div className="mt-auto flex items-center gap-3 border-t border-[#dedad3] bg-[#f9f8f6] px-4 py-2.5">
                         <img
                           src={review.dormImageUrl || DefaultDorm}
                           alt={`${review.dorm} thumbnail`}
@@ -527,7 +533,7 @@ function Home() {
                         <div className="min-w-0">
                           <p className="truncate text-[0.98rem] font-semibold text-[#2f2f2f]">{review.dorm}</p>
                           <p className="truncate text-[0.94rem] text-[#6a6966]">
-                            {review.university} • {formatReviewDate(review.createdAt)}
+                            {formatUniversityName(review.universityName || review.university)}
                           </p>
                         </div>
                       </div>

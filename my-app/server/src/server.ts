@@ -374,8 +374,12 @@ app.get('/api/stats/homepage', readOnlyLimiter, async (req: Request, res: Respon
     const dormStats: { [key: string]: { avgRating: number; reviewCount: number; totalRating: number } } = {};
     let totalReviewsCount = 0;
 
+    const universityNameMap = new Map<string, string>();
     universities.forEach((uni: any) => {
       universityStats[uni.slug] = { reviewCount: 0 };
+      if (uni.slug && uni.name) {
+        universityNameMap.set(uni.slug, uni.name);
+      }
     });
 
     reviewStats.forEach((stat: any) => {
@@ -441,17 +445,49 @@ app.get('/api/stats/homepage', readOnlyLimiter, async (req: Request, res: Respon
       dormLookupByName.set(dormNameKey, dorm);
     });
 
+    // Fetch user details for recent reviews (supports reviews storing either user id or email)
+    const userIdentifiers = [...new Set(recentVerifiedReviewsRaw.map((r: any) => String(r.user || '').trim()).filter(Boolean))];
+    const objectIdRegex = /^[a-f\d]{24}$/i;
+    const objectUserIds = userIdentifiers.filter((id) => objectIdRegex.test(id));
+    const emailUserIds = userIdentifiers.filter((id) => id.includes('@'));
+
+    let users: any[] = [];
+    if (objectUserIds.length > 0 || emailUserIds.length > 0) {
+      users = await User.find({
+        $or: [
+          ...(objectUserIds.length > 0 ? [{ _id: { $in: objectUserIds } }] : []),
+          ...(emailUserIds.length > 0 ? [{ email: { $in: emailUserIds } }] : [])
+        ]
+      }).select('email').lean();
+    }
+
+    const userMap = new Map<string, string>();
+    users.forEach((u: any) => {
+      const email = String(u.email || '').trim();
+      if (!email) return;
+      userMap.set(String(u._id), email);
+      userMap.set(email, email);
+    });
+
     const recentVerifiedReviews = recentVerifiedReviewsRaw
       .map((review: any) => {
         const uni = String(review.university || '').trim();
         const dorm = String(review.dorm || '').trim();
         const dormKey = `${uni}:${dorm.toLowerCase()}`;
         const dormData = dormLookupByName.get(dormKey);
+        
+        const uniSlug = dormData?.universitySlug || uni;
+        const rawUser = String(review.user || '').trim();
+        const userEmail = userMap.get(rawUser) || (rawUser.includes('@') ? rawUser : '');
+        const firstVisibleChar = userEmail.match(/[A-Za-z0-9]/)?.[0] || 'A';
+        
         return {
           ...review,
           dormSlug: dormData?.slug || dorm.toLowerCase().replace(/\s+/g, '-'),
-          universitySlug: dormData?.universitySlug || uni,
-          dormImageUrl: dormData?.imageUrl || null
+          universitySlug: uniSlug,
+          universityName: universityNameMap.get(uniSlug) || uniSlug,
+          dormImageUrl: dormData?.imageUrl || null,
+          userInitial: firstVisibleChar.toUpperCase()
         };
       })
       .filter((review: any) => !!review.universitySlug && !!review.dormSlug)
