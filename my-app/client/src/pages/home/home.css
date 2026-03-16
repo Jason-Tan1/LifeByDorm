@@ -244,6 +244,11 @@ textarea {
   overscroll-behavior-x: contain;
 }
 
+.recent-reviews-content-pad {
+  padding: 0 4%;
+  box-sizing: border-box;
+}
+
 .slider-wrapper::-webkit-scrollbar {
   display: none;
   /* Chrome, Safari, Opera */
@@ -371,6 +376,10 @@ textarea {
     scroll-padding-left: 5%;
   }
 
+  .recent-reviews-content-pad {
+    padding: 0 5%;
+  }
+
   .slider-card {
     flex: 0 0 min(74vw, 260px);
     min-width: min(74vw, 260px);
@@ -412,6 +421,10 @@ textarea {
     gap: 12px;
     padding: 8px 4%;
     scroll-padding-left: 4%;
+  }
+
+  .recent-reviews-content-pad {
+    padding: 0 4%;
   }
 
   .slider-card {
