@@ -36,7 +36,7 @@ function RecentReviewsSection({ isLoading, recentVerifiedReviews }: RecentReview
     const container = sliderRef.current;
     if (!container) return;
 
-    const firstCard = (container.querySelector('.slider-card') || container.firstElementChild) as HTMLElement;
+    const firstCard = (container.querySelector('.recent-review-slider-card') || container.firstElementChild) as HTMLElement;
     if (!firstCard) return;
 
     const style = window.getComputedStyle(container);
@@ -111,6 +111,11 @@ function RecentReviewsSection({ isLoading, recentVerifiedReviews }: RecentReview
     return name.replace(/-/g, ' ').replace(/\b\w/g, (letter) => letter.toUpperCase());
   };
 
+  const truncateDormName = (name: string, maxLength = 26) => {
+    if (!name) return '';
+    return name.length > maxLength ? `${name.slice(0, maxLength).trimEnd()}...` : name;
+  };
+
   return (
     <div className="featured-container" style={{ marginTop: '40px' }}>
       <div className="featured-header">
@@ -138,7 +143,10 @@ function RecentReviewsSection({ isLoading, recentVerifiedReviews }: RecentReview
         {isLoading ? (
           <div className="slider-wrapper recent-reviews-slider-wrapper" ref={sliderRef}>
             {Array.from({ length: 8 }).map((_, index) => (
-              <div key={index} className="recent-review-slider-card slider-card h-[330px] animate-pulse rounded-2xl border border-[#d8d5ce] bg-white" />
+              <div
+                key={index}
+                className="recent-review-slider-card recent-review-skeleton-card animate-pulse rounded-2xl border border-[#d8d5ce] bg-white"
+              />
             ))}
           </div>
         ) : recentVerifiedReviews.length === 0 ? (
@@ -157,7 +165,7 @@ function RecentReviewsSection({ isLoading, recentVerifiedReviews }: RecentReview
                 <Link
                   key={review._id}
                   to={`/universities/${review.universitySlug}/dorms/${review.dormSlug}`}
-                  className="recent-review-slider-card slider-card group flex min-h-[268px] flex-col overflow-hidden rounded-[18px] border border-[#d1cdc5] bg-white transition hover:-translate-y-0.5 hover:shadow-md"
+                  className="recent-review-slider-card recent-review-link-card group flex flex-col overflow-hidden rounded-[18px] border border-[#d1cdc5] bg-white transition hover:-translate-y-0.5 hover:shadow-md"
                 >
                   <div className="flex items-start gap-3 px-4 pt-3">
                     <div
@@ -184,12 +192,18 @@ function RecentReviewsSection({ isLoading, recentVerifiedReviews }: RecentReview
                   <div className="mt-auto flex items-center gap-3 border-t border-[#dedad3] bg-[#f9f8f6] px-4 py-2.5">
                     <img
                       src={review.dormImageUrl || DefaultDorm}
-                      alt={`${review.dorm} thumbnail`}
+                      alt="Dorm thumbnail"
                       className="h-10 w-10 rounded-[10px] border border-[#d9d5ce] object-cover"
                       loading="lazy"
+                      onError={(event) => {
+                        event.currentTarget.onerror = null;
+                        event.currentTarget.src = DefaultDorm;
+                      }}
                     />
                     <div className="min-w-0">
-                      <p className="truncate text-[0.98rem] font-semibold text-[#2f2f2f]">{review.dorm}</p>
+                      <p className="truncate text-[0.98rem] font-semibold text-[#2f2f2f]" title={review.dorm}>
+                        {truncateDormName(review.dorm)}
+                      </p>
                       <p className="truncate text-[0.94rem] text-[#6a6966]">
                         {formatUniversityName(review.universityName || review.university)}
                       </p>

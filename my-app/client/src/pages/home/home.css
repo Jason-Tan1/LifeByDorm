@@ -245,7 +245,7 @@ textarea {
 }
 
 .recent-reviews-content-pad {
-  padding: 0 4%;
+  padding: 0 0 0 4%;
   box-sizing: border-box;
 }
 
@@ -258,23 +258,24 @@ textarea {
   padding: 10px 0;
   scroll-padding-left: 0;
   align-content: start;
+  align-items: stretch;
 }
 
 .recent-review-slider-card {
+  flex: 0 0 300px;
   width: 300px;
   min-width: 300px;
+  max-width: 300px;
+  box-sizing: border-box;
   scroll-snap-align: center;
 }
 
-@media (max-width: 768px) {
-  .recent-reviews-slider-wrapper {
-    grid-auto-columns: 280px;
-  }
+.recent-review-skeleton-card {
+  min-height: 330px;
+}
 
-  .recent-review-slider-card {
-    width: 280px;
-    min-width: 280px;
-  }
+.recent-review-link-card {
+  min-height: 268px;
 }
 
 .review-overall-rating {
@@ -454,7 +455,7 @@ textarea {
   }
 
   .recent-reviews-content-pad {
-    padding: 0 5%;
+    padding: 0 0 0 5%;
   }
 
   .slider-card {
@@ -501,7 +502,7 @@ textarea {
   }
 
   .recent-reviews-content-pad {
-    padding: 0 4%;
+    padding: 0 0 0 4%;
   }
 
   .slider-card {
