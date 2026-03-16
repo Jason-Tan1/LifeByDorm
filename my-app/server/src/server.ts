@@ -338,7 +338,7 @@ app.get('/api/stats/homepage', readOnlyLimiter, async (req: Request, res: Respon
 
     // Use aggregation pipeline to compute stats on the database server
     // instead of fetching entire collections into memory
-    const [universities, dorms, reviewStats] = await Promise.all([
+    const [universities, dorms, reviewStats, recentVerifiedReviewsRaw] = await Promise.all([
       University.find({}).lean(),
       Dorm.find({
         $or: [{ status: 'approved' }, { status: { $exists: false } }]
@@ -356,7 +356,17 @@ app.get('/api/stats/homepage', readOnlyLimiter, async (req: Request, res: Respon
             reviewCount: { $sum: 1 }
           }
         }
-      ])
+      ]),
+      UserReview.find({
+        verified: true,
+        $or: [
+          { status: 'approved' },
+          { status: { $exists: false } }
+        ]
+      })
+        .sort({ createdAt: -1 })
+        .limit(40)
+        .lean()
     ]);
 
     // Build lookup maps from aggregation results
@@ -425,10 +435,33 @@ app.get('/api/stats/homepage', readOnlyLimiter, async (req: Request, res: Respon
       .sort((a, b) => b.reviewCount - a.reviewCount)
       .slice(0, 10);
 
+    const dormLookupByName = new Map<string, any>();
+    enrichedDorms.forEach((dorm: any) => {
+      const dormNameKey = `${dorm.universitySlug}:${String(dorm.name || '').trim().toLowerCase()}`;
+      dormLookupByName.set(dormNameKey, dorm);
+    });
+
+    const recentVerifiedReviews = recentVerifiedReviewsRaw
+      .map((review: any) => {
+        const uni = String(review.university || '').trim();
+        const dorm = String(review.dorm || '').trim();
+        const dormKey = `${uni}:${dorm.toLowerCase()}`;
+        const dormData = dormLookupByName.get(dormKey);
+        return {
+          ...review,
+          dormSlug: dormData?.slug || dorm.toLowerCase().replace(/\s+/g, '-'),
+          universitySlug: dormData?.universitySlug || uni,
+          dormImageUrl: dormData?.imageUrl || null
+        };
+      })
+      .filter((review: any) => !!review.universitySlug && !!review.dormSlug)
+      .slice(0, 24);
+
     const result = {
       topUniversities,
       topRatedDorms,
       mostReviewedDorms,
+      recentVerifiedReviews,
       universityStats,
       dormStats,
       totalReviewsCount

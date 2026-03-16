@@ -14,10 +14,28 @@ import GiveawayBanner from './GiveawayBanner';
 import UniversityBanner from './UniversityBanner';
 import InfoSection from './InfoSection';
 import { useSEO } from '../../hooks/useSEO';
+import Star from '@mui/icons-material/Star';
 
 // Use relative path '' on localhost to leverage the Vite proxy
 const isLocal = typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1');
 const API_BASE = isLocal ? '' : ((import.meta as any).env?.VITE_API_BASE || '');
+
+type RecentVerifiedReview = {
+  _id: string;
+  university: string;
+  dorm: string;
+  universitySlug: string;
+  dormSlug: string;
+  dormImageUrl?: string | null;
+  description: string;
+  createdAt: string;
+  verified: boolean;
+  room: number;
+  bathroom: number;
+  building: number;
+  amenities: number;
+  location: number;
+};
 
 function Home() {
   const { t } = useTranslation();
@@ -52,6 +70,8 @@ function Home() {
   const [universityScrollPosition, setUniversityScrollPosition] = useState(0);
   const [mostRatedDormsScrollPosition, setMostRatedDormsScrollPosition] = useState(0);
   const [dormScrollPosition, setDormScrollPosition] = useState(0);
+  const [recentVerifiedReviews, setRecentVerifiedReviews] = useState<RecentVerifiedReview[]>([]);
+  const [recentReviewsPage, setRecentReviewsPage] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
 
 
@@ -118,6 +138,12 @@ function Home() {
         if (stats.totalReviewsCount !== undefined) {
           setTotalReviewsCount(stats.totalReviewsCount);
         }
+
+        setRecentVerifiedReviews(
+          Array.isArray(stats.recentVerifiedReviews)
+            ? stats.recentVerifiedReviews.filter((review: any) => review?.verified === true)
+            : []
+        );
       } catch (e) {
         console.error('Failed to fetch data', e);
       } finally {
@@ -208,6 +234,37 @@ function Home() {
   const scrollDorms = (direction: 'left' | 'right') => {
     scrollContainer('dorm-slider', direction, setDormScrollPosition);
   };
+
+  const getRatingClass = (rating: number): 'high' | 'medium' | 'low' => {
+    if (rating >= 4.0) return 'high';
+    if (rating >= 3.0) return 'medium';
+    return 'low';
+  };
+
+  const calculateReviewRating = (review: RecentVerifiedReview) => {
+    const ratings = [review.room, review.bathroom, review.building, review.amenities, review.location];
+    return ratings.reduce((sum, value) => sum + value, 0) / ratings.length;
+  };
+
+  const formatReviewDate = (dateString: string) => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString('en-CA', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric'
+    });
+  };
+
+  const REVIEWS_PER_PAGE = 8;
+  const maxRecentReviewsPage = Math.max(0, Math.ceil(recentVerifiedReviews.length / REVIEWS_PER_PAGE) - 1);
+  const paginatedRecentReviews = recentVerifiedReviews.slice(
+    recentReviewsPage * REVIEWS_PER_PAGE,
+    recentReviewsPage * REVIEWS_PER_PAGE + REVIEWS_PER_PAGE
+  );
+
+  useEffect(() => {
+    setRecentReviewsPage(0);
+  }, [recentVerifiedReviews.length]);
 
   return (
     <div className="home">
@@ -376,8 +433,97 @@ function Home() {
             </div>
           </div>
         </div>
+
+        <section className="mt-10 rounded-3xl border border-[#d8d5ce] bg-[#f5f5f2] p-5 sm:p-7">
+          <div className="mb-5 flex items-center justify-between">
+            <h2 className="text-[30px] font-semibold leading-tight text-[#2f2f2f]">Recent user reviews</h2>
+            <div className="flex items-center gap-3">
+              <button
+                type="button"
+                className="flex h-10 w-10 items-center justify-center rounded-full border border-[#2e5ce6] text-[24px] leading-none text-[#2e5ce6] transition hover:bg-[#2e5ce6] hover:text-white disabled:cursor-not-allowed disabled:border-[#b6b6b6] disabled:text-[#b6b6b6] disabled:hover:bg-transparent"
+                onClick={() => setRecentReviewsPage((prev) => Math.max(0, prev - 1))}
+                disabled={recentReviewsPage === 0 || recentVerifiedReviews.length <= REVIEWS_PER_PAGE}
+                aria-label="Previous reviews"
+              >
+                ‹
+              </button>
+              <button
+                type="button"
+                className="flex h-10 w-10 items-center justify-center rounded-full border border-[#2e5ce6] text-[24px] leading-none text-[#2e5ce6] transition hover:bg-[#2e5ce6] hover:text-white disabled:cursor-not-allowed disabled:border-[#b6b6b6] disabled:text-[#b6b6b6] disabled:hover:bg-transparent"
+                onClick={() => setRecentReviewsPage((prev) => Math.min(maxRecentReviewsPage, prev + 1))}
+                disabled={recentReviewsPage >= maxRecentReviewsPage || recentVerifiedReviews.length <= REVIEWS_PER_PAGE}
+                aria-label="Next reviews"
+              >
+                ›
+              </button>
+            </div>
+          </div>
+
+          {isLoading ? (
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-4">
+              {Array.from({ length: 8 }).map((_, index) => (
+                <div key={index} className="h-[330px] animate-pulse rounded-2xl border border-[#d8d5ce] bg-white" />
+              ))}
+            </div>
+          ) : paginatedRecentReviews.length === 0 ? (
+            <p className="rounded-2xl border border-[#d8d5ce] bg-white px-5 py-8 text-center text-[#565656]">
+              No verified reviews available yet.
+            </p>
+          ) : (
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-4">
+              {paginatedRecentReviews.map((review) => {
+                const rating = calculateReviewRating(review);
+                const ratingClass = getRatingClass(rating);
+                const badgeClass = ratingClass === 'high'
+                  ? 'bg-[#e8f5e9] text-[#2e7d32]'
+                  : ratingClass === 'medium'
+                    ? 'bg-[#fff8e1] text-[#f9a825]'
+                    : 'bg-[#ffebee] text-[#c62828]';
+
+                return (
+                  <Link
+                    key={review._id}
+                    to={`/universities/${review.universitySlug}/dorms/${review.dormSlug}`}
+                    className="group overflow-hidden rounded-2xl border border-[#cfcac2] bg-white transition hover:-translate-y-0.5 hover:shadow-md"
+                  >
+                    <div className="relative h-44 overflow-hidden border-b border-[#e3e0db]">
+                      <img
+                        src={review.dormImageUrl || DefaultDorm}
+                        alt={`${review.dorm} dorm room`}
+                        className="h-full w-full object-cover transition duration-300 group-hover:scale-105"
+                        loading="lazy"
+                      />
+                      <span className={`absolute left-3 top-3 inline-flex items-center gap-1 rounded-md px-2 py-1 text-sm font-semibold ${badgeClass}`}>
+                        <Star style={{ fontSize: '1rem' }} />
+                        {rating.toFixed(1)}
+                      </span>
+                    </div>
+
+                    <div className="flex min-h-[180px] flex-col px-4 py-3">
+                      <p className="mb-3 text-[1.02rem] leading-7 text-[#323232]">
+                        {review.description.length > 180 ? `${review.description.slice(0, 180)}...` : review.description}
+                      </p>
+
+                      <div className="mt-auto border-t border-[#ece8e2] pt-3">
+                        <p className="truncate text-base font-semibold text-[#2f2f2f]">{review.dorm}</p>
+                        <div className="mt-1 flex items-center justify-between gap-2">
+                          <p className="truncate text-sm text-[#6a6966]">{review.university}</p>
+                          <span className="shrink-0 rounded-full bg-[#f1f5f9] px-2 py-0.5 text-xs font-medium text-[#475569]">
+                            {formatReviewDate(review.createdAt)}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  </Link>
+                );
+              })}
+            </div>
+          )}
+        </section>
+
         {/* LifeByDorm Info Section Banner */}
         <InfoSection />
+
       </main>
 
       <Footer />
