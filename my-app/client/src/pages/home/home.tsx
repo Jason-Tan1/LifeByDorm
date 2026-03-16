@@ -1,6 +1,5 @@
 import { useEffect, useState, useCallback, useRef, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import Star from '@mui/icons-material/Star';
 import './home.css';
 
 import { Link } from 'react-router-dom';
@@ -14,31 +13,12 @@ import DefaultDorm from '../../assets/Default_Dorm.webp';
 import GiveawayBanner from './GiveawayBanner';
 import UniversityBanner from './UniversityBanner';
 import InfoSection from './InfoSection';
+import RecentReviewsSection, { type RecentVerifiedReview } from './RecentReviewsSection';
 import { useSEO } from '../../hooks/useSEO';
 
 // Use relative path '' on localhost to leverage the Vite proxy
 const isLocal = typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1');
 const API_BASE = isLocal ? '' : ((import.meta as any).env?.VITE_API_BASE || '');
-
-type RecentVerifiedReview = {
-  _id: string;
-  university: string;
-  dorm: string;
-  universitySlug: string;
-  universityName?: string;
-  dormSlug: string;
-  dormImageUrl?: string | null;
-  description: string;
-  createdAt: string;
-  verified: boolean;
-  room: number;
-  bathroom: number;
-  building: number;
-  amenities: number;
-  location: number;
-  user?: string;
-  userInitial?: string;
-};
 
 function Home() {
   const { t } = useTranslation();
@@ -73,7 +53,6 @@ function Home() {
   const [universityScrollPosition, setUniversityScrollPosition] = useState(0);
   const [mostRatedDormsScrollPosition, setMostRatedDormsScrollPosition] = useState(0);
   const [dormScrollPosition, setDormScrollPosition] = useState(0);
-  const [recentReviewsScrollPosition, setRecentReviewsScrollPosition] = useState(0);
   const [recentVerifiedReviews, setRecentVerifiedReviews] = useState<RecentVerifiedReview[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -210,23 +189,18 @@ function Home() {
     const uniSlider = document.getElementById('university-slider');
     const mostRatedSlider = document.getElementById('most-rated-dorms-slider');
     const dormSlider = document.getElementById('dorm-slider');
-    const recentReviewsSlider = document.getElementById('recent-reviews-slider');
-
     const onUniScroll = () => handleScroll('university-slider', setUniversityScrollPosition);
     const onMostRatedScroll = () => handleScroll('most-rated-dorms-slider', setMostRatedDormsScrollPosition);
     const onDormScroll = () => handleScroll('dorm-slider', setDormScrollPosition);
-    const onRecentReviewsScroll = () => handleScroll('recent-reviews-slider', setRecentReviewsScrollPosition);
 
     uniSlider?.addEventListener('scroll', onUniScroll, { passive: true });
     mostRatedSlider?.addEventListener('scroll', onMostRatedScroll, { passive: true });
     dormSlider?.addEventListener('scroll', onDormScroll, { passive: true });
-    recentReviewsSlider?.addEventListener('scroll', onRecentReviewsScroll, { passive: true });
 
     return () => {
       uniSlider?.removeEventListener('scroll', onUniScroll);
       mostRatedSlider?.removeEventListener('scroll', onMostRatedScroll);
       dormSlider?.removeEventListener('scroll', onDormScroll);
-      recentReviewsSlider?.removeEventListener('scroll', onRecentReviewsScroll);
     };
   }, []);
 
@@ -242,47 +216,6 @@ function Home() {
     scrollContainer('dorm-slider', direction, setDormScrollPosition);
   };
 
-  const scrollRecentReviews = (direction: 'left' | 'right') => {
-    scrollContainer('recent-reviews-slider', direction, setRecentReviewsScrollPosition);
-  };
-
-  const getRatingClass = (rating: number): string => {
-    if (rating >= 4.0) return 'rating-high';
-    if (rating >= 3.0) return 'rating-medium';
-    return 'rating-low';
-  };
-
-  const calculateReviewRating = (review: RecentVerifiedReview) => {
-    const ratings = [review.room, review.bathroom, review.building, review.amenities, review.location];
-    return ratings.reduce((sum, value) => sum + value, 0) / ratings.length;
-  };
-
-  const getAvatarColor = (identifier: string) => {
-    const colors = [
-      '#EF4444', // red-500
-      '#F97316', // orange-500
-      '#F59E0B', // amber-500
-      '#84CC16', // lime-500
-      '#10B981', // emerald-500
-      '#06B6D4', // cyan-500
-      '#3B82F6', // blue-500
-      '#6366F1', // indigo-500
-      '#8B5CF6', // violet-500
-      '#D946EF', // fuchsia-500
-      '#F43F5E'  // rose-500
-    ];
-    let hash = 0;
-    for (let i = 0; i < identifier.length; i++) {
-      hash = identifier.charCodeAt(i) + ((hash << 5) - hash);
-    }
-    const index = Math.abs(hash) % colors.length;
-    return colors[index];
-  };
-
-  const formatUniversityName = (name: string) => {
-    if (!name) return '';
-    return name.replace(/-/g, ' ').replace(/\b\w/g, (l) => l.toUpperCase());
-  };
   return (
     <div className="home">
       <NavBar />
@@ -454,96 +387,10 @@ function Home() {
         {/* LifeByDorm Info Section Banner */}
         <InfoSection />
 
-        <div className="featured-container" style={{ marginTop: '40px' }}>
-          <div className="featured-header">
-            <h2 className="featured-title">Recent reviews</h2>
-            <div className="slider-controls">
-              <button
-                className="slider-button slider-button-left"
-                onClick={() => scrollRecentReviews('left')}
-                disabled={recentReviewsScrollPosition === 0}
-                aria-label="Previous reviews"
-              >
-                ‹
-              </button>
-              <button
-                className="slider-button slider-button-right"
-                onClick={() => scrollRecentReviews('right')}
-                aria-label="Next reviews"
-              >
-                ›
-              </button>
-            </div>
-          </div>
-
-          <div className="recent-reviews-content-pad">
-            {isLoading ? (
-              <div className="slider-wrapper recent-reviews-slider-wrapper" id="recent-reviews-slider">
-                {Array.from({ length: 8 }).map((_, index) => (
-                  <div key={index} className="recent-review-slider-card h-[330px] animate-pulse rounded-2xl border border-[#d8d5ce] bg-white" />
-                ))}
-              </div>
-            ) : recentVerifiedReviews.length === 0 ? (
-              <p className="rounded-2xl border border-[#d8d5ce] bg-white px-5 py-8 text-center text-[#565656]">
-                No verified reviews available yet.
-              </p>
-            ) : (
-              <div className="slider-wrapper recent-reviews-slider-wrapper" id="recent-reviews-slider">
-                {recentVerifiedReviews.map((review) => {
-                  const rating = calculateReviewRating(review);
-                  const ratingClass = getRatingClass(rating);
-                  const avatarSource = String(review.userInitial || review.user || '').trim();
-                  const avatarInitial = (avatarSource.match(/[A-Za-z0-9]/)?.[0] || 'A').toUpperCase();
-
-                  return (
-                    <Link
-                      key={review._id}
-                      to={`/universities/${review.universitySlug}/dorms/${review.dormSlug}`}
-                      className="recent-review-slider-card group flex min-h-[268px] flex-col overflow-hidden rounded-[18px] border border-[#d1cdc5] bg-white transition hover:-translate-y-0.5 hover:shadow-md"
-                    >
-                      <div className="flex items-start gap-3 px-4 pt-3">
-                        <div
-                          className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full text-lg font-bold text-white shadow-sm"
-                          style={{ backgroundColor: getAvatarColor(review._id) }}
-                        >
-                          {avatarInitial}
-                        </div>
-
-                        <div className="review-overall-rating">
-                          <span className={`overall-rating-badge ${ratingClass}`}>
-                            <Star className="rating-star-icon" />
-                            {rating.toFixed(1)}
-                          </span>
-                        </div>
-                      </div>
-
-                      <div className="px-4 pb-3 pt-2">
-                        <p className="text-[1.02rem] leading-[1.35] text-[#343434]">
-                          {review.description.length > 185 ? `${review.description.slice(0, 185)}...` : review.description}
-                        </p>
-                      </div>
-
-                      <div className="mt-auto flex items-center gap-3 border-t border-[#dedad3] bg-[#f9f8f6] px-4 py-2.5">
-                        <img
-                          src={review.dormImageUrl || DefaultDorm}
-                          alt={`${review.dorm} thumbnail`}
-                          className="h-10 w-10 rounded-[10px] border border-[#d9d5ce] object-cover"
-                          loading="lazy"
-                        />
-                        <div className="min-w-0">
-                          <p className="truncate text-[0.98rem] font-semibold text-[#2f2f2f]">{review.dorm}</p>
-                          <p className="truncate text-[0.94rem] text-[#6a6966]">
-                            {formatUniversityName(review.universityName || review.university)}
-                          </p>
-                        </div>
-                      </div>
-                    </Link>
-                  );
-                })}
-              </div>
-            )}
-          </div>
-        </div>
+        <RecentReviewsSection
+          isLoading={isLoading}
+          recentVerifiedReviews={recentVerifiedReviews}
+        />
 
       </main>
 
