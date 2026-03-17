@@ -139,80 +139,76 @@ function RecentReviewsSection({ isLoading, recentVerifiedReviews }: RecentReview
         </div>
       </div>
 
-      <div className="recent-reviews-content-pad">
+      <div className="slider-wrapper recent-reviews-slider-wrapper" ref={sliderRef}>
         {isLoading ? (
-          <div className="slider-wrapper recent-reviews-slider-wrapper" ref={sliderRef}>
-            {Array.from({ length: 8 }).map((_, index) => (
-              <div
-                key={index}
-                className="recent-review-slider-card recent-review-skeleton-card animate-pulse rounded-2xl border border-[#d8d5ce] bg-white"
-              />
-            ))}
-          </div>
+          Array.from({ length: 8 }).map((_, index) => (
+            <div
+              key={index}
+              className="recent-review-slider-card recent-review-skeleton-card animate-pulse rounded-2xl border border-[#d8d5ce] bg-white"
+            />
+          ))
         ) : recentVerifiedReviews.length === 0 ? (
-          <p className="rounded-2xl border border-[#d8d5ce] bg-white px-5 py-8 text-center text-[#565656]">
+          <p className="col-span-full rounded-2xl border border-[#d8d5ce] bg-white px-5 py-8 text-center text-[#565656]">
             No verified reviews available yet.
           </p>
         ) : (
-          <div className="slider-wrapper recent-reviews-slider-wrapper" ref={sliderRef}>
-            {recentVerifiedReviews.map((review) => {
-              const rating = calculateReviewRating(review);
-              const ratingClass = getRatingClass(rating);
-              const avatarSource = String(review.userInitial || review.user || '').trim();
-              const avatarInitial = (avatarSource.match(/[A-Za-z0-9]/)?.[0] || 'A').toUpperCase();
+          recentVerifiedReviews.map((review) => {
+            const rating = calculateReviewRating(review);
+            const ratingClass = getRatingClass(rating);
+            const avatarSource = String(review.userInitial || review.user || '').trim();
+            const avatarInitial = (avatarSource.match(/[A-Za-z0-9]/)?.[0] || 'A').toUpperCase();
 
-              return (
-                <Link
-                  key={review._id}
-                  to={`/universities/${review.universitySlug}/dorms/${review.dormSlug}`}
-                  className="recent-review-slider-card recent-review-link-card group flex flex-col overflow-hidden rounded-[18px] border border-[#d1cdc5] bg-white transition hover:-translate-y-0.5 hover:shadow-md"
-                >
-                  <div className="flex items-start gap-3 px-4 pt-3">
-                    <div
-                      className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full text-lg font-bold text-white shadow-sm"
-                      style={{ backgroundColor: getAvatarColor(review._id) }}
-                    >
-                      {avatarInitial}
-                    </div>
-
-                    <div className="review-overall-rating">
-                      <span className={`overall-rating-badge ${ratingClass}`}>
-                        <Star className="rating-star-icon" />
-                        {rating.toFixed(1)}
-                      </span>
-                    </div>
+            return (
+              <Link
+                key={review._id}
+                to={`/universities/${review.universitySlug}/dorms/${review.dormSlug}`}
+                className="recent-review-slider-card recent-review-link-card group flex flex-col overflow-hidden rounded-[18px] border border-[#d1cdc5] bg-white transition hover:-translate-y-0.5 hover:shadow-md"
+              >
+                <div className="flex items-start gap-3 px-4 pt-3">
+                  <div
+                    className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full text-lg font-bold text-white shadow-sm"
+                    style={{ backgroundColor: getAvatarColor(review._id) }}
+                  >
+                    {avatarInitial}
                   </div>
 
-                  <div className="px-4 pb-3 pt-2">
-                    <p className="text-[1.02rem] leading-[1.35] text-[#343434]">
-                      {review.description.length > 185 ? `${review.description.slice(0, 185)}...` : review.description}
+                  <div className="review-overall-rating">
+                    <span className={`overall-rating-badge ${ratingClass}`}>
+                      <Star className="rating-star-icon" />
+                      {rating.toFixed(1)}
+                    </span>
+                  </div>
+                </div>
+
+                <div className="px-4 pb-3 pt-2">
+                  <p className="text-[1.02rem] leading-[1.35] text-[#343434]">
+                    {review.description.length > 185 ? `${review.description.slice(0, 185)}...` : review.description}
+                  </p>
+                </div>
+
+                <div className="mt-auto flex items-center gap-3 border-t border-[#dedad3] bg-[#f9f8f6] px-4 py-2.5">
+                  <img
+                    src={review.dormImageUrl || DefaultDorm}
+                    alt="Dorm thumbnail"
+                    className="h-10 w-10 rounded-[10px] border border-[#d9d5ce] object-cover"
+                    loading="lazy"
+                    onError={(event) => {
+                      event.currentTarget.onerror = null;
+                      event.currentTarget.src = DefaultDorm;
+                    }}
+                  />
+                  <div className="min-w-0">
+                    <p className="truncate text-[0.98rem] font-semibold text-[#2f2f2f]" title={review.dorm}>
+                      {truncateDormName(review.dorm)}
+                    </p>
+                    <p className="truncate text-[0.94rem] text-[#6a6966]">
+                      {formatUniversityName(review.universityName || review.university)}
                     </p>
                   </div>
-
-                  <div className="mt-auto flex items-center gap-3 border-t border-[#dedad3] bg-[#f9f8f6] px-4 py-2.5">
-                    <img
-                      src={review.dormImageUrl || DefaultDorm}
-                      alt="Dorm thumbnail"
-                      className="h-10 w-10 rounded-[10px] border border-[#d9d5ce] object-cover"
-                      loading="lazy"
-                      onError={(event) => {
-                        event.currentTarget.onerror = null;
-                        event.currentTarget.src = DefaultDorm;
-                      }}
-                    />
-                    <div className="min-w-0">
-                      <p className="truncate text-[0.98rem] font-semibold text-[#2f2f2f]" title={review.dorm}>
-                        {truncateDormName(review.dorm)}
-                      </p>
-                      <p className="truncate text-[0.94rem] text-[#6a6966]">
-                        {formatUniversityName(review.universityName || review.university)}
-                      </p>
-                    </div>
-                  </div>
-                </Link>
-              );
-            })}
-          </div>
+                </div>
+              </Link>
+            );
+          })
         )}
       </div>
     </div>

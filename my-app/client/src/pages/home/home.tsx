@@ -216,6 +216,11 @@ function Home() {
     scrollContainer('dorm-slider', direction, setDormScrollPosition);
   };
 
+  const truncateName = (name: string, maxLength = 28) => {
+    if (!name) return '';
+    return name.length > maxLength ? `${name.slice(0, maxLength).trimEnd()}...` : name;
+  };
+
   return (
     <div className="home">
       <NavBar />
@@ -269,7 +274,7 @@ function Home() {
                     </div>
                     <div className="featured-info">
                       <h3 className="featured-university-name">
-                        <span className="icon"></span> {uni.name}
+                        <span className="icon"></span> <span className="featured-text-ellipsis" title={uni.name}>{truncateName(uni.name)}</span>
                       </h3>
                       <p className="featured-location">
                         <span className="icon"></span> {uni.location?.replace(', Canada', '') || t('home.locationNA')}
@@ -318,10 +323,10 @@ function Home() {
                     </div>
                     <div className="featured-info">
                       <h3 className="featured-university-name">
-                        <span className="icon"></span> {dorm.name}
+                        <span className="icon"></span> <span className="featured-text-ellipsis" title={dorm.name}>{truncateName(dorm.name)}</span>
                       </h3>
                       <p className="featured-location">
-                        <span className="icon"></span> {universities.find((u) => u.slug === dorm.universitySlug)?.name || dorm.universitySlug}
+                        <span className="icon"></span> <span className="featured-text-ellipsis" title={universities.find((u) => u.slug === dorm.universitySlug)?.name || dorm.universitySlug}>{truncateName(universities.find((u) => u.slug === dorm.universitySlug)?.name || dorm.universitySlug)}</span>
                       </p>
                       <p className="featured-location">
                         <span className="icon"></span> {dorm.reviewCount ?? 0} {dorm.reviewCount === 1 ? t('home.review') : t('home.reviews')}
@@ -368,10 +373,10 @@ function Home() {
                     </div>
                     <div className="featured-info">
                       <h3 className="featured-university-name">
-                        <span className="icon"></span> {dorm.name}
+                        <span className="icon"></span> <span className="featured-text-ellipsis" title={dorm.name}>{truncateName(dorm.name)}</span>
                       </h3>
                       <p className="featured-location">
-                        <span className="icon"></span> {universities.find((u) => u.slug === dorm.universitySlug)?.name || dorm.universitySlug}
+                        <span className="icon"></span> <span className="featured-text-ellipsis" title={universities.find((u) => u.slug === dorm.universitySlug)?.name || dorm.universitySlug}>{truncateName(universities.find((u) => u.slug === dorm.universitySlug)?.name || dorm.universitySlug)}</span>
                       </p>
                       <p className="featured-location">
                         <span className="icon"></span> {(dormRatings[dorm.name] ?? 0).toFixed(1)} ({dormReviewCounts[dorm.name] ?? 0} {dormReviewCounts[dorm.name] === 1 ? t('home.review') : t('home.reviews')})
