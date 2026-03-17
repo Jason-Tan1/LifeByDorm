@@ -1,7 +1,7 @@
 // import React from 'react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { FaLinkedin, FaGithub } from 'react-icons/fa';
+import { FaLinkedin, FaGithub, FaInstagram, FaTiktok } from 'react-icons/fa';
 import './footer.css';
 import LBDLogo from '../../assets/LBDLogo.webp';
 
@@ -47,6 +47,12 @@ function Footer() {
             </a>
             <a href="https://github.com/Jason-Tan1/LifeByDorm" target="_blank" rel="noopener noreferrer" className="footer-link with-icon">
               <FaGithub className="footer-icon" /> LifeByDorm GitHub
+            </a>
+            <a href="https://www.instagram.com/lifebydorm/" target="_blank" rel="noopener noreferrer" className="footer-link with-icon">
+              <FaInstagram className="footer-icon" /> Instagram
+            </a>
+            <a href="https://www.tiktok.com/@lifebydorm?lang=en" target="_blank" rel="noopener noreferrer" className="footer-link with-icon">
+              <FaTiktok className="footer-icon" /> TikTok
             </a>
           </div>
 
