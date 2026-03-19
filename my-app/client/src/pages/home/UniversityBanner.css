@@ -38,20 +38,20 @@
 }
 
 .university-logo.logo-standard {
-  max-height: 80px;
-  min-height: 60px;
-  max-width: 140px;
-  min-width: 70px;
+  max-height: 65px;
+  min-height: 45px;
+  max-width: 110px;
+  min-width: 55px;
   width: auto;
   object-fit: contain;
   margin: 0;
 }
 
 .university-logo.logo-horizontal {
-  max-height: 80px;
-  min-height: 50px;
-  max-width: 250px;
-  min-width: 120px;
+  max-height: 65px;
+  min-height: 40px;
+  max-width: 200px;
+  min-width: 100px;
   width: auto;
   object-fit: contain;
   margin: 0;
