@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import Star from '@mui/icons-material/Star';
 import { Link } from 'react-router-dom';
 import DefaultDorm from '../../assets/Default_Dorm.webp';
+import SkeletonCard from '../../components/SkeletonCard';
 
 export type RecentVerifiedReview = {
   _id: string;
@@ -73,11 +74,7 @@ function RecentReviewsSection({ isLoading, recentVerifiedReviews }: RecentReview
     };
   }, []);
 
-  const getRatingClass = (rating: number): string => {
-    if (rating >= 4.0) return 'rating-high';
-    if (rating >= 3.0) return 'rating-medium';
-    return 'rating-low';
-  };
+
 
   const calculateReviewRating = (review: RecentVerifiedReview) => {
     const ratings = [review.room, review.bathroom, review.building, review.amenities, review.location];
@@ -119,7 +116,7 @@ function RecentReviewsSection({ isLoading, recentVerifiedReviews }: RecentReview
   return (
     <div className="featured-container" style={{ marginTop: '40px' }}>
       <div className="featured-header">
-        <h2 className="featured-title">Recent reviews</h2>
+        <h2 className="featured-title">Recent Reviews</h2>
         <div className="slider-controls">
           <button
             className="slider-button slider-button-left"
@@ -144,17 +141,18 @@ function RecentReviewsSection({ isLoading, recentVerifiedReviews }: RecentReview
           Array.from({ length: 8 }).map((_, index) => (
             <div
               key={index}
-              className="recent-review-slider-card recent-review-skeleton-card animate-pulse rounded-2xl border border-[#d8d5ce] bg-white"
-            />
+              className="recent-review-slider-card"
+            >
+              <SkeletonCard showRating={true} imageHeight={180} />
+            </div>
           ))
         ) : recentVerifiedReviews.length === 0 ? (
-          <p className="col-span-full rounded-2xl border border-[#d8d5ce] bg-white px-5 py-8 text-center text-[#565656]">
+          <p className="col-span-full rounded-xl border border-[#e0e0e0] bg-[#f8f8f8] px-5 py-8 text-center text-[#565656]">
             No verified reviews available yet.
           </p>
         ) : (
           recentVerifiedReviews.map((review) => {
             const rating = calculateReviewRating(review);
-            const ratingClass = getRatingClass(rating);
             const avatarSource = String(review.userInitial || review.user || '').trim();
             const avatarInitial = (avatarSource.match(/[A-Za-z0-9]/)?.[0] || 'A').toUpperCase();
 
@@ -162,48 +160,59 @@ function RecentReviewsSection({ isLoading, recentVerifiedReviews }: RecentReview
               <Link
                 key={review._id}
                 to={`/universities/${review.universitySlug}/dorms/${review.dormSlug}`}
-                className="recent-review-slider-card recent-review-link-card group flex flex-col overflow-hidden rounded-[18px] border border-[#d1cdc5] bg-white transition hover:-translate-y-0.5 hover:shadow-md"
+                className="recent-review-slider-card group flex flex-col overflow-hidden rounded-xl border border-[#e0e0e0] bg-white transition-all duration-300 ease-in-out hover:-translate-y-2 hover:shadow-[0_12px_24px_rgba(0,0,0,0.1)]"
               >
-                <div className="flex items-start gap-3 px-4 pt-3">
-                  <div
-                    className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full text-lg font-bold text-white shadow-sm"
-                    style={{ backgroundColor: getAvatarColor(review._id) }}
-                  >
-                    {avatarInitial}
+                <div className="flex items-center justify-between px-4 pt-4">
+                  <div className="flex items-center gap-3">
+                    <div
+                      className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-[1.05rem] font-bold text-white shadow-sm"
+                      style={{ backgroundColor: getAvatarColor(review._id) }}
+                    >
+                      {avatarInitial}
+                    </div>
+                    
+                    <div className="flex flex-col">
+                      <span className="text-[0.8rem] font-bold uppercase tracking-wider text-[#7a7a7a]">
+                        Verified
+                      </span>
+                      <span className="text-[0.75rem] text-[#9a9a9a]">Student Review</span>
+                    </div>
                   </div>
 
-                  <div className="review-overall-rating">
-                    <span className={`overall-rating-badge ${ratingClass}`}>
-                      <Star className="rating-star-icon" />
-                      {rating.toFixed(1)}
-                    </span>
+                  <div className="flex items-center gap-1.5 rounded-full border border-[#ebebeb] bg-[#fafafa] px-2.5 py-1 text-[0.95rem] font-semibold text-[#444444]">
+                    <Star style={{ color: '#FFB800', fontSize: '1.2rem' }} />
+                    {rating.toFixed(1)}
                   </div>
                 </div>
 
-                <div className="px-4 pb-3 pt-2">
-                  <p className="text-[1.02rem] leading-[1.35] text-[#343434]">
-                    {review.description.length > 185 ? `${review.description.slice(0, 185)}...` : review.description}
+                <div className="px-5 pb-4 pt-4">
+                  <p className="line-clamp-4 text-[0.98rem] leading-[1.5] text-[#4a4a4a]">
+                    {review.description}
                   </p>
                 </div>
 
-                <div className="mt-auto flex items-center gap-3 border-t border-[#dedad3] bg-[#f9f8f6] px-4 py-2.5">
+                <div className="mt-auto flex items-center gap-3 border-t border-[#e0e0e0] bg-[#f8f8f8] px-4 py-3">
                   <img
                     src={review.dormImageUrl || DefaultDorm}
                     alt="Dorm thumbnail"
-                    className="h-10 w-10 rounded-[10px] border border-[#d9d5ce] object-cover"
+                    className="h-[42px] w-[42px] rounded-lg border border-[#d9d5ce] object-cover"
                     loading="lazy"
                     onError={(event) => {
                       event.currentTarget.onerror = null;
                       event.currentTarget.src = DefaultDorm;
                     }}
                   />
-                  <div className="min-w-0">
-                    <p className="truncate text-[0.98rem] font-semibold text-[#2f2f2f]" title={review.dorm}>
+                  <div className="min-w-0 flex-1">
+                    <p className="truncate text-[0.95rem] font-bold text-[#2f2f2f]" title={review.dorm}>
                       {truncateDormName(review.dorm)}
                     </p>
-                    <p className="truncate text-[0.94rem] text-[#6a6966]">
+                    <p className="truncate text-[0.88rem] text-[#6a6966]">
                       {formatUniversityName(review.universityName || review.university)}
                     </p>
+                  </div>
+                  
+                  <div className="pb-[2px] text-[1.3rem] text-[#b0b0b0] transition-colors group-hover:text-[#6a6966]">
+                    ›
                   </div>
                 </div>
               </Link>
