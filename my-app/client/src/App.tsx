@@ -19,7 +19,7 @@ const AdminDashboard = lazy(() => import('./pages/admin/dashboard'));
 const TermsOfService = lazy(() => import('./pages/legal/TermsOfService.tsx'));
 const PrivacyPolicy = lazy(() => import('./pages/legal/PrivacyPolicy.tsx'));
 
-const CookieConsent = lazy(() => import('./components/CookieConsent'));
+import CookieConsent from './components/CookieConsent';
 
 function App() {
   return (
@@ -46,9 +46,7 @@ function App() {
           </Routes>
         </Suspense>
 
-        <Suspense fallback={null}>
-          <CookieConsent />
-        </Suspense>
+        <CookieConsent />
       </Router >
     </UniversityDataProvider >
   )
