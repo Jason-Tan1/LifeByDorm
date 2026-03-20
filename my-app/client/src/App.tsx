@@ -19,7 +19,7 @@ const AdminDashboard = lazy(() => import('./pages/admin/dashboard'));
 const TermsOfService = lazy(() => import('./pages/legal/TermsOfService.tsx'));
 const PrivacyPolicy = lazy(() => import('./pages/legal/PrivacyPolicy.tsx'));
 
-import CookieConsent from './components/CookieConsent';
+const CookieConsent = lazy(() => import('./components/CookieConsent'));
 
 function App() {
   return (

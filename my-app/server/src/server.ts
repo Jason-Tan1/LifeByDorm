@@ -365,7 +365,7 @@ app.get('/api/stats/homepage', readOnlyLimiter, async (req: Request, res: Respon
         ]
       })
         .sort({ createdAt: -1 })
-        .limit(40)
+        .limit(50)
         .lean()
     ]);
 
@@ -491,7 +491,7 @@ app.get('/api/stats/homepage', readOnlyLimiter, async (req: Request, res: Respon
         };
       })
       .filter((review: any) => !!review.universitySlug && !!review.dormSlug)
-      .slice(0, 24);
+      .slice(0, 30);
 
     const result = {
       topUniversities,
