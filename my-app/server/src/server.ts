@@ -1551,24 +1551,9 @@ app.get('/api/admin/reviews/pending', authenticationToken, requireAdmin, async (
       ]
     }).sort({ createdAt: -1 }).lean();
 
-    // Sign image URLs so they can be viewed even if S3 block public access is on
-    const reviewsWithSignedUrls = await Promise.all(pendingReviews.map(async (review: any) => {
-      if (review.fileImage) {
-        review.fileImage = await getSignedFileUrl(review.fileImage);
-      }
-      if (review.images && review.images.length > 0) {
-        review.images = await Promise.all(review.images.map((img: string) => getSignedFileUrl(img)));
-      }
-      // Also sign pending edit images
-      if (review.pendingEdit && review.pendingEdit.images && review.pendingEdit.images.length > 0) {
-        review.pendingEdit.images = await Promise.all(
-          review.pendingEdit.images.map((img: string) => getSignedFileUrl(img))
-        );
-      }
-      return review;
-    }));
-
-    res.json(reviewsWithSignedUrls);
+    // Images are publicly accessible on S3, so we return them directly
+    // (presigning was converting working public URLs into broken ones in production)
+    res.json(pendingReviews);
   } catch (err) {
     console.error('Error fetching pending reviews', err);
     res.status(500).json({ message: 'Error fetching pending reviews' });
