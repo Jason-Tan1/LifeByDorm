@@ -3,6 +3,8 @@ import { useTranslation } from 'react-i18next';
 import NavBar from '../nav/navbar';
 import Footer from '../home/footer';
 import './allUniversities.css';
+import '../legal/legal.css';
+import '../nav/contactme.css';
 import { useUniversityData } from '../../context/UniversityDataContext';
 import PageLoader from '../../components/PageLoader';
 import { useSEO } from '../../hooks/useSEO';
