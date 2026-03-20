@@ -46,7 +46,9 @@ function App() {
           </Routes>
         </Suspense>
 
-        <CookieConsent />
+        <Suspense fallback={null}>
+          <CookieConsent />
+        </Suspense>
       </Router >
     </UniversityDataProvider >
   )
