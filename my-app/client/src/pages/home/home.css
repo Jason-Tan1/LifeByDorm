@@ -118,6 +118,12 @@ textarea {
   text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.6);
 }
 
+@media (max-width: 480px) {
+  .home-section h1 {
+    font-size: 1.8rem;
+  }
+}
+
 @media (min-width: 1600px) {
   .home-section h1 {
     font-size: 2.5rem;
@@ -261,6 +267,15 @@ textarea {
   max-width: 300px;
   box-sizing: border-box;
   scroll-snap-align: center;
+}
+
+@media (max-width: 480px) {
+  .recent-review-slider-card {
+    flex: 0 0 280px;
+    width: 280px;
+    min-width: 280px;
+    max-width: 280px;
+  }
 }
 
 .recent-review-skeleton-card {
@@ -617,4 +632,18 @@ textarea {
 
 .icon {
   font-size: 1.2rem;
+}
+
+/* Disable sticky hover animations on touch devices */
+@media (hover: none) {
+  .hover\:-translate-y-2:hover,
+  .hover\:shadow-\[0_12px_24px_rgba\(0\,0\,0\,0\.1\)\]:hover,
+  .slider-card:hover,
+  .featured-card:hover,
+  .recent-review-slider-card:hover,
+  .featured-university-card:hover,
+  .featured-card:hover .featured-image {
+    transform: none !important;
+    box-shadow: none !important;
+  }
 }
