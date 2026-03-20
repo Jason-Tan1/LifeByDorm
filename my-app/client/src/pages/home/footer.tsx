@@ -1,7 +1,8 @@
 // import React from 'react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { FaLinkedin, FaGithub, FaInstagram, FaTiktok } from 'react-icons/fa';
+import { FaLinkedin, FaInstagram, FaTiktok } from 'react-icons/fa';
+import { FaXTwitter } from 'react-icons/fa6';
 import './footer.css';
 import LBDLogo from '../../assets/LBDLogo.webp';
 
@@ -45,8 +46,8 @@ function Footer() {
             <a href="https://www.linkedin.com/in/jasontan5/" target="_blank" rel="noopener noreferrer" className="footer-link with-icon">
               <FaLinkedin className="footer-icon" /> Creator LinkedIn
             </a>
-            <a href="https://github.com/Jason-Tan1/LifeByDorm" target="_blank" rel="noopener noreferrer" className="footer-link with-icon">
-              <FaGithub className="footer-icon" /> LifeByDorm GitHub
+            <a href="https://x.com/lifebydorm" target="_blank" rel="noopener noreferrer" className="footer-link with-icon">
+              <FaXTwitter className="footer-icon" /> X
             </a>
             <a href="https://www.instagram.com/lifebydorm/" target="_blank" rel="noopener noreferrer" className="footer-link with-icon">
               <FaInstagram className="footer-icon" /> Instagram
@@ -63,7 +64,7 @@ function Footer() {
       <div className="footer-bottom">
         <div className="footer-bottom-content">
           <div className="hiring-box">
-            Hiring for Marketing/Growth position, message on my <a href="https://www.linkedin.com/in/jasontan5/" target="_blank" rel="noopener noreferrer">linkedin</a> to see details
+            Looking for a Lead Marketing/Growth person to work with me, message on my <a href="https://www.linkedin.com/in/jasontan5/" target="_blank" rel="noopener noreferrer">linkedin</a> to see details
           </div>
           <p>&copy; {new Date().getFullYear()} LifeByDorm. {t('footer.rightsReserved') || 'All Rights Reserved.'}</p>
         </div>
