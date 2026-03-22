@@ -64,25 +64,10 @@ textarea {
   width: 100%;
   max-width: 1400px;
   margin: 0 auto;
-  padding: 0 4%;
+  padding: 18vh clamp(8px, 2vw, 20px) 0;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding-top: 18vh;
-}
-
-@media (min-width: 1600px) {
-  .home-container {
-    max-width: 1400px;
-    padding-top: 18vh;
-  }
-}
-
-@media (min-width: 1920px) {
-  .home-container {
-    max-width: 1800px;
-    padding-top: 20vh;
-  }
 }
 
 /* This div holds the text, search, and quick links */
@@ -148,7 +133,8 @@ textarea {
 
 .featured-container {
   width: 100%;
-  margin: 0;
+  max-width: 1400px;
+  margin: 0 auto;
   padding: 0;
 }
 
@@ -158,7 +144,7 @@ textarea {
   align-items: center;
   width: 100%;
   margin: 0 0 20px;
-  padding: 0 4%;
+  padding: 0 clamp(8px, 2vw, 20px);
   box-sizing: border-box;
   min-width: 0;
 }
@@ -245,8 +231,8 @@ textarea {
   /* Firefox */
   -ms-overflow-style: none;
   /* IE and Edge */
-  padding: 10px 4%;
-  scroll-padding-left: 4%;
+  padding: 10px clamp(8px, 2vw, 20px);
+  scroll-padding-left: clamp(8px, 2vw, 20px);
   overscroll-behavior-x: contain;
 }
 
