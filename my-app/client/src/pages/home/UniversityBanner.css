@@ -1,9 +1,10 @@
 .university-banner-container {
   width: 100%;
+  max-width: 1400px;
+  margin: 50px auto 0;
   overflow: hidden;
   background-color: transparent;
-  padding: 30px 0 50px 0;
-  margin-top: 50px;
+  padding: 30px clamp(8px, 2vw, 20px) 50px;
   display: flex;
   position: relative;
   z-index: 10;
