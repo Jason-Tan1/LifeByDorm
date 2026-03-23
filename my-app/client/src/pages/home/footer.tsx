@@ -23,37 +23,68 @@ function Footer() {
           <p className="footer-description">
             {t('footer.description2')}
           </p>
+
+          <div className="footer-socials">
+            <a href="https://linkedin.com/company/lifebydorm" target="_blank" rel="noopener noreferrer" className="footer-social-icon" aria-label="LinkedIn">
+              <FaLinkedin />
+            </a>
+            <a href="https://x.com/lifebydorm" target="_blank" rel="noopener noreferrer" className="footer-social-icon" aria-label="X (Twitter)">
+              <FaXTwitter />
+            </a>
+            <a href="https://www.instagram.com/lifebydorm/" target="_blank" rel="noopener noreferrer" className="footer-social-icon" aria-label="Instagram">
+              <FaInstagram />
+            </a>
+            <a href="https://www.tiktok.com/@lifebydorm?lang=en" target="_blank" rel="noopener noreferrer" className="footer-social-icon" aria-label="TikTok">
+              <FaTiktok />
+            </a>
+          </div>
         </div>
 
         {/* Right Side: Links */}
         <div className="footer-right">
 
-          {/* Column 1: Navigation */}
+          {/* Column 1: Resources */}
           <div className="footer-link-column">
-            <Link to="/aboutme" className="footer-link">{t('footer.about')}</Link>
-            <Link to="/contactme" className="footer-link">{t('footer.contactMe')}</Link>
-            <Link to="/universities" className="footer-link">{t('footer.universityList')}</Link>
-            <Link to="/terms" className="footer-link">{t('footer.terms')}</Link>
-            <Link to="/privacy" className="footer-link">{t('footer.privacy')}</Link>
+            <h4 className="footer-column-title">Resources</h4>
+            <Link to="/universities" className="footer-link">{t('footer.universityList', 'Find a University')}</Link>
+            <span className="footer-link placeholder-link">
+              The LifeByDorm Blog <span className="coming-soon-badge">Soon</span>
+            </span>
+            <span className="footer-link placeholder-link">
+              Dorm Essentials <span className="coming-soon-badge">Soon</span>
+            </span>
+            <span className="footer-link placeholder-link">
+              Freshman Guide <span className="coming-soon-badge">Soon</span>
+            </span>
+            <span className="footer-link placeholder-link">
+              Help Center <span className="coming-soon-badge">Soon</span>
+            </span>
           </div>
 
-          {/* Column 2: Socials & Support */}
+          {/* Column 2: Company */}
           <div className="footer-link-column">
-            <a href="https://linkedin.com/company/lifebydorm" target="_blank" rel="noopener noreferrer" className="footer-link with-icon">
-              <FaLinkedin className="footer-icon" /> {t('footer.companyLinkedin')}
+            <h4 className="footer-column-title">Company</h4>
+            <Link to="/aboutme" className="footer-link">{t('footer.about', 'About Us')}</Link>
+            <Link to="/contactme" className="footer-link">{t('footer.contactMe', 'Contact Us')}</Link>
+            <a href="https://www.linkedin.com/in/jasontan5/" target="_blank" rel="noopener noreferrer" className="footer-link">
+              Founder LinkedIn
             </a>
-            <a href="https://www.linkedin.com/in/jasontan5/" target="_blank" rel="noopener noreferrer" className="footer-link with-icon">
-              <FaLinkedin className="footer-icon" /> {t('footer.creatorLinkedin')}
-            </a>
-            <a href="https://x.com/lifebydorm" target="_blank" rel="noopener noreferrer" className="footer-link with-icon">
-              <FaXTwitter className="footer-icon" /> X
-            </a>
-            <a href="https://www.instagram.com/lifebydorm/" target="_blank" rel="noopener noreferrer" className="footer-link with-icon">
-              <FaInstagram className="footer-icon" /> Instagram
-            </a>
-            <a href="https://www.tiktok.com/@lifebydorm?lang=en" target="_blank" rel="noopener noreferrer" className="footer-link with-icon">
-              <FaTiktok className="footer-icon" /> TikTok
-            </a>
+            <span className="footer-link placeholder-link">
+              Ambassadors <span className="coming-soon-badge">Soon</span>
+            </span>
+          </div>
+
+          {/* Column 3: Legal & Community */}
+          <div className="footer-link-column">
+            <h4 className="footer-column-title">Legal</h4>
+            <Link to="/terms" className="footer-link">{t('footer.terms', 'Terms of Service')}</Link>
+            <Link to="/privacy" className="footer-link">{t('footer.privacy', 'Privacy Policy')}</Link>
+            <Link to="/review-guidelines" className="footer-link">
+              Review Guidelines
+            </Link>
+            <Link to="/cookie-policy" className="footer-link">
+              Cookie Policy
+            </Link>
           </div>
 
         </div>
@@ -70,7 +101,7 @@ function Footer() {
               }}
             />
           </div>
-          <p>&copy; {new Date().getFullYear()} LifeByDorm. {t('footer.rightsReserved')}</p>
+          <p>&copy; {new Date().getFullYear()} LifeByDorm. {t('footer.rightsReserved', 'All rights reserved.')}</p>
         </div>
       </div>
     </footer>

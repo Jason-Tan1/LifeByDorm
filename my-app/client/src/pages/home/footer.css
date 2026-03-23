@@ -1,89 +1,119 @@
-/* DM Sans loaded globally via tailwind.css */
-
 .footer {
   background-color: #1f1f1f;
   width: 100%;
   margin-top: auto;
-  font-family: 'DM Sans', sans-serif;
   box-sizing: border-box;
 }
 
 .footer-content {
   background-color: #1f1f1f;
-  /* Apply the dark grey/black background */
   color: #eeeeee;
   max-width: 1400px;
   margin: 0 auto;
-  padding: 40px clamp(8px, 2vw, 20px) 20px;
-  /* Apply padding inside the grey box */
+  padding: 60px clamp(8px, 2vw, 20px) 40px;
   display: flex;
   justify-content: space-between;
-  gap: 40px;
+  gap: 60px;
 }
 
 /* Left Side Styles */
 .footer-left {
   flex: 1;
-  max-width: 500px;
+  max-width: 450px; /* Increased to let the description breathe and fill more space */
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
 }
 
 .footer-logo {
   height: 60px;
   width: auto;
-  margin-bottom: 20px;
-  /* Add brightness if the logo is dark on a dark background */
-  /* filter: brightness(0) invert(1); */
+  margin-bottom: 24px;
 }
 
 .footer-description {
   font-size: 0.95rem;
-  line-height: 1.5;
+  line-height: 1.7; /* Increased line height for better readability */
   color: #cccccc;
-  margin-bottom: 25px;
+  margin-bottom: 24px;
+  text-wrap: balance; /* Prevents awkward hanging words */
 }
 
-.footer-description a {
+.footer-socials {
+  display: flex;
+  gap: 18px;
+  margin-top: auto; /* Pushes socials to the bottom to align with columns if space exists */
+  padding-top: 10px;
+}
+
+.footer-social-icon {
   color: #eeeeee;
-  text-decoration: underline;
+  font-size: 1.4rem;
+  transition: color 0.2s ease, transform 0.2s ease;
 }
 
-.footer-description a:hover {
+.footer-social-icon:hover {
   color: #ffffff;
+  transform: scale(1.1);
 }
 
 /* Right Side Styles */
 .footer-right {
   display: flex;
-  gap: 60px;
+  flex: 2;
+  /* Brings them closer together instead of stretching across */
+  gap: clamp(40px, 5vw, 80px); 
+  /* Anchors all 3 columns fully to the right side */
+  justify-content: flex-end; 
+  flex-wrap: wrap;
 }
 
 .footer-link-column {
   display: flex;
   flex-direction: column;
   gap: 12px;
+  min-width: max-content; /* Helps columns fit tightly to their content */
+}
+
+.footer-column-title {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: #ffffff;
+  margin-bottom: 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
 }
 
 .footer-link {
-  color: #eeeeee;
+  color: #bbbbbb;
   text-decoration: none;
   font-size: 0.95rem;
   font-weight: 500;
   transition: color 0.2s ease;
-}
-
-.footer-link.with-icon {
-  display: flex;
+  display: inline-flex;
   align-items: center;
-  gap: 8px;
 }
 
-.footer-icon {
-  font-size: 1.1rem;
-}
-
-.footer-link:hover {
-  text-decoration: underline;
+.footer-link:hover:not(.placeholder-link) {
   color: #ffffff;
+  text-decoration: underline;
+}
+
+.placeholder-link {
+  cursor: default;
+  color: #888888;
+}
+
+.coming-soon-badge {
+  background-color: #333333;
+  color: #aaaaaa;
+  font-size: 0.65rem;
+  padding: 2px 6px;
+  border-radius: 4px;
+  margin-left: 8px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
 }
 
 /* Bottom Legal Section */
@@ -92,22 +122,22 @@
   margin: 0 auto;
   padding: 0 clamp(8px, 2vw, 20px) 30px;
   display: flex;
-  justify-content: flex-end;
-  background-color: #1f1f1f;
-  /* Extend the background color down */
+  justify-content: space-between;
+  align-items: center;
+  border-top: 1px solid #333333;
+  padding-top: 25px;
 }
 
 .footer-bottom-content {
   display: flex;
   flex-direction: column;
-  align-items: flex-end;
-  gap: 15px;
+  gap: 10px;
+  width: 100%;
 }
 
 .hiring-box {
   font-size: 0.85rem;
-  color: #eeeeee;
-  display: inline-block;
+  color: #bbbbbb;
 }
 
 .hiring-box a {
@@ -119,39 +149,43 @@
 .footer-bottom p {
   margin: 0;
   font-size: 0.85rem;
-  color: #aaaaaa;
+  color: #888888;
 }
 
+/* Responsive Media Queries */
 @media (max-width: 900px) {
   .footer-content {
     flex-direction: column;
-    gap: 40px;
+    gap: 50px;
   }
 
   .footer-left {
     max-width: 100%;
   }
 
-  .footer-bottom {
-    justify-content: center;
-    text-align: center;
+  .footer-right {
+    /* For smaller screens like tablets, align columns to the left under the logo */
+    justify-content: flex-start;
+    gap: 40px 60px;
+  }
+}
+
+@media (max-width: 600px) {
+  .footer-right {
+    gap: 40px;
+  }
+  .footer-link-column {
+    min-width: 40%;
   }
 }
 
 @media (max-width: 480px) {
   .footer-right {
-    flex-direction: column;
+    flex-direction: column; /* Stack vertically on very small mobile screens */
     gap: 30px;
   }
-}
-
-@media (max-width: 768px) {
-  .footer-content {
-    padding-left: 4%;
-    padding-right: 4%;
-  }
-  .footer-bottom {
-    padding-left: 4%;
-    padding-right: 4%;
+  .footer-bottom-content {
+    align-items: center;
+    text-align: center;
   }
 }

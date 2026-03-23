@@ -18,6 +18,8 @@ const AllUniversities = lazy(() => import('./pages/universities/allUniversities.
 const AdminDashboard = lazy(() => import('./pages/admin/dashboard'));
 const TermsOfService = lazy(() => import('./pages/legal/TermsOfService.tsx'));
 const PrivacyPolicy = lazy(() => import('./pages/legal/PrivacyPolicy.tsx'));
+const CookiePolicy = lazy(() => import('./pages/legal/CookiePolicy.tsx'));
+const ReviewGuidelines = lazy(() => import('./pages/legal/ReviewGuidelines.tsx'));
 
 import CookieConsent from './components/CookieConsent';
 import GoogleOneTapPrompt from './components/GoogleOneTapPrompt';
@@ -44,6 +46,8 @@ function App() {
             <Route path="/review" element={<Review />} />
             <Route path="/terms" element={<TermsOfService />} />
             <Route path="/privacy" element={<PrivacyPolicy />} />
+            <Route path="/cookie-policy" element={<CookiePolicy />} />
+            <Route path="/review-guidelines" element={<ReviewGuidelines />} />
           </Routes>
         </Suspense>
 
