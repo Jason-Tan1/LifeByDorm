@@ -1,0 +1,36 @@
+.onetap-container {
+  position: fixed;
+  top: 72px; /* Below desktop navbar */
+  left: 0;
+  width: 100%;
+  z-index: 999; /* Just under navbar */
+  pointer-events: none; /* Let clicks pass through empty space */
+  display: flex;
+}
+
+.onetap-inner {
+  max-width: 1400px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 0 clamp(8px, 2vw, 20px); /* Match navbar padding */
+  display: flex;
+  justify-content: flex-end; /* Align right like auth buttons */
+  pointer-events: auto;
+}
+
+/* Tablet */
+@media (max-width: 768px) {
+  .onetap-container {
+    top: 60px;
+  }
+}
+
+/* Mobile */
+@media (max-width: 480px) {
+  .onetap-container {
+    top: 52px;
+  }
+  .onetap-inner {
+    padding: 0 4%; /* Navbar uses this on mobile */
+  }
+}

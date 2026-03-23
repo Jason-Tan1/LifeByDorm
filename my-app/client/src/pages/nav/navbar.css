@@ -271,7 +271,7 @@ body {
 }
 
 /* Styling for the primary button (Sign In) */
-.navbar_login button {
+.navbar_login > button {
   background-color: #D62828;
   color: #ffffff;
   border-radius: 999px; /* Pill shape */
@@ -280,7 +280,7 @@ body {
 }
 
 /* Hover effect for the primary button */
-.navbar_login button:hover {
+.navbar_login > button:hover {
   background-color: #B91C1C;
   box-shadow: 0 4px 12px rgba(214, 40, 40, 0.35);
 }

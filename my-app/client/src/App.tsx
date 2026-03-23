@@ -20,6 +20,7 @@ const TermsOfService = lazy(() => import('./pages/legal/TermsOfService.tsx'));
 const PrivacyPolicy = lazy(() => import('./pages/legal/PrivacyPolicy.tsx'));
 
 import CookieConsent from './components/CookieConsent';
+import GoogleOneTapPrompt from './components/GoogleOneTapPrompt';
 
 function App() {
   return (
@@ -46,8 +47,7 @@ function App() {
           </Routes>
         </Suspense>
 
-        <CookieConsent />
-      </Router >
+        <CookieConsent />        <GoogleOneTapPrompt />      </Router >
     </UniversityDataProvider >
   )
 }
