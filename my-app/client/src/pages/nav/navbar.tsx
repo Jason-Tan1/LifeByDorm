@@ -301,9 +301,9 @@ function Navbar() {
         {renderMobileMenuContent()}
       </div>
       </div>
-      <LoginModal isOpen={isLoginModalOpen} onClose={() => setIsLoginModalOpen(false)} />
     </div>
     <div className="navbar-spacer" />
+    <LoginModal isOpen={isLoginModalOpen} onClose={() => setIsLoginModalOpen(false)} />
     </>
   )
 }

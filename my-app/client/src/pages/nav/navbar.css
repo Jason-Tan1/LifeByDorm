@@ -242,7 +242,7 @@ body {
 }
 
 /* General Styling for all buttons in the navbar */
-.navbar button {
+.navbar-content button {
   cursor: pointer;
   border: none;
   border-radius: 8px;
@@ -252,7 +252,7 @@ body {
   transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.navbar button:active {
+.navbar-content button:active {
   transform: scale(0.96);
 }
 
@@ -378,7 +378,7 @@ body {
     height: 35px;
   }
 
-  .navbar button {
+  .navbar-content button {
     padding: 0.35rem 0.6rem;
     font-size: 0.8rem;
   }
@@ -440,7 +440,7 @@ body {
     gap: 0.3rem;
   }
 
-  .navbar button {
+  .navbar-content button {
     padding: 0.4rem 0.8rem;
     font-size: 0.75rem;
   }
