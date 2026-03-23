@@ -50,6 +50,11 @@
         "review": "review",
         "locationNA": "Location N/A"
     },
+    "infoSection": {
+        "title": "We're LifeByDorm",
+        "description": "We're a dorm review platform built by students, for students. Our vision is to become the universal hub for Canadian university living by empowering students to share real experiences, share authentic photos, and choose their perfect home with confidence.",
+        "cardTitle": "Campus Residence"
+    },
     "search": {
         "placeholderUniversities": "Search for universities...",
         "placeholderDorms": "Search for dormitories...",
@@ -62,7 +67,12 @@
         "universityList": "All Schools",
         "terms": "Terms & Conditions",
         "privacy": "Privacy Policy",
-        "rightsReserved": "LifeByDorm. All rights reserved."
+        "rightsReserved": "LifeByDorm. All rights reserved.",
+        "description1": "LifeByDorm is an independent platform built by students, for students. We provide genuine reviews and insights on university accommodations across Canada to help you make informed decisions about where you live.",
+        "description2": "Writing a review is easy! Simply create an account, search for your university and specific dorm, and rate the various aspects of your stay. Your insights directly help future students find their ideal home away from home.",
+        "companyLinkedin": "Company LinkedIn",
+        "creatorLinkedin": "Creator LinkedIn",
+        "hiringMessage": "Looking for a Lead Marketing/Growth person to work with me, message on my <link>linkedin</link> to see details"
     },
     "universityList": {
         "title": "All Schools",

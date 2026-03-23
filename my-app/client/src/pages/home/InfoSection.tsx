@@ -1,17 +1,18 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import DefaultCampus from '../../assets/Default_Campus.webp';
 import './InfoSection.css';
 
 const InfoSection: React.FC = () => {
+  const { t } = useTranslation();
+
   return (
     <div className="info-section-container wrapper">
       <div className="info-section-content">
         <div className="info-left">
-          <h2 className="info-title">We're LifeByDorm</h2>
+          <h2 className="info-title">{t('infoSection.title')}</h2>
           <p className="info-description">
-            We're a dorm review platform built by students, for students. Our vision is to become
-            the universal hub for Canadian university living by empowering students to share real experiences,
-            share authentic photos, and choose their perfect home with confidence.
+            {t('infoSection.description')}
           </p>
         </div>
 
@@ -24,7 +25,7 @@ const InfoSection: React.FC = () => {
                 style={{ backgroundImage: `url(${DefaultCampus})` }}
               />
               <div className="graphic-dorm-details">
-                <div className="graphic-dorm-title">Campus Residence</div>
+                <div className="graphic-dorm-title">{t('infoSection.cardTitle')}</div>
                 <div className="graphic-dorm-stars">
                   <span>★</span><span>★</span><span>★</span><span>★</span><span>★</span>
                 </div>

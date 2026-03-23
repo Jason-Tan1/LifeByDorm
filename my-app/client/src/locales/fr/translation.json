@@ -50,6 +50,11 @@
         "review": "avis",
         "locationNA": "Emplacement N/A"
     },
+    "infoSection": {
+        "title": "Nous sommes LifeByDorm",
+        "description": "Nous sommes une plateforme d'avis sur les résidences créée par des étudiants, pour des étudiants. Notre vision est de devenir le hub universel pour la vie universitaire au Canada en permettant aux étudiants de partager leurs expériences réelles, de publier des photos authentiques et de choisir leur résidence idéale en toute confiance.",
+        "cardTitle": "Résidence universitaire"
+    },
     "search": {
         "placeholderUniversities": "Rechercher des Universities...",
         "placeholderDorms": "Rechercher des Dorms...",
@@ -59,10 +64,15 @@
     "footer": {
         "about": "À propos",
         "contactMe": "Contactez-moi",
-        "universityList": "Liste des Universities",
+        "universityList": "Liste des universités",
         "terms": "Conditions générales",
         "privacy": "Politique de confidentialité",
-        "rightsReserved": "LifeByDorm. Tous droits réservés."
+        "rightsReserved": "LifeByDorm. Tous droits réservés.",
+        "description1": "LifeByDorm est une plateforme indépendante créée par des étudiants, pour des étudiants. Nous fournissons des avis authentiques et des informations sur les logements universitaires à travers le Canada pour vous aider à prendre des décisions éclairées sur votre lieu de vie.",
+        "description2": "Rédiger un avis est facile ! Créez simplement un compte, recherchez votre université et votre résidence, et évaluez les différents aspects de votre séjour. Vos avis aident directement les futurs étudiants à trouver leur résidence idéale.",
+        "companyLinkedin": "LinkedIn de l'entreprise",
+        "creatorLinkedin": "LinkedIn du créateur",
+        "hiringMessage": "À la recherche d'un(e) responsable Marketing/Croissance pour travailler avec moi, envoyez un message sur mon <link>linkedin</link> pour plus de détails"
     },
     "universityList": {
         "title": "Liste des Universities",

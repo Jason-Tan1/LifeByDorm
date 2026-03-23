@@ -1,6 +1,6 @@
 // import React from 'react';
 import { Link } from 'react-router-dom';
-import { useTranslation } from 'react-i18next';
+import { useTranslation, Trans } from 'react-i18next';
 import { FaLinkedin, FaInstagram, FaTiktok } from 'react-icons/fa';
 import { FaXTwitter } from 'react-icons/fa6';
 import './footer.css';
@@ -18,10 +18,10 @@ function Footer() {
             <img src={LBDLogo} alt="LifeByDorm Logo" className="footer-logo" />
           </Link>
           <p className="footer-description">
-            LifeByDorm is an independent platform built by students, for students. We provide genuine reviews and insights on university accommodations across Canada to help you make informed decisions about where you live.
+            {t('footer.description1')}
           </p>
           <p className="footer-description">
-            Writing a review is easy! Simply create an account, search for your university and specific dorm, and rate the various aspects of your stay. Your insights directly help future students find their ideal home away from home.
+            {t('footer.description2')}
           </p>
         </div>
 
@@ -30,21 +30,20 @@ function Footer() {
 
           {/* Column 1: Navigation */}
           <div className="footer-link-column">
-            <Link to="/aboutme" className="footer-link">{t('footer.about') || 'About us'}</Link>
-            <Link to="/contactme" className="footer-link">{t('footer.contactMe') || 'Contact Me'}</Link>
-            <Link to="/universities" className="footer-link">{t('footer.universityList') || 'Universities'}</Link>
-            <Link to="/terms" className="footer-link">{t('footer.terms') || 'Terms of Use'}</Link>
-            <Link to="/privacy" className="footer-link">{t('footer.privacy') || 'Privacy Policy'}</Link>
+            <Link to="/aboutme" className="footer-link">{t('footer.about')}</Link>
+            <Link to="/contactme" className="footer-link">{t('footer.contactMe')}</Link>
+            <Link to="/universities" className="footer-link">{t('footer.universityList')}</Link>
+            <Link to="/terms" className="footer-link">{t('footer.terms')}</Link>
+            <Link to="/privacy" className="footer-link">{t('footer.privacy')}</Link>
           </div>
 
           {/* Column 2: Socials & Support */}
           <div className="footer-link-column">
-            {/* You can update these HREFs with your actual links */}
             <a href="https://linkedin.com/company/lifebydorm" target="_blank" rel="noopener noreferrer" className="footer-link with-icon">
-              <FaLinkedin className="footer-icon" /> Company LinkedIn
+              <FaLinkedin className="footer-icon" /> {t('footer.companyLinkedin')}
             </a>
             <a href="https://www.linkedin.com/in/jasontan5/" target="_blank" rel="noopener noreferrer" className="footer-link with-icon">
-              <FaLinkedin className="footer-icon" /> Creator LinkedIn
+              <FaLinkedin className="footer-icon" /> {t('footer.creatorLinkedin')}
             </a>
             <a href="https://x.com/lifebydorm" target="_blank" rel="noopener noreferrer" className="footer-link with-icon">
               <FaXTwitter className="footer-icon" /> X
@@ -64,9 +63,14 @@ function Footer() {
       <div className="footer-bottom">
         <div className="footer-bottom-content">
           <div className="hiring-box">
-            Looking for a Lead Marketing/Growth person to work with me, message on my <a href="https://www.linkedin.com/in/jasontan5/" target="_blank" rel="noopener noreferrer">linkedin</a> to see details
+            <Trans
+              i18nKey="footer.hiringMessage"
+              components={{
+                link: <a href="https://www.linkedin.com/in/jasontan5/" target="_blank" rel="noopener noreferrer" />
+              }}
+            />
           </div>
-          <p>&copy; {new Date().getFullYear()} LifeByDorm. {t('footer.rightsReserved') || 'All Rights Reserved.'}</p>
+          <p>&copy; {new Date().getFullYear()} LifeByDorm. {t('footer.rightsReserved')}</p>
         </div>
       </div>
     </footer>
