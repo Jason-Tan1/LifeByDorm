@@ -5,7 +5,7 @@ body {
   background-color: #fffafa;
   margin: 0;
   width: 100%;
-  overflow-x: hidden;
+  overflow-x: clip;
   overflow-y: overlay;
 }
 
@@ -31,13 +31,46 @@ body {
 
 /* Main Navbar Container */
 .navbar {
+  background-color: rgba(255, 255, 255, 0.96);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  width: 100%;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 1000;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.02);
+  box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.04);
+  box-sizing: border-box;
+  transition: background-color 0.3s ease;
+}
+
+.navbar-spacer {
+  height: 72px; /* matches navbar height on desktop */
+}
+
+@media (max-width: 768px) {
+  .navbar-spacer {
+    height: 60px;
+  }
+}
+
+@media (max-width: 480px) {
+  .navbar-spacer {
+    height: 52px;
+  }
+}
+
+.navbar-content {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: clamp(0.5rem, 2vw, 1rem) clamp(0.75rem, 3vw, 2.5rem);
-  background-color: #ffffff;
-  box-sizing: border-box;
+  max-width: 1400px;
   width: 100%;
+  margin: 0 auto;
+  padding: 0 clamp(8px, 2vw, 20px);
+  height: 72px; /* Fixed height prevents layout shifts when search bar mounts */
+  box-sizing: border-box;
   flex-wrap: wrap;
   gap: 0.5rem;
 }
@@ -55,6 +88,60 @@ body {
   /* Adjust height as needed */
   width: auto;
   object-fit: contain;
+}
+
+.navbar_left {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+  flex: 1; /* Pushes the right-side actions apart naturally */
+}
+
+/* Conditional Nav Search Bar */
+.navbar_search_container {
+  width: 100%;
+  max-width: 380px; /* Slimmer, sleeker footprint */
+  display: flex;
+  align-items: center;
+}
+
+/* Social Icons (Desktop only) */
+.navbar_socials {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-right: 12px;
+  padding-right: 12px;
+  border-right: 1px solid #e5e7eb;
+}
+
+.navbar_socials a {
+  color: #6b7280;
+  font-size: 1.15rem;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px;
+  border-radius: 6px;
+}
+
+.navbar_socials a:active {
+  transform: scale(0.92);
+}
+
+.navbar_socials a:hover {
+  background-color: #f3f4f6;
+}
+
+.navbar_socials a[aria-label="TikTok"]:hover {
+  color: #000000;
+}
+.navbar_socials a[aria-label="Instagram"]:hover {
+  color: #E1306C;
+}
+.navbar_socials a[aria-label="LinkedIn"]:hover {
+  color: #0A66C2;
 }
 
 /* Container for the navigation buttons */
@@ -77,7 +164,7 @@ body {
   width: 38px;
   height: 38px;
   border-radius: 10px;
-  background-color: #ffffff;
+  background-color: transparent;
   border: 1px solid #e5e7eb;
   color: #1f2937;
 }
@@ -92,7 +179,7 @@ body {
   gap: 4px;
 }
 
-.mobile_menu_section + .mobile_menu_section {
+.mobile_menu_section+.mobile_menu_section {
   border-top: 1px solid #f3f4f6;
   padding-top: 8px;
   margin-top: 2px;
@@ -162,7 +249,11 @@ body {
   font-size: clamp(0.75rem, 2vw, 0.95rem);
   font-weight: 500;
   padding: clamp(0.4rem, 1vw, 0.6rem) clamp(0.7rem, 2vw, 1.2rem);
-  transition: all 0.2s ease-in-out;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.navbar button:active {
+  transform: scale(0.96);
 }
 
 /* Styling for secondary buttons (About Me, Contact Me) */
@@ -183,12 +274,15 @@ body {
 .navbar_login button {
   background-color: #D62828;
   color: #ffffff;
-  border-radius: 25px;
+  border-radius: 999px; /* Pill shape */
+  font-weight: 600;
+  box-shadow: 0 2px 8px rgba(214, 40, 40, 0.25);
 }
 
 /* Hover effect for the primary button */
 .navbar_login button:hover {
   background-color: #B91C1C;
+  box-shadow: 0 4px 12px rgba(214, 40, 40, 0.35);
 }
 
 /* Dropdown Container */
@@ -199,7 +293,7 @@ body {
 
 /* My Account Button (matches Login button style) */
 .navbar_account_dropdown .account_btn {
-  background-color: #ffffff;
+  background-color: transparent;
   color: #333333;
   border: none;
   display: flex;
@@ -221,19 +315,20 @@ body {
   position: absolute;
   right: 0;
   background-color: #ffffff;
-  min-width: 140px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  min-width: 160px;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.05);
   z-index: 1000;
-  border-radius: 8px;
+  border-radius: 10px;
   overflow: hidden;
-  margin-top: 4px;
-  border: 1px solid #e0e7ff;
+  margin-top: 10px;
+  border: 1px solid #f3f4f6;
+  padding: 6px 0;
 }
 
 /* Links inside the dropdown */
 .account_dropdown_content button {
-  color: #374151;
-  padding: 10px 16px;
+  color: #4b5563;
+  padding: 10px 18px;
   text-decoration: none;
   display: block;
   background-color: transparent;
@@ -241,13 +336,16 @@ body {
   text-align: left;
   border-radius: 0;
   font-size: 0.9rem;
+  font-weight: 500;
   border: none;
+  transition: all 0.15s ease;
 }
 
 /* Change color of dropdown links on hover */
 .account_dropdown_content button:hover {
-  background-color: #f3f4f6;
+  background-color: #f8f9fa;
   color: #111827;
+  padding-left: 22px; /* Smooth slide-in effect */
 }
 
 /* Hover effect removed - controlled by click in component
@@ -260,9 +358,20 @@ body {
 /* Tablet */
 @media (max-width: 768px) {
   .navbar {
-    padding: 0.5rem 0.75rem;
-    position: relative;
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 1000;
+  }
+
+  .navbar-content {
+    padding: 0 4%;
+    height: 60px;
     flex-wrap: nowrap;
+  }
+
+  .navbar_search_container {
+    display: none;
   }
 
   .navbar_logo img {
@@ -283,8 +392,8 @@ body {
   }
 
   .navbar_actions_mobile {
-    position: absolute;
-    top: calc(100% + 8px);
+    position: fixed;
+    top: 60px;
     right: 0.75rem;
     display: none;
     flex-direction: column;
@@ -311,9 +420,10 @@ body {
 
 /* Mobile */
 @media (max-width: 480px) {
-  .navbar {
+  .navbar-content {
     justify-content: space-between;
-    padding: 0.5rem;
+    padding: 0 4%;
+    height: 52px;
   }
 
   .navbar_logo img {
@@ -342,6 +452,7 @@ body {
   }
 
   .navbar_actions_mobile {
+    top: 52px;
     right: 0.5rem;
     width: auto;
     max-width: 200px;

@@ -1,9 +1,11 @@
 import { useEffect, useState } from 'react'
-import { Link, useNavigate, useSearchParams } from 'react-router-dom';
+import { Link, useNavigate, useSearchParams, useLocation } from 'react-router-dom';
+import { FaTiktok, FaInstagram, FaLinkedinIn } from 'react-icons/fa';
 import MenuIcon from '@mui/icons-material/Menu';
 import LanguageIcon from '@mui/icons-material/Language';
 import LoginModal from './login';
 import { useTranslation } from 'react-i18next';
+import NavbarSearchBar from './NavbarSearchBar';
 import './navbar.css'
 
 import LBDLogo from '../../assets/LBDLogo.webp';
@@ -16,8 +18,27 @@ function Navbar() {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isLangDropdownOpen, setIsLangDropdownOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [showNavSearch, setShowNavSearch] = useState(false);
+
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
+  const location = useLocation();
+
+  useEffect(() => {
+    const handleScroll = () => {
+      if (location.pathname === '/') {
+        // Show after scrolling past the home hero section search bar (~350px)
+        setShowNavSearch(window.scrollY > 350);
+      } else {
+        // Always show on other pages
+        setShowNavSearch(true);
+      }
+    };
+
+    handleScroll(); // Check initially
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, [location.pathname]);
 
   const changeLanguage = (lng: string) => {
     i18n.changeLanguage(lng);
@@ -227,13 +248,25 @@ function Navbar() {
   );
 
   return (
+    <>
     <div className="navbar">
-      {/* Navigation Bar Logo */}
-      <div className="navbar_logo">
-        <Link to="/">
-          <img src={LBDLogo} alt="LifeByDorm Logo" />
-        </Link>
+      <div className="navbar-content">
+      <div className="navbar_left">
+        {/* Navigation Bar Logo */}
+        <div className="navbar_logo">
+          <Link to="/">
+            <img src={LBDLogo} alt="LifeByDorm Logo" />
+          </Link>
+        </div>
+
+        {/* Conditionally Displayed Search Bar */}
+        {showNavSearch && (
+          <div className="navbar_search_container">
+            <NavbarSearchBar />
+          </div>
+        )}
       </div>
+
       <button
         className="mobile_menu_toggle"
         aria-label="Open menu"
@@ -248,6 +281,17 @@ function Navbar() {
 
       {/* Desktop Navigation Buttons */}
       <div className="navbar_actions navbar_actions_desktop">
+        <div className="navbar_socials">
+          <a href="https://www.tiktok.com/@lifebydorm" target="_blank" rel="noopener noreferrer" aria-label="TikTok">
+            <FaTiktok />
+          </a>
+          <a href="https://www.instagram.com/lifebydorm" target="_blank" rel="noopener noreferrer" aria-label="Instagram">
+            <FaInstagram />
+          </a>
+          <a href="https://www.linkedin.com/company/lifebydorm" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn">
+            <FaLinkedinIn />
+          </a>
+        </div>
         {renderLanguageSwitcher()}
         {renderAuthActions()}
       </div>
@@ -256,8 +300,11 @@ function Navbar() {
       <div className={`navbar_actions_mobile ${isMobileMenuOpen ? 'open' : ''}`}>
         {renderMobileMenuContent()}
       </div>
+      </div>
       <LoginModal isOpen={isLoginModalOpen} onClose={() => setIsLoginModalOpen(false)} />
     </div>
+    <div className="navbar-spacer" />
+    </>
   )
 }
 
