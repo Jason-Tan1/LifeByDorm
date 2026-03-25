@@ -123,7 +123,9 @@ function Home() {
 
         setRecentVerifiedReviews(
           Array.isArray(stats.recentVerifiedReviews)
-            ? stats.recentVerifiedReviews.filter((review: any) => review?.verified === true)
+            ? stats.recentVerifiedReviews.filter(
+                (review: any) => review?.verified === true && /\S/.test(String(review?.description || ''))
+              )
             : []
         );
       } catch (e) {

@@ -359,6 +359,7 @@ app.get('/api/stats/homepage', readOnlyLimiter, async (req: Request, res: Respon
       ]),
       UserReview.find({
         verified: true,
+        description: { $regex: /\S/ },
         $or: [
           { status: 'approved' },
           { status: { $exists: false } }
@@ -470,6 +471,7 @@ app.get('/api/stats/homepage', readOnlyLimiter, async (req: Request, res: Respon
     });
 
     const recentVerifiedReviews = recentVerifiedReviewsRaw
+      .filter((review: any) => /\S/.test(String(review.description || '')))
       .map((review: any) => {
         const uni = String(review.university || '').trim();
         const dorm = String(review.dorm || '').trim();
