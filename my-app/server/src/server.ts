@@ -1340,11 +1340,29 @@ app.get('/api/reviews', async (req: Request, res: Response) => {
     if (university) filter.university = university;
     if (dorm) filter.dorm = dorm;
 
-    const reviews = await UserReview.find(filter)
-      .sort({ createdAt: -1 })
-      .limit(limit)
-      .skip(skip)
-      .lean();
+    const reviews = await UserReview.aggregate([
+      { $match: filter },
+      {
+        $addFields: {
+          hasWrittenDescription: {
+            $gt: [
+              {
+                $strLenCP: {
+                  $trim: {
+                    input: { $ifNull: ['$description', ''] }
+                  }
+                }
+              },
+              0
+            ]
+          }
+        }
+      },
+      { $sort: { hasWrittenDescription: -1, createdAt: -1 } },
+      { $skip: skip },
+      { $limit: limit },
+      { $project: { hasWrittenDescription: 0 } }
+    ]);
 
     res.json(reviews);
   } catch (err) {
@@ -1364,7 +1382,27 @@ app.get('/api/reviews/user', authenticationToken, async (req: AuthRequest, res: 
     }
 
     // Find reviews by user email
-    const reviews = await UserReview.find({ user: userEmail }).sort({ createdAt: -1 }).lean();
+    const reviews = await UserReview.aggregate([
+      { $match: { user: userEmail } },
+      {
+        $addFields: {
+          hasWrittenDescription: {
+            $gt: [
+              {
+                $strLenCP: {
+                  $trim: {
+                    input: { $ifNull: ['$description', ''] }
+                  }
+                }
+              },
+              0
+            ]
+          }
+        }
+      },
+      { $sort: { hasWrittenDescription: -1, createdAt: -1 } },
+      { $project: { hasWrittenDescription: 0 } }
+    ]);
     if (!isProduction) console.log('📋 Found', reviews.length, 'reviews for user:', userEmail);
     res.json(reviews);
   } catch (err) {

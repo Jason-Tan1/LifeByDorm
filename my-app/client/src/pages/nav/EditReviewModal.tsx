@@ -148,7 +148,7 @@ function EditReviewModal({ review, onClose, onSaved }: EditReviewModalProps) {
             if (ratings.building <= 0) missing.push('Building rating');
             if (ratings.amenities <= 0) missing.push('Amenities rating');
             if (ratings.location <= 0) missing.push('Location rating');
-            if (!description || description.trim().length < 25 || description.trim().length > 1500) missing.push('Comments (25-1500 chars)');
+            if (description.trim().length > 1500) missing.push('Comments (0-1500 chars)');
 
             if (missing.length > 0) {
                 setErrorMessage('Please fill out: ' + missing.join(', '));
@@ -329,7 +329,7 @@ function EditReviewModal({ review, onClose, onSaved }: EditReviewModalProps) {
                             maxLength={1500}
                         />
                         <div className="char-count">
-                            {description.length}/1500 max characters (min 25)
+                            {description.length}/1500 max characters (min 0)
                         </div>
                     </div>
 

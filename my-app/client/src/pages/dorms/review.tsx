@@ -190,7 +190,7 @@ function Reviews() {
       if (ratings.building <= 0) missing.push('Building rating');
       if (ratings.amenities <= 0) missing.push('Amenities rating');
       if (ratings.location <= 0) missing.push('Location rating');
-      if (!description || description.trim().length < 25 || description.trim().length > 1500) missing.push('Comments (25-1500 chars)');
+      if (description.trim().length > 1500) missing.push('Comments (0-1500 chars)');
 
       if (missing.length > 0) {
         setErrorMessage('Please fill out the following fields:\n' + missing.join(', '));
@@ -234,12 +234,22 @@ function Reviews() {
           headers,
           body: JSON.stringify(payload)
         });
-        const data = await res.json();
+        const data = await res.json().catch(() => ({}));
         if (!res.ok) {
-          const serverMessage = data?.message || 'Failed to submit review';
+          const detailedValidation = Array.isArray(data?.errors)
+            ? data.errors
+              .map((e: { path?: Array<string | number>; message?: string }) => {
+                const path = Array.isArray(e?.path) ? e.path.join('.') : '';
+                return path ? `${path}: ${e?.message || 'Invalid value'}` : (e?.message || 'Invalid value');
+              })
+              .join('\n')
+            : '';
+          const serverMessage = detailedValidation
+            ? `Validation failed:\n${detailedValidation}`
+            : (data?.message || 'Failed to submit review');
           setErrorMessage(serverMessage);
           setShowErrorPopup(true);
-          throw new Error(serverMessage);
+          return;
         }
 
         // Clear form
@@ -266,10 +276,8 @@ function Reviews() {
 
       } catch (err) {
         console.error(err);
-        if (!showErrorPopup) { // Don't overwrite if we already set a specific server error
-          setErrorMessage('Error submitting review. Please try again.');
-          setShowErrorPopup(true);
-        }
+        setErrorMessage('Error submitting review. Please try again.');
+        setShowErrorPopup(true);
       }
     } finally {
       setIsSubmitting(false);
@@ -512,7 +520,9 @@ function Reviews() {
                   <div className="comments-header">
                     {/* Removed Help Me Write button */}
                   </div>
-                  <label className="section-label">{t('review.writeReview')}</label>
+                  <label className="section-label">
+                    {t('review.writeReview')} <span className="optional-text">{t('review.optional')}</span>
+                  </label>
                   <textarea
                     className="review-textarea"
                     placeholder={t('review.shareExperience')}
@@ -521,7 +531,7 @@ function Reviews() {
                     maxLength={1500}
                   />
                   <div className="char-count">
-                    {description.length}/1500 max characters (min 25)
+                    {description.length}/1500 max characters
                   </div>
                 </div>
 
