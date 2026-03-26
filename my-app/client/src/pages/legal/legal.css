@@ -18,8 +18,8 @@
     font-weight: 800;
     margin-bottom: 1.2rem;
     color: #000;
-    border-bottom: 1px solid #ddd;
-    padding-bottom: 8px;
+    border-bottom: none;
+    padding-bottom: 0;
     letter-spacing: -0.5px;
     text-transform: uppercase;
 }
@@ -75,7 +75,7 @@
 .legal-contact {
     padding: 20px 0;
     margin-top: 3rem;
-    border-top: 1px solid #ddd;
+    border-top: none;
 }
 
 .legal-contact h2 {
@@ -83,6 +83,66 @@
     font-weight: 800;
     margin-bottom: 1rem;
     color: #000;
+}
+
+.help-faq-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.help-faq-item {
+    border: 1px solid #d8d8d8;
+    background-color: #fff;
+}
+
+.help-faq-question {
+    width: 100%;
+    border: none;
+    background: transparent;
+    text-align: left;
+    padding: 16px 18px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 16px;
+    font-weight: 700;
+    color: #111;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+}
+
+.help-faq-question:hover {
+    background-color: #f8f8f8;
+}
+
+.help-faq-question:focus-visible {
+    outline: 2px solid #111;
+    outline-offset: -2px;
+}
+
+.help-faq-icon {
+    font-size: 22px;
+    font-weight: 500;
+    line-height: 1;
+}
+
+.help-faq-answer {
+    padding: 0 18px 16px;
+    border-top: 1px solid #ededed;
+}
+
+.help-faq-answer p {
+    margin: 14px 0 0;
+}
+
+.help-center-page .help-faq-item {
+    border: none;
+}
+
+.help-center-page .help-faq-answer {
+    border-top: none;
 }
 
 @media (max-width: 768px) {
@@ -97,5 +157,14 @@
 
     .legal-section h2 {
         font-size: 1.4rem;
+    }
+
+    .help-faq-question {
+        font-size: 15px;
+        padding: 14px 14px;
+    }
+
+    .help-faq-answer {
+        padding: 0 14px 14px;
     }
 }

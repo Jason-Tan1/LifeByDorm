@@ -20,6 +20,7 @@ const TermsOfService = lazy(() => import('./pages/legal/TermsOfService.tsx'));
 const PrivacyPolicy = lazy(() => import('./pages/legal/PrivacyPolicy.tsx'));
 const CookiePolicy = lazy(() => import('./pages/legal/CookiePolicy.tsx'));
 const ReviewGuidelines = lazy(() => import('./pages/legal/ReviewGuidelines.tsx'));
+const HelpCenter = lazy(() => import('./pages/legal/HelpCenter.tsx'));
 
 import CookieConsent from './components/CookieConsent';
 import GoogleOneTapPrompt from './components/GoogleOneTapPrompt';
@@ -48,6 +49,7 @@ function App() {
             <Route path="/privacy" element={<PrivacyPolicy />} />
             <Route path="/cookie-policy" element={<CookiePolicy />} />
             <Route path="/review-guidelines" element={<ReviewGuidelines />} />
+            <Route path="/help-center" element={<HelpCenter />} />
           </Routes>
         </Suspense>
 

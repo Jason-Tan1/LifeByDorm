@@ -56,9 +56,7 @@ function Footer() {
             <span className="footer-link placeholder-link">
               Freshman Guide <span className="coming-soon-badge">Soon</span>
             </span>
-            <span className="footer-link placeholder-link">
-              Help Center <span className="coming-soon-badge">Soon</span>
-            </span>
+            <Link to="/help-center" className="footer-link">Help Center</Link>
           </div>
 
           {/* Column 2: Company */}
