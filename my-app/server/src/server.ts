@@ -333,6 +333,7 @@ app.get('/api/stats/homepage', readOnlyLimiter, async (req: Request, res: Respon
     const cacheKey = 'homepage-stats';
     const cachedResult = getCached<any>(cacheKey);
     if (cachedResult) {
+      res.set('Cache-Control', 'public, max-age=300, s-maxage=600, stale-while-revalidate=60');
       return res.json(cachedResult);
     }
 
@@ -477,12 +478,12 @@ app.get('/api/stats/homepage', readOnlyLimiter, async (req: Request, res: Respon
         const dorm = String(review.dorm || '').trim();
         const dormKey = `${uni}:${dorm.toLowerCase()}`;
         const dormData = dormLookupByName.get(dormKey);
-        
+
         const uniSlug = dormData?.universitySlug || uni;
         const rawUser = String(review.user || '').trim();
         const userEmail = userMap.get(rawUser) || (rawUser.includes('@') ? rawUser : '');
         const firstVisibleChar = userEmail.match(/[A-Za-z0-9]/)?.[0] || 'A';
-        
+
         return {
           ...review,
           dormSlug: dormData?.slug || dorm.toLowerCase().replace(/\s+/g, '-'),
@@ -508,6 +509,7 @@ app.get('/api/stats/homepage', readOnlyLimiter, async (req: Request, res: Respon
     // Cache the result
     setCache(cacheKey, result);
 
+    res.set('Cache-Control', 'public, max-age=300, s-maxage=600, stale-while-revalidate=60');
     res.json(result);
   } catch (err) {
     console.error('Error fetching homepage stats', err);
@@ -954,6 +956,7 @@ function requireAdmin(req: AuthRequest, res: Response, next: NextFunction) {
 app.get('/api/universities', async (req: Request, res: Response) => {
   try {
     const universities = await University.find({}).sort({ name: 1 }).lean();
+    res.set('Cache-Control', 'public, max-age=300, s-maxage=600, stale-while-revalidate=60');
     res.json(universities);
   } catch (err) {
     console.error('Error fetching universities', err);
@@ -973,6 +976,7 @@ app.get('/api/universities/:slug/dorms', async (req: Request, res: Response) => 
         { status: { $exists: false } }
       ]
     }).sort({ name: 1 }).lean();
+    res.set('Cache-Control', 'public, max-age=120, s-maxage=300, stale-while-revalidate=60');
     res.json(dorms);
   } catch (err) {
     console.error('Error fetching dorms for university', err);
@@ -1500,10 +1504,24 @@ app.put('/api/reviews/:id', authenticationToken, validate(editReviewSchema), asy
 // Get dashboard analytics stats (admin only)
 app.get('/api/admin/stats', authenticationToken, requireAdmin, async (req: AuthRequest, res: Response) => {
   try {
-    const now = new Date();
-    const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-    const startOfWeek = new Date(startOfToday);
-    startOfWeek.setDate(startOfWeek.getDate() - 7);
+    // Timezone Bug Fix: Use EST instead of standard server time
+    const nowLocal = new Date();
+    // 1. Get current time in EST as a local Date object.
+    const estDateStr = nowLocal.toLocaleString('en-US', { timeZone: 'America/New_York' });
+    const estDateLocal = new Date(estDateStr);
+
+    // 2. We want midnight of estDateLocal
+    const estMidnightLocal = new Date(estDateLocal.getFullYear(), estDateLocal.getMonth(), estDateLocal.getDate());
+
+    // 3. What is the difference between UTC now and EST now?
+    const offset = nowLocal.getTime() - estDateLocal.getTime();
+
+    // 4. Actual UTC time of EST midnight:
+    const startOfToday = new Date(estMidnightLocal.getTime() + offset);
+
+    const startOfWeekEST = new Date(estMidnightLocal);
+    startOfWeekEST.setDate(startOfWeekEST.getDate() - 7);
+    const startOfWeek = new Date(startOfWeekEST.getTime() + offset);
 
     // Run all queries in parallel for performance
     const [
@@ -1516,7 +1534,8 @@ app.get('/api/admin/stats', authenticationToken, requireAdmin, async (req: AuthR
       approvedReviews,
       totalDorms,
       topDorms,
-      topUniversities
+      topUniversities,
+      totalUniversities
     ] = await Promise.all([
       // Total users
       User.countDocuments(),
@@ -1534,22 +1553,24 @@ app.get('/api/admin/stats', authenticationToken, requireAdmin, async (req: AuthR
       UserReview.countDocuments({ status: 'approved' }),
       // Total dorms
       Dorm.countDocuments({ status: 'approved' }),
-      // Top 5 most reviewed dorms
+      // Top 10 most reviewed dorms
       UserReview.aggregate([
         { $match: { status: 'approved' } },
         { $group: { _id: { dorm: '$dorm', university: '$university' }, count: { $sum: 1 } } },
         { $sort: { count: -1 } },
-        { $limit: 5 },
+        { $limit: 10 },
         { $project: { _id: 0, dorm: '$_id.dorm', university: '$_id.university', reviewCount: '$count' } }
       ]),
-      // Top 5 most active universities
+      // Top 10 most active universities
       UserReview.aggregate([
         { $match: { status: 'approved' } },
         { $group: { _id: '$university', count: { $sum: 1 } } },
         { $sort: { count: -1 } },
-        { $limit: 5 },
+        { $limit: 10 },
         { $project: { _id: 0, university: '$_id', reviewCount: '$count' } }
-      ])
+      ]),
+      // Total Supported Universities
+      University.countDocuments()
     ]);
 
     res.json({
@@ -1566,6 +1587,9 @@ app.get('/api/admin/stats', authenticationToken, requireAdmin, async (req: AuthR
       },
       dorms: {
         total: totalDorms
+      },
+      universities: {
+        total: totalUniversities
       },
       topDorms,
       topUniversities

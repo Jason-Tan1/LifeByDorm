@@ -4,6 +4,9 @@ import { UniversityDataProvider } from './context/UniversityDataContext';
 import PageLoader from './components/PageLoader';
 import ScrollToTop from './components/ScrollToTop';
 
+// Lazy load the Google OAuth provider so the SDK doesn't block first paint
+const LazyGoogleOAuthProvider = lazy(() => import('./components/LazyGoogleOAuthProvider'));
+
 // Lazy load all page components for better initial load performance
 const Home = lazy(() => import('./pages/home/home.tsx'));
 const AboutMe = lazy(() => import('./pages/nav/aboutme.tsx'));
@@ -22,16 +25,18 @@ const CookiePolicy = lazy(() => import('./pages/legal/CookiePolicy.tsx'));
 const ReviewGuidelines = lazy(() => import('./pages/legal/ReviewGuidelines.tsx'));
 const HelpCenter = lazy(() => import('./pages/legal/HelpCenter.tsx'));
 
-import CookieConsent from './components/CookieConsent';
-import GoogleOneTapPrompt from './components/GoogleOneTapPrompt';
+const CookieConsent = lazy(() => import('./components/CookieConsent'));
+const GoogleOneTapPrompt = lazy(() => import('./components/GoogleOneTapPrompt'));
 
 function App() {
   return (
-    <UniversityDataProvider>
-      <Router>
-        <ScrollToTop />
-        <Suspense fallback={<PageLoader />}>
-          <Routes>
+    <Suspense fallback={<PageLoader />}>
+      <LazyGoogleOAuthProvider>
+        <UniversityDataProvider>
+          <Router>
+            <ScrollToTop />
+            <Suspense fallback={<PageLoader />}>
+              <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/aboutme" element={<AboutMe />} />
             <Route path="/contactme" element={<ContactMe />} />
@@ -49,12 +54,16 @@ function App() {
             <Route path="/privacy" element={<PrivacyPolicy />} />
             <Route path="/cookie-policy" element={<CookiePolicy />} />
             <Route path="/review-guidelines" element={<ReviewGuidelines />} />
-            <Route path="/help-center" element={<HelpCenter />} />
-          </Routes>
-        </Suspense>
+              <Route path="/help-center" element={<HelpCenter />} />
+            </Routes>
+          </Suspense>
 
-        <CookieConsent />        <GoogleOneTapPrompt />      </Router >
-    </UniversityDataProvider >
+            <CookieConsent />
+            <GoogleOneTapPrompt />
+          </Router>
+        </UniversityDataProvider>
+      </LazyGoogleOAuthProvider>
+    </Suspense>
   )
 }
 

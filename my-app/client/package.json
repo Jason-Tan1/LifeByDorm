@@ -14,14 +14,11 @@
     "test:run": "vitest run"
   },
   "dependencies": {
-    "@aws-sdk/client-s3": "^3.893.0",
-    "@aws-sdk/s3-request-presigner": "^3.893.0",
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.1",
     "@mui/icons-material": "^7.3.5",
     "@mui/material": "^7.3.5",
     "@react-oauth/google": "^0.13.4",
-    "axios": "^1.13.1",
     "bcryptjs": "^3.0.3",
     "compression": "^1.8.1",
     "cors": "^2.8.6",
@@ -33,6 +30,7 @@
     "helmet": "^8.1.0",
     "i18next": "^25.8.11",
     "i18next-browser-languagedetector": "^8.2.1",
+    "i18next-http-backend": "^3.0.2",
     "jsonwebtoken": "^9.0.3",
     "mongoose": "^9.2.1",
     "nodemailer": "^8.0.1",

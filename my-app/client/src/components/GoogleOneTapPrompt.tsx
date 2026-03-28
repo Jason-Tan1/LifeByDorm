@@ -1,7 +1,6 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useGoogleOneTapLogin } from '@react-oauth/google';
-import axios from 'axios';
-import { Snackbar, Alert } from '@mui/material';
+import Toast from './Toast';
 import './GoogleOneTapPrompt.css';
 
 const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
@@ -16,10 +15,7 @@ export function GoogleOneTapPrompt() {
     setSnackbarOpen(true);
   };
 
-  const handleSnackbarClose = (_event?: React.SyntheticEvent | Event, reason?: string) => {
-    if (reason === 'clickaway') {
-      return;
-    }
+  const handleSnackbarClose = () => {
     setSnackbarOpen(false);
   };
 
@@ -33,17 +29,21 @@ export function GoogleOneTapPrompt() {
           throw new Error('No credential received');
         }
 
-        const response = await axios.post(`${API_BASE}/auth/google`, {
-          credential: credentialResponse.credential,
+        const res = await fetch(`${API_BASE}/auth/google`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ credential: credentialResponse.credential }),
         });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.message || 'Google sign-in failed');
 
-        if (response.data.token) {
-          localStorage.setItem('token', response.data.token);
+        if (data.token) {
+          localStorage.setItem('token', data.token);
           window.location.reload();
         }
       } catch (err: any) {
         console.error("Google One Tap Error:", err);
-        showError(err.response?.data?.message || 'Google sign-in failed');
+        showError(err.message || 'Google sign-in failed');
       }
     },
     onError: () => {
@@ -65,16 +65,7 @@ export function GoogleOneTapPrompt() {
           </div>
         </div>
       )}
-      <Snackbar 
-        open={snackbarOpen} 
-        autoHideDuration={6000} 
-        onClose={handleSnackbarClose}
-        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
-      >
-        <Alert onClose={handleSnackbarClose} severity="error" sx={{ width: '100%' }}>
-          {error}
-        </Alert>
-      </Snackbar>
+      <Toast open={snackbarOpen} message={error} severity="error" onClose={handleSnackbarClose} />
     </>
   );
 }

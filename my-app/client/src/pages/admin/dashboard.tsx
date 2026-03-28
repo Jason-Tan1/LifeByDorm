@@ -59,6 +59,7 @@ interface StatsData {
   users: { total: number; newThisWeek: number };
   reviews: { total: number; approved: number; pending: number; today: number; thisWeek: number };
   dorms: { total: number };
+  universities: { total: number };
   topDorms: { dorm: string; university: string; reviewCount: number }[];
   topUniversities: { university: string; reviewCount: number }[];
 }
@@ -258,135 +259,101 @@ function AdminDashboard() {
   };
 
   return (
-    <div>
+    <div className="admin-dashboard-container">
       <NavBar />
-      <main style={{ padding: '24px', maxWidth: '1200px', margin: '0 auto' }}>
-        <h1>Admin Dashboard</h1>
-        <p>Review pending submissions from users.</p>
+      <main className="admin-main">
+        <div className="admin-header">
+          <h1 className="admin-title">Admin Dashboard</h1>
+          <p className="admin-subtitle">Review pending submissions and monitor application performance.</p>
+        </div>
 
         {/* Tabs */}
-        <div style={{ display: 'flex', gap: '8px', marginTop: '24px', marginBottom: '24px' }}>
+        <div className="admin-tabs">
           <button
             onClick={() => setActiveTab('stats')}
-            style={{
-              padding: '12px 24px',
-              backgroundColor: activeTab === 'stats' ? '#1976d2' : '#e0e0e0',
-              color: activeTab === 'stats' ? 'white' : '#333',
-              border: 'none',
-              borderRadius: '8px',
-              cursor: 'pointer',
-              fontWeight: '600',
-              fontSize: '14px',
-              transition: 'all 0.2s'
-            }}
+            className={`admin-tab-btn ${activeTab === 'stats' ? 'active' : ''}`}
           >
-            📊 Stats
+            📊 Analytics Overview
           </button>
           <button
             onClick={() => setActiveTab('reviews')}
-            style={{
-              padding: '12px 24px',
-              backgroundColor: activeTab === 'reviews' ? '#1976d2' : '#e0e0e0',
-              color: activeTab === 'reviews' ? 'white' : '#333',
-              border: 'none',
-              borderRadius: '8px',
-              cursor: 'pointer',
-              fontWeight: '600',
-              fontSize: '14px',
-              transition: 'all 0.2s'
-            }}
+            className={`admin-tab-btn ${activeTab === 'reviews' ? 'active' : ''}`}
           >
-            Pending Reviews ({pendingReviews.length})
+            📝 Pending Reviews ({pendingReviews.length})
           </button>
           <button
             onClick={() => setActiveTab('dorms')}
-            style={{
-              padding: '12px 24px',
-              backgroundColor: activeTab === 'dorms' ? '#1976d2' : '#e0e0e0',
-              color: activeTab === 'dorms' ? 'white' : '#333',
-              border: 'none',
-              borderRadius: '8px',
-              cursor: 'pointer',
-              fontWeight: '600',
-              fontSize: '14px',
-              transition: 'all 0.2s'
-            }}
+            className={`admin-tab-btn ${activeTab === 'dorms' ? 'active' : ''}`}
           >
-            Pending Dorms ({pendingDorms.length})
+            🏠 Pending Dorms ({pendingDorms.length})
           </button>
         </div>
 
         {/* Stats Tab Content */}
         {activeTab === 'stats' && (
-          <div style={{ marginTop: '32px' }}>
-            <h2>📊 Analytics Overview</h2>
+          <div>
             {statsLoading ? (
-              <p>Loading stats...</p>
+              <p className="admin-empty-state">Loading stats...</p>
             ) : !stats ? (
-              <p>Unable to load stats.</p>
+              <p className="admin-empty-state">Unable to load stats.</p>
             ) : (
               <>
                 {/* Stat Cards Grid */}
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '16px', marginTop: '20px' }}>
+                <div className="admin-stats-grid">
                   {[
-                    { label: 'Total Users', value: stats.users.total, icon: '👥', color: '#1976d2' },
-                    { label: 'New This Week', value: stats.users.newThisWeek, icon: '🆕', color: '#00897b' },
-                    { label: 'Total Reviews', value: stats.reviews.total, icon: '📝', color: '#7b1fa2' },
-                    { label: 'Reviews Today', value: stats.reviews.today, icon: '📅', color: '#e65100' },
-                    { label: 'Reviews This Week', value: stats.reviews.thisWeek, icon: '📆', color: '#2e7d32' },
-                    { label: 'Pending Approval', value: stats.reviews.pending, icon: '⏳', color: '#f57c00' },
-                    { label: 'Total Dorms', value: stats.dorms.total, icon: '🏠', color: '#5c6bc0' },
+                    { label: 'Total Users', value: stats.users?.total ?? 0, icon: '👥', color: '#1976d2' },
+                    { label: 'New This Week', value: stats.users?.newThisWeek ?? 0, icon: '🆕', color: '#00897b' },
+                    { label: 'Total Reviews', value: stats.reviews?.total ?? 0, icon: '📝', color: '#7b1fa2' },
+                    { label: 'Reviews Today', value: stats.reviews?.today ?? 0, icon: '📅', color: '#e65100' },
+                    { label: 'Reviews This Week', value: stats.reviews?.thisWeek ?? 0, icon: '📆', color: '#2e7d32' },
+                    { label: 'Total Universities', value: stats.universities?.total ?? 0, icon: '🎓', color: '#d81b60' },
+                    { label: 'Pending Approval', value: stats.reviews?.pending ?? 0, icon: '⏳', color: '#f57c00' },
+                    { label: 'Total Dorms', value: stats.dorms?.total ?? 0, icon: '🏠', color: '#5c6bc0' },
                   ].map((stat) => (
-                    <div key={stat.label} style={{
-                      backgroundColor: '#fff',
-                      border: '1px solid #e0e0e0',
-                      borderRadius: '12px',
-                      padding: '20px',
-                      textAlign: 'center',
-                      boxShadow: '0 2px 8px rgba(0,0,0,0.06)',
-                      borderTop: `4px solid ${stat.color}`
-                    }}>
-                      <div style={{ fontSize: '28px', marginBottom: '8px' }}>{stat.icon}</div>
-                      <div style={{ fontSize: '32px', fontWeight: '700', color: stat.color }}>{stat.value}</div>
-                      <div style={{ fontSize: '13px', color: '#666', marginTop: '4px', fontWeight: '500' }}>{stat.label}</div>
+                    <div key={stat.label} className="admin-stat-card" style={{ borderTop: `4px solid ${stat.color}` }}>
+                      <div className="admin-stat-icon">{stat.icon}</div>
+                      <div className="admin-stat-value" style={{ color: stat.color }}>{stat.value}</div>
+                      <div className="admin-stat-label">{stat.label}</div>
                     </div>
                   ))}
                 </div>
 
                 {/* Top Lists */}
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px', marginTop: '32px' }}>
+                <div className="admin-lists-container">
                   {/* Top Dorms */}
-                  <div style={{ backgroundColor: '#fff', border: '1px solid #e0e0e0', borderRadius: '12px', padding: '20px', boxShadow: '0 2px 8px rgba(0,0,0,0.06)' }}>
-                    <h3 style={{ margin: '0 0 16px 0', fontSize: '16px' }}>🏆 Top 5 Most Reviewed Dorms</h3>
-                    {stats.topDorms.length === 0 ? (
-                      <p style={{ color: '#999' }}>No data yet.</p>
+                  <div className="admin-list-card">
+                    <h3>🏆 Top 10 Most Reviewed Dorms</h3>
+                    {(!stats.topDorms || stats.topDorms.length === 0) ? (
+                      <p className="admin-empty-state">No data yet.</p>
                     ) : (
-                      <ol style={{ margin: 0, paddingLeft: '20px' }}>
+                      <ul className="admin-list">
                         {stats.topDorms.map((d, i) => (
-                          <li key={i} style={{ padding: '8px 0', borderBottom: i < stats.topDorms.length - 1 ? '1px solid #f0f0f0' : 'none' }}>
-                            <strong>{d.dorm}</strong>
-                            <span style={{ color: '#666', fontSize: '13px' }}> — {d.university}</span>
-                            <span style={{ float: 'right', fontWeight: '700', color: '#1976d2' }}>{d.reviewCount} reviews</span>
+                          <li key={i} className="admin-list-item">
+                            <div>
+                              <strong>{i + 1}. {d.dorm}</strong>
+                              <span> — {d.university}</span>
+                            </div>
+                            <span className="admin-review-count" style={{ fontWeight: '700', color: '#1976d2' }}>{d.reviewCount} reviews</span>
                           </li>
                         ))}
-                      </ol>
+                      </ul>
                     )}
                   </div>
 
                   {/* Top Universities */}
-                  <div style={{ backgroundColor: '#fff', border: '1px solid #e0e0e0', borderRadius: '12px', padding: '20px', boxShadow: '0 2px 8px rgba(0,0,0,0.06)' }}>
-                    <h3 style={{ margin: '0 0 16px 0', fontSize: '16px' }}>🎓 Top 5 Most Active Universities</h3>
-                    {stats.topUniversities.length === 0 ? (
-                      <p style={{ color: '#999' }}>No data yet.</p>
+                  <div className="admin-list-card">
+                    <h3>🎓 Top 10 Most Active Universities</h3>
+                    {(!stats.topUniversities || stats.topUniversities.length === 0) ? (
+                      <p className="admin-empty-state">No data yet.</p>
                     ) : (
-                      <ol style={{ margin: 0, paddingLeft: '20px' }}>
+                      <ul className="admin-list">
                         {stats.topUniversities.map((u, i) => (
-                          <li key={i} style={{ padding: '8px 0', borderBottom: i < stats.topUniversities.length - 1 ? '1px solid #f0f0f0' : 'none' }}>
-                            <strong>{u.university}</strong>
-                            <span style={{ float: 'right', fontWeight: '700', color: '#7b1fa2' }}>{u.reviewCount} reviews</span>
+                          <li key={i} className="admin-list-item">
+                            <strong>{i + 1}. {u.university}</strong>
+                            <span className="admin-review-count" style={{ fontWeight: '700', color: '#7b1fa2' }}>{u.reviewCount} reviews</span>
                           </li>
                         ))}
-                      </ol>
+                      </ul>
                     )}
                   </div>
                 </div>
@@ -397,17 +364,15 @@ function AdminDashboard() {
 
         {/* Reviews Tab Content */}
         {activeTab === 'reviews' && (
-          <div style={{ marginTop: '32px' }}>
-            <h2>Pending Reviews ({pendingReviews.length})</h2>
-
-            {loading && <p>Loading...</p>}
-            {error && <p style={{ color: 'red' }}>{error}</p>}
+          <div>
+            {loading && <p className="admin-empty-state">Loading...</p>}
+            {error && <p className="admin-empty-state" style={{ color: 'red' }}>{error}</p>}
 
             {!loading && !error && pendingReviews.length === 0 && (
-              <p>No pending reviews at this time.</p>
+              <p className="admin-empty-state">No pending reviews at this time. Great job! 🎉</p>
             )}
 
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '20px', marginTop: '20px' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', marginTop: '10px' }}>
               {pendingReviews.map(review => {
                 const pe = review.pendingEdit;
                 const dRoom = pe ? pe.room : review.room;
@@ -426,37 +391,37 @@ function AdminDashboard() {
                   <div key={review._id} className="admin-card">
                     <div className="admin-card-inner">
                       <div className="admin-card-content">
-                        <h3 style={{ margin: '0 0 8px 0' }}>
+                        <h3>
                           {review.dorm} - {review.university}
                           {review.pendingEdit ? (
-                            <span style={{ marginLeft: '10px', background: '#fff3e0', color: '#ef6c00', padding: '2px 10px', borderRadius: '12px', fontSize: '11px', fontWeight: 600, border: '1px solid #ffe0b2' }}>✏️ EDITED REVIEW</span>
+                            <span className="admin-badge admin-badge-edit">✏️ EDITED</span>
                           ) : (
-                            <span style={{ marginLeft: '10px', background: '#e8f5e9', color: '#2e7d32', padding: '2px 10px', borderRadius: '12px', fontSize: '11px', fontWeight: 600, border: '1px solid #c8e6c9' }}>🆕 NEW REVIEW</span>
+                            <span className="admin-badge admin-badge-new">🆕 NEW</span>
                           )}
                         </h3>
-                        <p style={{ margin: '4px 0', color: '#666' }}>
+                        <p>
                           <strong>Overall Rating:</strong> {dOverall} / 5.0
                         </p>
-                        <p style={{ margin: '4px 0', color: '#666' }}>
-                          <strong>Room Type:</strong> {formatRoomTypes(dRoomType)} |
-                          <strong> Year:</strong> {formatYears(dYear)} |
-                          <strong> Would Dorm Again:</strong> {dWouldDormAgain ? 'Yes' : 'No'}
+                        <p>
+                          <strong>Room Type:</strong> {formatRoomTypes(dRoomType)} &nbsp;|&nbsp;
+                          <strong> Year:</strong> {formatYears(dYear)} &nbsp;|&nbsp;
+                          <strong> Would Dorm Again:</strong> {dWouldDormAgain ? 'Yes 👍' : 'No 👎'}
                         </p>
-                        <p style={{ margin: '4px 0', color: '#666' }}>
+                        <p>
                           <strong>Submitted by:</strong> {review.user || 'Unknown'}
                         </p>
-                        <div style={{ marginTop: '12px' }}>
-                          <strong>Ratings:</strong>
-                          <div style={{ display: 'flex', gap: '16px', marginTop: '8px', fontSize: '14px' }}>
-                            <span>Room: {dRoom}/5</span>
-                            <span>Bathroom: {dBathroom}/5</span>
-                            <span>Building: {dBuilding}/5</span>
-                            <span>Amenities: {dAmenities}/5</span>
-                            <span>Location: {dLocation}/5</span>
+                        <div style={{ marginTop: '16px' }}>
+                          <strong>Individual Ratings:</strong>
+                          <div className="admin-ratings-grid">
+                            <span>🛏️ Room: {dRoom}/5</span>
+                            <span>🚿 Bathroom: {dBathroom}/5</span>
+                            <span>🏢 Building: {dBuilding}/5</span>
+                            <span>✨ Amenities: {dAmenities}/5</span>
+                            <span>📍 Location: {dLocation}/5</span>
                           </div>
                         </div>
-                        <div style={{ marginTop: '12px' }}>
-                          <strong>Comments:</strong>
+                        <div style={{ marginTop: '16px' }}>
+                          <strong>User Comment:</strong>
                           <p className="admin-review-text">{dDescription}</p>
                         </div>
                         {(() => {
@@ -511,72 +476,68 @@ function AdminDashboard() {
 
         {/* Dorms Tab Content */}
         {activeTab === 'dorms' && (
-          <div style={{ marginTop: '32px' }}>
-            <h2>Pending Dorms ({pendingDorms.length})</h2>
-
-            {pendingDorms.length === 0 && (
-              <p>No pending dorm submissions at this time.</p>
-            )}
-
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '20px', marginTop: '20px' }}>
-              {pendingDorms.map(dorm => (
-                <div key={dorm._id} className="admin-card">
-                  <div className="admin-card-inner">
-                    <div className="admin-card-content">
-                      <h3 style={{ margin: '0 0 8px 0' }}>
-                        {dorm.name}
-                      </h3>
-                      <p style={{ margin: '4px 0', color: '#666' }}>
-                        <strong>University:</strong> {dorm.universitySlug.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}
-                      </p>
-                      {dorm.description && (
-                        <div style={{ marginTop: '12px' }}>
-                          <strong>Description:</strong>
-                          <p className="admin-review-text">{dorm.description}</p>
-                        </div>
-                      )}
-                      {dorm.amenities && dorm.amenities.length > 0 && (
-                        <p style={{ margin: '8px 0', color: '#666' }}>
-                          <strong>Amenities:</strong> {dorm.amenities.join(', ')}
+          <div>
+            {pendingDorms.length === 0 ? (
+              <p className="admin-empty-state">No pending dorm submissions at this time.</p>
+            ) : (
+              <div style={{ display: 'flex', flexDirection: 'column', marginTop: '10px' }}>
+                {pendingDorms.map(dorm => (
+                  <div key={dorm._id} className="admin-card">
+                    <div className="admin-card-inner">
+                      <div className="admin-card-content">
+                        <h3>{dorm.name}</h3>
+                        <p>
+                          <strong>University:</strong> {dorm.universitySlug.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}
                         </p>
-                      )}
-                      {dorm.roomTypes && dorm.roomTypes.length > 0 && (
-                        <p style={{ margin: '8px 0', color: '#666' }}>
-                          <strong>Room Types:</strong> {dorm.roomTypes.join(', ')}
-                        </p>
-                      )}
-                      <div style={{ marginTop: '12px' }}>
-                        <strong>Image:</strong>
-                        <div className="admin-review-images">
-                          <img
-                            src={dorm.imageUrl || DefaultDorm}
-                            alt={dorm.name}
-                          />
+                        {dorm.description && (
+                          <div style={{ marginTop: '16px' }}>
+                            <strong>Description:</strong>
+                            <p className="admin-review-text">{dorm.description}</p>
+                          </div>
+                        )}
+                        {dorm.amenities && dorm.amenities.length > 0 && (
+                          <p style={{ marginTop: '12px' }}>
+                            <strong>Amenities:</strong> {dorm.amenities.join(', ')}
+                          </p>
+                        )}
+                        {dorm.roomTypes && dorm.roomTypes.length > 0 && (
+                          <p style={{ marginTop: '8px' }}>
+                            <strong>Room Types:</strong> {dorm.roomTypes.join(', ')}
+                          </p>
+                        )}
+                        <div style={{ marginTop: '16px' }}>
+                          <strong>Image:</strong>
+                          <div className="admin-review-images">
+                            <img
+                              src={dorm.imageUrl || DefaultDorm}
+                              alt={dorm.name}
+                            />
+                          </div>
                         </div>
+                        <p style={{ fontSize: '12px', color: '#999', marginTop: '16px' }}>
+                          Submitted by: {dorm.submittedBy || 'Unknown'} &nbsp;|&nbsp; {dorm.createdAt ? new Date(dorm.createdAt).toLocaleString() : 'Unknown date'}
+                        </p>
                       </div>
-                      <p style={{ fontSize: '12px', color: '#999', marginTop: '12px' }}>
-                        Submitted by: {dorm.submittedBy || 'Unknown'} | {dorm.createdAt ? new Date(dorm.createdAt).toLocaleString() : 'Unknown date'}
-                      </p>
-                    </div>
 
-                    <div className="admin-card-actions">
-                      <button
-                        onClick={() => handleApproveDorm(dorm._id)}
-                        className="admin-action-btn admin-btn-approve"
-                      >
-                        ✓ Approve
-                      </button>
-                      <button
-                        onClick={() => handleDeclineDorm(dorm._id)}
-                        className="admin-action-btn admin-btn-decline"
-                      >
-                        ✗ Decline
-                      </button>
+                      <div className="admin-card-actions">
+                        <button
+                          onClick={() => handleApproveDorm(dorm._id)}
+                          className="admin-action-btn admin-btn-approve"
+                        >
+                          ✓ Approve
+                        </button>
+                        <button
+                          onClick={() => handleDeclineDorm(dorm._id)}
+                          className="admin-action-btn admin-btn-decline"
+                        >
+                          ✗ Decline
+                        </button>
+                      </div>
                     </div>
                   </div>
-                </div>
-              ))}
-            </div>
+                ))}
+              </div>
+            )}
           </div>
         )}
       </main>

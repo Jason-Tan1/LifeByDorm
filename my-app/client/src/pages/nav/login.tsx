@@ -3,12 +3,11 @@ import { Link } from 'react-router-dom'
 import { useTranslation, Trans } from 'react-i18next';
 import { useGoogleLogin } from '@react-oauth/google'
 import type { TokenResponse } from '@react-oauth/google'
-import axios from 'axios'
 import MailOutlineIcon from '@mui/icons-material/MailOutline';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import './login.css'
 import LBDLogo from '../../assets/LBDLogo.webp';
-import { Snackbar, Alert } from '@mui/material';
+import Toast from '../../components/Toast';
 
 // Use relative path '' when on localhost to leverage the Vite proxy (vite.config.ts)
 // Otherwise use the environment variable (for production)
@@ -37,10 +36,7 @@ function Login({ isOpen, onClose }: LoginModalProps) {
     setSnackbarOpen(true);
   };
 
-  const handleSnackbarClose = (_event?: React.SyntheticEvent | Event, reason?: string) => {
-    if (reason === 'clickaway') {
-      return;
-    }
+  const handleSnackbarClose = () => {
     setSnackbarOpen(false);
   };
 
@@ -50,13 +46,16 @@ function Login({ isOpen, onClose }: LoginModalProps) {
       try {
         setLoading(true);
         // Send the access token to your backend to verify and create a session
-        const response = await axios.post(`${API_BASE}/auth/google`, {
-          // Note: using access_token instead of credential for useGoogleLogin
-          access_token: tokenResponse.access_token,
+        const res = await fetch(`${API_BASE}/auth/google`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ access_token: tokenResponse.access_token }),
         });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.message || 'Google sign-in failed');
 
-        if (response.data.token) {
-          localStorage.setItem('token', response.data.token);
+        if (data.token) {
+          localStorage.setItem('token', data.token);
           setShowSuccessPopup(true);
           setTimeout(() => {
             onClose();
@@ -65,7 +64,7 @@ function Login({ isOpen, onClose }: LoginModalProps) {
         }
       } catch (err: any) {
         console.error("Google Login Error:", err);
-        showError(err.response?.data?.message || 'Google sign-in failed');
+        showError(err.message || 'Google sign-in failed');
         setLoading(false);
       }
     },
@@ -97,17 +96,28 @@ function Login({ isOpen, onClose }: LoginModalProps) {
     try {
       if (!showVerificationStep) {
         // Step 1: Send Code
-        await axios.post(`${API_BASE}/auth/send-code`, { email });
+        const sendRes = await fetch(`${API_BASE}/auth/send-code`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email }),
+        });
+        if (!sendRes.ok) {
+          const errData = await sendRes.json();
+          throw new Error(errData.message || 'Failed to send code');
+        }
         setShowVerificationStep(true);
       } else {
         // Step 2: Verify Code
-        const response = await axios.post(`${API_BASE}/auth/verify-code`, {
-          email,
-          code: verificationCode
+        const verifyRes = await fetch(`${API_BASE}/auth/verify-code`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, code: verificationCode }),
         });
+        const verifyData = await verifyRes.json();
+        if (!verifyRes.ok) throw new Error(verifyData.message || 'Verification failed');
 
-        if (response.data.token) {
-          localStorage.setItem('token', response.data.token);
+        if (verifyData.token) {
+          localStorage.setItem('token', verifyData.token);
           setShowSuccessPopup(true);
           setTimeout(() => {
             handleClose();
@@ -116,7 +126,7 @@ function Login({ isOpen, onClose }: LoginModalProps) {
         }
       }
     } catch (err: any) {
-      showError(err.response?.data?.message || 'An error occurred');
+      showError(err.message || 'An error occurred');
     } finally {
       setLoading(false);
     }
@@ -259,11 +269,7 @@ function Login({ isOpen, onClose }: LoginModalProps) {
         )}
       </div>
 
-      <Snackbar open={snackbarOpen} autoHideDuration={6000} onClose={handleSnackbarClose} anchorOrigin={{ vertical: 'top', horizontal: 'center' }}>
-        <Alert onClose={handleSnackbarClose} severity="error" sx={{ width: '100%' }}>
-          {error}
-        </Alert>
-      </Snackbar>
+      <Toast open={snackbarOpen} message={error} severity="error" onClose={handleSnackbarClose} />
     </div>
   )
 }

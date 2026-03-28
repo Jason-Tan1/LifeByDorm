@@ -273,6 +273,8 @@
 }
 
 .stars-display {
+  display: flex;
+  align-items: center;
   margin-top: 8px;
   color: #FFD700;
 }

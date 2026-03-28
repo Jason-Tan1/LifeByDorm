@@ -1,97 +1,381 @@
-/* Base Card Layout */
-.admin-card {
-    border: 1px solid #ddd;
+/* Admin Dashboard Styling to Match Website Theme */
+.admin-dashboard-container {
+    width: 100%;
+    background-color: #fafafa;
+    min-height: calc(100vh - 80px); /* Leave room for NavBar */
+    padding-bottom: 60px;
+    font-family: 'DM Sans', sans-serif;
+}
+
+.admin-main {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 40px clamp(12px, 3vw, 24px);
+    display: flex;
+    flex-direction: column;
+}
+
+.admin-header {
+    text-align: left;
+    margin-bottom: 24px;
+}
+
+.admin-title {
+    font-size: 2.2rem;
+    font-weight: 800;
+    color: #1a1a1a;
+    margin: 0 0 8px 0;
+}
+
+.admin-subtitle {
+    font-size: 1.05rem;
+    color: #666;
+    margin: 0;
+}
+
+/* Tabs */
+.admin-tabs {
+    display: flex;
+    gap: 12px;
+    margin-top: 24px;
+    margin-bottom: 32px;
+    border-bottom: 2px solid #eaeaea;
+    padding-bottom: 4px;
+    flex-wrap: wrap;
+}
+
+.admin-tab-btn {
+    padding: 12px 24px;
+    background-color: transparent;
+    color: #666;
+    border: none;
     border-radius: 8px;
-    padding: 20px;
-    background-color: #f9f9f9;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 14px;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+}
+
+.admin-tab-btn:hover {
+    color: #1a1a1a;
+    background-color: rgba(0, 0, 0, 0.04);
+}
+
+.admin-tab-btn.active {
+    color: #1976d2;
+    background-color: #e3f2fd;
+}
+
+/* Stat Cards */
+.admin-stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); /* Reduced from 220px to fit more neatly on mobile */
+    gap: 16px;
+    margin-top: 20px;
+}
+
+.admin-stat-card {
+    background-color: #ffffff;
+    border: 1px solid #e0e0e0;
+    border-radius: 12px;
+    padding: 24px;
+    text-align: center;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.04);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.admin-stat-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 24px rgba(0,0,0,0.08);
+}
+
+.admin-stat-icon {
+    font-size: 32px;
+    margin-bottom: 12px;
+}
+
+.admin-stat-value {
+    font-size: 36px;
+    font-weight: 800;
+    margin-bottom: 4px;
+}
+
+.admin-stat-label {
+    font-size: 14px;
+    color: #666;
+    font-weight: 600;
+}
+
+/* Lists styling */
+.admin-lists-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+    margin-top: 32px;
+}
+
+.admin-list-card {
+    background-color: #ffffff;
+    border: 1px solid #e0e0e0;
+    border-radius: 12px;
+    padding: 24px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.04);
+}
+
+.admin-list-card h3 {
+    margin: 0 0 20px 0;
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: #333;
+}
+
+.admin-list {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.admin-list-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start; /* Changed to flex-start for multi-line */
+    padding: 12px 0;
+    border-bottom: 1px solid #f0f0f0;
+    gap: 12px;
+}
+
+.admin-list-item:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+}
+
+.admin-list-item > div,
+.admin-list-item > strong {
+    flex: 1;
+    min-width: 0;
+    word-break: break-word; /* Prevent long words from breaking layout */
+    line-height: 1.4;
+}
+
+.admin-list-item span {
+    color: #666;
+    font-size: 0.95rem;
+}
+
+.admin-review-count {
+    flex-shrink: 0;
+    white-space: nowrap; /* Keep "X reviews" on one line */
+    margin-top: 2px;
+}
+
+/* Pending Review & Dorm Cards */
+.admin-card {
+    background-color: #ffffff;
+    border: 1px solid #e0e0e0;
+    border-radius: 12px;
+    padding: 24px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.04);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    margin-bottom: 20px;
+}
+
+.admin-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 24px rgba(0,0,0,0.08);
 }
 
 .admin-card-inner {
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
-    gap: 20px;
+    gap: 24px;
 }
 
 .admin-card-content {
     flex: 1;
     min-width: 0;
-    /* Prevents overflow of flex items */
+    color: #444;
+}
+
+.admin-card-content h3 {
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: #1a1a1a;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 0 0 12px 0;
+}
+
+.admin-card-content p {
+    margin: 6px 0;
+    font-size: 0.95rem;
+}
+
+.admin-card-content strong {
+    color: #222;
+}
+
+/* Badges for New / Edited Review */
+.admin-badge {
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.admin-badge-edit {
+    background-color: #fff3e0;
+    color: #ef6c00;
+    border: 1px solid #ffe0b2;
+}
+
+.admin-badge-new {
+    background-color: #e8f5e9;
+    color: #2e7d32;
+    border: 1px solid #c8e6c9;
+}
+
+/* Ratings grid inside card */
+.admin-ratings-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 8px;
+    font-size: 0.9rem;
+    background-color: #f9f9f9;
+    padding: 10px 14px;
+    border-radius: 8px;
+    border: 1px solid #f0f0f0;
+}
+
+.admin-ratings-grid span {
+    font-weight: 500;
+    color: #333;
 }
 
 /* Ensure long text wraps instead of breaking layout */
 .admin-review-text {
-    margin-top: 4px;
-    line-height: 1.5;
+    margin-top: 12px;
+    line-height: 1.6;
     word-wrap: break-word;
     white-space: pre-wrap;
     overflow-wrap: break-word;
+    background-color: #fcfcfc;
+    padding: 16px;
+    border-radius: 8px;
+    border-left: 4px solid #1976d2;
+    font-style: italic;
+    color: #555;
 }
 
 /* Review Images Grid */
 .admin-review-images {
     display: flex;
-    gap: 8px;
-    margin-top: 8px;
+    gap: 12px;
+    margin-top: 12px;
     flex-wrap: wrap;
 }
 
 .admin-review-images img {
-    width: 100px;
-    height: 100px;
+    width: 120px;
+    height: 120px;
     object-fit: cover;
-    border-radius: 4px;
+    border-radius: 8px;
+    border: 1px solid #e0e0e0;
+    transition: transform 0.2s;
+}
+
+.admin-review-images img:hover {
+    transform: scale(1.05);
 }
 
 /* Action Buttons Container */
 .admin-card-actions {
     display: flex;
     flex-direction: column;
-    gap: 8px;
+    gap: 10px;
+    min-width: 140px;
 }
 
 .admin-action-btn {
-    padding: 10px 20px;
+    padding: 12px 20px;
     color: white;
     border: none;
-    border-radius: 6px;
+    border-radius: 8px;
     cursor: pointer;
     font-weight: 600;
-    font-size: 14px;
+    font-size: 0.95rem;
     text-align: center;
     width: 100%;
+    transition: background-color 0.2s, transform 0.1s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.admin-action-btn:active {
+    transform: scale(0.98);
 }
 
 .admin-btn-approve {
-    background-color: #4caf50;
+    background-color: #2e7d32;
+}
+
+.admin-btn-approve:hover {
+    background-color: #1b5e20;
 }
 
 .admin-btn-decline {
-    background-color: #f44336;
+    background-color: #d32f2f;
 }
 
-/* Responsive Media Queries (Mobile & Small Tablets) */
+.admin-btn-decline:hover {
+    background-color: #c62828;
+}
+
+/* Loading/Empty States */
+.admin-empty-state {
+    text-align: center;
+    padding: 40px 20px;
+    color: #666;
+    background-color: #fff;
+    border-radius: 12px;
+    border: 1px dashed #ccc;
+    font-size: 1.1rem;
+}
+
+/* Responsive Media Queries */
+@media (max-width: 900px) {
+    .admin-lists-container {
+        grid-template-columns: 1fr;
+    }
+}
+
 @media (max-width: 768px) {
     .admin-card-inner {
         flex-direction: column;
         align-items: stretch;
-        gap: 16px;
+        gap: 20px;
     }
 
     /* Action buttons take up full width on mobile */
     .admin-card-actions {
         flex-direction: row;
-        margin-left: 0;
+        width: 100%;
     }
 
-    .admin-card-actions button {
+    .admin-action-btn {
         flex: 1;
     }
 
-    /* Scale images intelligently to fit mobile widths */
     .admin-review-images {
         display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(45%, 1fr));
+        grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
         gap: 8px;
     }
 
@@ -99,5 +383,9 @@
         width: 100%;
         height: auto;
         aspect-ratio: 1 / 1;
+    }
+
+    .admin-title {
+        font-size: 1.8rem;
     }
 }

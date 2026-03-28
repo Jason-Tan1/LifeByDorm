@@ -48,7 +48,7 @@ function Footer() {
             <h4 className="footer-column-title">Resources</h4>
             <Link to="/universities" className="footer-link">{t('footer.universityList', 'Find a University')}</Link>
             <span className="footer-link placeholder-link">
-              The LifeByDorm Blog <span className="coming-soon-badge">Soon</span>
+              Blogs <span className="coming-soon-badge">Soon</span>
             </span>
             <span className="footer-link placeholder-link">
               Dorm Essentials <span className="coming-soon-badge">Soon</span>

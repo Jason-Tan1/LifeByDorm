@@ -10,6 +10,8 @@
   <!-- Preload critical resources -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap" onload="this.onload=null;this.rel='stylesheet'" />
+  <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap" /></noscript>
   <title>LifeByDorm | Real Student Photos & Dorm Reviews for Canadian Schools</title>
 
   <!-- Primary Meta Tags -->
@@ -40,13 +42,28 @@
     content="Read real, unbiased dorm reviews and see authentic photos from students at Canadian universities. Find the best college residences before you move in." />
   <meta property="twitter:image" content="https://www.lifebydorm.ca/LifeByDormShortLogoSquare.png" />
 
-  <!-- Google Analytics 4 -->
+  <!-- Preconnect to third-party origins -->
+  <link rel="preconnect" href="https://accounts.google.com" />
+  <link rel="dns-prefetch" href="https://accounts.google.com" />
+  <link rel="preconnect" href="https://www.googletagmanager.com" />
+  <link rel="dns-prefetch" href="https://www.googletagmanager.com" />
+
+  <!-- Google Analytics 4 (deferred) -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-GG4MC5H4PE"></script>
   <script>
     window.dataLayer = window.dataLayer || [];
     function gtag() { dataLayer.push(arguments); }
-    gtag('js', new Date());
-    gtag('config', 'G-GG4MC5H4PE');
+    if ('requestIdleCallback' in window) {
+      requestIdleCallback(function() {
+        gtag('js', new Date());
+        gtag('config', 'G-GG4MC5H4PE');
+      });
+    } else {
+      setTimeout(function() {
+        gtag('js', new Date());
+        gtag('config', 'G-GG4MC5H4PE');
+      }, 0);
+    }
   </script>
   <!-- Schema Markup for SEO -->
   <script type="application/ld+json">
