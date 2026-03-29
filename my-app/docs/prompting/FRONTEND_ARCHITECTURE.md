@@ -1,9 +1,8 @@
 # LifeByDorm — Frontend Architecture Blueprint
 
-> **Purpose**: This document is a detailed restructuring prompt. Use it to reorganize all
-> frontend files from the current flat `my-app/` root into a dedicated `client/` directory,
-> following enterprise-grade conventions. Every file, folder, and configuration is listed
-> explicitly so nothing is missed and zero functionality is broken.
+> **Purpose**: This document is an internal frontend architecture reference for the current
+> `my-app/client/` workspace layout. It documents the target client structure, key config
+> conventions, and the migration history that shaped the current frontend layout.
 
 ---
 
@@ -137,8 +136,6 @@ client/
 | `my-app/src/assets/*` | `client/src/assets/*` (unchanged) |
 | `my-app/public/*` | `client/public/*` |
 | `my-app/index.html` | `client/index.html` |
-| `my-app/package.json` | `client/package.json` |
-| `my-app/package-lock.json` | `client/package-lock.json` |
 | `my-app/vite.config.ts` | `client/vite.config.ts` |
 | `my-app/vitest.config.ts` | `client/vitest.config.ts` |
 | `my-app/tsconfig.json` | `client/tsconfig.json` |
@@ -155,7 +152,8 @@ client/
 
 ### 3.1 `client/package.json`
 
-**Keep only frontend dependencies.** Remove all backend dependencies (express, mongoose, bcryptjs, cors, jsonwebtoken, nodemailer, helmet, compression, etc.) that are duplicated in the frontend package.json.
+**Keep only frontend dependencies in `client/package.json`.** The repository no longer keeps a
+duplicate frontend package manifest at `my-app/package.json`.
 
 **Scripts** (keep exactly as-is):
 ```json
@@ -293,18 +291,9 @@ import Home from '../pages/home/home';
 
 ### Vercel (Frontend)
 
-A new `client/vercel.json` should be created:
-```json
-{
-  "version": 2,
-  "buildCommand": "npm run build",
-  "outputDirectory": "dist",
-  "rewrites": [
-    { "source": "/((?!assets/).*)", "destination": "/index.html" }
-  ]
-}
-```
-> Note: API rewrites are now handled by the backend deployment, not the frontend.
+Frontend deployment is configured by the single root [`my-app/vercel.json`](../../vercel.json).
+Do not create a separate `client/vercel.json`; the root config already builds `client/` and
+routes API requests through the shared monorepo entrypoint.
 
 ### Docker
 

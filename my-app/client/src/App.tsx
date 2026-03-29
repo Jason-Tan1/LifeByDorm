@@ -25,6 +25,11 @@ const HelpCenter = lazy(() => import('./pages/legal/HelpCenter.tsx'));
 import CookieConsent from './components/CookieConsent';
 import GoogleOneTapPrompt from './components/GoogleOneTapPrompt';
 
+const isLocal = typeof window !== 'undefined' && (
+  window.location.hostname === 'localhost' ||
+  window.location.hostname === '127.0.0.1'
+);
+
 function App() {
   return (
     <UniversityDataProvider>
@@ -53,10 +58,11 @@ function App() {
           </Routes>
         </Suspense>
 
-        <CookieConsent />        <GoogleOneTapPrompt />      </Router >
+        <CookieConsent />
+        {!isLocal && <GoogleOneTapPrompt />}
+      </Router >
     </UniversityDataProvider >
   )
 }
 
 export default App
-

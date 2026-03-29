@@ -1,9 +1,8 @@
 # LifeByDorm — Backend Architecture Blueprint
 
-> **Purpose**: This document is a detailed restructuring prompt. Use it to reorganize all
-> backend files from the current `my-app/server/` subdirectory into a standalone `server/`
-> directory at the project root, with enterprise-grade conventions for source, tests, models,
-> seed data, infrastructure (Docker), and deployment configuration.
+> **Purpose**: This document is an internal backend architecture reference for the current
+> `my-app/server/` workspace layout. It documents the target structure, supporting
+> infrastructure, and the integration points that must stay aligned during refactors.
 
 ---
 
@@ -49,7 +48,7 @@ server/
 ├── .env.local                      # Local overrides (gitignored)
 ├── .env.production                 # Production env (gitignored)
 ├── .gitignore                      # Backend-specific gitignore
-└── vercel.json                     # Vercel deployment config for API
+└── .env.example                    # Backend environment template
 ```
 
 ---
@@ -73,10 +72,10 @@ server/
 | `my-app/server/tsconfig.json` | `server/tsconfig.json` |
 | `my-app/server/vitest.config.ts` | `server/vitest.config.ts` |
 | `my-app/server/serverless.yml` | `server/serverless.yml` |
-| `my-app/server/vercel.json` | `server/vercel.json` |
 | `my-app/server/.env` | `server/.env` |
 | `my-app/server/.env.local` | `server/.env.local` |
 | `my-app/server/.env.production` | `server/.env.production` |
+| `my-app/server/.env.example` | `server/.env.example` |
 | `my-app/server/.gitignore` | `server/.gitignore` |
 | `my-app/server/server.ts.old` | **DELETE** (legacy, not needed) |
 
@@ -196,20 +195,7 @@ functions:
 > ```
 > Verify based on your Serverless Framework build config.
 
-### 3.6 `server/vercel.json`
-
-Update the API rewrite destination:
-```json
-{
-  "version": 2,
-  "outputDirectory": "dist",
-  "rewrites": [
-    { "source": "/(.*)", "destination": "/src/api/index.ts" }
-  ]
-}
-```
-
-### 3.7 Seed Script Import Paths
+### 3.6 Seed Script Import Paths
 
 The seed script (`seed/seed.ts`) imports models. Since models are now at `src/models/`, update:
 ```ts
@@ -240,8 +226,8 @@ docker/
 |---|---|
 | `my-app/Dockerfile` | `docker/Dockerfile` |
 | `my-app/Dockerfile.dev` | `docker/Dockerfile.dev` |
-| `my-app/docker-compose.yml` | `docker/docker-compose.yml` |
-| `my-app/docker-compose.dev.yml` | `docker/docker-compose.dev.yml` |
+| `my-app/docker/docker-compose.yml` | `docker/docker-compose.yml` |
+| `my-app/docker/docker-compose.dev.yml` | `docker/docker-compose.dev.yml` |
 | `my-app/docker/mongo-init.js` | `docker/mongo-init.js` |
 | `my-app/.dockerignore` | `docker/.dockerignore` |
 
@@ -580,6 +566,9 @@ import app from '../server/src/server.js';
 export default app;
 ```
 
+This root deployment config is the only Vercel config that should remain in the repo. Do not
+add or reintroduce a separate `server/vercel.json`.
+
 ---
 
 ## 7. Environment Variables Reference
@@ -650,7 +639,7 @@ export default app;
 
 > **⚠️ These rules MUST be followed to prevent breaking the application:**
 
-1. **Never rename the `default export`** of `server.ts` — `lambda.ts`, `api/index.ts`, and `vercel.json` all depend on it.
+1. **Never rename the `default export`** of `server.ts` — `lambda.ts` and the root `api/index.ts` entrypoint both depend on it.
 2. **Keep model collection names unchanged** — `'user'`, `'Dorm'`, `'University'`, `'userreview'` — as they map to MongoDB collections containing live data.
 3. **Keep the seed script paths to JSON files** — `seed/universityInformation.json` and `seed/dormInformation.json` are loaded at runtime.
 4. **Preserve the `server.ts.old` → DELETE** — it's truly legacy and not imported anywhere.

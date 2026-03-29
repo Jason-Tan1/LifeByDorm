@@ -6,11 +6,19 @@ import './i18n'; // Import i18n configuration
 import './tailwind.css';
 
 const GOOGLE_CLIENT_ID = (import.meta as any).env?.VITE_GOOGLE_CLIENT_ID || '';
+const isLocal = typeof window !== 'undefined' && (
+  window.location.hostname === 'localhost' ||
+  window.location.hostname === '127.0.0.1'
+);
+
+const app = <App />;
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
-      <App />
-    </GoogleOAuthProvider>
+    {isLocal ? app : (
+      <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
+        {app}
+      </GoogleOAuthProvider>
+    )}
   </StrictMode>,
 )

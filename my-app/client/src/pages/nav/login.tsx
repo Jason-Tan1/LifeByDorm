@@ -21,37 +21,24 @@ interface LoginModalProps {
   onClose: () => void;
 }
 
-function Login({ isOpen, onClose }: LoginModalProps) {
-  const { t } = useTranslation();
-  const [email, setEmail] = useState<string>("");
-  const [verificationCode, setVerificationCode] = useState<string>("");
-  const [showVerificationStep, setShowVerificationStep] = useState<boolean>(false);
-  const [error, setError] = useState<string>("");
-  const [showEmailForm, setShowEmailForm] = useState<boolean>(false);
-  const [loading, setLoading] = useState<boolean>(false);
-  const [, setShowSuccessPopup] = useState<boolean>(false);
-  const [snackbarOpen, setSnackbarOpen] = useState<boolean>(false);
-
-  const showError = (msg: string) => {
-    setError(msg);
-    setSnackbarOpen(true);
-  };
-
-  const handleSnackbarClose = (_event?: React.SyntheticEvent | Event, reason?: string) => {
-    if (reason === 'clickaway') {
-      return;
-    }
-    setSnackbarOpen(false);
-  };
-
-  // Custom Google Login Hook
+function GoogleLoginButton({
+  onClose,
+  setLoading,
+  setShowSuccessPopup,
+  showError,
+  t
+}: {
+  onClose: () => void;
+  setLoading: React.Dispatch<React.SetStateAction<boolean>>;
+  setShowSuccessPopup: React.Dispatch<React.SetStateAction<boolean>>;
+  showError: (msg: string) => void;
+  t: (key: string) => string;
+}) {
   const loginWithGoogle = useGoogleLogin({
     onSuccess: async (tokenResponse: TokenResponse) => {
       try {
         setLoading(true);
-        // Send the access token to your backend to verify and create a session
         const response = await axios.post(`${API_BASE}/auth/google`, {
-          // Note: using access_token instead of credential for useGoogleLogin
           access_token: tokenResponse.access_token,
         });
 
@@ -74,6 +61,44 @@ function Login({ isOpen, onClose }: LoginModalProps) {
       showError('Google sign-in failed');
     }
   });
+
+  return (
+    <button
+      className="google_custom_button"
+      onClick={() => loginWithGoogle()}
+    >
+      <img
+        src="https://cdn1.iconfinder.com/data/icons/google-s-logo/150/Google_Icons-09-512.png"
+        alt="Google"
+        className="google_icon"
+      />
+      {t('login.continueGoogle')}
+    </button>
+  );
+}
+
+function Login({ isOpen, onClose }: LoginModalProps) {
+  const { t } = useTranslation();
+  const [email, setEmail] = useState<string>("");
+  const [verificationCode, setVerificationCode] = useState<string>("");
+  const [showVerificationStep, setShowVerificationStep] = useState<boolean>(false);
+  const [error, setError] = useState<string>("");
+  const [showEmailForm, setShowEmailForm] = useState<boolean>(false);
+  const [loading, setLoading] = useState<boolean>(false);
+  const [, setShowSuccessPopup] = useState<boolean>(false);
+  const [snackbarOpen, setSnackbarOpen] = useState<boolean>(false);
+
+  const showError = (msg: string) => {
+    setError(msg);
+    setSnackbarOpen(true);
+  };
+
+  const handleSnackbarClose = (_event?: React.SyntheticEvent | Event, reason?: string) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+    setSnackbarOpen(false);
+  };
 
   if (!isOpen) return null;
 
@@ -140,18 +165,15 @@ function Login({ isOpen, onClose }: LoginModalProps) {
             </h1>
 
             <div className="login_options">
-              <button
-                className="google_custom_button"
-                onClick={() => loginWithGoogle()}
-                disabled={loading}
-              >
-                <img
-                  src="https://cdn1.iconfinder.com/data/icons/google-s-logo/150/Google_Icons-09-512.png"
-                  alt="Google"
-                  className="google_icon"
+              {!isLocal && (
+                <GoogleLoginButton
+                  onClose={onClose}
+                  setLoading={setLoading}
+                  setShowSuccessPopup={setShowSuccessPopup}
+                  showError={showError}
+                  t={t}
                 />
-                {t('login.continueGoogle')}
-              </button>
+              )}
 
               <button
                 className="email_option_button"

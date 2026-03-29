@@ -1,6 +1,8 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 
+const LIVE_API_BASE = 'https://b4zyhqawrk.execute-api.us-east-1.amazonaws.com/dev';
+
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [react()],
@@ -18,15 +20,17 @@ export default defineConfig({
     },
   },
   server: {
+    port: 5173,
+    strictPort: true,
     host: true,
     proxy: {
       '/api': {
-        target: 'http://localhost:3000',
+        target: LIVE_API_BASE,
         changeOrigin: true,
         secure: false,
       },
       '/auth': {
-        target: 'http://localhost:3000',
+        target: LIVE_API_BASE,
         changeOrigin: true,
         secure: false,
       }
