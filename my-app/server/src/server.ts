@@ -18,6 +18,7 @@ import nodemailer from 'nodemailer';
 import helmet from 'helmet';
 import { uploadToS3, getSignedFileUrl } from './s3';
 import Groq from 'groq-sdk';
+import { Verifier } from 'academic-email-verifier';
 
 // Security: Check if running in production
 const isProduction = process.env.NODE_ENV === 'production';
@@ -385,6 +386,25 @@ Write a concise 3-4 sentence summary that captures the overall student experienc
   } catch (err) {
     console.error(`Failed to generate AI summary for ${dormName}:`, err);
     return null;
+  }
+}
+
+// Academic email verification (subdomain-aware)
+function normalizeEmailForVerification(email: string): string {
+  const [user, domain] = email.split('@');
+  const parts = domain.split('.');
+  if (parts.length >= 3) {
+    return user + '@' + parts.slice(-2).join('.');
+  }
+  return email;
+}
+
+async function isAcademicEmail(email: string): Promise<boolean> {
+  try {
+    const normalized = normalizeEmailForVerification(email);
+    return await Verifier.isAcademic(normalized);
+  } catch {
+    return false;
   }
 }
 
@@ -1409,7 +1429,7 @@ app.post('/api/reviews', submitLimiter, validate(reviewSchema), async (req: Requ
       images
     } = req.body;
 
-    // Check if user is logged in (verified) via Authorization header
+    // Check if user is logged in and has an academic email for verified badge
     let isVerified = false;
     let userEmail = '';
     const authHeader = req.headers.authorization;
@@ -1422,8 +1442,10 @@ app.post('/api/reviews', submitLimiter, validate(reviewSchema), async (req: Requ
       const token = authHeader.split(' ')[1];
       try {
         const decoded = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET as Secret) as JwtPayload;
-        isVerified = true;
         userEmail = decoded.name || '';
+        // Verified badge requires a recognized university email
+        isVerified = userEmail ? await isAcademicEmail(userEmail) : false;
+        if (!isProduction) console.log('🎓 Academic email check:', userEmail, '→', isVerified);
       } catch (err) {
         if (!isProduction) console.log('🔑 Token verification failed:', err instanceof Error ? err.message : 'Unknown error');
         isVerified = false;
