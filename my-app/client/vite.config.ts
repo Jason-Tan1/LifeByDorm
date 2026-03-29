@@ -16,6 +16,14 @@ export default defineConfig({
           'vendor-router': ['react-router-dom'],
           'vendor-i18n': ['i18next', 'react-i18next', 'i18next-browser-languagedetector'],
           'vendor-oauth': ['@react-oauth/google'],
+          'vendor-mui-icons': [
+            '@mui/icons-material/Star', '@mui/icons-material/StarBorder',
+            '@mui/icons-material/StarHalf', '@mui/icons-material/Home',
+            '@mui/icons-material/Close', '@mui/icons-material/CheckCircle',
+            '@mui/icons-material/CloudUpload', '@mui/icons-material/Menu',
+            '@mui/icons-material/Language', '@mui/icons-material/MailOutline',
+            '@mui/icons-material/ArrowBack'
+          ],
         },
       },
     },

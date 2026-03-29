@@ -6,7 +6,6 @@ import { Link } from 'react-router-dom';
 import NavBar from '../nav/navbar.tsx';
 import SearchBar from './searchbar.tsx';
 import Footer from './footer.tsx';
-import { useUniversityData } from '../../context/UniversityDataContext';
 import { SkeletonSlider } from '../../components/SkeletonCard';
 import DefaultCampus from '../../assets/Default_Campus.webp';
 import DefaultDorm from '../../assets/Default_Dorm.webp';
@@ -60,23 +59,20 @@ function Home() {
   // Track if data has been fetched to prevent duplicate calls
   const hasFetched = useRef(false);
 
-  // Use shared context for universities - single source of truth!
-  const { universities, isLoading: universitiesLoading } = useUniversityData();
-
   const calculateOverallRating = useCallback((review: any) => {
     const ratings = [review.room, review.bathroom, review.building, review.amenities, review.location];
     return ratings.reduce((acc, rating) => acc + rating, 0) / ratings.length;
   }, []);
 
   useEffect(() => {
-    // Wait for universities to load from context and prevent duplicate fetches
-    if (universitiesLoading || universities.length === 0 || hasFetched.current) {
+    // Prevent duplicate fetches
+    if (hasFetched.current) {
       return;
     }
 
     hasFetched.current = true;
 
-    // Optimized: Fetch all homepage data in a single request
+    // Optimized: Fetch all homepage data in a single request (no longer waits for university context)
     const fetchAllData = async () => {
       setIsLoading(true);
 
@@ -136,7 +132,7 @@ function Home() {
     };
 
     fetchAllData();
-  }, [universities, universitiesLoading, calculateOverallRating]);
+  }, [calculateOverallRating]);
 
   /* Helper to scroll a container by exactly one card width + gap */
   const scrollContainer = (containerId: string, direction: 'left' | 'right', setPos: (pos: number) => void) => {
@@ -328,7 +324,7 @@ function Home() {
                         <span className="icon"></span> <span className="featured-text-ellipsis" title={dorm.name}>{truncateName(dorm.name)}</span>
                       </h3>
                       <p className="featured-location">
-                        <span className="icon"></span> <span className="featured-text-ellipsis" title={universities.find((u) => u.slug === dorm.universitySlug)?.name || dorm.universitySlug}>{truncateName(universities.find((u) => u.slug === dorm.universitySlug)?.name || dorm.universitySlug)}</span>
+                        <span className="icon"></span> <span className="featured-text-ellipsis" title={dorm.universityName || dorm.universitySlug}>{truncateName(dorm.universityName || dorm.universitySlug)}</span>
                       </p>
                       <p className="featured-location">
                         <span className="icon"></span> {dorm.reviewCount ?? 0} {dorm.reviewCount === 1 ? t('home.review') : t('home.reviews')}
@@ -378,7 +374,7 @@ function Home() {
                         <span className="icon"></span> <span className="featured-text-ellipsis" title={dorm.name}>{truncateName(dorm.name)}</span>
                       </h3>
                       <p className="featured-location">
-                        <span className="icon"></span> <span className="featured-text-ellipsis" title={universities.find((u) => u.slug === dorm.universitySlug)?.name || dorm.universitySlug}>{truncateName(universities.find((u) => u.slug === dorm.universitySlug)?.name || dorm.universitySlug)}</span>
+                        <span className="icon"></span> <span className="featured-text-ellipsis" title={dorm.universityName || dorm.universitySlug}>{truncateName(dorm.universityName || dorm.universitySlug)}</span>
                       </p>
                       <p className="featured-location">
                         <span className="icon"></span> {(dormRatings[dorm.name] ?? 0).toFixed(1)} ({dormReviewCounts[dorm.name] ?? 0} {dormReviewCounts[dorm.name] === 1 ? t('home.review') : t('home.reviews')})

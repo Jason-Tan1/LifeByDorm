@@ -37,26 +37,26 @@ function App() {
             <ScrollToTop />
             <Suspense fallback={<PageLoader />}>
               <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/aboutme" element={<AboutMe />} />
-            <Route path="/contactme" element={<ContactMe />} />
-            <Route path="/account" element={<Account />} />
-            <Route path="/admin" element={<Home />} />
-            <Route path="/admin/dashboard" element={<AdminDashboard />} />
-            <Route path="/universities" element={<AllUniversities />} />
-            <Route path="/universities/:universityName" element={<University />} />
-            <Route path="/universities/:universityName/dorms/:dormSlug" element={<Dorms />} />
-            <Route path="/dorms" element={<Dorms />} />
-            <Route path="/navbar" element={<NavBar />} />
-            <Route path="/searchbar" element={<SearchBar />} />
-            <Route path="/review" element={<Review />} />
-            <Route path="/terms" element={<TermsOfService />} />
-            <Route path="/privacy" element={<PrivacyPolicy />} />
-            <Route path="/cookie-policy" element={<CookiePolicy />} />
-            <Route path="/review-guidelines" element={<ReviewGuidelines />} />
-              <Route path="/help-center" element={<HelpCenter />} />
-            </Routes>
-          </Suspense>
+                <Route path="/" element={<Home />} />
+                <Route path="/aboutme" element={<AboutMe />} />
+                <Route path="/contactme" element={<ContactMe />} />
+                <Route path="/account" element={<Account />} />
+                <Route path="/admin" element={<Home />} />
+                <Route path="/admin/dashboard" element={<AdminDashboard />} />
+                <Route path="/universities" element={<AllUniversities />} />
+                <Route path="/universities/:universityName" element={<University />} />
+                <Route path="/universities/:universityName/dorms/:dormSlug" element={<Dorms />} />
+                <Route path="/dorms" element={<Dorms />} />
+                <Route path="/navbar" element={<NavBar />} />
+                <Route path="/searchbar" element={<SearchBar />} />
+                <Route path="/review" element={<Review />} />
+                <Route path="/terms" element={<TermsOfService />} />
+                <Route path="/privacy" element={<PrivacyPolicy />} />
+                <Route path="/cookie-policy" element={<CookiePolicy />} />
+                <Route path="/review-guidelines" element={<ReviewGuidelines />} />
+                <Route path="/help-center" element={<HelpCenter />} />
+              </Routes>
+            </Suspense>
 
             <CookieConsent />
             <GoogleOneTapPrompt />

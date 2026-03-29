@@ -90,8 +90,8 @@ export const reviewSchema = z.object({
   wouldDormAgain: z.boolean().nullable().optional(),
   // fileImage can be string, null, undefined, or empty string
   fileImage: z.union([z.string(), z.null()]).optional(),
-  // images can be array of strings, null, undefined, or empty array
-  images: z.union([z.array(z.string()), z.null()]).optional()
+  // images can be array of strings, null, undefined, or empty array (max 10 images per review)
+  images: z.union([z.array(z.string()).max(10), z.null()]).optional()
 }).strict();
 
 export const editReviewSchema = z.object({
@@ -104,5 +104,11 @@ export const editReviewSchema = z.object({
   year: z.union([z.number(), z.string(), z.array(z.union([z.number(), z.string()]))]),
   roomType: z.union([z.string(), z.array(z.string())]),
   wouldDormAgain: z.boolean().nullable().optional(),
-  images: z.union([z.array(z.string()), z.null()]).optional()
+  images: z.union([z.array(z.string()).max(10), z.null()]).optional()
+}).strict();
+
+export const contactSchema = z.object({
+  fullName: z.string().min(1).max(100).trim(),
+  email: z.string().email().max(100).trim(),
+  message: z.string().min(1).max(5000).trim()
 }).strict();

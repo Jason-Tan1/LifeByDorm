@@ -120,16 +120,18 @@ function UniversityDash() {
     // Fetch data from APIs - try optimized endpoint first, fallback to old method
     async function fetchData() {
       try {
-        // Fetch university data
-        const uniRes = await fetch(`${API_BASE}/api/universities/${encodeURIComponent(universityName!)}`);
+        // Fetch university data and dorm stats in parallel (both only need the slug from URL)
+        const [uniRes, dormsStatsRes] = await Promise.all([
+          fetch(`${API_BASE}/api/universities/${encodeURIComponent(universityName!)}`),
+          fetch(`${API_BASE}/api/universities/${encodeURIComponent(universityName!)}/dorms-stats`)
+        ]);
+
         if (!uniRes.ok) {
           throw new Error(`Failed to load university: ${uniRes.status}`);
         }
         const uniData: APIUniversity = await uniRes.json();
 
-        // Try the new optimized batch endpoint first
         let dormsWithStats: APIDorm[] = [];
-        const dormsStatsRes = await fetch(`${API_BASE}/api/universities/${encodeURIComponent(universityName!)}/dorms-stats`);
 
         if (dormsStatsRes.ok) {
           // Use the optimized endpoint - dorms come with stats pre-calculated

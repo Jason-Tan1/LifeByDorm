@@ -25,16 +25,6 @@ const isProduction = process.env.NODE_ENV === 'production';
 const JWT_ALGORITHM: Algorithm = 'HS256';
 const JWT_EXPIRY = '24h';
 
-// Security: Timing-safe string comparison to prevent timing attacks
-function safeCompare(a: string, b: string): boolean {
-  if (a.length !== b.length) return false;
-  try {
-    return crypto.timingSafeEqual(Buffer.from(a), Buffer.from(b));
-  } catch {
-    return false;
-  }
-}
-
 // Security: Generate cryptographically secure verification code
 function generateSecureCode(): string {
   return crypto.randomInt(100000, 999999).toString();
@@ -61,7 +51,8 @@ import {
   googleAuthSchema,
   dormSchema,
   reviewSchema,
-  editReviewSchema
+  editReviewSchema,
+  contactSchema
 } from './validation';
 
 dotenv.config();
@@ -206,6 +197,15 @@ const apiLimiter = rateLimit({
   legacyHeaders: false,
 });
 
+// Stricter limit for review/dorm submissions (allows anonymous but prevents spam)
+const submitLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 10, // 10 submissions per 15 mins per IP
+  message: { message: 'Too many submissions, please try again later' },
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+
 // Higher limit for read-only GET requests (public data)
 const readOnlyLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
@@ -224,6 +224,11 @@ const cache: Map<string, CacheEntry<any>> = new Map();
 const CACHE_TTL = 5 * 60 * 1000; // 5 minutes cache TTL
 
 app.get('/', (req: Request, res: Response) => {
+  // In production, only return a minimal response to avoid leaking server info
+  if (isProduction) {
+    return res.json({ message: "LifeByDorm Backend is Running" });
+  }
+
   const states: { [key: number]: string } = {
     0: 'disconnected',
     1: 'connected',
@@ -417,7 +422,8 @@ app.get('/api/stats/homepage', readOnlyLimiter, async (req: Request, res: Respon
       return {
         ...dorm,
         avgRating: stats.avgRating,
-        reviewCount: stats.reviewCount
+        reviewCount: stats.reviewCount,
+        universityName: universityNameMap.get(dorm.universitySlug) || dorm.universitySlug
       };
     });
 
@@ -953,9 +959,18 @@ function requireAdmin(req: AuthRequest, res: Response, next: NextFunction) {
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 // Get all universities
-app.get('/api/universities', async (req: Request, res: Response) => {
+app.get('/api/universities', readOnlyLimiter, async (req: Request, res: Response) => {
   try {
+    const cacheKey = 'all-universities';
+    const cached = getCached<any>(cacheKey);
+    if (cached) {
+      res.set('Cache-Control', 'public, max-age=300, s-maxage=600, stale-while-revalidate=60');
+      return res.json(cached);
+    }
+
     const universities = await University.find({}).sort({ name: 1 }).lean();
+
+    setCache(cacheKey, universities);
     res.set('Cache-Control', 'public, max-age=300, s-maxage=600, stale-while-revalidate=60');
     res.json(universities);
   } catch (err) {
@@ -965,7 +980,7 @@ app.get('/api/universities', async (req: Request, res: Response) => {
 });
 
 // Get dorms for a university by university slug (must come before /:slug route)
-app.get('/api/universities/:slug/dorms', async (req: Request, res: Response) => {
+app.get('/api/universities/:slug/dorms', readOnlyLimiter, async (req: Request, res: Response) => {
   try {
     const { slug } = req.params;
     // Only return approved dorms OR dorms without a status field (legacy dorms)
@@ -996,26 +1011,27 @@ app.get('/api/universities/:slug/dorms-stats', readOnlyLimiter, async (req: Requ
     const cacheKey = `dorms-stats-${slug}`;
     const cachedData = getCached<any>(cacheKey);
     if (cachedData) {
+      res.set('Cache-Control', 'public, max-age=300, s-maxage=600, stale-while-revalidate=60');
       return res.json(cachedData);
     }
 
-    // Fetch dorms for this university
-    const dorms = await Dorm.find({
-      universitySlug: slug,
-      $or: [
-        { status: 'approved' },
-        { status: { $exists: false } }
-      ]
-    }).sort({ name: 1 }).lean();
-
-    // Fetch all reviews for this university in one query
-    const reviews = await UserReview.find({
-      university: slug,
-      $or: [
-        { status: 'approved' },
-        { status: { $exists: false } }
-      ]
-    }).lean();
+    // Fetch dorms and reviews in parallel (independent queries on different collections)
+    const [dorms, reviews] = await Promise.all([
+      Dorm.find({
+        universitySlug: slug,
+        $or: [
+          { status: 'approved' },
+          { status: { $exists: false } }
+        ]
+      }).sort({ name: 1 }).lean(),
+      UserReview.find({
+        university: slug,
+        $or: [
+          { status: 'approved' },
+          { status: { $exists: false } }
+        ]
+      }).lean()
+    ]);
 
     // Calculate stats per dorm
     const dormStats: { [dormName: string]: { totalRating: number; reviewCount: number } } = {};
@@ -1045,6 +1061,7 @@ app.get('/api/universities/:slug/dorms-stats', readOnlyLimiter, async (req: Requ
     // Cache the result
     setCache(cacheKey, enrichedDorms);
 
+    res.set('Cache-Control', 'public, max-age=300, s-maxage=600, stale-while-revalidate=60');
     res.json(enrichedDorms);
   } catch (err) {
     console.error('Error fetching dorm stats for university', err);
@@ -1064,6 +1081,7 @@ app.get('/api/universities/:slug/dorms/:dormSlug', readOnlyLimiter, async (req: 
     const cacheKey = `dorm-${slug}-${dormSlug}`;
     const cachedData = getCached<any>(cacheKey);
     if (cachedData) {
+      res.set('Cache-Control', 'public, max-age=300, s-maxage=600, stale-while-revalidate=60');
       return res.json(cachedData);
     }
 
@@ -1102,6 +1120,7 @@ app.get('/api/universities/:slug/dorms/:dormSlug', readOnlyLimiter, async (req: 
     // Cache the result
     setCache(cacheKey, result);
 
+    res.set('Cache-Control', 'public, max-age=300, s-maxage=600, stale-while-revalidate=60');
     res.json(result);
   } catch (err) {
     console.error('Error fetching dorm', err);
@@ -1110,11 +1129,22 @@ app.get('/api/universities/:slug/dorms/:dormSlug', readOnlyLimiter, async (req: 
 });
 
 // Get a single university by slug
-app.get('/api/universities/:slug', async (req: Request, res: Response) => {
+app.get('/api/universities/:slug', readOnlyLimiter, async (req: Request, res: Response) => {
   try {
     const { slug } = req.params;
+
+    const cacheKey = `university-${slug}`;
+    const cached = getCached<any>(cacheKey);
+    if (cached) {
+      res.set('Cache-Control', 'public, max-age=300, s-maxage=600, stale-while-revalidate=60');
+      return res.json(cached);
+    }
+
     const university = await University.findOne({ slug }).lean();
     if (!university) return res.status(404).json({ message: 'University not found' });
+
+    setCache(cacheKey, university);
+    res.set('Cache-Control', 'public, max-age=300, s-maxage=600, stale-while-revalidate=60');
     res.json(university);
   } catch (err) {
     console.error('Error fetching university', err);
@@ -1123,12 +1153,22 @@ app.get('/api/universities/:slug', async (req: Request, res: Response) => {
 });
 
 // Public endpoint: search approved dorms (lightweight, no auth required)
-app.get('/api/dorms/search', async (req: Request, res: Response) => {
+app.get('/api/dorms/search', readOnlyLimiter, async (req: Request, res: Response) => {
   try {
+    const cacheKey = 'dorms-search';
+    const cached = getCached<any>(cacheKey);
+    if (cached) {
+      res.set('Cache-Control', 'public, max-age=300, s-maxage=600, stale-while-revalidate=60');
+      return res.json(cached);
+    }
+
     const dorms = await Dorm.find(
       { $or: [{ status: 'approved' }, { status: { $exists: false } }] },
       { name: 1, slug: 1, universitySlug: 1, _id: 0 }
     ).sort({ name: 1 }).lean();
+
+    setCache(cacheKey, dorms);
+    res.set('Cache-Control', 'public, max-age=300, s-maxage=600, stale-while-revalidate=60');
     res.json(dorms);
   } catch (err) {
     console.error('Error fetching dorms for search', err);
@@ -1201,7 +1241,7 @@ app.post('/api/dorms', authenticationToken, validate(dormSchema), async (req: Au
 });
 
 // Reviews API: create and fetch reviews
-app.post('/api/reviews', validate(reviewSchema), async (req: Request, res: Response) => {
+app.post('/api/reviews', submitLimiter, validate(reviewSchema), async (req: Request, res: Response) => {
   try {
     const {
       university,
@@ -1326,7 +1366,7 @@ app.post('/api/reviews', validate(reviewSchema), async (req: Request, res: Respo
   }
 });
 
-app.get('/api/reviews', async (req: Request, res: Response) => {
+app.get('/api/reviews', readOnlyLimiter, async (req: Request, res: Response) => {
   try {
     const { university, dorm, limit: limitParam, skip: skipParam } = req.query;
 
@@ -1335,6 +1375,14 @@ app.get('/api/reviews', async (req: Request, res: Response) => {
     const DEFAULT_LIMIT = 50;
     const limit = Math.min(parseInt(limitParam as string) || DEFAULT_LIMIT, MAX_LIMIT);
     const skip = Math.max(parseInt(skipParam as string) || 0, 0);
+
+    // Check cache (shorter TTL for reviews since they change more frequently)
+    const cacheKey = `reviews-${university || ''}-${dorm || ''}-${limit}-${skip}`;
+    const cached = getCached<any>(cacheKey);
+    if (cached) {
+      res.set('Cache-Control', 'public, max-age=60, s-maxage=120, stale-while-revalidate=30');
+      return res.json(cached);
+    }
 
     // Show approved reviews OR reviews without a status field (legacy reviews)
     const filter: any = {
@@ -1370,6 +1418,8 @@ app.get('/api/reviews', async (req: Request, res: Response) => {
       { $project: { hasWrittenDescription: 0 } }
     ]);
 
+    setCache(cacheKey, reviews);
+    res.set('Cache-Control', 'public, max-age=60, s-maxage=120, stale-while-revalidate=30');
     res.json(reviews);
   } catch (err) {
     console.error('Error fetching reviews', err);
@@ -1885,20 +1935,21 @@ app.delete('/api/admin/dorms/:id', authenticationToken, requireAdmin, async (req
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 // CONTACT FORM ENDPOINT
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
-app.post('/api/contact', apiLimiter, async (req: Request, res: Response) => {
+app.post('/api/contact', submitLimiter, validate(contactSchema), async (req: Request, res: Response) => {
   try {
     const { fullName, email, message } = req.body;
-    if (!fullName || !email || !message) {
-      return res.status(400).json({ message: 'All fields are required' });
-    }
+
+    // Sanitize all user inputs to prevent email header injection and XSS
+    const safeName = sanitizeInput(fullName);
+    const safeMessage = sanitizeInput(message);
 
     if (process.env.EMAIL_USER && process.env.EMAIL_PASS) {
       await getTransporter().sendMail({
         from: '"LifeByDorm Contact" <support@lifebydorm.ca>',
         to: process.env.EMAIL_USER, // Send to your own support email
         replyTo: email,
-        subject: `New Contact Message from ${fullName}`,
-        text: `Name: ${fullName}\nEmail: ${email}\n\nMessage:\n${message}`,
+        subject: `New Contact Message from ${safeName}`,
+        text: `Name: ${safeName}\nEmail: ${email}\n\nMessage:\n${safeMessage}`,
       });
       res.status(200).json({ message: 'Message sent successfully' });
     } else {
