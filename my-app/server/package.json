@@ -31,6 +31,7 @@
     "express-rate-limit": "^8.2.1",
     "fast-xml-parser": "^5.3.8",
     "google-auth-library": "^10.5.0",
+    "groq-sdk": "^1.1.2",
     "helmet": "^8.1.0",
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.19.3",

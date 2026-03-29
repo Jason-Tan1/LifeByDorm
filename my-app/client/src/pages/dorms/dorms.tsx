@@ -23,6 +23,7 @@ type APIDorm = {
   description?: string;
   amenities?: string[];
   roomTypes?: string[];
+  aiSummary?: string;
 };
 
 //Base URL for API requests

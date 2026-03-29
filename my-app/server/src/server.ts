@@ -17,6 +17,7 @@ import { Dorm } from './models/dorm';
 import nodemailer from 'nodemailer';
 import helmet from 'helmet';
 import { uploadToS3, getSignedFileUrl } from './s3';
+import Groq from 'groq-sdk';
 
 // Security: Check if running in production
 const isProduction = process.env.NODE_ENV === 'production';
@@ -257,8 +258,111 @@ function setCache<T>(key: string, data: T): void {
   cache.set(key, { data, timestamp: Date.now() });
 }
 
+// Groq AI client (lazy-initialized)
+let groqClient: Groq | null = null;
+function getGroq(): Groq | null {
+  if (groqClient) return groqClient;
+  if (!process.env.GROQ_API_KEY) {
+    if (!isProduction) console.warn('⚠️ GROQ_API_KEY not configured, AI summaries disabled');
+    return null;
+  }
+  groqClient = new Groq({ apiKey: process.env.GROQ_API_KEY });
+  return groqClient;
+}
+
+async function generateDormSummary(
+  dormId: string,
+  dormName: string,
+  universitySlug: string,
+  dormSlug: string
+): Promise<string | null> {
+  try {
+    const groq = getGroq();
+    if (!groq) return null;
+
+    const reviews = await UserReview.find({
+      university: universitySlug,
+      dorm: dormName,
+      $or: [{ status: 'approved' }, { status: { $exists: false } }]
+    }).lean();
+
+    if (reviews.length < 5) return null;
+
+    // Calculate average ratings per category
+    const totals = { room: 0, bathroom: 0, building: 0, amenities: 0, location: 0 };
+    let wouldDormAgainCount = 0;
+    for (const r of reviews as any[]) {
+      totals.room += r.room || 0;
+      totals.bathroom += r.bathroom || 0;
+      totals.building += r.building || 0;
+      totals.amenities += r.amenities || 0;
+      totals.location += r.location || 0;
+      if (r.wouldDormAgain === true) wouldDormAgainCount++;
+    }
+    const count = reviews.length;
+    const avgRoom = (totals.room / count).toFixed(1);
+    const avgBathroom = (totals.bathroom / count).toFixed(1);
+    const avgBuilding = (totals.building / count).toFixed(1);
+    const avgAmenities = (totals.amenities / count).toFixed(1);
+    const avgLocation = (totals.location / count).toFixed(1);
+    const wouldDormAgainPct = Math.round((wouldDormAgainCount / count) * 100);
+
+    // Build review descriptions (truncate each to 200 chars)
+    const reviewTexts = (reviews as any[])
+      .filter(r => r.description && r.description.trim())
+      .map((r, i) => `${i + 1}. "${r.description.slice(0, 200)}"`)
+      .join('\n');
+
+    const completion = await groq.chat.completions.create({
+      model: 'openai/gpt-oss-120b',
+      temperature: 0.3,
+      max_tokens: 300,
+      messages: [
+        {
+          role: 'system',
+          content: 'Write a concise 3-4 sentence summary of a university dormitory based on student reviews. Be balanced — mention both positives and negatives. Write in third person. Do not fabricate details not present in the reviews.'
+        },
+        {
+          role: 'user',
+          content: `Summarize the following ${count} student reviews for "${dormName}" at ${universitySlug.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ')}.
+
+Average ratings (out of 5):
+- Room: ${avgRoom}
+- Bathroom: ${avgBathroom}
+- Building: ${avgBuilding}
+- Amenities: ${avgAmenities}
+- Location: ${avgLocation}
+- Would Dorm Again: ${wouldDormAgainPct}%
+
+Student comments:
+${reviewTexts}
+
+Write a concise 3-4 sentence summary that captures the overall student experience.`
+        }
+      ]
+    });
+
+    const summary = completion.choices[0]?.message?.content?.trim();
+    if (!summary) return null;
+
+    await Dorm.findByIdAndUpdate(dormId, {
+      aiSummary: summary,
+      summaryGeneratedAt: new Date()
+    });
+
+    // Invalidate in-memory cache for this dorm
+    cache.delete(`dorm-${universitySlug}-${dormSlug}`);
+
+    if (!isProduction) console.log(`✅ AI summary generated for ${dormName}`);
+    return summary;
+  } catch (err) {
+    console.error(`Failed to generate AI summary for ${dormName}:`, err);
+    return null;
+  }
+}
+
 // CORS configuration - Moved to top of file
-// const ALLOWED_ORIGINS = ... 
+// const ALLOWED_ORIGINS = ...
 // (Commented out legacy block removed to avoid confusion)
 
 // MongoDB Connection optimized for Serverless with Global Caching
@@ -1111,11 +1215,30 @@ app.get('/api/universities/:slug/dorms/:dormSlug', readOnlyLimiter, async (req: 
       avgRating = total / reviews.length;
     }
 
-    const result = {
+    const result: any = {
       ...dorm,
       avgRating,
       reviewCount: reviews.length
     };
+
+    // AI summary: lazy weekly refresh
+    const SEVEN_DAYS_MS = 7 * 24 * 60 * 60 * 1000;
+    const dormObj = dorm as any;
+    if (reviews.length >= 5) {
+      const summaryAge = dormObj.summaryGeneratedAt
+        ? Date.now() - new Date(dormObj.summaryGeneratedAt).getTime()
+        : Infinity;
+
+      if (summaryAge > SEVEN_DAYS_MS) {
+        const newSummary = await generateDormSummary(
+          dormObj._id.toString(), dormObj.name, slug, dormSlug
+        );
+        if (newSummary) {
+          result.aiSummary = newSummary;
+          result.summaryGeneratedAt = new Date();
+        }
+      }
+    }
 
     // Cache the result
     setCache(cacheKey, result);
@@ -1718,6 +1841,27 @@ app.patch('/api/admin/reviews/:id/approve', authenticationToken, requireAdmin, a
     }
 
     await review.save();
+
+    // AI summary: check if this approval crosses the 5-review threshold
+    if (!review.pendingEdit) {
+      const approvedCount = await UserReview.countDocuments({
+        university: review.university,
+        dorm: review.dorm,
+        $or: [{ status: 'approved' }, { status: { $exists: false } }]
+      });
+
+      if (approvedCount >= 5) {
+        const dormDoc = await Dorm.findOne({
+          universitySlug: review.university,
+          name: review.dorm
+        });
+        if (dormDoc && !dormDoc.aiSummary) {
+          await generateDormSummary(
+            (dormDoc._id as any).toString(), dormDoc.name, dormDoc.universitySlug, dormDoc.slug
+          );
+        }
+      }
+    }
 
     res.json({ message: 'Review approved', review });
   } catch (err) {

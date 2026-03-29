@@ -17,6 +17,7 @@ type APIDorm = {
   description?: string;
   amenities?: string[];
   roomTypes?: string[];
+  aiSummary?: string;
 };
 
 interface DormInfoProps {
@@ -95,6 +96,22 @@ function DormInfo({ dorm, reviews, universityName, universityLocation, calculate
         <div className="dorm-details">
           <h2>About</h2>
           <p>{dorm.description}</p>
+        </div>
+      )}
+
+      {/* AI Summary Section */}
+      {dorm.aiSummary && (
+        <div className="dorm-details">
+          <div className="ai-summary-card">
+            <h2 className="ai-summary-header">What Students Say</h2>
+            <p className="ai-summary-text">{dorm.aiSummary}</p>
+            <div className="ai-summary-footer">
+              <span className="ai-summary-badge">AI Summary</span>
+              <span className="ai-summary-disclaimer">
+                Based on {reviews.length} student review{reviews.length !== 1 ? 's' : ''}
+              </span>
+            </div>
+          </div>
         </div>
       )}
 

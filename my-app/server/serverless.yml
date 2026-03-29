@@ -18,6 +18,7 @@ provider:
     EMAIL_PASS: ${env:EMAIL_PASS}
     # AWS_REGION: ${env:AWS_REGION} # Reserved key, handled by provider.region
     NODE_ENV: production
+    GROQ_API_KEY: ${env:GROQ_API_KEY, ''}
 
   # Grant Lambda permission to access S3 properly using IAM roles
   # (This is better than hardcoding keys in env vars)
