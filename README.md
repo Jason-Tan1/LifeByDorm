@@ -64,6 +64,8 @@ Finding the right dorm can be overwhelming. LifeByDorm bridges the gap by provid
 
 ## Getting Started
 
+The application workspace lives under `my-app/`.
+
 ### Installation
 
 1. **Clone the repository**
@@ -76,7 +78,7 @@ Finding the right dorm can be overwhelming. LifeByDorm bridges the gap by provid
    
    Frontend:
    ```bash
-   cd my-app
+   cd my-app/client
    npm install
    ```
    
@@ -99,15 +101,118 @@ Finding the right dorm can be overwhelming. LifeByDorm bridges the gap by provid
    
    Frontend:
    ```bash
-   cd my-app
+   cd my-app/client
    npm run dev
    ```
    
    Backend:
    ```bash
    cd my-app/server
-   npm start
+   npm run devStart
    ```
+
+### Docker Setup
+
+If you prefer Docker:
+
+```bash
+cd my-app
+docker-compose -f docker/docker-compose.yml up --build
+```
+
+Development Docker setup:
+
+```bash
+cd my-app
+docker-compose -f docker/docker-compose.dev.yml up --build
+```
+
+### Project Structure
+
+```text
+LifeByDorm/
+├── README.md               # Repository documentation
+├── my-app/
+│   ├── client/             # Frontend React application
+│   │   ├── src/            # Frontend source code
+│   │   ├── public/         # Static assets
+│   │   └── vite.config.ts  # Vite development/build config
+│   ├── server/             # Backend Express API
+│   │   ├── src/            # Server source code
+│   │   ├── seed/           # Database seed scripts
+│   │   └── serverless.yml  # AWS Lambda/serverless config
+│   ├── docker/             # Docker-related files
+│   ├── api/                # Serverless entrypoints
+│   └── vercel.json         # Vercel configuration
+└── api.txt                 # Owner-provided deployment/env reference
+```
+
+### Docker Commands
+
+| Command | Description |
+|---------|-------------|
+| `cd my-app && docker-compose -f docker/docker-compose.yml up --build` | Build and start production containers |
+| `cd my-app && docker-compose -f docker/docker-compose.yml up -d` | Start containers in detached mode |
+| `cd my-app && docker-compose -f docker/docker-compose.yml down` | Stop and remove containers |
+| `cd my-app && docker-compose -f docker/docker-compose.yml down -v` | Stop and remove containers and volumes |
+| `cd my-app && docker-compose -f docker/docker-compose.yml logs -f app` | View application logs |
+| `cd my-app && docker-compose -f docker/docker-compose.yml --profile seed up seeder` | Seed the database |
+| `cd my-app && docker-compose -f docker/docker-compose.dev.yml up --build` | Start the development Docker environment |
+
+### Environment Variables
+
+Backend variables used by `my-app/server/.env`:
+
+| Variable | Description | Required |
+|----------|-------------|----------|
+| `MONGODB_URI` | MongoDB connection string | Yes |
+| `ACCESS_TOKEN_SECRET` | JWT signing secret | Yes |
+| `GOOGLE_CLIENT_ID` | Google OAuth client ID | No |
+| `ADMIN_EMAILS` | Comma-separated admin emails | No |
+| `FRONTEND_URL` | Allowed frontend origin for CORS | No |
+| `EMAIL_USER` | Email sender account | No |
+| `EMAIL_PASS` | Email sender password/app password | No |
+| `AWS_BUCKET_NAME` | S3 bucket for images | No |
+| `AWS_REGION` | AWS region | No |
+| `AWS_ACCESS_KEY_ID` | AWS access key | No |
+| `AWS_SECRET_ACCESS_KEY` | AWS secret key | No |
+
+Frontend variables used by `my-app/client/.env`:
+
+| Variable | Description | Required |
+|----------|-------------|----------|
+| `VITE_API_BASE` | Browser API base URL for non-local environments | No |
+| `VITE_GOOGLE_CLIENT_ID` | Google OAuth client ID for the frontend | No |
+| `VITE_GOOGLE_MAPS_API_KEY` | Google Maps key used on dorm pages | No |
+
+### Testing
+
+Frontend:
+
+```bash
+cd my-app/client
+npm test
+```
+
+Backend:
+
+```bash
+cd my-app/server
+npm test
+```
+
+### API Endpoints
+
+| Endpoint | Method | Description |
+|----------|--------|-------------|
+| `/api/health` | GET | Health check |
+| `/auth/google` | POST | Google authentication |
+| `/auth/send-code` | POST | Send email verification code |
+| `/auth/verify-code` | POST | Verify email code and create session |
+| `/api/universities` | GET | List all universities |
+| `/api/universities/:slug` | GET | Fetch one university |
+| `/api/universities/:slug/dorms` | GET | List dorms for a university |
+| `/api/reviews` | GET/POST | Fetch or submit reviews |
 
 ## Usage
 
