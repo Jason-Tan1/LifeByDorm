@@ -307,10 +307,35 @@ async function generateDormSummary(
     const avgLocation = (totals.location / count).toFixed(1);
     const wouldDormAgainPct = Math.round((wouldDormAgainCount / count) * 100);
 
-    // Build review descriptions (truncate each to 200 chars)
-    const reviewTexts = (reviews as any[])
-      .filter(r => r.description && r.description.trim())
-      .map((r, i) => `${i + 1}. "${r.description.slice(0, 200)}"`)
+    // Select a representative sample if there are many reviews
+    const withText = (reviews as any[]).filter(r => r.description && r.description.trim());
+    let sampled: any[];
+    const MAX_REVIEWS = 30;
+
+    if (withText.length <= MAX_REVIEWS) {
+      sampled = withText;
+    } else {
+      // Sort by overall rating to pick from the full spectrum
+      const sorted = [...withText].sort((a, b) => {
+        const avgA = (a.room + a.bathroom + a.building + a.amenities + a.location) / 5;
+        const avgB = (b.room + b.bathroom + b.building + b.amenities + b.location) / 5;
+        return avgA - avgB;
+      });
+
+      // 10 lowest-rated, 10 highest-rated, 10 most recent
+      const lowest = sorted.slice(0, 10);
+      const highest = sorted.slice(-10);
+      const usedIds = new Set([...lowest, ...highest].map(r => String(r._id)));
+      const recent = [...withText]
+        .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+        .filter(r => !usedIds.has(String(r._id)))
+        .slice(0, 10);
+
+      sampled = [...lowest, ...highest, ...recent];
+    }
+
+    const reviewTexts = sampled
+      .map((r, i) => `${i + 1}. "${r.description}"`)
       .join('\n');
 
     const completion = await groq.chat.completions.create({
@@ -324,8 +349,10 @@ async function generateDormSummary(
         },
         {
           role: 'user',
-          content: `Summarize the following ${count} student reviews for "${dormName}" at ${universitySlug.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ')}.
+          content: `Summarize student reviews for "${dormName}" at ${universitySlug.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ')}.
 
+Total reviews: ${count}
+${sampled.length < withText.length ? `Showing ${sampled.length} representative reviews (mix of highest-rated, lowest-rated, and most recent).` : ''}
 Average ratings (out of 5):
 - Room: ${avgRoom}
 - Bathroom: ${avgBathroom}
