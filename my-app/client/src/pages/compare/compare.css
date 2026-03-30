@@ -1,18 +1,67 @@
-.compare-page {
-  min-height: 100vh;
-  background-color: #f5f5f5;
+/* Compare Modal Overlay */
+.compare-modal-overlay {
   font-family: 'DM Sans', sans-serif;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.75);
   display: flex;
-  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  z-index: 1200; /* Higher than navbar */
+  padding: 20px;
 }
 
-.compare-container {
-  flex: 1;
-  max-width: 900px;
-  margin: 0 auto;
-  padding: 24px clamp(16px, 4vw, 40px);
+/* Compare Modal Container */
+.compare-modal-container {
+  background: #f5f5f5;
+  padding: 30px clamp(16px, 4vw, 40px);
+  border-radius: 20px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
   width: 100%;
+  max-width: 900px;
+  max-height: 90vh; /* Restrict height */
+  overflow-y: auto; /* Scroll inside the modal */
+  position: relative;
+  animation: compareModalFadeIn 0.3s ease;
   box-sizing: border-box;
+}
+
+.compare-modal-container * {
+  box-sizing: border-box;
+}
+
+@keyframes compareModalFadeIn {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Close Button */
+.compare-modal-close {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  background: transparent;
+  border: none;
+  font-size: 1.5rem;
+  color: #666;
+  cursor: pointer;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+  line-height: 1;
+  z-index: 10;
+}
+
+.compare-modal-close:hover {
+  background: #e0e0e0;
+  color: #1a1a1a;
 }
 
 /* Hero */
@@ -49,6 +98,8 @@
   border-radius: 12px;
   padding: 20px;
   transition: border-color 0.2s, box-shadow 0.2s;
+  box-sizing: border-box;
+  min-width: 0;
 }
 
 .compare-select-card.has-selection {
@@ -88,6 +139,11 @@
   background-repeat: no-repeat;
   background-position: right 12px center;
   padding-right: 32px;
+  width: 100%;
+  box-sizing: border-box;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
 }
 
 .compare-select-fields select:focus {
@@ -132,6 +188,7 @@
   cursor: pointer;
   margin-bottom: 24px;
   transition: background 0.2s, transform 0.1s;
+  box-sizing: border-box;
 }
 
 .compare-button:hover:not(:disabled) {

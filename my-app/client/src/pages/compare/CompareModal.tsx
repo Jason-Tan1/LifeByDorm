@@ -1,8 +1,5 @@
 import { useEffect, useState, useCallback, useRef } from 'react';
-import { useSearchParams } from 'react-router-dom';
 import { useUniversityData } from '../../context/UniversityDataContext';
-import NavBar from '../nav/navbar.tsx';
-import Footer from '../home/footer.tsx';
 import DefaultDorm from '../../assets/Default_Dorm.webp';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
@@ -46,15 +43,21 @@ function SkeletonBlock({ width, height }: { width?: string; height?: string }) {
   return <div className="skeleton-pulse" style={{ width: width || '100%', height: height || '16px', borderRadius: '6px' }} />;
 }
 
-function Compare() {
-  const [searchParams] = useSearchParams();
+interface CompareModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  initialUni1?: string;
+  initialDorm1?: string;
+}
+
+function CompareModal({ isOpen, onClose, initialUni1, initialDorm1 }: CompareModalProps) {
   const { universities } = useUniversityData();
   const resultsRef = useRef<HTMLDivElement>(null);
 
-  const [uni1, setUni1] = useState(searchParams.get('uni1') || '');
-  const [dorm1, setDorm1] = useState(searchParams.get('dorm1') || '');
-  const [uni2, setUni2] = useState(searchParams.get('uni2') || '');
-  const [dorm2, setDorm2] = useState(searchParams.get('dorm2') || '');
+  const [uni1, setUni1] = useState(initialUni1 || '');
+  const [dorm1, setDorm1] = useState(initialDorm1 || '');
+  const [uni2, setUni2] = useState('');
+  const [dorm2, setDorm2] = useState('');
 
   const [dorms1, setDorms1] = useState<DormOption[]>([]);
   const [dorms2, setDorms2] = useState<DormOption[]>([]);
@@ -64,6 +67,20 @@ function Compare() {
   const [error, setError] = useState<string | null>(null);
   const [collapsed, setCollapsed] = useState(false);
   const [barsAnimated, setBarsAnimated] = useState(false);
+
+  // Reset state when opened with new initial props
+  useEffect(() => {
+    if (isOpen) {
+      setUni1(initialUni1 || '');
+      setDorm1(initialDorm1 || '');
+      setUni2(initialUni1 || '');
+      setDorm2('');
+      setResult(null);
+      setCollapsed(false);
+      setBarsAnimated(false);
+      setError(null);
+    }
+  }, [isOpen, initialUni1, initialDorm1]);
 
   const fetchDorms = useCallback(async (uniSlug: string, setter: (d: DormOption[]) => void) => {
     if (!uniSlug) { setter([]); return; }
@@ -92,7 +109,6 @@ function Compare() {
     setError(null);
     setResult(null);
     setBarsAnimated(false);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
 
     try {
       const res = await fetch(
@@ -196,10 +212,14 @@ function Compare() {
     </div>
   );
 
+  if (!isOpen) return null;
+
   return (
-    <div className="compare-page">
-      <NavBar />
-      <div className="compare-container">
+    <div className="compare-modal-overlay" onClick={onClose}>
+      <div className="compare-modal-container" onClick={(e) => e.stopPropagation()}>
+        <button className="compare-modal-close" onClick={onClose} aria-label="Close">
+          &times;
+        </button>
 
         {/* Collapsed top bar showing selections */}
         {collapsed && (
@@ -220,7 +240,7 @@ function Compare() {
           <>
             <div className="compare-hero">
               <h1 className="compare-title">Compare Dorms</h1>
-              <p className="compare-subtitle">Select two dorms to see a side-by-side breakdown with AI analysis</p>
+              <p className="compare-subtitle">Select another dorm at {uniName(initialUni1 || '')} to see a side-by-side breakdown</p>
             </div>
 
             <div className="compare-selection-area">
@@ -230,13 +250,7 @@ function Compare() {
                     <img src={selectedDorm1.imageUrl || DefaultDorm} alt={selectedDorm1.name} className="compare-preview-image" />
                   )}
                   <div className="compare-select-fields">
-                    <select value={uni1} onChange={e => { setUni1(e.target.value); setDorm1(''); }}>
-                      <option value="">Select university...</option>
-                      {universities.map(u => (
-                        <option key={u.slug} value={u.slug}>{u.name}</option>
-                      ))}
-                    </select>
-                    <select value={dorm1} onChange={e => setDorm1(e.target.value)} disabled={!uni1}>
+                    <select value={dorm1} onChange={e => setDorm1(e.target.value)}>
                       <option value="">Select dorm...</option>
                       {dorms1.map(d => (
                         <option key={d.slug} value={d.slug}>{d.name}</option>
@@ -254,13 +268,7 @@ function Compare() {
                     <img src={selectedDorm2.imageUrl || DefaultDorm} alt={selectedDorm2.name} className="compare-preview-image" />
                   )}
                   <div className="compare-select-fields">
-                    <select value={uni2} onChange={e => { setUni2(e.target.value); setDorm2(''); }}>
-                      <option value="">Select university...</option>
-                      {universities.map(u => (
-                        <option key={u.slug} value={u.slug}>{u.name}</option>
-                      ))}
-                    </select>
-                    <select value={dorm2} onChange={e => setDorm2(e.target.value)} disabled={!uni2}>
+                    <select value={dorm2} onChange={e => setDorm2(e.target.value)}>
                       <option value="">Select dorm...</option>
                       {dorms2.map(d => (
                         <option key={d.slug} value={d.slug}>{d.name}</option>
@@ -334,9 +342,8 @@ function Compare() {
           </div>
         )}
       </div>
-      <Footer />
     </div>
   );
 }
 
-export default Compare;
+export default CompareModal;

@@ -9,6 +9,8 @@ import '../nav/navbar.css';
 import { useParams, useLocation, useNavigate } from 'react-router-dom';
 import LoginModal from '../nav/login';
 
+import CompareModal from '../compare/CompareModal.tsx';
+
 import PageLoader from '../../components/PageLoader';
 import { useSEO } from '../../hooks/useSEO';
 
@@ -49,6 +51,7 @@ function Dorms() {
   const navigate = useNavigate();
   const [showSuccessToast, setShowSuccessToast] = useState(false);
   const [showLoginModal, setShowLoginModal] = useState(false);
+  const [isCompareModalOpen, setIsCompareModalOpen] = useState(false);
 
   useEffect(() => {
     // Check if we were redirected here after submitting a review
@@ -363,6 +366,7 @@ function Dorms() {
           universityLocation={univLocation || undefined}
           calculateAverageRating={calculateAverageRating}
           calculateCategoryAverages={calculateCategoryAverages}
+          onOpenCompare={() => setIsCompareModalOpen(true)}
         />
 
         {/* Right side - Review Listings */}
@@ -407,6 +411,13 @@ function Dorms() {
       <LoginModal
         isOpen={showLoginModal}
         onClose={() => setShowLoginModal(false)}
+      />
+
+      <CompareModal
+        isOpen={isCompareModalOpen}
+        onClose={() => setIsCompareModalOpen(false)}
+        initialUni1={dorm.universitySlug}
+        initialDorm1={dorm.slug}
       />
 
       <Footer />

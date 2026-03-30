@@ -35,9 +35,10 @@ interface DormInfoProps {
     amenities: number;
     location: number;
   };
+  onOpenCompare: () => void;
 }
 
-function DormInfo({ dorm, reviews, universityName, universityLocation, calculateAverageRating, calculateCategoryAverages }: DormInfoProps) {
+function DormInfo({ dorm, reviews, universityName, universityLocation, calculateAverageRating, calculateCategoryAverages, onOpenCompare }: DormInfoProps) {
   const [showMap, setShowMap] = useState(false);
 
   const renderStars = (rating: number) => {
@@ -183,7 +184,7 @@ function DormInfo({ dorm, reviews, universityName, universityLocation, calculate
 
       {/* Compare Link */}
       <div className="dorm-details">
-        <CompareCard dormSlug={dorm.slug} universitySlug={dorm.universitySlug} />
+        <CompareCard onOpenCompare={onOpenCompare} />
       </div>
 
       {/* Location Section */}
