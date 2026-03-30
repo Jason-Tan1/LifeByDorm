@@ -1298,6 +1298,154 @@ app.get('/api/universities/:slug/dorms/:dormSlug', readOnlyLimiter, async (req: 
   }
 });
 
+// Compare two dorms with AI analysis
+app.get('/api/compare', readOnlyLimiter, async (req: Request, res: Response) => {
+  try {
+    const { dorm1, uni1, dorm2, uni2 } = req.query;
+    if (!dorm1 || !uni1 || !dorm2 || !uni2) {
+      return res.status(400).json({ message: 'Missing required query params: dorm1, uni1, dorm2, uni2' });
+    }
+
+    // Fetch both dorms and their reviews in parallel
+    const reviewQuery = (uniSlug: string, dormName: string) => ({
+      university: uniSlug,
+      dorm: dormName,
+      $or: [{ status: 'approved' }, { status: { $exists: false } }]
+    });
+
+    const [dormDoc1, dormDoc2] = await Promise.all([
+      Dorm.findOne({ universitySlug: uni1, slug: dorm1, $or: [{ status: 'approved' }, { status: { $exists: false } }] }).lean(),
+      Dorm.findOne({ universitySlug: uni2, slug: dorm2, $or: [{ status: 'approved' }, { status: { $exists: false } }] }).lean(),
+    ]);
+
+    if (!dormDoc1 || !dormDoc2) {
+      return res.status(404).json({ message: 'One or both dorms not found' });
+    }
+
+    const d1 = dormDoc1 as any;
+    const d2 = dormDoc2 as any;
+
+    const [reviews1, reviews2] = await Promise.all([
+      UserReview.find(reviewQuery(uni1 as string, d1.name)).lean(),
+      UserReview.find(reviewQuery(uni2 as string, d2.name)).lean(),
+    ]);
+
+    if (reviews1.length < 5 || reviews2.length < 5) {
+      return res.status(400).json({
+        message: 'Both dorms must have at least 5 approved reviews to compare',
+        dorm1ReviewCount: reviews1.length,
+        dorm2ReviewCount: reviews2.length,
+      });
+    }
+
+    // Calculate stats for each dorm
+    function calcStats(reviews: any[]) {
+      const totals = { room: 0, bathroom: 0, building: 0, amenities: 0, location: 0 };
+      let wouldDormAgainCount = 0;
+      for (const r of reviews) {
+        totals.room += r.room || 0;
+        totals.bathroom += r.bathroom || 0;
+        totals.building += r.building || 0;
+        totals.amenities += r.amenities || 0;
+        totals.location += r.location || 0;
+        if (r.wouldDormAgain === true) wouldDormAgainCount++;
+      }
+      const n = reviews.length;
+      return {
+        reviewCount: n,
+        avgRoom: +(totals.room / n).toFixed(1),
+        avgBathroom: +(totals.bathroom / n).toFixed(1),
+        avgBuilding: +(totals.building / n).toFixed(1),
+        avgAmenities: +(totals.amenities / n).toFixed(1),
+        avgLocation: +(totals.location / n).toFixed(1),
+        avgOverall: +((totals.room + totals.bathroom + totals.building + totals.amenities + totals.location) / (n * 5)).toFixed(1),
+        wouldDormAgainPct: Math.round((wouldDormAgainCount / n) * 100),
+      };
+    }
+
+    const stats1 = calcStats(reviews1 as any[]);
+    const stats2 = calcStats(reviews2 as any[]);
+
+    // Build AI comparison
+    const groq = getGroq();
+    let comparison: string | null = null;
+
+    if (groq) {
+      try {
+        // Use existing AI summaries if available, otherwise sample reviews
+        const uniName = (slug: string) => slug.split('-').map((w: string) => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+
+        const dorm1Context = d1.aiSummary
+          ? `AI Summary: ${d1.aiSummary}`
+          : (reviews1 as any[]).filter(r => r.description?.trim()).slice(0, 15).map((r, i) => `${i + 1}. "${r.description}"`).join('\n');
+
+        const dorm2Context = d2.aiSummary
+          ? `AI Summary: ${d2.aiSummary}`
+          : (reviews2 as any[]).filter(r => r.description?.trim()).slice(0, 15).map((r, i) => `${i + 1}. "${r.description}"`).join('\n');
+
+        const completion = await groq.chat.completions.create({
+          model: 'openai/gpt-oss-120b',
+          temperature: 0.3,
+          max_tokens: 800,
+          messages: [
+            {
+              role: 'system',
+              content: `You are a university housing advisor writing a dorm comparison. The user can already see the numerical ratings — do NOT repeat or reference any numbers or scores. Focus on what students actually said in their reviews: the lived experience, specific details, and qualitative differences.
+
+Structure your response with these three sections:
+
+**Overview** — One sentence per dorm capturing its personality (e.g., "social and central but showing its age" vs "sleek and quiet but feels isolated").
+
+**Key Differences** — Compare the 3-4 areas where the dorms differ most based on what students described. Use specific details from reviews (e.g., "thin walls", "long winter walk", "floor kitchens") rather than ratings.
+
+**Verdict** — 2-3 sentences on which dorm suits which type of student. Be specific and opinionated.
+
+Be balanced, concise, and grounded in the reviews. Do not fabricate details. Use markdown formatting.`
+            },
+            {
+              role: 'user',
+              content: `Compare these two dorms:
+
+DORM 1: "${d1.name}" at ${uniName(uni1 as string)}
+- Ratings: Room ${stats1.avgRoom}, Bathroom ${stats1.avgBathroom}, Building ${stats1.avgBuilding}, Amenities ${stats1.avgAmenities}, Location ${stats1.avgLocation}
+- Overall: ${stats1.avgOverall}/5 | Would Dorm Again: ${stats1.wouldDormAgainPct}% | ${stats1.reviewCount} reviews
+${dorm1Context}
+
+DORM 2: "${d2.name}" at ${uniName(uni2 as string)}
+- Ratings: Room ${stats2.avgRoom}, Bathroom ${stats2.avgBathroom}, Building ${stats2.avgBuilding}, Amenities ${stats2.avgAmenities}, Location ${stats2.avgLocation}
+- Overall: ${stats2.avgOverall}/5 | Would Dorm Again: ${stats2.wouldDormAgainPct}% | ${stats2.reviewCount} reviews
+${dorm2Context}
+
+Compare these two dorms using the exact format specified.`
+            }
+          ]
+        });
+
+        comparison = completion.choices[0]?.message?.content?.trim() || null;
+      } catch (err) {
+        console.error('Failed to generate AI comparison:', err);
+      }
+    }
+
+    res.json({
+      dorm1: {
+        name: d1.name, slug: d1.slug, universitySlug: d1.universitySlug,
+        imageUrl: d1.imageUrl, amenities: d1.amenities || [], roomTypes: d1.roomTypes || [],
+        ...stats1,
+      },
+      dorm2: {
+        name: d2.name, slug: d2.slug, universitySlug: d2.universitySlug,
+        imageUrl: d2.imageUrl, amenities: d2.amenities || [], roomTypes: d2.roomTypes || [],
+        ...stats2,
+      },
+      comparison,
+    });
+  } catch (err) {
+    console.error('Error comparing dorms:', err);
+    res.status(500).json({ message: 'Error comparing dorms' });
+  }
+});
+
 // Get a single university by slug
 app.get('/api/universities/:slug', readOnlyLimiter, async (req: Request, res: Response) => {
   try {

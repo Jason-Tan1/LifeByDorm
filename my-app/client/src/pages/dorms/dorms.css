@@ -160,6 +160,24 @@
   margin-bottom: 32px;
 }
 
+.compare-link-button {
+  display: block;
+  text-align: center;
+  padding: 10px 20px;
+  border: 2px solid #D62828;
+  border-radius: 8px;
+  color: #D62828;
+  font-weight: 600;
+  font-size: 0.9rem;
+  text-decoration: none;
+  transition: background 0.2s, color 0.2s;
+}
+
+.compare-link-button:hover {
+  background: #D62828;
+  color: white;
+}
+
 .ai-summary-card {
   background: white;
   border-radius: 12px;

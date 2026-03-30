@@ -115,6 +115,16 @@ function DormInfo({ dorm, reviews, universityName, universityLocation, calculate
         </div>
       )}
 
+      {/* Compare Link */}
+      <div className="dorm-details">
+        <Link
+          to={`/compare?dorm1=${dorm.slug}&uni1=${dorm.universitySlug}`}
+          className="compare-link-button"
+        >
+          Compare with another dorm
+        </Link>
+      </div>
+
       {/* Average Ratings Section - New Layout */}
       <div className="dorm-details">
         <div className="ratings-container">
