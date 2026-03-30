@@ -24,6 +24,7 @@ type APIDorm = {
   amenities?: string[];
   roomTypes?: string[];
   aiSummary?: string;
+  aiTags?: string[];
 };
 
 //Base URL for API requests

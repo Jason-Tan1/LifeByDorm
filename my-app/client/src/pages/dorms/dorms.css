@@ -160,43 +160,15 @@
   margin-bottom: 32px;
 }
 
-.compare-link-button {
-  display: block;
-  text-align: center;
-  padding: 10px 20px;
-  border: 2px solid #D62828;
-  border-radius: 8px;
-  color: #D62828;
-  font-weight: 600;
-  font-size: 0.9rem;
-  text-decoration: none;
-  transition: background 0.2s, color 0.2s;
-}
-
-.compare-link-button:hover {
-  background: #D62828;
-  color: white;
-}
 
 .ai-summary-card {
-  background: white;
+  background: #f8f9fa;
   border-radius: 12px;
   padding: 28px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-  border: 1px solid #eee;
   position: relative;
   overflow: hidden;
 }
 
-.ai-summary-card::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 3px;
-  background: linear-gradient(90deg, #D62828, #e85d5d);
-}
 
 .ai-summary-header {
   margin: 0 0 16px 0;
@@ -234,6 +206,24 @@
 .ai-summary-disclaimer {
   font-size: 0.78rem;
   color: #999;
+}
+
+.ai-summary-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.ai-summary-tag {
+  display: inline-block;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: #D62828;
+  background: #fff1f2;
+  padding: 5px 14px;
+  border-radius: 20px;
+  letter-spacing: 0.02em;
 }
 
 /* New Ratings Container - Two Column Layout */

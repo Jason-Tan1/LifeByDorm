@@ -6,6 +6,7 @@ import StarBorder from '@mui/icons-material/StarBorder';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import HomeIcon from '@mui/icons-material/Home';
 import DefaultDorm from '../../assets/Default_Dorm.webp';
+import CompareCard from '../../components/CompareCard/CompareCard';
 
 type APIDorm = {
   name: string;
@@ -18,6 +19,7 @@ type APIDorm = {
   amenities?: string[];
   roomTypes?: string[];
   aiSummary?: string;
+  aiTags?: string[];
 };
 
 interface DormInfoProps {
@@ -99,32 +101,6 @@ function DormInfo({ dorm, reviews, universityName, universityLocation, calculate
         </div>
       )}
 
-      {/* AI Summary Section */}
-      {dorm.aiSummary && (
-        <div className="dorm-details">
-          <div className="ai-summary-card">
-            <h2 className="ai-summary-header">What Students Say</h2>
-            <p className="ai-summary-text">{dorm.aiSummary}</p>
-            <div className="ai-summary-footer">
-              <span className="ai-summary-badge">AI Summary</span>
-              <span className="ai-summary-disclaimer">
-                Based on {reviews.length} student review{reviews.length !== 1 ? 's' : ''}
-              </span>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Compare Link */}
-      <div className="dorm-details">
-        <Link
-          to={`/compare?dorm1=${dorm.slug}&uni1=${dorm.universitySlug}`}
-          className="compare-link-button"
-        >
-          Compare with another dorm
-        </Link>
-      </div>
-
       {/* Average Ratings Section - New Layout */}
       <div className="dorm-details">
         <div className="ratings-container">
@@ -181,6 +157,33 @@ function DormInfo({ dorm, reviews, universityName, universityLocation, calculate
             </div>
           </div>
         </div>
+      </div>
+
+      {/* AI Summary Section */}
+      {dorm.aiSummary && (
+        <div className="dorm-details">
+          <div className="ai-summary-card">
+            <h2 className="ai-summary-header">AI Student Review Summary</h2>
+            <p className="ai-summary-text">{dorm.aiSummary}</p>
+            {dorm.aiTags && dorm.aiTags.length > 0 && (
+              <div className="ai-summary-tags">
+                {dorm.aiTags.map((tag, i) => (
+                  <span key={i} className="ai-summary-tag">{tag}</span>
+                ))}
+              </div>
+            )}
+            <div className="ai-summary-footer">
+              <span className="ai-summary-disclaimer">
+                Based on {reviews.length} student review{reviews.length !== 1 ? 's' : ''}
+              </span>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Compare Link */}
+      <div className="dorm-details">
+        <CompareCard dormSlug={dorm.slug} universitySlug={dorm.universitySlug} />
       </div>
 
       {/* Location Section */}

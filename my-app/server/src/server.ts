@@ -271,6 +271,21 @@ function getGroq(): Groq | null {
   return groqClient;
 }
 
+// AI Summary prompt — change this text and all cached summaries auto-invalidate
+const DORM_SUMMARY_SYSTEM_PROMPT = `Write a short summary of a university dorm based on student reviews. Keep it between 80 and 100 words. Use simple, everyday words that are easy to read. Do NOT use fancy or complex vocabulary. Write in third person. Be balanced and mention both the good and the bad. NEVER use em dashes (—). Use commas, periods, or the word "but" instead. Do not make up details that are not in the reviews.
+
+Here is an example of a good summary style:
+"Warren Towers is a popular freshman dorm at BU, offering a social atmosphere with plenty of chances to make friends. The location is very convenient, right in the heart of campus, making it a short walk to most classes. The building has a dining hall, laundry, and study spaces all within reach. While the rooms can be small and outdated, the sense of community and being close to everything on campus makes up for it. The shared bathrooms and occasional maintenance issues are downsides, but the lively feel and central location make it a top choice for freshmen."
+
+Follow this style. Keep words simple and clear.
+
+After the summary, on a new line, write exactly 3 short keyword tags that describe this dorm. Format them on a single line like this:
+TAGS: Social, Great Location, Small Rooms
+
+The tags should be 1-3 words each and capture the most common themes from the reviews.`;
+
+const SUMMARY_PROMPT_HASH = crypto.createHash('sha256').update(DORM_SUMMARY_SYSTEM_PROMPT).digest('hex').slice(0, 16);
+
 async function generateDormSummary(
   dormId: string,
   dormName: string,
@@ -340,13 +355,13 @@ async function generateDormSummary(
       .join('\n');
 
     const completion = await groq.chat.completions.create({
-      model: 'openai/gpt-oss-120b',
+      model: 'llama-3.3-70b-versatile',
       temperature: 0.3,
-      max_tokens: 300,
+      max_tokens: 350,
       messages: [
         {
           role: 'system',
-          content: 'Write a concise 3-4 sentence summary of a university dormitory based on student reviews. Be balanced — mention both positives and negatives. Write in third person. Do not fabricate details not present in the reviews.'
+          content: DORM_SUMMARY_SYSTEM_PROMPT
         },
         {
           role: 'user',
@@ -365,23 +380,35 @@ Average ratings (out of 5):
 Student comments:
 ${reviewTexts}
 
-Write a concise 3-4 sentence summary that captures the overall student experience.`
+Write a summary between 80 and 100 words. Use simple, clear words. Do NOT use em dashes. Do NOT use big or fancy words.
+Then on a new line write: TAGS: tag1, tag2, tag3`
         }
       ]
     });
 
-    const summary = completion.choices[0]?.message?.content?.trim();
-    if (!summary) return null;
+    const raw = completion.choices[0]?.message?.content?.trim();
+    if (!raw) return null;
+
+    // Parse tags from the response
+    let summary = raw;
+    let aiTags: string[] = [];
+    const tagsMatch = raw.match(/^TAGS:\s*(.+)$/im);
+    if (tagsMatch) {
+      aiTags = tagsMatch[1].split(',').map(t => t.trim()).filter(Boolean).slice(0, 3);
+      summary = raw.replace(/\n*TAGS:\s*.+$/im, '').trim();
+    }
 
     await Dorm.findByIdAndUpdate(dormId, {
       aiSummary: summary,
-      summaryGeneratedAt: new Date()
+      aiTags,
+      summaryGeneratedAt: new Date(),
+      summaryPromptHash: SUMMARY_PROMPT_HASH
     });
 
     // Invalidate in-memory cache for this dorm
     cache.delete(`dorm-${universitySlug}-${dormSlug}`);
 
-    if (!isProduction) console.log(`✅ AI summary generated for ${dormName}`);
+    if (!isProduction) console.log(`✅ AI summary generated for ${dormName}`, aiTags);
     return summary;
   } catch (err) {
     console.error(`Failed to generate AI summary for ${dormName}:`, err);
@@ -1276,13 +1303,20 @@ app.get('/api/universities/:slug/dorms/:dormSlug', readOnlyLimiter, async (req: 
         ? Date.now() - new Date(dormObj.summaryGeneratedAt).getTime()
         : Infinity;
 
-      if (summaryAge > SEVEN_DAYS_MS) {
+      const promptChanged = dormObj.summaryPromptHash !== SUMMARY_PROMPT_HASH;
+
+      if (summaryAge > SEVEN_DAYS_MS || promptChanged) {
         const newSummary = await generateDormSummary(
           dormObj._id.toString(), dormObj.name, slug, dormSlug
         );
         if (newSummary) {
           result.aiSummary = newSummary;
           result.summaryGeneratedAt = new Date();
+          // Re-fetch to get the aiTags that were saved during generation
+          const updatedDorm = await Dorm.findById(dormObj._id).lean() as any;
+          if (updatedDorm?.aiTags) {
+            result.aiTags = updatedDorm.aiTags;
+          }
         }
       }
     }
@@ -1384,7 +1418,7 @@ app.get('/api/compare', readOnlyLimiter, async (req: Request, res: Response) => 
           : (reviews2 as any[]).filter(r => r.description?.trim()).slice(0, 15).map((r, i) => `${i + 1}. "${r.description}"`).join('\n');
 
         const completion = await groq.chat.completions.create({
-          model: 'openai/gpt-oss-120b',
+          model: 'llama-3.3-70b-versatile',
           temperature: 0.3,
           max_tokens: 800,
           messages: [
