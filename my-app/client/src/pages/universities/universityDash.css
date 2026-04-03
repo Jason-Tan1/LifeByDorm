@@ -179,6 +179,8 @@
   color: var(--color-text-primary);
   margin: 0 0 8px 0;
   line-height: 1.1;
+  border-bottom: none;
+  padding-bottom: 0;
 }
 
 .university-website-card .highlight-text {

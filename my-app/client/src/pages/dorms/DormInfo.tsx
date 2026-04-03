@@ -6,6 +6,7 @@ import StarBorder from '@mui/icons-material/StarBorder';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import HomeIcon from '@mui/icons-material/Home';
 import DefaultDorm from '../../assets/Default_Dorm.webp';
+import CompareCard from '../../components/CompareCard/CompareCard';
 
 type APIDorm = {
   name: string;
@@ -17,6 +18,8 @@ type APIDorm = {
   description?: string;
   amenities?: string[];
   roomTypes?: string[];
+  aiSummary?: string;
+  aiTags?: string[];
 };
 
 interface DormInfoProps {
@@ -32,9 +35,10 @@ interface DormInfoProps {
     amenities: number;
     location: number;
   };
+  onOpenCompare: () => void;
 }
 
-function DormInfo({ dorm, reviews, universityName, universityLocation, calculateAverageRating, calculateCategoryAverages }: DormInfoProps) {
+function DormInfo({ dorm, reviews, universityName, universityLocation, calculateAverageRating, calculateCategoryAverages, onOpenCompare }: DormInfoProps) {
   const [showMap, setShowMap] = useState(false);
 
   const renderStars = (rating: number) => {
@@ -154,6 +158,33 @@ function DormInfo({ dorm, reviews, universityName, universityLocation, calculate
             </div>
           </div>
         </div>
+      </div>
+
+      {/* AI Summary Section */}
+      {dorm.aiSummary && (
+        <div className="dorm-details">
+          <div className="ai-summary-card">
+            <h2 className="ai-summary-header">AI Student Review Summary</h2>
+            <p className="ai-summary-text">{dorm.aiSummary}</p>
+            {dorm.aiTags && dorm.aiTags.length > 0 && (
+              <div className="ai-summary-tags">
+                {dorm.aiTags.map((tag, i) => (
+                  <span key={i} className="ai-summary-tag">{tag}</span>
+                ))}
+              </div>
+            )}
+            <div className="ai-summary-footer">
+              <span className="ai-summary-disclaimer">
+                Based on {reviews.length} student review{reviews.length !== 1 ? 's' : ''}
+              </span>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Compare Link */}
+      <div className="dorm-details">
+        <CompareCard onOpenCompare={onOpenCompare} />
       </div>
 
       {/* Location Section */}

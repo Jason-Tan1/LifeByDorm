@@ -12,6 +12,11 @@ export interface IDorm extends Document {
   amenities?: string[];
   roomTypes?: string[];
   createdAt?: Date;
+  // AI-generated summary from reviews
+  aiSummary?: string;
+  aiTags?: string[];
+  summaryGeneratedAt?: Date;
+  summaryPromptHash?: string;
   // New fields for user-submitted dorms requiring admin approval
   status?: 'pending' | 'approved' | 'declined';
   submittedBy?: string; // User email who submitted the dorm
@@ -29,6 +34,11 @@ const dormSchema = new Schema<IDorm>({
   amenities: { type: [String], default: [] },
   roomTypes: { type: [String], default: [] },
   createdAt: { type: Date, default: Date.now },
+  // AI-generated summary
+  aiSummary: { type: String },
+  aiTags: { type: [String], default: [] },
+  summaryGeneratedAt: { type: Date },
+  summaryPromptHash: { type: String },
   // New fields for admin approval workflow
   status: { type: String, enum: ['pending', 'approved', 'declined'], default: 'approved' },
   submittedBy: { type: String }

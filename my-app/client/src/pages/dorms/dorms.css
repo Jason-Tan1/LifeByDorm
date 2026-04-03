@@ -160,6 +160,72 @@
   margin-bottom: 32px;
 }
 
+
+.ai-summary-card {
+  background: #f8f9fa;
+  border-radius: 12px;
+  padding: 28px;
+  position: relative;
+  overflow: hidden;
+}
+
+
+.ai-summary-header {
+  margin: 0 0 16px 0;
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: #1a1a1a;
+}
+
+.ai-summary-text {
+  font-size: 0.95rem;
+  line-height: 1.75;
+  color: #444;
+  margin: 0 0 20px 0;
+}
+
+.ai-summary-footer {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding-top: 16px;
+  border-top: 1px solid #f0f0f0;
+}
+
+.ai-summary-badge {
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  color: #D62828;
+  background: #fff1f2;
+  padding: 4px 10px;
+  border-radius: 20px;
+  letter-spacing: 0.04em;
+}
+
+.ai-summary-disclaimer {
+  font-size: 0.78rem;
+  color: #999;
+}
+
+.ai-summary-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.ai-summary-tag {
+  display: inline-block;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: #D62828;
+  background: #fff1f2;
+  padding: 5px 14px;
+  border-radius: 20px;
+  letter-spacing: 0.02em;
+}
+
 /* New Ratings Container - Two Column Layout */
 .ratings-container {
   display: flex;

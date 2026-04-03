@@ -64,6 +64,8 @@
   color: #1a1a1a;
   margin: 0 0 8px 0;
   line-height: 1.1;
+  border-bottom: none;
+  padding-bottom: 0;
 }
 
 .add-dorm-cta-card .highlight-text {

@@ -17,6 +17,8 @@ import { Dorm } from './models/dorm';
 import nodemailer from 'nodemailer';
 import helmet from 'helmet';
 import { uploadToS3, getSignedFileUrl } from './s3';
+import Groq from 'groq-sdk';
+import { Verifier } from 'academic-email-verifier';
 
 // Security: Check if running in production
 const isProduction = process.env.NODE_ENV === 'production';
@@ -52,7 +54,8 @@ import {
   dormSchema,
   reviewSchema,
   editReviewSchema,
-  contactSchema
+  contactSchema,
+  compareQuerySchema
 } from './validation';
 
 dotenv.config();
@@ -257,8 +260,184 @@ function setCache<T>(key: string, data: T): void {
   cache.set(key, { data, timestamp: Date.now() });
 }
 
+// Groq AI client (lazy-initialized)
+let groqClient: Groq | null = null;
+function getGroq(): Groq | null {
+  if (groqClient) return groqClient;
+  if (!process.env.GROQ_API_KEY) {
+    if (!isProduction) console.warn('⚠️ GROQ_API_KEY not configured, AI summaries disabled');
+    return null;
+  }
+  groqClient = new Groq({ apiKey: process.env.GROQ_API_KEY });
+  return groqClient;
+}
+
+// AI Summary prompt — change this text and all cached summaries auto-invalidate
+const DORM_SUMMARY_SYSTEM_PROMPT = `Write a short summary of a university dorm based on student reviews. Keep it between 80 and 100 words. Use simple, everyday words that are easy to read. Do NOT use fancy or complex vocabulary. Write in third person. Be balanced and mention both the good and the bad. NEVER use em dashes (—). Use commas, periods, or the word "but" instead. Do not make up details that are not in the reviews.
+
+Here is an example of a good summary style:
+"Warren Towers is a popular freshman dorm at BU, offering a social atmosphere with plenty of chances to make friends. The location is very convenient, right in the heart of campus, making it a short walk to most classes. The building has a dining hall, laundry, and study spaces all within reach. While the rooms can be small and outdated, the sense of community and being close to everything on campus makes up for it. The shared bathrooms and occasional maintenance issues are downsides, but the lively feel and central location make it a top choice for freshmen."
+
+Follow this style. Keep words simple and clear.
+
+After the summary, on a new line, write exactly 3 short keyword tags that describe this dorm. Format them on a single line like this:
+TAGS: Social, Great Location, Small Rooms
+
+The tags should be 1-3 words each and capture the most common themes from the reviews.`;
+
+const SUMMARY_PROMPT_HASH = crypto.createHash('sha256').update(DORM_SUMMARY_SYSTEM_PROMPT).digest('hex').slice(0, 16);
+
+async function generateDormSummary(
+  dormId: string,
+  dormName: string,
+  universitySlug: string,
+  dormSlug: string
+): Promise<string | null> {
+  try {
+    const groq = getGroq();
+    if (!groq) return null;
+
+    const reviews = await UserReview.find({
+      university: universitySlug,
+      dorm: dormName,
+      $or: [{ status: 'approved' }, { status: { $exists: false } }]
+    }).lean();
+
+    if (reviews.length < 5) return null;
+
+    // Calculate average ratings per category
+    const totals = { room: 0, bathroom: 0, building: 0, amenities: 0, location: 0 };
+    let wouldDormAgainCount = 0;
+    for (const r of reviews as any[]) {
+      totals.room += r.room || 0;
+      totals.bathroom += r.bathroom || 0;
+      totals.building += r.building || 0;
+      totals.amenities += r.amenities || 0;
+      totals.location += r.location || 0;
+      if (r.wouldDormAgain === true) wouldDormAgainCount++;
+    }
+    const count = reviews.length;
+    const avgRoom = (totals.room / count).toFixed(1);
+    const avgBathroom = (totals.bathroom / count).toFixed(1);
+    const avgBuilding = (totals.building / count).toFixed(1);
+    const avgAmenities = (totals.amenities / count).toFixed(1);
+    const avgLocation = (totals.location / count).toFixed(1);
+    const wouldDormAgainPct = Math.round((wouldDormAgainCount / count) * 100);
+
+    // Select a representative sample if there are many reviews
+    const withText = (reviews as any[]).filter(r => r.description && r.description.trim());
+    let sampled: any[];
+    const MAX_REVIEWS = 30;
+
+    if (withText.length <= MAX_REVIEWS) {
+      sampled = withText;
+    } else {
+      // Sort by overall rating to pick from the full spectrum
+      const sorted = [...withText].sort((a, b) => {
+        const avgA = (a.room + a.bathroom + a.building + a.amenities + a.location) / 5;
+        const avgB = (b.room + b.bathroom + b.building + b.amenities + b.location) / 5;
+        return avgA - avgB;
+      });
+
+      // 10 lowest-rated, 10 highest-rated, 10 most recent
+      const lowest = sorted.slice(0, 10);
+      const highest = sorted.slice(-10);
+      const usedIds = new Set([...lowest, ...highest].map(r => String(r._id)));
+      const recent = [...withText]
+        .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+        .filter(r => !usedIds.has(String(r._id)))
+        .slice(0, 10);
+
+      sampled = [...lowest, ...highest, ...recent];
+    }
+
+    const reviewTexts = sampled
+      .map((r, i) => `${i + 1}. "${r.description}"`)
+      .join('\n');
+
+    const completion = await groq.chat.completions.create({
+      model: 'llama-3.3-70b-versatile',
+      temperature: 0.3,
+      max_tokens: 350,
+      messages: [
+        {
+          role: 'system',
+          content: DORM_SUMMARY_SYSTEM_PROMPT
+        },
+        {
+          role: 'user',
+          content: `Summarize student reviews for "${dormName}" at ${universitySlug.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ')}.
+
+Total reviews: ${count}
+${sampled.length < withText.length ? `Showing ${sampled.length} representative reviews (mix of highest-rated, lowest-rated, and most recent).` : ''}
+Average ratings (out of 5):
+- Room: ${avgRoom}
+- Bathroom: ${avgBathroom}
+- Building: ${avgBuilding}
+- Amenities: ${avgAmenities}
+- Location: ${avgLocation}
+- Would Dorm Again: ${wouldDormAgainPct}%
+
+Student comments:
+${reviewTexts}
+
+Write a summary between 80 and 100 words. Use simple, clear words. Do NOT use em dashes. Do NOT use big or fancy words.
+Then on a new line write: TAGS: tag1, tag2, tag3`
+        }
+      ]
+    });
+
+    const raw = completion.choices[0]?.message?.content?.trim();
+    if (!raw) return null;
+
+    // Parse tags from the response
+    let summary = raw;
+    let aiTags: string[] = [];
+    const tagsMatch = raw.match(/^TAGS:\s*(.+)$/im);
+    if (tagsMatch) {
+      aiTags = tagsMatch[1].split(',').map(t => t.trim()).filter(Boolean).slice(0, 3);
+      summary = raw.replace(/\n*TAGS:\s*.+$/im, '').trim();
+    }
+
+    await Dorm.findByIdAndUpdate(dormId, {
+      aiSummary: summary,
+      aiTags,
+      summaryGeneratedAt: new Date(),
+      summaryPromptHash: SUMMARY_PROMPT_HASH
+    });
+
+    // Invalidate in-memory cache for this dorm
+    cache.delete(`dorm-${universitySlug}-${dormSlug}`);
+
+    if (!isProduction) console.log(`✅ AI summary generated for ${dormName}`, aiTags);
+    return summary;
+  } catch (err) {
+    console.error(`Failed to generate AI summary for ${dormName}:`, err);
+    return null;
+  }
+}
+
+// Academic email verification (subdomain-aware)
+function normalizeEmailForVerification(email: string): string {
+  const [user, domain] = email.split('@');
+  const parts = domain.split('.');
+  if (parts.length >= 3) {
+    return user + '@' + parts.slice(-2).join('.');
+  }
+  return email;
+}
+
+async function isAcademicEmail(email: string): Promise<boolean> {
+  try {
+    const normalized = normalizeEmailForVerification(email);
+    return await Verifier.isAcademic(normalized);
+  } catch {
+    return false;
+  }
+}
+
 // CORS configuration - Moved to top of file
-// const ALLOWED_ORIGINS = ... 
+// const ALLOWED_ORIGINS = ...
 // (Commented out legacy block removed to avoid confusion)
 
 // MongoDB Connection optimized for Serverless with Global Caching
@@ -1111,11 +1290,37 @@ app.get('/api/universities/:slug/dorms/:dormSlug', readOnlyLimiter, async (req: 
       avgRating = total / reviews.length;
     }
 
-    const result = {
+    const result: any = {
       ...dorm,
       avgRating,
       reviewCount: reviews.length
     };
+
+    // AI summary: lazy weekly refresh
+    const SEVEN_DAYS_MS = 7 * 24 * 60 * 60 * 1000;
+    const dormObj = dorm as any;
+    if (reviews.length >= 5) {
+      const summaryAge = dormObj.summaryGeneratedAt
+        ? Date.now() - new Date(dormObj.summaryGeneratedAt).getTime()
+        : Infinity;
+
+      const promptChanged = dormObj.summaryPromptHash !== SUMMARY_PROMPT_HASH;
+
+      if (summaryAge > SEVEN_DAYS_MS || promptChanged) {
+        const newSummary = await generateDormSummary(
+          dormObj._id.toString(), dormObj.name, slug, dormSlug
+        );
+        if (newSummary) {
+          result.aiSummary = newSummary;
+          result.summaryGeneratedAt = new Date();
+          // Re-fetch to get the aiTags that were saved during generation
+          const updatedDorm = await Dorm.findById(dormObj._id).lean() as any;
+          if (updatedDorm?.aiTags) {
+            result.aiTags = updatedDorm.aiTags;
+          }
+        }
+      }
+    }
 
     // Cache the result
     setCache(cacheKey, result);
@@ -1125,6 +1330,156 @@ app.get('/api/universities/:slug/dorms/:dormSlug', readOnlyLimiter, async (req: 
   } catch (err) {
     console.error('Error fetching dorm', err);
     res.status(500).json({ message: 'Error fetching dorm' });
+  }
+});
+
+// Compare two dorms with AI analysis
+app.get('/api/compare', readOnlyLimiter, async (req: Request, res: Response) => {
+  try {
+    let dorm1: string, uni1: string, dorm2: string, uni2: string;
+    try {
+      ({ dorm1, uni1, dorm2, uni2 } = compareQuerySchema.parse(req.query));
+    } catch (err) {
+      return res.status(400).json({ message: 'Invalid or missing query params: dorm1, uni1, dorm2, uni2' });
+    }
+
+    // Fetch both dorms and their reviews in parallel
+    const reviewQuery = (uniSlug: string, dormName: string) => ({
+      university: uniSlug,
+      dorm: dormName,
+      $or: [{ status: 'approved' }, { status: { $exists: false } }]
+    });
+
+    const [dormDoc1, dormDoc2] = await Promise.all([
+      Dorm.findOne({ universitySlug: uni1, slug: dorm1, $or: [{ status: 'approved' }, { status: { $exists: false } }] }).lean(),
+      Dorm.findOne({ universitySlug: uni2, slug: dorm2, $or: [{ status: 'approved' }, { status: { $exists: false } }] }).lean(),
+    ]);
+
+    if (!dormDoc1 || !dormDoc2) {
+      return res.status(404).json({ message: 'One or both dorms not found' });
+    }
+
+    const d1 = dormDoc1 as any;
+    const d2 = dormDoc2 as any;
+
+    const [reviews1, reviews2] = await Promise.all([
+      UserReview.find(reviewQuery(uni1, d1.name)).lean(),
+      UserReview.find(reviewQuery(uni2, d2.name)).lean(),
+    ]);
+
+    if (reviews1.length < 5 || reviews2.length < 5) {
+      return res.status(400).json({
+        message: 'Both dorms must have at least 5 approved reviews to compare',
+        dorm1ReviewCount: reviews1.length,
+        dorm2ReviewCount: reviews2.length,
+      });
+    }
+
+    // Calculate stats for each dorm
+    function calcStats(reviews: any[]) {
+      const totals = { room: 0, bathroom: 0, building: 0, amenities: 0, location: 0 };
+      let wouldDormAgainCount = 0;
+      for (const r of reviews) {
+        totals.room += r.room || 0;
+        totals.bathroom += r.bathroom || 0;
+        totals.building += r.building || 0;
+        totals.amenities += r.amenities || 0;
+        totals.location += r.location || 0;
+        if (r.wouldDormAgain === true) wouldDormAgainCount++;
+      }
+      const n = reviews.length;
+      return {
+        reviewCount: n,
+        avgRoom: +(totals.room / n).toFixed(1),
+        avgBathroom: +(totals.bathroom / n).toFixed(1),
+        avgBuilding: +(totals.building / n).toFixed(1),
+        avgAmenities: +(totals.amenities / n).toFixed(1),
+        avgLocation: +(totals.location / n).toFixed(1),
+        avgOverall: +((totals.room + totals.bathroom + totals.building + totals.amenities + totals.location) / (n * 5)).toFixed(1),
+        wouldDormAgainPct: Math.round((wouldDormAgainCount / n) * 100),
+      };
+    }
+
+    const stats1 = calcStats(reviews1 as any[]);
+    const stats2 = calcStats(reviews2 as any[]);
+
+    // Build AI comparison
+    const groq = getGroq();
+    let comparison: string | null = null;
+
+    if (groq) {
+      try {
+        // Use existing AI summaries if available, otherwise sample reviews
+        const uniName = (slug: string) => slug.split('-').map((w: string) => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+
+        const dorm1Context = d1.aiSummary
+          ? `AI Summary: ${d1.aiSummary}`
+          : (reviews1 as any[]).filter(r => r.description?.trim()).slice(0, 15).map((r, i) => `${i + 1}. "${r.description}"`).join('\n');
+
+        const dorm2Context = d2.aiSummary
+          ? `AI Summary: ${d2.aiSummary}`
+          : (reviews2 as any[]).filter(r => r.description?.trim()).slice(0, 15).map((r, i) => `${i + 1}. "${r.description}"`).join('\n');
+
+        const completion = await groq.chat.completions.create({
+          model: 'llama-3.3-70b-versatile',
+          temperature: 0.3,
+          max_tokens: 800,
+          messages: [
+            {
+              role: 'system',
+              content: `You are a university housing advisor writing a dorm comparison. The user can already see the numerical ratings — do NOT repeat or reference any numbers or scores. Focus on what students actually said in their reviews: the lived experience, specific details, and qualitative differences.
+
+Structure your response with these three sections:
+
+**Overview** — One sentence per dorm capturing its personality (e.g., "social and central but showing its age" vs "sleek and quiet but feels isolated").
+
+**Key Differences** — Compare the 3-4 areas where the dorms differ most based on what students described. Use specific details from reviews (e.g., "thin walls", "long winter walk", "floor kitchens") rather than ratings.
+
+**Verdict** — 2-3 sentences on which dorm suits which type of student. Be specific and opinionated.
+
+Be balanced, concise, and grounded in the reviews. Do not fabricate details. Use markdown formatting.`
+            },
+            {
+              role: 'user',
+              content: `Compare these two dorms:
+
+DORM 1: "${d1.name}" at ${uniName(uni1)}
+- Ratings: Room ${stats1.avgRoom}, Bathroom ${stats1.avgBathroom}, Building ${stats1.avgBuilding}, Amenities ${stats1.avgAmenities}, Location ${stats1.avgLocation}
+- Overall: ${stats1.avgOverall}/5 | Would Dorm Again: ${stats1.wouldDormAgainPct}% | ${stats1.reviewCount} reviews
+${dorm1Context}
+
+DORM 2: "${d2.name}" at ${uniName(uni2)}
+- Ratings: Room ${stats2.avgRoom}, Bathroom ${stats2.avgBathroom}, Building ${stats2.avgBuilding}, Amenities ${stats2.avgAmenities}, Location ${stats2.avgLocation}
+- Overall: ${stats2.avgOverall}/5 | Would Dorm Again: ${stats2.wouldDormAgainPct}% | ${stats2.reviewCount} reviews
+${dorm2Context}
+
+Compare these two dorms using the exact format specified.`
+            }
+          ]
+        });
+
+        comparison = completion.choices[0]?.message?.content?.trim() || null;
+      } catch (err) {
+        console.error('Failed to generate AI comparison:', err);
+      }
+    }
+
+    res.json({
+      dorm1: {
+        name: d1.name, slug: d1.slug, universitySlug: d1.universitySlug,
+        imageUrl: d1.imageUrl, amenities: d1.amenities || [], roomTypes: d1.roomTypes || [],
+        ...stats1,
+      },
+      dorm2: {
+        name: d2.name, slug: d2.slug, universitySlug: d2.universitySlug,
+        imageUrl: d2.imageUrl, amenities: d2.amenities || [], roomTypes: d2.roomTypes || [],
+        ...stats2,
+      },
+      comparison,
+    });
+  } catch (err) {
+    console.error('Error comparing dorms:', err);
+    res.status(500).json({ message: 'Error comparing dorms' });
   }
 });
 
@@ -1259,7 +1614,7 @@ app.post('/api/reviews', submitLimiter, validate(reviewSchema), async (req: Requ
       images
     } = req.body;
 
-    // Check if user is logged in (verified) via Authorization header
+    // Check if user is logged in and has an academic email for verified badge
     let isVerified = false;
     let userEmail = '';
     const authHeader = req.headers.authorization;
@@ -1272,8 +1627,10 @@ app.post('/api/reviews', submitLimiter, validate(reviewSchema), async (req: Requ
       const token = authHeader.split(' ')[1];
       try {
         const decoded = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET as Secret) as JwtPayload;
-        isVerified = true;
         userEmail = decoded.name || '';
+        // Verified badge requires a recognized university email
+        isVerified = userEmail ? await isAcademicEmail(userEmail) : false;
+        if (!isProduction) console.log('🎓 Academic email check:', userEmail, '→', isVerified);
       } catch (err) {
         if (!isProduction) console.log('🔑 Token verification failed:', err instanceof Error ? err.message : 'Unknown error');
         isVerified = false;
@@ -1718,6 +2075,27 @@ app.patch('/api/admin/reviews/:id/approve', authenticationToken, requireAdmin, a
     }
 
     await review.save();
+
+    // AI summary: check if this approval crosses the 5-review threshold
+    if (!review.pendingEdit) {
+      const approvedCount = await UserReview.countDocuments({
+        university: review.university,
+        dorm: review.dorm,
+        $or: [{ status: 'approved' }, { status: { $exists: false } }]
+      });
+
+      if (approvedCount >= 5) {
+        const dormDoc = await Dorm.findOne({
+          universitySlug: review.university,
+          name: review.dorm
+        });
+        if (dormDoc && !dormDoc.aiSummary) {
+          await generateDormSummary(
+            (dormDoc._id as any).toString(), dormDoc.name, dormDoc.universitySlug, dormDoc.slug
+          );
+        }
+      }
+    }
 
     res.json({ message: 'Review approved', review });
   } catch (err) {

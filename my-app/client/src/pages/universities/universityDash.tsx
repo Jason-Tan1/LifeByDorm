@@ -13,6 +13,8 @@ import DefaultCampus from '../../assets/Default_Campus.webp';
 import DefaultDorm from '../../assets/Default_Dorm.webp';
 import PageLoader from '../../components/PageLoader';
 import { useSEO } from '../../hooks/useSEO';
+import CompareModal from '../compare/CompareModal';
+import CompareCard from '../../components/CompareCard/CompareCard';
 
 // Define types for University and Dorm data from API
 type APIUniversity = {
@@ -57,6 +59,7 @@ function UniversityDash() {
   const [dormRatings, setDormRatings] = useState<{ [dormName: string]: number }>({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [isCompareModalOpen, setIsCompareModalOpen] = useState(false);
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -308,6 +311,13 @@ function UniversityDash() {
               // Dorm submitted successfully
             }}
           />
+
+          {/* Compare Dorms Section */}
+          <CompareCard
+            onOpenCompare={() => setIsCompareModalOpen(true)}
+            title="Compare dorms"
+            description="Select two dorms to see a side-by-side breakdown of ratings and reviews."
+          />
         </div>
 
         {/* Right side - Dorms List */}
@@ -404,6 +414,11 @@ function UniversityDash() {
         </div>
       </main>
       <Footer />
+      <CompareModal
+        isOpen={isCompareModalOpen}
+        onClose={() => setIsCompareModalOpen(false)}
+        initialUni1={universityName}
+      />
     </div>
   );
 }
