@@ -3,8 +3,7 @@
     "allow": [
       "Bash(xargs grep:*)",
       "Bash(ls:*)",
-      "Bash(find C:UsersjatanDesktopLifeByDorm/my-app/client/src -type f \\\\\\(-name *.ts -o -name *.tsx \\\\\\))",
-      "Bash(npx tsc:*)"
+      "Bash(find C:UsersjatanDesktopLifeByDorm/my-app/client/src -type f \\\\\\(-name *.ts -o -name *.tsx \\\\\\))"
     ]
   }
 }
