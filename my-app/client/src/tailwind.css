@@ -7,3 +7,12 @@
     font-family: 'DM Sans', sans-serif;
   }
 }
+
+/* Google AdSense ad container */
+.ad-unit-container {
+  width: 100%;
+  max-width: 728px;
+  margin: 24px auto;
+  text-align: center;
+  overflow: hidden;
+}

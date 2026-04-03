@@ -241,9 +241,25 @@
   font-weight: 500;
 }
 
-.compare-dropdown-menu button:hover {
+.compare-dropdown-menu button:hover:not(:disabled) {
   background-color: #f3f4f6;
   color: #111827;
+}
+
+.compare-dropdown-review-count {
+  font-size: 0.72rem;
+  color: #999;
+  margin-left: 8px;
+  font-weight: 400;
+}
+
+.compare-dropdown-disabled {
+  opacity: 0.45;
+  cursor: not-allowed !important;
+}
+
+.compare-dropdown-disabled .compare-dropdown-review-count {
+  color: #ccc;
 }
 
 /* VS Badge */

@@ -1,5 +1,6 @@
 import Star from '@mui/icons-material/Star';
 import { useTranslation } from 'react-i18next';
+import AdUnit from '../../components/AdUnit';
 
 const UpArrowIcon = ({ active }: { active: boolean }) => (
   <svg width="24" height="24" viewBox="0 0 24 24" fill={active ? "currentColor" : "none"} stroke="currentColor" strokeWidth="2" strokeLinejoin="round">
@@ -73,11 +74,27 @@ function ReviewsList({
       {reviewsLoading ? (
         <p>{t('dorms.loading')}</p>
       ) : reviews.length === 0 ? (
-        <p>{t('dorms.noReviews')}</p>
+        <div className="reviews-grid">
+          <div className="review-card empty-reviews-card">
+            <div className="review-header">
+              <div className="review-overall-rating">
+                <span className="overall-rating-badge rating-none">
+                  <Star className="rating-star-icon" />
+                  -.-
+                </span>
+              </div>
+              <div className="review-metadata">
+              </div>
+            </div>
+            <div className="review-content">
+              <p className="review-description">{t('dorms.noReviews')}</p>
+            </div>
+          </div>
+        </div>
       ) : (
         <>
           <div className="reviews-grid">
-            {visibleReviews.map(review => (
+            {visibleReviews.map((review) => (
               <div key={review._id} className="review-card">
                 <div className="review-header">
                   <div className="review-overall-rating">
@@ -171,6 +188,8 @@ function ReviewsList({
               </span>
             </div>
           )}
+
+          <AdUnit adSlot="1150044728" />
         </>
       )}
     </div>

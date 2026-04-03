@@ -1,11 +1,13 @@
 .compare-info-card {
-  background: #ffffff;
-  border-radius: var(--radius-md, 12px);
-  padding: 24px;
+  background: var(--compare-card-bg, var(--color-surface, #ffffff));
+  border-radius: var(--compare-card-radius, var(--radius-md, 12px));
+  padding: var(--compare-card-padding, 24px);
   display: flex;
   flex-direction: column;
   align-items: flex-start;
   margin-bottom: 24px;
+  border: var(--compare-card-border, none);
+  box-shadow: var(--compare-card-shadow, var(--shadow-sm, 0 1px 3px rgba(0, 0, 0, 0.1)));
 }
 
 .compare-info-card h2 {

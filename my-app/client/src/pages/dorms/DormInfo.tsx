@@ -114,12 +114,13 @@ function DormInfo({ dorm, reviews, universityName, universityLocation, calculate
               { label: 'Amenities', value: calculateCategoryAverages().amenities },
               { label: 'Location', value: calculateCategoryAverages().location },
             ].map((item) => {
-              const percentage = (item.value / 5) * 100;
+              const hasReviews = reviews.length > 0;
+              const percentage = hasReviews ? (item.value / 5) * 100 : 0;
               return (
                 <div key={item.label} className="distribution-item">
                   <div className="distribution-label">
                     <span>{item.label}</span>
-                    <span className="distribution-count">{item.value.toFixed(1)}</span>
+                    <span className="distribution-count">{hasReviews ? item.value.toFixed(1) : 'N/A'}</span>
                   </div>
                   <div className="distribution-bar">
                     <div
@@ -144,16 +145,16 @@ function DormInfo({ dorm, reviews, universityName, universityLocation, calculate
 
             <div className="would-dorm-again-box">
               <div className="would-dorm-percentage-large">
-                {getWouldDormAgainPercentage()}%
-                <CheckCircleIcon className="checkmark-icon" />
+                {reviews.length > 0 ? `${getWouldDormAgainPercentage()}%` : 'N/A'}
+                {reviews.length > 0 && <CheckCircleIcon className="checkmark-icon" />}
               </div>
               <span className="would-dorm-text">Would Dorm Again</span>
             </div>
 
             <div className="average-rating-box">
-              <span className="average-rating-label">Average Rating: <strong>{calculateAverageRating().toFixed(1)}</strong></span>
+              <span className="average-rating-label">Average Rating: <strong>{reviews.length > 0 ? calculateAverageRating().toFixed(1) : 'N/A'}</strong></span>
               <div className="stars-display">
-                {renderStars(calculateAverageRating())}
+                {reviews.length > 0 ? renderStars(calculateAverageRating()) : renderStars(0)}
               </div>
             </div>
           </div>

@@ -18,6 +18,10 @@
 .admin-header {
     text-align: left;
     margin-bottom: 24px;
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
 }
 
 .admin-title {
@@ -31,6 +35,242 @@
     font-size: 1.05rem;
     color: #666;
     margin: 0;
+}
+
+.admin-refresh-btn {
+    border: 1px solid #d8e2ef;
+    background: #ffffff;
+    color: #1a1a1a;
+    border-radius: 10px;
+    padding: 10px 14px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.admin-refresh-btn:hover {
+    background: #f5f9ff;
+}
+
+.admin-dashboard-shell {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.admin-controls-row {
+    display: flex;
+    justify-content: flex-end;
+}
+
+.admin-filter-group {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.admin-filter-group label {
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: #5f6772;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+
+.admin-filter-group select {
+    border: 1px solid #d8e2ef;
+    background: #ffffff;
+    border-radius: 10px;
+    padding: 8px 12px;
+    color: #111827;
+    font-size: 0.9rem;
+    font-weight: 600;
+}
+
+.admin-kpi-row {
+    display: grid;
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+    gap: 12px;
+}
+
+.admin-kpi-tile {
+    background: linear-gradient(140deg, #ffffff, #f6f9fd);
+    border: 1px solid #e4ebf2;
+    border-radius: 12px;
+    padding: 14px;
+    box-shadow: 0 2px 8px rgba(20, 34, 52, 0.06);
+}
+
+.admin-kpi-label {
+    margin: 0;
+    font-size: 0.76rem;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    color: #6a7480;
+    font-weight: 700;
+}
+
+.admin-kpi-value {
+    margin: 8px 0 2px;
+    font-size: 1.5rem;
+    line-height: 1.1;
+    font-weight: 800;
+    color: #1a1a1a;
+}
+
+.admin-kpi-meta {
+    margin: 0;
+    font-size: 0.8rem;
+    color: #5f6772;
+}
+
+.admin-analytics-grid {
+    display: grid;
+    grid-template-columns: 1.3fr 1fr;
+    gap: 20px;
+}
+
+.admin-panel {
+    background: #ffffff;
+    border-radius: 12px;
+    border: 1px solid #e5ecf3;
+    box-shadow: 0 4px 14px rgba(16, 24, 40, 0.04);
+    padding: 18px;
+}
+
+.admin-panel-head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 14px;
+}
+
+.admin-panel-head h3 {
+    margin: 0;
+    font-size: 1rem;
+    font-weight: 700;
+    color: #1a1a1a;
+}
+
+.admin-panel-head span {
+    font-size: 0.8rem;
+    color: #697586;
+}
+
+.admin-mini-metrics {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 10px;
+    margin-bottom: 14px;
+}
+
+.admin-mini-metrics div {
+    background: #f7fafc;
+    border: 1px solid #ebf1f6;
+    border-radius: 8px;
+    padding: 10px;
+}
+
+.admin-mini-metrics span {
+    display: block;
+    color: #637081;
+    font-size: 0.78rem;
+    margin-bottom: 4px;
+}
+
+.admin-mini-metrics strong {
+    font-size: 1.05rem;
+    color: #111827;
+}
+
+.admin-traffic-chart {
+    position: relative;
+    width: 100%;
+    cursor: crosshair;
+}
+
+.admin-traffic-chart svg {
+    display: block;
+    width: 100%;
+    overflow: visible;
+}
+
+.admin-traffic-labels {
+    position: relative;
+    height: 20px;
+    margin-top: 4px;
+}
+
+.admin-traffic-labels span {
+    position: absolute;
+    transform: translateX(-50%);
+    font-size: 0.7rem;
+    color: #6b7280;
+    white-space: nowrap;
+}
+
+.admin-traffic-tooltip {
+    position: absolute;
+    transform: translate(-50%, -100%);
+    background: #1a1a1a;
+    color: #fff;
+    padding: 8px 12px;
+    border-radius: 8px;
+    font-size: 0.78rem;
+    pointer-events: none;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    white-space: nowrap;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    z-index: 10;
+}
+
+.admin-traffic-tooltip strong {
+    font-weight: 700;
+    font-size: 0.85rem;
+}
+
+.admin-traffic-tooltip span {
+    color: #aab4c0;
+    font-size: 0.72rem;
+}
+
+.admin-page-table {
+    border: 1px solid #edf1f6;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.admin-page-table-head,
+.admin-page-table-row {
+    display: grid;
+    grid-template-columns: 1fr 90px 110px;
+    gap: 10px;
+    align-items: center;
+    padding: 10px 12px;
+}
+
+.admin-page-table-head {
+    background: #f8fafc;
+    font-size: 0.76rem;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    color: #6c7684;
+    font-weight: 700;
+}
+
+.admin-page-table-row {
+    border-top: 1px solid #eef2f6;
+    font-size: 0.88rem;
+    color: #1f2937;
+}
+
+.admin-page-table-row span:first-child {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
 /* Tabs */
@@ -117,10 +357,10 @@
 
 .admin-list-card {
     background-color: #ffffff;
-    border: 1px solid #e0e0e0;
+    border: 1px solid #e5ecf3;
     border-radius: 12px;
-    padding: 24px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.04);
+    padding: 18px;
+    box-shadow: 0 4px 14px rgba(16, 24, 40, 0.04);
 }
 
 .admin-list-card h3 {
@@ -136,25 +376,31 @@
     list-style: none;
 }
 
+.admin-ranked-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
 .admin-list-item {
     display: flex;
     justify-content: space-between;
-    align-items: flex-start; /* Changed to flex-start for multi-line */
-    padding: 12px 0;
-    border-bottom: 1px solid #f0f0f0;
+    align-items: center;
+    padding: 10px 12px;
+    border: 1px solid #edf1f6;
+    border-radius: 10px;
+    background: #fbfcfe;
     gap: 12px;
 }
 
 .admin-list-item:last-child {
-    border-bottom: none;
-    padding-bottom: 0;
+    border-bottom: 1px solid #edf1f6;
 }
 
-.admin-list-item > div,
 .admin-list-item > strong {
     flex: 1;
     min-width: 0;
-    word-break: break-word; /* Prevent long words from breaking layout */
+    word-break: break-word;
     line-height: 1.4;
 }
 
@@ -165,8 +411,42 @@
 
 .admin-review-count {
     flex-shrink: 0;
-    white-space: nowrap; /* Keep "X reviews" on one line */
+    white-space: nowrap;
     margin-top: 2px;
+    font-weight: 700;
+    color: #1f5ebf;
+}
+
+.admin-rank-pill {
+    width: 30px;
+    height: 30px;
+    border-radius: 999px;
+    background: #e9f2ff;
+    color: #1f5ebf;
+    display: grid;
+    place-items: center;
+    font-size: 0.82rem;
+    font-weight: 800;
+    flex-shrink: 0;
+}
+
+.admin-list-primary {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-width: 0;
+}
+
+.admin-list-primary strong {
+    color: #111827;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.admin-list-primary span {
+    color: #64748b;
+    font-size: 0.82rem;
 }
 
 /* Pending Review & Dorm Cards */
@@ -351,12 +631,56 @@
 
 /* Responsive Media Queries */
 @media (max-width: 900px) {
+    .admin-kpi-row {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .admin-controls-row {
+        justify-content: flex-start;
+    }
+
+    .admin-analytics-grid {
+        grid-template-columns: 1fr;
+    }
+
     .admin-lists-container {
         grid-template-columns: 1fr;
     }
 }
 
 @media (max-width: 768px) {
+    .admin-header {
+        flex-direction: column;
+    }
+
+    .admin-filter-group {
+        width: 100%;
+        justify-content: space-between;
+    }
+
+    .admin-filter-group select {
+        flex: 1;
+        max-width: 220px;
+    }
+
+    .admin-refresh-btn {
+        width: 100%;
+    }
+
+    .admin-kpi-row {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .admin-mini-metrics {
+        grid-template-columns: 1fr;
+    }
+
+    .admin-page-table-head,
+    .admin-page-table-row {
+        grid-template-columns: 1fr 80px 95px;
+        font-size: 0.8rem;
+    }
+
     .admin-card-inner {
         flex-direction: column;
         align-items: stretch;

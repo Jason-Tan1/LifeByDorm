@@ -267,11 +267,22 @@ function CompareModal({ isOpen, onClose, initialUni1, initialDorm1 }: CompareMod
                     {isDorm1Open && (
                       <div className="compare-dropdown-menu">
                         <button onClick={() => { setDorm1(''); setIsDorm1Open(false); }}>Select dorm...</button>
-                        {dorms1.map(d => (
-                          <button key={d.slug} onClick={() => { setDorm1(d.slug); setIsDorm1Open(false); }}>
-                            {d.name}
-                          </button>
-                        ))}
+                        {dorms1.map(d => {
+                          const eligible = (d.reviewCount ?? 0) >= 5;
+                          return (
+                            <button
+                              key={d.slug}
+                              onClick={() => { if (eligible) { setDorm1(d.slug); setIsDorm1Open(false); } }}
+                              disabled={!eligible}
+                              className={!eligible ? 'compare-dropdown-disabled' : ''}
+                            >
+                              {d.name}
+                              <span className="compare-dropdown-review-count">
+                                {d.reviewCount ?? 0} review{(d.reviewCount ?? 0) !== 1 ? 's' : ''}
+                              </span>
+                            </button>
+                          );
+                        })}
                       </div>
                     )}
                   </div>
@@ -295,11 +306,22 @@ function CompareModal({ isOpen, onClose, initialUni1, initialDorm1 }: CompareMod
                     {isDorm2Open && (
                       <div className="compare-dropdown-menu">
                         <button onClick={() => { setDorm2(''); setIsDorm2Open(false); }}>Select dorm...</button>
-                        {dorms2.map(d => (
-                          <button key={d.slug} onClick={() => { setDorm2(d.slug); setIsDorm2Open(false); }}>
-                            {d.name}
-                          </button>
-                        ))}
+                        {dorms2.map(d => {
+                          const eligible = (d.reviewCount ?? 0) >= 5;
+                          return (
+                            <button
+                              key={d.slug}
+                              onClick={() => { if (eligible) { setDorm2(d.slug); setIsDorm2Open(false); } }}
+                              disabled={!eligible}
+                              className={!eligible ? 'compare-dropdown-disabled' : ''}
+                            >
+                              {d.name}
+                              <span className="compare-dropdown-review-count">
+                                {d.reviewCount ?? 0} review{(d.reviewCount ?? 0) !== 1 ? 's' : ''}
+                              </span>
+                            </button>
+                          );
+                        })}
                       </div>
                     )}
                   </div>
@@ -401,7 +423,7 @@ function CompareModal({ isOpen, onClose, initialUni1, initialDorm1 }: CompareMod
             {result.comparison && (
               <div className="compare-ai-card compare-ai-animated">
                 <h2 className="compare-ai-header">AI Comparison</h2>
-                <div className="compare-ai-text"><ReactMarkdown remarkPlugins={[remarkGfm]}>{result.comparison}</ReactMarkdown></div>
+                <div className="compare-ai-text"><ReactMarkdown remarkPlugins={[remarkGfm]} allowedElements={['p', 'strong', 'em', 'h1', 'h2', 'h3', 'h4', 'ul', 'ol', 'li', 'br', 'hr', 'blockquote', 'table', 'thead', 'tbody', 'tr', 'th', 'td']} unwrapDisallowed>{result.comparison}</ReactMarkdown></div>
               </div>
             )}
           </div>

@@ -15,6 +15,7 @@ import PageLoader from '../../components/PageLoader';
 import { useSEO } from '../../hooks/useSEO';
 import CompareModal from '../compare/CompareModal';
 import CompareCard from '../../components/CompareCard/CompareCard';
+import AdUnit from '../../components/AdUnit';
 
 // Define types for University and Dorm data from API
 type APIUniversity = {
@@ -411,6 +412,8 @@ function UniversityDash() {
               </div>
             )}
           </div>
+
+          <AdUnit adSlot="6505275777" />
         </div>
       </main>
       <Footer />
