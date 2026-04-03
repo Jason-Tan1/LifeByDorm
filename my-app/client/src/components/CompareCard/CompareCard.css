@@ -75,8 +75,7 @@
   .compare-info-btn {
     padding: 8px 16px;
     font-size: 0.9rem;
-    width: 100%;
-    text-align: center;
-    box-sizing: border-box;
+    width: auto;
+    align-self: flex-start;
   }
 }

@@ -648,6 +648,8 @@
   font-size: 1.15rem;
   font-weight: 700;
   color: #1a1a1a;
+  border-bottom: none;
+  padding-bottom: 0;
 }
 
 .compare-ai-text {
@@ -662,6 +664,8 @@
   font-weight: 700;
   color: #1a1a1a;
   margin: 24px 0 6px 0;
+  border-bottom: none;
+  padding-bottom: 0;
 }
 
 .compare-ai-text h2:first-child {
@@ -691,6 +695,10 @@
 
 .compare-ai-text p {
   margin: 0 0 12px 0;
+}
+
+.compare-ai-text hr {
+  display: none;
 }
 
 .compare-ai-text h2+p,
