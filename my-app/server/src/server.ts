@@ -6,7 +6,7 @@ import cors from 'cors';
 import jwt, { Secret, JwtPayload, Algorithm } from 'jsonwebtoken';
 import mongoose from 'mongoose'; // MongoDB Connections from Node.js
 import bcrypt from 'bcryptjs'; //Hide Passwords
-import { OAuth2Client } from 'google-auth-library';
+import { OAuth2Client, GoogleAuth } from 'google-auth-library';
 import rateLimit from 'express-rate-limit';
 import compression from 'compression';
 import sanitizeHtml from 'sanitize-html';
@@ -232,12 +232,235 @@ interface CacheEntry<T> {
   data: T;
   timestamp: number;
 }
+
+interface GoogleAnalyticsTopPage {
+  path: string;
+  title: string;
+  views: number;
+  activeUsers: number;
+}
+
+interface GoogleAnalyticsDailyTraffic {
+  date: string;
+  activeUsers: number;
+  sessions: number;
+  pageViews: number;
+}
+
+interface GoogleAnalyticsStats {
+  configured: boolean;
+  available: boolean;
+  propertyId?: string;
+  activeUsers: number;
+  totalUsers: number;
+  newUsers: number;
+  sessions: number;
+  pageViews: number;
+  bounceRate: number | null;
+  averageSessionDuration: number | null;
+  topPages: GoogleAnalyticsTopPage[];
+  dailyTraffic: GoogleAnalyticsDailyTraffic[];
+  error?: string;
+}
+
+interface GaMetricValue {
+  value?: string;
+}
+
+interface GaDimensionValue {
+  value?: string;
+}
+
+interface GaRow {
+  dimensionValues?: GaDimensionValue[];
+  metricValues?: GaMetricValue[];
+}
+
+interface GaRunReportResponse {
+  rows?: GaRow[];
+}
+
 const cache: Map<string, CacheEntry<any>> = new Map();
 const CACHE_TTL = 5 * 60 * 1000; // 5 minutes cache TTL
 
 // Separate cache for AI comparisons (longer TTL since they're expensive)
 const compareCache: Map<string, CacheEntry<any>> = new Map();
 const COMPARE_CACHE_TTL = 30 * 60 * 1000; // 30 minutes
+const gaCache: Map<string, CacheEntry<GoogleAnalyticsStats>> = new Map();
+const GA_CACHE_TTL = 5 * 60 * 1000; // 5 minutes
+
+function parseGaNumber(value: string | undefined): number {
+  if (!value) return 0;
+  const parsed = Number(value);
+  return Number.isFinite(parsed) ? parsed : 0;
+}
+
+function parseGaDate(value: string | undefined): string {
+  if (!value || value.length !== 8) return value || '';
+  const year = value.slice(0, 4);
+  const month = value.slice(4, 6);
+  const day = value.slice(6, 8);
+  return `${year}-${month}-${day}`;
+}
+
+async function runGaReport(
+  propertyId: string,
+  accessToken: string,
+  body: Record<string, unknown>
+): Promise<GaRunReportResponse> {
+  const response = await fetch(`https://analyticsdata.googleapis.com/v1beta/properties/${propertyId}:runReport`, {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(body)
+  });
+
+  if (!response.ok) {
+    throw new Error(`GA4 API request failed with status ${response.status}`);
+  }
+
+  return response.json() as Promise<GaRunReportResponse>;
+}
+
+function normalizeAnalyticsDays(input: unknown, fallback = 14): number {
+  const n = Number(input);
+  if (!Number.isFinite(n)) return fallback;
+  const rounded = Math.floor(n);
+  const allowed = [7, 14, 30, 60, 90, 365];
+  return allowed.includes(rounded) ? rounded : fallback;
+}
+
+async function getGoogleAnalyticsStats(days: number): Promise<GoogleAnalyticsStats> {
+  const propertyId = (process.env.GA4_PROPERTY_ID || '').trim();
+  const cacheKey = `ga4:${propertyId || 'missing-property'}:${days}`;
+
+  const cached = gaCache.get(cacheKey);
+  if (cached && Date.now() - cached.timestamp < GA_CACHE_TTL) {
+    return cached.data;
+  }
+
+  if (!propertyId) {
+    const result: GoogleAnalyticsStats = {
+      configured: false,
+      available: false,
+      activeUsers: 0,
+      totalUsers: 0,
+      newUsers: 0,
+      sessions: 0,
+      pageViews: 0,
+      bounceRate: null,
+      averageSessionDuration: null,
+      topPages: [],
+      dailyTraffic: [],
+      error: 'Google Analytics is not configured. Missing GA4_PROPERTY_ID.'
+    };
+    gaCache.set(cacheKey, { data: result, timestamp: Date.now() });
+    return result;
+  }
+
+  try {
+    const googleAuth = new GoogleAuth({
+      scopes: ['https://www.googleapis.com/auth/analytics.readonly']
+    });
+    const client = await googleAuth.getClient();
+    const token = await client.getAccessToken();
+    if (!token?.token) {
+      throw new Error('Unable to obtain Google Analytics access token.');
+    }
+
+    const [overviewReport, topPagesReport, dailyTrafficReport] = await Promise.all([
+      runGaReport(propertyId, token.token, {
+        dateRanges: [{ startDate: `${days}daysAgo`, endDate: 'today' }],
+        metrics: [
+          { name: 'activeUsers' },
+          { name: 'totalUsers' },
+          { name: 'newUsers' },
+          { name: 'sessions' },
+          { name: 'screenPageViews' },
+          { name: 'bounceRate' },
+          { name: 'averageSessionDuration' }
+        ]
+      }),
+      runGaReport(propertyId, token.token, {
+        dateRanges: [{ startDate: `${days}daysAgo`, endDate: 'today' }],
+        dimensions: [{ name: 'pagePath' }, { name: 'pageTitle' }],
+        metrics: [{ name: 'screenPageViews' }, { name: 'activeUsers' }],
+        orderBys: [{ metric: { metricName: 'screenPageViews' }, desc: true }],
+        limit: 6
+      }),
+      runGaReport(propertyId, token.token, {
+        dateRanges: [{ startDate: `${days}daysAgo`, endDate: 'today' }],
+        dimensions: [{ name: 'date' }],
+        metrics: [{ name: 'activeUsers' }, { name: 'sessions' }, { name: 'screenPageViews' }],
+        orderBys: [{ dimension: { dimensionName: 'date' }, desc: false }]
+      })
+    ]);
+
+    const overviewMetrics = overviewReport.rows?.[0]?.metricValues || [];
+
+    const topPages: GoogleAnalyticsTopPage[] = (topPagesReport.rows || []).map((row) => {
+      const dimensions = row.dimensionValues || [];
+      const metrics = row.metricValues || [];
+      return {
+        path: dimensions[0]?.value || '/',
+        title: dimensions[1]?.value || 'Untitled',
+        views: parseGaNumber(metrics[0]?.value),
+        activeUsers: parseGaNumber(metrics[1]?.value)
+      };
+    });
+
+    const dailyTraffic: GoogleAnalyticsDailyTraffic[] = (dailyTrafficReport.rows || []).map((row) => {
+      const dimensions = row.dimensionValues || [];
+      const metrics = row.metricValues || [];
+      return {
+        date: parseGaDate(dimensions[0]?.value),
+        activeUsers: parseGaNumber(metrics[0]?.value),
+        sessions: parseGaNumber(metrics[1]?.value),
+        pageViews: parseGaNumber(metrics[2]?.value)
+      };
+    });
+
+    const result: GoogleAnalyticsStats = {
+      configured: true,
+      available: true,
+      propertyId,
+      activeUsers: parseGaNumber(overviewMetrics[0]?.value),
+      totalUsers: parseGaNumber(overviewMetrics[1]?.value),
+      newUsers: parseGaNumber(overviewMetrics[2]?.value),
+      sessions: parseGaNumber(overviewMetrics[3]?.value),
+      pageViews: parseGaNumber(overviewMetrics[4]?.value),
+      bounceRate: parseGaNumber(overviewMetrics[5]?.value),
+      averageSessionDuration: parseGaNumber(overviewMetrics[6]?.value),
+      topPages,
+      dailyTraffic
+    };
+
+    gaCache.set(cacheKey, { data: result, timestamp: Date.now() });
+    return result;
+  } catch (error) {
+    console.error('Error fetching Google Analytics stats:', error instanceof Error ? error.message : 'Unknown error');
+    const result: GoogleAnalyticsStats = {
+      configured: true,
+      available: false,
+      propertyId,
+      activeUsers: 0,
+      totalUsers: 0,
+      newUsers: 0,
+      sessions: 0,
+      pageViews: 0,
+      bounceRate: null,
+      averageSessionDuration: null,
+      topPages: [],
+      dailyTraffic: [],
+      error: 'Google Analytics data is unavailable. Verify GA property access and ADC credentials.'
+    };
+
+    gaCache.set(cacheKey, { data: result, timestamp: Date.now() });
+    return result;
+  }
+}
 
 app.get('/', (req: Request, res: Response) => {
   // In production, only return a minimal response to avoid leaking server info
@@ -1939,6 +2162,8 @@ app.put('/api/reviews/:id', authenticationToken, validate(editReviewSchema), asy
 // Get dashboard analytics stats (admin only)
 app.get('/api/admin/stats', authenticationToken, requireAdmin, async (req: AuthRequest, res: Response) => {
   try {
+    const selectedDays = normalizeAnalyticsDays(req.query.days, 14);
+
     // Timezone Bug Fix: Use EST instead of standard server time
     const nowLocal = new Date();
     // 1. Get current time in EST as a local Date object.
@@ -1958,6 +2183,10 @@ app.get('/api/admin/stats', authenticationToken, requireAdmin, async (req: AuthR
     startOfWeekEST.setDate(startOfWeekEST.getDate() - 7);
     const startOfWeek = new Date(startOfWeekEST.getTime() + offset);
 
+    const startOfSelectedPeriodEST = new Date(estMidnightLocal);
+    startOfSelectedPeriodEST.setDate(startOfSelectedPeriodEST.getDate() - selectedDays);
+    const startOfSelectedPeriod = new Date(startOfSelectedPeriodEST.getTime() + offset);
+
     // Run all queries in parallel for performance
     const [
       totalUsers,
@@ -1965,12 +2194,14 @@ app.get('/api/admin/stats', authenticationToken, requireAdmin, async (req: AuthR
       totalReviews,
       reviewsToday,
       reviewsThisWeek,
+      reviewsInSelectedPeriod,
       pendingReviews,
       approvedReviews,
       totalDorms,
       topDorms,
       topUniversities,
-      totalUniversities
+      totalUniversities,
+      googleAnalytics
     ] = await Promise.all([
       // Total users
       User.countDocuments(),
@@ -1982,6 +2213,8 @@ app.get('/api/admin/stats', authenticationToken, requireAdmin, async (req: AuthR
       UserReview.countDocuments({ createdAt: { $gte: startOfToday } }),
       // Reviews submitted this week
       UserReview.countDocuments({ createdAt: { $gte: startOfWeek } }),
+      // Reviews submitted in selected period
+      UserReview.countDocuments({ createdAt: { $gte: startOfSelectedPeriod } }),
       // Pending reviews
       UserReview.countDocuments({ status: 'pending' }),
       // Approved reviews
@@ -1990,7 +2223,12 @@ app.get('/api/admin/stats', authenticationToken, requireAdmin, async (req: AuthR
       Dorm.countDocuments({ status: 'approved' }),
       // Top 10 most reviewed dorms
       UserReview.aggregate([
-        { $match: { status: 'approved' } },
+        {
+          $match: {
+            createdAt: { $gte: startOfSelectedPeriod },
+            $or: [{ status: 'approved' }, { status: { $exists: false } }]
+          }
+        },
         { $group: { _id: { dorm: '$dorm', university: '$university' }, count: { $sum: 1 } } },
         { $sort: { count: -1 } },
         { $limit: 10 },
@@ -1998,14 +2236,21 @@ app.get('/api/admin/stats', authenticationToken, requireAdmin, async (req: AuthR
       ]),
       // Top 10 most active universities
       UserReview.aggregate([
-        { $match: { status: 'approved' } },
+        {
+          $match: {
+            createdAt: { $gte: startOfSelectedPeriod },
+            $or: [{ status: 'approved' }, { status: { $exists: false } }]
+          }
+        },
         { $group: { _id: '$university', count: { $sum: 1 } } },
         { $sort: { count: -1 } },
         { $limit: 10 },
         { $project: { _id: 0, university: '$_id', reviewCount: '$count' } }
       ]),
       // Total Supported Universities
-      University.countDocuments()
+      University.countDocuments(),
+      // Google Analytics website metrics
+      getGoogleAnalyticsStats(selectedDays)
     ]);
 
     res.json({
@@ -2018,7 +2263,8 @@ app.get('/api/admin/stats', authenticationToken, requireAdmin, async (req: AuthR
         approved: approvedReviews,
         pending: pendingReviews,
         today: reviewsToday,
-        thisWeek: reviewsThisWeek
+        thisWeek: reviewsThisWeek,
+        selectedPeriod: reviewsInSelectedPeriod
       },
       dorms: {
         total: totalDorms
@@ -2026,8 +2272,10 @@ app.get('/api/admin/stats', authenticationToken, requireAdmin, async (req: AuthR
       universities: {
         total: totalUniversities
       },
+      periodDays: selectedDays,
       topDorms,
-      topUniversities
+      topUniversities,
+      googleAnalytics
     });
   } catch (err) {
     console.error('Error fetching admin stats', err);
