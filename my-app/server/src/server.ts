@@ -54,7 +54,8 @@ import {
   dormSchema,
   reviewSchema,
   editReviewSchema,
-  contactSchema
+  contactSchema,
+  compareQuerySchema
 } from './validation';
 
 dotenv.config();
@@ -1335,9 +1336,11 @@ app.get('/api/universities/:slug/dorms/:dormSlug', readOnlyLimiter, async (req: 
 // Compare two dorms with AI analysis
 app.get('/api/compare', readOnlyLimiter, async (req: Request, res: Response) => {
   try {
-    const { dorm1, uni1, dorm2, uni2 } = req.query;
-    if (!dorm1 || !uni1 || !dorm2 || !uni2) {
-      return res.status(400).json({ message: 'Missing required query params: dorm1, uni1, dorm2, uni2' });
+    let dorm1: string, uni1: string, dorm2: string, uni2: string;
+    try {
+      ({ dorm1, uni1, dorm2, uni2 } = compareQuerySchema.parse(req.query));
+    } catch (err) {
+      return res.status(400).json({ message: 'Invalid or missing query params: dorm1, uni1, dorm2, uni2' });
     }
 
     // Fetch both dorms and their reviews in parallel
@@ -1360,8 +1363,8 @@ app.get('/api/compare', readOnlyLimiter, async (req: Request, res: Response) => 
     const d2 = dormDoc2 as any;
 
     const [reviews1, reviews2] = await Promise.all([
-      UserReview.find(reviewQuery(uni1 as string, d1.name)).lean(),
-      UserReview.find(reviewQuery(uni2 as string, d2.name)).lean(),
+      UserReview.find(reviewQuery(uni1, d1.name)).lean(),
+      UserReview.find(reviewQuery(uni2, d2.name)).lean(),
     ]);
 
     if (reviews1.length < 5 || reviews2.length < 5) {
@@ -1440,12 +1443,12 @@ Be balanced, concise, and grounded in the reviews. Do not fabricate details. Use
               role: 'user',
               content: `Compare these two dorms:
 
-DORM 1: "${d1.name}" at ${uniName(uni1 as string)}
+DORM 1: "${d1.name}" at ${uniName(uni1)}
 - Ratings: Room ${stats1.avgRoom}, Bathroom ${stats1.avgBathroom}, Building ${stats1.avgBuilding}, Amenities ${stats1.avgAmenities}, Location ${stats1.avgLocation}
 - Overall: ${stats1.avgOverall}/5 | Would Dorm Again: ${stats1.wouldDormAgainPct}% | ${stats1.reviewCount} reviews
 ${dorm1Context}
 
-DORM 2: "${d2.name}" at ${uniName(uni2 as string)}
+DORM 2: "${d2.name}" at ${uniName(uni2)}
 - Ratings: Room ${stats2.avgRoom}, Bathroom ${stats2.avgBathroom}, Building ${stats2.avgBuilding}, Amenities ${stats2.avgAmenities}, Location ${stats2.avgLocation}
 - Overall: ${stats2.avgOverall}/5 | Would Dorm Again: ${stats2.wouldDormAgainPct}% | ${stats2.reviewCount} reviews
 ${dorm2Context}

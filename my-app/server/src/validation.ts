@@ -107,6 +107,15 @@ export const editReviewSchema = z.object({
   images: z.union([z.array(z.string()).max(10), z.null()]).optional()
 }).strict();
 
+const slugField = z.string().min(1).max(100).regex(/^[a-z0-9-]+$/, { message: 'Must be a valid URL slug (lowercase letters, numbers, hyphens)' });
+
+export const compareQuerySchema = z.object({
+  dorm1: slugField,
+  uni1: slugField,
+  dorm2: slugField,
+  uni2: slugField,
+});
+
 export const contactSchema = z.object({
   fullName: z.string().min(1).max(100).trim(),
   email: z.string().email().max(100).trim(),

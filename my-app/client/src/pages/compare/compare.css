@@ -10,7 +10,8 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 1200; /* Higher than navbar */
+  z-index: 1200;
+  /* Higher than navbar */
   padding: 20px;
 }
 
@@ -22,8 +23,11 @@
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
   width: 100%;
   max-width: 900px;
-  max-height: 90vh; /* Restrict height */
-  overflow-y: auto; /* Scroll inside the modal */
+  max-height: 90vh;
+  /* Restrict height */
+  overflow-y: scroll;
+  scrollbar-gutter: stable;
+  /* Scroll inside the modal */
   position: relative;
   animation: compareModalFadeIn 0.3s ease;
   box-sizing: border-box;
@@ -34,8 +38,43 @@
 }
 
 @keyframes compareModalFadeIn {
-  from { opacity: 0; transform: translateY(-10px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Custom Scrollbars to prevent corner overlapping using inset padding box trick */
+.compare-modal-container::-webkit-scrollbar {
+  width: 18px;
+}
+.compare-modal-container::-webkit-scrollbar-track {
+  background: transparent;
+  margin: 16px 0; /* Keep track away from top/bottom rounded corners */
+}
+.compare-modal-container::-webkit-scrollbar-thumb {
+  background-color: #c1c1c1;
+  border-radius: 20px;
+  border: 6px solid #f5f5f5; /* Matches modal container background to act as padding */
+  background-clip: padding-box;
+}
+.compare-dropdown-menu::-webkit-scrollbar {
+  width: 14px;
+}
+.compare-dropdown-menu::-webkit-scrollbar-track {
+  background: transparent;
+  margin: 6px 0;
+}
+.compare-dropdown-menu::-webkit-scrollbar-thumb {
+  background-color: #d1d5db;
+  border-radius: 10px;
+  border: 4px solid #ffffff; /* Matches dropdown background */
+  background-clip: padding-box;
 }
 
 /* Close Button */
@@ -126,35 +165,85 @@
   gap: 8px;
 }
 
-.compare-select-fields select {
-  padding: 10px 12px;
-  border: 1px solid #e0e0e0;
-  border-radius: 8px;
-  font-size: 0.9rem;
-  font-family: 'DM Sans', sans-serif;
-  background: #fafafa;
-  cursor: pointer;
-  appearance: none;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23666' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
-  background-repeat: no-repeat;
-  background-position: right 12px center;
-  padding-right: 32px;
+.compare-custom-dropdown {
+  position: relative;
   width: 100%;
+}
+
+.compare-dropdown-button {
+  width: 100%;
+  padding: 12px 16px;
+  font-size: 1rem;
+  border: none;
+  border-radius: 50px;
+  background-color: white;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+  color: #1a1a1a;
+  cursor: pointer;
+  text-align: left;
+  appearance: none;
+  background-image: url('data:image/svg+xml;charset=UTF-8,%3csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="%23333" stroke-width="2"%3e%3cpolyline points="6 9 12 15 18 9"%3e%3c/polyline%3e%3c/svg%3e');
+  background-repeat: no-repeat;
+  background-position: right 16px center;
+  background-size: 16px;
+  padding-right: 44px;
+  transition: background-color 0.2s, box-shadow 0.2s;
+  font-family: 'DM Sans', sans-serif;
+  font-weight: 500;
   box-sizing: border-box;
   text-overflow: ellipsis;
   overflow: hidden;
   white-space: nowrap;
 }
 
-.compare-select-fields select:focus {
+.compare-dropdown-button:hover,
+.compare-dropdown-button:focus {
   outline: none;
-  border-color: #D62828;
   background-color: white;
+  /* Removed click effect focus rings as requested */
 }
 
-.compare-select-fields select:disabled {
+.compare-dropdown-button:disabled {
   opacity: 0.5;
   cursor: not-allowed;
+}
+
+.compare-dropdown-menu {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  right: 0;
+  background-color: #ffffff;
+  border: 1px solid #e0e7ff;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  z-index: 100;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+.compare-dropdown-menu button {
+  color: #374151;
+  padding: 8px 12px;
+  text-decoration: none;
+  display: block;
+  background-color: transparent;
+  width: 100%;
+  text-align: left;
+  border-radius: 0;
+  font-size: 0.85rem;
+  border: none;
+  cursor: pointer;
+  font-family: 'DM Sans', sans-serif;
+  font-weight: 500;
+}
+
+.compare-dropdown-menu button:hover {
+  background-color: #f3f4f6;
+  color: #111827;
 }
 
 /* VS Badge */
@@ -254,45 +343,43 @@
 }
 
 .compare-change-btn {
-  padding: 6px 16px;
-  border: 1px solid #ddd;
-  border-radius: 6px;
-  background: white;
+  padding: 4px 0;
+  border: none;
+  background: transparent;
   font-family: 'DM Sans', sans-serif;
-  font-size: 0.85rem;
-  font-weight: 600;
-  color: #555;
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: #666;
   cursor: pointer;
-  transition: border-color 0.2s, color 0.2s;
+  display: flex;
+  align-items: center;
+  transition: color 0.2s, transform 0.2s;
 }
 
-.compare-change-btn:hover {
-  border-color: #D62828;
-  color: #D62828;
+.compare-change-btn:hover,
+.compare-change-btn:focus-visible {
+  color: #1a1a1a;
+  outline: none;
+  transform: translateX(-4px);
 }
 
-/* Skeleton pulse */
-.skeleton-pulse {
-  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
-  background-size: 200% 100%;
-  animation: skeleton-shimmer 1.5s ease infinite;
+/* Spinner */
+.compare-circle-spinner {
+  width: 48px;
+  height: 48px;
+  border: 4px solid #f0f0f0;
+  border-radius: 50%;
+  border-top-color: #D62828;
+  animation: compare-spin 1s linear infinite;
 }
 
-@keyframes skeleton-shimmer {
-  0% {
-    background-position: 200% 0;
-  }
-
-  100% {
-    background-position: -200% 0;
+@keyframes compare-spin {
+  to {
+    transform: rotate(360deg);
   }
 }
 
 /* Results */
-.compare-results {
-  /* no animation on skeleton version */
-}
-
 .compare-results-animated {
   animation: compare-fadeIn 0.4s ease;
 }
@@ -338,41 +425,94 @@
   border-top-color: #4a90d9;
 }
 
+.compare-dorm-image-container {
+  position: relative;
+  width: 100%;
+  border-radius: 8px;
+  overflow: hidden;
+  margin-bottom: 16px;
+  aspect-ratio: 16 / 11;
+}
+
 .compare-dorm-image {
   width: 100%;
-  aspect-ratio: 16 / 10;
+  height: 100%;
   object-fit: cover;
-  border-radius: 8px;
-  margin-bottom: 12px;
+  display: block;
+}
+
+.compare-dorm-image-overlay {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 65%;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.85) 0%, rgba(0, 0, 0, 0) 100%);
+  pointer-events: none;
+}
+
+.compare-dorm-title-wrap {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 16px;
+  text-align: left;
 }
 
 .compare-dorm-header h2 {
-  font-size: 1.1rem;
+  font-size: 1.25rem;
   font-weight: 700;
-  margin: 0 0 4px 0;
-  color: #1a1a1a;
+  margin: 0;
+  color: white;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.6);
+  line-height: 1.2;
+  border-bottom: none !important;
+  text-decoration: none !important;
 }
 
 .compare-uni-name {
   font-size: 0.85rem;
-  color: #777;
-  margin: 0 0 12px 0;
+  color: #e0e0e0;
+  margin: 0;
+  font-weight: 500;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.6);
 }
 
 .compare-stat-pills {
   display: flex;
-  gap: 6px;
-  justify-content: center;
-  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-around;
+  padding: 12px 4px 8px;
 }
 
-.compare-pill {
+.compare-pill-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.compare-pill-value {
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: #1a1a1a;
+  display: flex;
+  align-items: center;
+}
+
+.compare-pill-label {
   font-size: 0.72rem;
   font-weight: 600;
-  background: #f8f9fa;
-  padding: 4px 10px;
-  border-radius: 20px;
-  color: #555;
+  color: #777;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.compare-pill-divider {
+  width: 1px;
+  height: 28px;
+  background-color: #eee;
 }
 
 /* Rating Bars */
@@ -487,16 +627,6 @@
   overflow: hidden;
 }
 
-.compare-ai-card::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 3px;
-  background: linear-gradient(90deg, #D62828, #4a90d9);
-}
-
 .compare-ai-header {
   margin: 0 0 16px 0;
   font-size: 1.15rem;
@@ -515,9 +645,7 @@
   font-size: 1.05rem;
   font-weight: 700;
   color: #1a1a1a;
-  margin: 24px 0 10px 0;
-  padding-bottom: 6px;
-  border-bottom: 1px solid #f0f0f0;
+  margin: 24px 0 6px 0;
 }
 
 .compare-ai-text h2:first-child {
@@ -528,9 +656,7 @@
   font-size: 1rem;
   font-weight: 700;
   color: #1a1a1a;
-  margin: 20px 0 8px 0;
-  padding-bottom: 4px;
-  border-bottom: 1px solid #f0f0f0;
+  margin: 20px 0 4px 0;
 }
 
 .compare-ai-text h3:first-child {

@@ -1,5 +1,5 @@
 .compare-info-card {
-  background: #f8f9fa;
+  background: #ffffff;
   border-radius: var(--radius-md, 12px);
   padding: 24px;
   display: flex;
@@ -14,6 +14,8 @@
   color: var(--color-text-primary, #1a1a1a);
   margin: 0 0 12px 0;
   line-height: 1.1;
+  border-bottom: none;
+  padding-bottom: 0;
 }
 
 .compare-info-card p {

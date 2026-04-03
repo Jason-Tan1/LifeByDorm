@@ -39,9 +39,7 @@ type ComparisonResult = {
   comparison: string | null;
 };
 
-function SkeletonBlock({ width, height }: { width?: string; height?: string }) {
-  return <div className="skeleton-pulse" style={{ width: width || '100%', height: height || '16px', borderRadius: '6px' }} />;
-}
+
 
 interface CompareModalProps {
   isOpen: boolean;
@@ -53,6 +51,7 @@ interface CompareModalProps {
 function CompareModal({ isOpen, onClose, initialUni1, initialDorm1 }: CompareModalProps) {
   const { universities } = useUniversityData();
   const resultsRef = useRef<HTMLDivElement>(null);
+  const modalRef = useRef<HTMLDivElement>(null);
 
   const [uni1, setUni1] = useState(initialUni1 || '');
   const [dorm1, setDorm1] = useState(initialDorm1 || '');
@@ -61,6 +60,42 @@ function CompareModal({ isOpen, onClose, initialUni1, initialDorm1 }: CompareMod
 
   const [dorms1, setDorms1] = useState<DormOption[]>([]);
   const [dorms2, setDorms2] = useState<DormOption[]>([]);
+
+  const [isDorm1Open, setIsDorm1Open] = useState(false);
+  const [isDorm2Open, setIsDorm2Open] = useState(false);
+  const dorm1Ref = useRef<HTMLDivElement>(null);
+  const dorm2Ref = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (dorm1Ref.current && !dorm1Ref.current.contains(event.target as Node)) {
+        setIsDorm1Open(false);
+      }
+      if (dorm2Ref.current && !dorm2Ref.current.contains(event.target as Node)) {
+        setIsDorm2Open(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
+  // Close modal on Escape key
+  useEffect(() => {
+    if (!isOpen) return;
+    const handler = (e: KeyboardEvent) => { if (e.key === 'Escape') onClose(); };
+    document.addEventListener('keydown', handler);
+    return () => document.removeEventListener('keydown', handler);
+  }, [isOpen, onClose]);
+
+  // Prevent background scrolling while modal is open
+  useEffect(() => {
+    if (!isOpen) return;
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    return () => { document.body.style.overflow = prev; };
+  }, [isOpen]);
 
   const [result, setResult] = useState<ComparisonResult | null>(null);
   const [loading, setLoading] = useState(false);
@@ -79,25 +114,40 @@ function CompareModal({ isOpen, onClose, initialUni1, initialDorm1 }: CompareMod
       setCollapsed(false);
       setBarsAnimated(false);
       setError(null);
+      if (modalRef.current) {
+        modalRef.current.scrollTop = 0;
+      }
     }
   }, [isOpen, initialUni1, initialDorm1]);
 
-  const fetchDorms = useCallback(async (uniSlug: string, setter: (d: DormOption[]) => void) => {
+  const fetchDorms = useCallback(async (uniSlug: string, setter: (d: DormOption[]) => void, signal?: AbortSignal) => {
     if (!uniSlug) { setter([]); return; }
     try {
-      const res = await fetch(`${API_BASE}/api/universities/${uniSlug}/dorms-stats`);
+      const res = await fetch(`${API_BASE}/api/universities/${uniSlug}/dorms-stats`, { signal });
       if (res.ok) {
         const data = await res.json();
         setter(Array.isArray(data) ? data : data.dorms || []);
       } else {
-        const res2 = await fetch(`${API_BASE}/api/universities/${uniSlug}/dorms`);
+        const res2 = await fetch(`${API_BASE}/api/universities/${uniSlug}/dorms`, { signal });
         if (res2.ok) setter(await res2.json());
       }
-    } catch { setter([]); }
+    } catch (err) {
+      if (err instanceof DOMException && err.name === 'AbortError') return;
+      setter([]);
+    }
   }, []);
 
-  useEffect(() => { fetchDorms(uni1, setDorms1); }, [uni1, fetchDorms]);
-  useEffect(() => { fetchDorms(uni2, setDorms2); }, [uni2, fetchDorms]);
+  useEffect(() => {
+    const controller = new AbortController();
+    fetchDorms(uni1, setDorms1, controller.signal);
+    return () => controller.abort();
+  }, [uni1, fetchDorms]);
+
+  useEffect(() => {
+    const controller = new AbortController();
+    fetchDorms(uni2, setDorms2, controller.signal);
+    return () => controller.abort();
+  }, [uni2, fetchDorms]);
 
   const selectedDorm1 = dorms1.find(d => d.slug === dorm1);
   const selectedDorm2 = dorms2.find(d => d.slug === dorm2);
@@ -109,11 +159,14 @@ function CompareModal({ isOpen, onClose, initialUni1, initialDorm1 }: CompareMod
     setError(null);
     setResult(null);
     setBarsAnimated(false);
+    
+    if (modalRef.current) {
+      modalRef.current.scrollTop = 0;
+    }
 
     try {
-      const res = await fetch(
-        `${API_BASE}/api/compare?dorm1=${dorm1}&uni1=${uni1}&dorm2=${dorm2}&uni2=${uni2}`
-      );
+      const params = new URLSearchParams({ dorm1, uni1, dorm2, uni2 });
+      const res = await fetch(`${API_BASE}/api/compare?${params}`);
       const data = await res.json();
       if (!res.ok) {
         setError(data.message || 'Failed to compare dorms');
@@ -139,6 +192,9 @@ function CompareModal({ isOpen, onClose, initialUni1, initialDorm1 }: CompareMod
     setResult(null);
     setError(null);
     setBarsAnimated(false);
+    if (modalRef.current) {
+      modalRef.current.scrollTop = 0;
+    }
   };
 
   const canCompare = dorm1 && uni1 && dorm2 && uni2 && !(uni1 === uni2 && dorm1 === dorm2);
@@ -169,46 +225,9 @@ function CompareModal({ isOpen, onClose, initialUni1, initialDorm1 }: CompareMod
   };
 
   const renderSkeleton = () => (
-    <div className="compare-results" ref={resultsRef}>
-      <div className="compare-headers">
-        <div className="compare-dorm-header dorm-left">
-          <SkeletonBlock height="140px" />
-          <div style={{ marginTop: 12 }}><SkeletonBlock width="70%" height="20px" /></div>
-          <div style={{ marginTop: 8 }}><SkeletonBlock width="50%" height="14px" /></div>
-          <div style={{ marginTop: 12, display: 'flex', gap: 6, justifyContent: 'center' }}>
-            <SkeletonBlock width="50px" height="24px" />
-            <SkeletonBlock width="70px" height="24px" />
-            <SkeletonBlock width="90px" height="24px" />
-          </div>
-        </div>
-        <div className="compare-dorm-header dorm-right">
-          <SkeletonBlock height="140px" />
-          <div style={{ marginTop: 12 }}><SkeletonBlock width="70%" height="20px" /></div>
-          <div style={{ marginTop: 8 }}><SkeletonBlock width="50%" height="14px" /></div>
-          <div style={{ marginTop: 12, display: 'flex', gap: 6, justifyContent: 'center' }}>
-            <SkeletonBlock width="50px" height="24px" />
-            <SkeletonBlock width="70px" height="24px" />
-            <SkeletonBlock width="90px" height="24px" />
-          </div>
-        </div>
-      </div>
-
-      <div className="compare-ratings-section">
-        {[1, 2, 3, 4, 5].map(i => (
-          <div key={i} style={{ marginBottom: 14 }}><SkeletonBlock height="14px" /></div>
-        ))}
-      </div>
-
-      <div className="compare-ai-card">
-        <SkeletonBlock width="40%" height="20px" />
-        <div style={{ marginTop: 16 }}>
-          <SkeletonBlock height="14px" />
-          <div style={{ marginTop: 8 }}><SkeletonBlock height="14px" /></div>
-          <div style={{ marginTop: 8 }}><SkeletonBlock width="80%" height="14px" /></div>
-          <div style={{ marginTop: 8 }}><SkeletonBlock height="14px" /></div>
-          <div style={{ marginTop: 8 }}><SkeletonBlock width="60%" height="14px" /></div>
-        </div>
-      </div>
+    <div className="compare-results" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '60px 0' }} ref={resultsRef}>
+      <div className="compare-circle-spinner" />
+      <p style={{ marginTop: 24, fontSize: '1.05rem', color: '#666', fontWeight: 600 }}>Analyzing and Comparing Dorms...</p>
     </div>
   );
 
@@ -216,31 +235,20 @@ function CompareModal({ isOpen, onClose, initialUni1, initialDorm1 }: CompareMod
 
   return (
     <div className="compare-modal-overlay" onClick={onClose}>
-      <div className="compare-modal-container" onClick={(e) => e.stopPropagation()}>
+      <div className="compare-modal-container" ref={modalRef} onClick={(e) => e.stopPropagation()} role="dialog" aria-modal="true" aria-labelledby="compare-modal-title">
         <button className="compare-modal-close" onClick={onClose} aria-label="Close">
           &times;
         </button>
-
-        {/* Collapsed top bar showing selections */}
-        {collapsed && (
-          <div className="compare-collapsed-bar">
-            <div className="compare-collapsed-info">
-              <span className="collapsed-dorm-name">{selectedDorm1?.name || dorm1}</span>
-              <span className="collapsed-vs">vs</span>
-              <span className="collapsed-dorm-name">{selectedDorm2?.name || dorm2}</span>
-            </div>
-            <button className="compare-change-btn" onClick={handleNewComparison}>
-              Change
-            </button>
-          </div>
-        )}
 
         {/* Full selection area — hidden when collapsed */}
         {!collapsed && (
           <>
             <div className="compare-hero">
-              <h1 className="compare-title">Compare Dorms</h1>
+              <h1 className="compare-title" id="compare-modal-title">Compare Dorms</h1>
               <p className="compare-subtitle">Select another dorm at {uniName(initialUni1 || '')} to see a side-by-side breakdown</p>
+              <p className="compare-disclaimer" style={{ fontSize: '0.85rem', color: '#888', marginTop: '8px', fontWeight: 500 }}>
+                * Note: Only dorms with 5 or more reviews can be compared
+              </p>
             </div>
 
             <div className="compare-selection-area">
@@ -249,13 +257,23 @@ function CompareModal({ isOpen, onClose, initialUni1, initialDorm1 }: CompareMod
                   {selectedDorm1 && (
                     <img src={selectedDorm1.imageUrl || DefaultDorm} alt={selectedDorm1.name} className="compare-preview-image" />
                   )}
-                  <div className="compare-select-fields">
-                    <select value={dorm1} onChange={e => setDorm1(e.target.value)}>
-                      <option value="">Select dorm...</option>
-                      {dorms1.map(d => (
-                        <option key={d.slug} value={d.slug}>{d.name}</option>
-                      ))}
-                    </select>
+                  <div className="compare-custom-dropdown" ref={dorm1Ref}>
+                    <button
+                      className="compare-dropdown-button"
+                      onClick={() => setIsDorm1Open(!isDorm1Open)}
+                    >
+                      {selectedDorm1 ? selectedDorm1.name : 'Select dorm...'}
+                    </button>
+                    {isDorm1Open && (
+                      <div className="compare-dropdown-menu">
+                        <button onClick={() => { setDorm1(''); setIsDorm1Open(false); }}>Select dorm...</button>
+                        {dorms1.map(d => (
+                          <button key={d.slug} onClick={() => { setDorm1(d.slug); setIsDorm1Open(false); }}>
+                            {d.name}
+                          </button>
+                        ))}
+                      </div>
+                    )}
                   </div>
                 </div>
               </div>
@@ -267,13 +285,23 @@ function CompareModal({ isOpen, onClose, initialUni1, initialDorm1 }: CompareMod
                   {selectedDorm2 && (
                     <img src={selectedDorm2.imageUrl || DefaultDorm} alt={selectedDorm2.name} className="compare-preview-image" />
                   )}
-                  <div className="compare-select-fields">
-                    <select value={dorm2} onChange={e => setDorm2(e.target.value)}>
-                      <option value="">Select dorm...</option>
-                      {dorms2.map(d => (
-                        <option key={d.slug} value={d.slug}>{d.name}</option>
-                      ))}
-                    </select>
+                  <div className="compare-custom-dropdown" ref={dorm2Ref}>
+                    <button
+                      className="compare-dropdown-button"
+                      onClick={() => setIsDorm2Open(!isDorm2Open)}
+                    >
+                      {selectedDorm2 ? selectedDorm2.name : 'Select dorm...'}
+                    </button>
+                    {isDorm2Open && (
+                      <div className="compare-dropdown-menu">
+                        <button onClick={() => { setDorm2(''); setIsDorm2Open(false); }}>Select dorm...</button>
+                        {dorms2.map(d => (
+                          <button key={d.slug} onClick={() => { setDorm2(d.slug); setIsDorm2Open(false); }}>
+                            {d.name}
+                          </button>
+                        ))}
+                      </div>
+                    )}
                   </div>
                 </div>
               </div>
@@ -297,26 +325,63 @@ function CompareModal({ isOpen, onClose, initialUni1, initialDorm1 }: CompareMod
         {/* Actual results */}
         {result && !loading && (
           <div className="compare-results compare-results-animated" ref={resultsRef}>
+            <div style={{ display: 'flex', justifyContent: 'flex-start', marginBottom: '24px' }}>
+              <button className="compare-change-btn" onClick={handleNewComparison}>
+                &larr; Change
+              </button>
+            </div>
             <div className="compare-headers">
               <div className="compare-dorm-header dorm-left">
-                <img src={result.dorm1.imageUrl || DefaultDorm} alt={result.dorm1.name} className="compare-dorm-image" />
-                <h2>{result.dorm1.name}</h2>
-                <p className="compare-uni-name">{uniName(result.dorm1.universitySlug)}</p>
+                <div className="compare-dorm-image-container">
+                  <img src={result.dorm1.imageUrl || DefaultDorm} alt={result.dorm1.name} className="compare-dorm-image" />
+                  <div className="compare-dorm-image-overlay" />
+                  <div className="compare-dorm-title-wrap">
+                    <h2>{result.dorm1.name}</h2>
+                    <p className="compare-uni-name">{uniName(result.dorm1.universitySlug)}</p>
+                  </div>
+                </div>
                 <div className="compare-stat-pills">
-                  <span className="compare-pill">{result.dorm1.avgOverall.toFixed(1)}/5</span>
-                  <span className="compare-pill">{result.dorm1.reviewCount} reviews</span>
-                  <span className="compare-pill">{result.dorm1.wouldDormAgainPct}% would return</span>
+                  <div className="compare-pill-item">
+                    <span className="compare-pill-value">{result.dorm1.avgOverall.toFixed(1)}</span>
+                    <span className="compare-pill-label">Rating</span>
+                  </div>
+                  <div className="compare-pill-divider" />
+                  <div className="compare-pill-item">
+                    <span className="compare-pill-value">{result.dorm1.reviewCount}</span>
+                    <span className="compare-pill-label">Reviews</span>
+                  </div>
+                  <div className="compare-pill-divider" />
+                  <div className="compare-pill-item">
+                    <span className="compare-pill-value">{result.dorm1.wouldDormAgainPct}%</span>
+                    <span className="compare-pill-label">Would Return</span>
+                  </div>
                 </div>
               </div>
 
               <div className="compare-dorm-header dorm-right">
-                <img src={result.dorm2.imageUrl || DefaultDorm} alt={result.dorm2.name} className="compare-dorm-image" />
-                <h2>{result.dorm2.name}</h2>
-                <p className="compare-uni-name">{uniName(result.dorm2.universitySlug)}</p>
+                <div className="compare-dorm-image-container">
+                  <img src={result.dorm2.imageUrl || DefaultDorm} alt={result.dorm2.name} className="compare-dorm-image" />
+                  <div className="compare-dorm-image-overlay" />
+                  <div className="compare-dorm-title-wrap">
+                    <h2>{result.dorm2.name}</h2>
+                    <p className="compare-uni-name">{uniName(result.dorm2.universitySlug)}</p>
+                  </div>
+                </div>
                 <div className="compare-stat-pills">
-                  <span className="compare-pill">{result.dorm2.avgOverall.toFixed(1)}/5</span>
-                  <span className="compare-pill">{result.dorm2.reviewCount} reviews</span>
-                  <span className="compare-pill">{result.dorm2.wouldDormAgainPct}% would return</span>
+                  <div className="compare-pill-item">
+                    <span className="compare-pill-value">{result.dorm2.avgOverall.toFixed(1)}</span>
+                    <span className="compare-pill-label">Rating</span>
+                  </div>
+                  <div className="compare-pill-divider" />
+                  <div className="compare-pill-item">
+                    <span className="compare-pill-value">{result.dorm2.reviewCount}</span>
+                    <span className="compare-pill-label">Reviews</span>
+                  </div>
+                  <div className="compare-pill-divider" />
+                  <div className="compare-pill-item">
+                    <span className="compare-pill-value">{result.dorm2.wouldDormAgainPct}%</span>
+                    <span className="compare-pill-label">Would Return</span>
+                  </div>
                 </div>
               </div>
             </div>
