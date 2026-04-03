@@ -12,6 +12,7 @@ import DefaultDorm from '../../assets/Default_Dorm.webp';
 import GiveawayBanner from './GiveawayBanner';
 import UniversityBanner from './UniversityBanner';
 import InfoSection from './InfoSection';
+import AdUnit from '../../components/AdUnit';
 import RecentReviewsSection, { type RecentVerifiedReview } from './RecentReviewsSection';
 import { useSEO } from '../../hooks/useSEO';
 
@@ -386,6 +387,8 @@ function Home() {
             </div>
           </div>
         </div>
+
+        <AdUnit adSlot="6590802616" />
 
         {/* LifeByDorm Info Section Banner */}
         <InfoSection />

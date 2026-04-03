@@ -218,6 +218,15 @@ const readOnlyLimiter = rateLimit({
   legacyHeaders: false,
 });
 
+// Stricter limit for AI-powered compare endpoint (each request triggers a Groq API call)
+const compareLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 30, // 30 comparisons per 15 min per IP
+  message: { message: 'Too many comparison requests, please try again later' },
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+
 // Simple in-memory cache for expensive aggregations
 interface CacheEntry<T> {
   data: T;
@@ -225,6 +234,10 @@ interface CacheEntry<T> {
 }
 const cache: Map<string, CacheEntry<any>> = new Map();
 const CACHE_TTL = 5 * 60 * 1000; // 5 minutes cache TTL
+
+// Separate cache for AI comparisons (longer TTL since they're expensive)
+const compareCache: Map<string, CacheEntry<any>> = new Map();
+const COMPARE_CACHE_TTL = 30 * 60 * 1000; // 30 minutes
 
 app.get('/', (req: Request, res: Response) => {
   // In production, only return a minimal response to avoid leaking server info
@@ -1334,13 +1347,22 @@ app.get('/api/universities/:slug/dorms/:dormSlug', readOnlyLimiter, async (req: 
 });
 
 // Compare two dorms with AI analysis
-app.get('/api/compare', readOnlyLimiter, async (req: Request, res: Response) => {
+app.get('/api/compare', compareLimiter, async (req: Request, res: Response) => {
   try {
     let dorm1: string, uni1: string, dorm2: string, uni2: string;
     try {
       ({ dorm1, uni1, dorm2, uni2 } = compareQuerySchema.parse(req.query));
     } catch (err) {
       return res.status(400).json({ message: 'Invalid or missing query params: dorm1, uni1, dorm2, uni2' });
+    }
+
+    // Check compare cache (sorted key so A-vs-B and B-vs-A share a cache entry)
+    const pairKey = [`${dorm1}@${uni1}`, `${dorm2}@${uni2}`].sort().join('::');
+    const compareCacheKey = `compare-${pairKey}`;
+    const cachedCompare = compareCache.get(compareCacheKey);
+    if (cachedCompare && Date.now() - cachedCompare.timestamp < COMPARE_CACHE_TTL) {
+      res.set('Cache-Control', 'public, max-age=300, s-maxage=600, stale-while-revalidate=60');
+      return res.json(cachedCompare.data);
     }
 
     // Fetch both dorms and their reviews in parallel
@@ -1464,7 +1486,7 @@ Compare these two dorms using the exact format specified.`
       }
     }
 
-    res.json({
+    const responseData = {
       dorm1: {
         name: d1.name, slug: d1.slug, universitySlug: d1.universitySlug,
         imageUrl: d1.imageUrl, amenities: d1.amenities || [], roomTypes: d1.roomTypes || [],
@@ -1476,7 +1498,13 @@ Compare these two dorms using the exact format specified.`
         ...stats2,
       },
       comparison,
-    });
+    };
+
+    // Cache the result so repeated comparisons don't re-call Groq
+    compareCache.set(compareCacheKey, { data: responseData, timestamp: Date.now() });
+
+    res.set('Cache-Control', 'public, max-age=300, s-maxage=600, stale-while-revalidate=60');
+    res.json(responseData);
   } catch (err) {
     console.error('Error comparing dorms:', err);
     res.status(500).json({ message: 'Error comparing dorms' });
