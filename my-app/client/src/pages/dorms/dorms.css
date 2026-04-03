@@ -25,6 +25,12 @@
   box-shadow: none;
   height: fit-content;
   align-self: start;
+
+  /* Overrides for CompareCard to match other dorm info cards */
+  --compare-card-bg: #f8f9fa;
+  --compare-card-padding: 28px;
+  --compare-card-border: none;
+  --compare-card-shadow: none;
 }
 
 .dorm-main-image {
@@ -167,6 +173,8 @@
   padding: 28px;
   position: relative;
   overflow: hidden;
+  border: none;
+  box-shadow: none;
 }
 
 
@@ -233,6 +241,8 @@
   background: #f8f9fa;
   border-radius: 12px;
   padding: 24px;
+  border: none;
+  box-shadow: none;
 }
 
 /* Left side - Rating Distribution */
@@ -341,6 +351,7 @@
 .stars-display {
   display: flex;
   align-items: center;
+  justify-content: center;
   margin-top: 8px;
   color: #FFD700;
 }
@@ -474,6 +485,17 @@
 .leave-review-button:hover {
   background-color: #388e3c;
   transform: scale(1.02);
+}
+
+.empty-reviews-card {
+  opacity: 0.7;
+  pointer-events: none;
+  user-select: none;
+}
+
+.empty-reviews-card .rating-none {
+  background-color: #e0e0e0;
+  color: #757575;
 }
 
 .reviews-grid {

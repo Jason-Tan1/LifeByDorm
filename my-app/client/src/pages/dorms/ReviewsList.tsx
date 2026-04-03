@@ -73,7 +73,23 @@ function ReviewsList({
       {reviewsLoading ? (
         <p>{t('dorms.loading')}</p>
       ) : reviews.length === 0 ? (
-        <p>{t('dorms.noReviews')}</p>
+        <div className="reviews-grid">
+          <div className="review-card empty-reviews-card">
+            <div className="review-header">
+              <div className="review-overall-rating">
+                <span className="overall-rating-badge rating-none">
+                  <Star className="rating-star-icon" />
+                  -.-
+                </span>
+              </div>
+              <div className="review-metadata">
+              </div>
+            </div>
+            <div className="review-content">
+              <p className="review-description">{t('dorms.noReviews')}</p>
+            </div>
+          </div>
+        </div>
       ) : (
         <>
           <div className="reviews-grid">
