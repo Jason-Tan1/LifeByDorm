@@ -45,3 +45,5 @@ lerna-debug.log*
 
 # Seed Admin Data
 admins.json
+
+.vercel
