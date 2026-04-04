@@ -335,6 +335,8 @@ function normalizeAnalyticsDays(input: unknown, fallback = 14): number {
 
 async function getGoogleAnalyticsStats(days: number): Promise<GoogleAnalyticsStats> {
   const propertyId = (process.env.GA4_PROPERTY_ID || '').trim();
+  const gaServiceAccountEmail = (process.env.GA4_SERVICE_ACCOUNT_EMAIL || '').trim();
+  const gaServiceAccountPrivateKey = (process.env.GA4_SERVICE_ACCOUNT_PRIVATE_KEY || '').replace(/\\n/g, '\n').trim();
   const cacheKey = `ga4:${propertyId || 'missing-property'}:${days}`;
 
   const cached = gaCache.get(cacheKey);
@@ -362,9 +364,25 @@ async function getGoogleAnalyticsStats(days: number): Promise<GoogleAnalyticsSta
   }
 
   try {
-    const googleAuth = new GoogleAuth({
+    const authOptions: {
+      scopes: string[];
+      credentials?: {
+        client_email: string;
+        private_key: string;
+      };
+    } = {
       scopes: ['https://www.googleapis.com/auth/analytics.readonly']
-    });
+    };
+
+    // Prefer explicit env credentials in cloud runtimes when available.
+    if (gaServiceAccountEmail && gaServiceAccountPrivateKey) {
+      authOptions.credentials = {
+        client_email: gaServiceAccountEmail,
+        private_key: gaServiceAccountPrivateKey,
+      };
+    }
+
+    const googleAuth = new GoogleAuth(authOptions);
     const client = await googleAuth.getClient();
     const token = await client.getAccessToken();
     if (!token?.token) {
