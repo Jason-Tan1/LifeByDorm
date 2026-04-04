@@ -150,11 +150,11 @@ app.use(helmet({
   contentSecurityPolicy: isProduction ? {
     directives: {
       defaultSrc: ["'self'"],
-      scriptSrc: ["'self'", "'unsafe-inline'", "'unsafe-eval'", "https://accounts.google.com", "https://apis.google.com"],
+      scriptSrc: ["'self'", "'unsafe-inline'", "https://accounts.google.com", "https://apis.google.com", "https://www.googletagmanager.com"],
       styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
       imgSrc: ["'self'", "data:", "https:", "blob:"],
       fontSrc: ["'self'", "https://fonts.gstatic.com"],
-      connectSrc: ["'self'", process.env.FRONTEND_URL || '', "https://accounts.google.com", "https://www.googleapis.com"].filter(Boolean),
+      connectSrc: ["'self'", process.env.FRONTEND_URL || '', "https://accounts.google.com", "https://www.googleapis.com", "https://www.google-analytics.com"].filter(Boolean),
       frameSrc: ["https://accounts.google.com"],
       objectSrc: ["'none'"],
       upgradeInsecureRequests: [],
@@ -286,6 +286,7 @@ const CACHE_TTL = 5 * 60 * 1000; // 5 minutes cache TTL
 // Separate cache for AI comparisons (longer TTL since they're expensive)
 const compareCache: Map<string, CacheEntry<any>> = new Map();
 const COMPARE_CACHE_TTL = 30 * 60 * 1000; // 30 minutes
+const COMPARE_CACHE_VERSION = 'v2';
 const gaCache: Map<string, CacheEntry<GoogleAnalyticsStats>> = new Map();
 const GA_CACHE_TTL = 5 * 60 * 1000; // 5 minutes
 
@@ -1581,10 +1582,10 @@ app.get('/api/compare', compareLimiter, async (req: Request, res: Response) => {
 
     // Check compare cache (sorted key so A-vs-B and B-vs-A share a cache entry)
     const pairKey = [`${dorm1}@${uni1}`, `${dorm2}@${uni2}`].sort().join('::');
-    const compareCacheKey = `compare-${pairKey}`;
+    const compareCacheKey = `compare-${COMPARE_CACHE_VERSION}-${pairKey}`;
     const cachedCompare = compareCache.get(compareCacheKey);
     if (cachedCompare && Date.now() - cachedCompare.timestamp < COMPARE_CACHE_TTL) {
-      res.set('Cache-Control', 'public, max-age=300, s-maxage=600, stale-while-revalidate=60');
+      res.set('Cache-Control', 'no-store');
       return res.json(cachedCompare.data);
     }
 
@@ -1612,9 +1613,9 @@ app.get('/api/compare', compareLimiter, async (req: Request, res: Response) => {
       UserReview.find(reviewQuery(uni2, d2.name)).lean(),
     ]);
 
-    if (reviews1.length < 5 || reviews2.length < 5) {
+    if (reviews1.length < 3 || reviews2.length < 3) {
       return res.status(400).json({
-        message: 'Both dorms must have at least 5 approved reviews to compare',
+        message: 'Both dorms must have at least 3 approved reviews to compare',
         dorm1ReviewCount: reviews1.length,
         dorm2ReviewCount: reviews2.length,
       });
@@ -1726,7 +1727,7 @@ Compare these two dorms using the exact format specified.`
     // Cache the result so repeated comparisons don't re-call Groq
     compareCache.set(compareCacheKey, { data: responseData, timestamp: Date.now() });
 
-    res.set('Cache-Control', 'public, max-age=300, s-maxage=600, stale-while-revalidate=60');
+    res.set('Cache-Control', 'no-store');
     res.json(responseData);
   } catch (err) {
     console.error('Error comparing dorms:', err);
@@ -1877,7 +1878,7 @@ app.post('/api/reviews', submitLimiter, validate(reviewSchema), async (req: Requ
     if (authHeader && authHeader.startsWith('Bearer ')) {
       const token = authHeader.split(' ')[1];
       try {
-        const decoded = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET as Secret) as JwtPayload;
+        const decoded = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET as Secret, { algorithms: [JWT_ALGORITHM] }) as JwtPayload;
         userEmail = decoded.name || '';
         // Verified badge requires a recognized university email
         isVerified = userEmail ? await isAcademicEmail(userEmail) : false;
@@ -2663,9 +2664,11 @@ if (process.env.NODE_ENV === 'production' && process.env.VERCEL !== '1') {
 // Handle Uncaught Exceptions
 process.on('uncaughtException', (err) => {
   console.error('❌ Uncaught Exception:', err);
-  // Optional: Perform cleanup or exit
-  // process.exit(1); // Usually recommended to exit, but user wants to prevent crash "at anytime"
-  console.log('⚠️ Process kept alive after uncaught exception.');
+  if (isProduction) {
+    console.error('🚨 Exiting process after uncaught exception in production');
+    process.exit(1);
+  }
+  console.log('⚠️ Process kept alive after uncaught exception in development.');
 });
 
 // ========================================
@@ -2694,8 +2697,11 @@ app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
 // Handle Unhandled Rejections
 process.on('unhandledRejection', (reason, promise) => {
   console.error('❌ Unhandled Rejection at:', promise, 'reason:', reason);
-  // Optional: Perform cleanup or exit
-  console.log('⚠️ Process kept alive after unhandled rejection.');
+  if (isProduction) {
+    console.error('🚨 Exiting process after unhandled rejection in production');
+    process.exit(1);
+  }
+  console.log('⚠️ Process kept alive after unhandled rejection in development.');
 });
 
 // Start server if not running in Vercel or AWS Lambda

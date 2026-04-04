@@ -247,7 +247,7 @@ function CompareModal({ isOpen, onClose, initialUni1, initialDorm1 }: CompareMod
               <h1 className="compare-title" id="compare-modal-title">Compare Dorms</h1>
               <p className="compare-subtitle">Select another dorm at {uniName(initialUni1 || '')} to see a side-by-side breakdown</p>
               <p className="compare-disclaimer" style={{ fontSize: '0.85rem', color: '#888', marginTop: '8px', fontWeight: 500 }}>
-                * Note: Only dorms with 5 or more reviews can be compared
+                * Note: Only dorms with 3 or more reviews can be compared
               </p>
             </div>
 
@@ -268,7 +268,7 @@ function CompareModal({ isOpen, onClose, initialUni1, initialDorm1 }: CompareMod
                       <div className="compare-dropdown-menu">
                         <button onClick={() => { setDorm1(''); setIsDorm1Open(false); }}>Select dorm...</button>
                         {dorms1.map(d => {
-                          const eligible = (d.reviewCount ?? 0) >= 5;
+                          const eligible = (d.reviewCount ?? 0) >= 3;
                           return (
                             <button
                               key={d.slug}
@@ -307,7 +307,7 @@ function CompareModal({ isOpen, onClose, initialUni1, initialDorm1 }: CompareMod
                       <div className="compare-dropdown-menu">
                         <button onClick={() => { setDorm2(''); setIsDorm2Open(false); }}>Select dorm...</button>
                         {dorms2.map(d => {
-                          const eligible = (d.reviewCount ?? 0) >= 5;
+                          const eligible = (d.reviewCount ?? 0) >= 3;
                           return (
                             <button
                               key={d.slug}
