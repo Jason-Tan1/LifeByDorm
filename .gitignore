@@ -9,3 +9,6 @@ node_modules/
 .env*.local
 
 admins.json
+
+.vercel
+.env*.local
