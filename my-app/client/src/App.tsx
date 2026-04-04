@@ -3,6 +3,8 @@ import { lazy, Suspense } from 'react';
 import { UniversityDataProvider } from './context/UniversityDataContext';
 import PageLoader from './components/PageLoader';
 import ScrollToTop from './components/ScrollToTop';
+import CookieConsent from './components/CookieConsent';
+import GoogleOneTapPrompt from './components/GoogleOneTapPrompt';
 
 // Lazy load the Google OAuth provider so the SDK doesn't block first paint
 const LazyGoogleOAuthProvider = lazy(() => import('./components/LazyGoogleOAuthProvider'));
@@ -24,9 +26,6 @@ const PrivacyPolicy = lazy(() => import('./pages/legal/PrivacyPolicy.tsx'));
 const CookiePolicy = lazy(() => import('./pages/legal/CookiePolicy.tsx'));
 const ReviewGuidelines = lazy(() => import('./pages/legal/ReviewGuidelines.tsx'));
 const HelpCenter = lazy(() => import('./pages/legal/HelpCenter.tsx'));
-
-const CookieConsent = lazy(() => import('./components/CookieConsent'));
-const GoogleOneTapPrompt = lazy(() => import('./components/GoogleOneTapPrompt'));
 
 function App() {
   return (
