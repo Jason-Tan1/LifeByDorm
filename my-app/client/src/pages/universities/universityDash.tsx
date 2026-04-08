@@ -8,7 +8,7 @@ import HomeIcon from '@mui/icons-material/Home';
 import AddDorm from './AddDorm';
 import './universityDash.css';
 import '../home/searchbar.css';
-import { FaSearch } from 'react-icons/fa';
+import { FaSearch, FaInstagram } from 'react-icons/fa';
 import DefaultCampus from '../../assets/Default_Campus.webp';
 import DefaultDorm from '../../assets/Default_Dorm.webp';
 import PageLoader from '../../components/PageLoader';
@@ -16,6 +16,7 @@ import { useSEO } from '../../hooks/useSEO';
 import CompareModal from '../compare/CompareModal';
 import CompareCard from '../../components/CompareCard/CompareCard';
 import AdUnit from '../../components/AdUnit';
+import GetYorkedProfile from '../../assets/Get_Yorked.png';
 
 // Define types for University and Dorm data from API
 type APIUniversity = {
@@ -319,6 +320,31 @@ function UniversityDash() {
             title="Compare dorms"
             description="Select two dorms to see a side-by-side breakdown of ratings and reviews."
           />
+
+          {/* Specifically for York University - Get_Yorked Instagram Link */}
+          {university.slug === 'york-university' && (
+            <a
+              href="https://www.instagram.com/get_yorked/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="instagram-card"
+            >
+              <div className="instagram-card-content">
+                <img
+                  src={GetYorkedProfile}
+                  alt="Get_Yorked Profile Logo"
+                  className="instagram-profile-pic"
+                />
+                <div className="instagram-text">
+                  <div className="instagram-name-row">
+                    <h3>Get_Yorked</h3>
+                    <FaInstagram className="instagram-icon" />
+                  </div>
+                  <p>YorkU News & Entertainment</p>
+                </div>
+              </div>
+            </a>
+          )}
         </div>
 
         {/* Right side - Dorms List */}
