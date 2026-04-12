@@ -12,3 +12,5 @@ admins.json
 
 .vercel
 .env*.local
+
+CLAUDE.md
