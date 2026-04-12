@@ -130,7 +130,18 @@ function Dorms() {
             bestRating: '5',
             worstRating: '1',
             ratingCount: reviews.length.toString()
-          }
+          },
+          review: reviews.slice(0, 5).map((r: any) => ({
+            '@type': 'Review',
+            reviewRating: {
+              '@type': 'Rating',
+              ratingValue: ([r.room, r.bathroom, r.building, r.amenities, r.location].reduce((a: number, b: number) => a + b, 0) / 5).toFixed(1),
+              bestRating: '5',
+              worstRating: '1'
+            },
+            author: { '@type': 'Person', name: 'Student' },
+            reviewBody: r.description ? r.description.slice(0, 500) : ''
+          }))
         } : {})
       },
       {
@@ -152,7 +163,8 @@ function Dorms() {
       ? `${dormDisplayName} at ${uniDisplayName} has a ${avgRating.toFixed(1)}/5 rating from ${reviews.length} student reviews. See real photos and detailed ratings.`
       : `Read student reviews and see real photos of ${dormDisplayName} at ${uniDisplayName}. Get insights before you move in.`,
     canonicalPath: `/universities/${universityName}/dorms/${dormSlug}`,
-    jsonLd: dormJsonLd
+    jsonLd: dormJsonLd,
+    ogImage: dorm?.imageUrl || undefined
   });
 
   // Fetch reviews for this dorm

@@ -106,7 +106,8 @@ function UniversityDash() {
     title: `${uniDisplayName} Dorm Reviews & Residence Photos`,
     description: `Read real student reviews and see photos of dorms at ${uniDisplayName}. Compare ${dorms.length} residences to find your perfect campus home.`,
     canonicalPath: `/universities/${universityName}`,
-    jsonLd: universityJsonLd
+    jsonLd: universityJsonLd,
+    ogImage: university?.imageUrl || undefined
   });
 
   // Fetch university and dorm data when component mounts or universityName changes
