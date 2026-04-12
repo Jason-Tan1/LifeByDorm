@@ -11,7 +11,7 @@ import '../home/searchbar.css';
 import { FaSearch, FaInstagram } from 'react-icons/fa';
 import DefaultCampus from '../../assets/Default_Campus.webp';
 import DefaultDorm from '../../assets/Default_Dorm.webp';
-import PageLoader from '../../components/PageLoader';
+import { SkeletonGrid } from '../../components/SkeletonCard';
 import { useSEO } from '../../hooks/useSEO';
 import CompareModal from '../compare/CompareModal';
 import CompareCard from '../../components/CompareCard/CompareCard';
@@ -246,13 +246,8 @@ function UniversityDash() {
   //   return "★".repeat(fullStars) + (hasHalfStar ? "⯨" : "") + "☆".repeat(emptyStars);
   // };
 
-  // Main component render
-  if (loading) {
-    return <PageLoader />;
-  }
-
-  // Handle error state
-  if (error || !university) {
+  // Handle error state (only after loading completes)
+  if (!loading && (error || !university)) {
     return (
       <div className="university-dash">
         <NavBar />
@@ -263,11 +258,17 @@ function UniversityDash() {
     );
   }
 
-  // Render university dashboard
+  // Render university dashboard — show navbar + shell immediately, skeleton while data loads
   return (
     <div className="university-dash">
       <NavBar />
       <main className="university-content">
+        {loading ? (
+          <div style={{ width: '100%', padding: '20px' }}>
+            <SkeletonGrid count={6} />
+          </div>
+        ) : university && (
+          <>
         {/* Left side - University Information */}
         <div className="university-info">
           {/* Breadcrumbs */}
@@ -442,6 +443,8 @@ function UniversityDash() {
 
           <AdUnit adSlot="6505275777" />
         </div>
+          </>
+        )}
       </main>
       <Footer />
       <CompareModal

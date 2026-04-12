@@ -11,7 +11,7 @@ import LoginModal from '../nav/login';
 
 import CompareModal from '../compare/CompareModal.tsx';
 
-import PageLoader from '../../components/PageLoader';
+import { SkeletonGrid } from '../../components/SkeletonCard';
 import { useSEO } from '../../hooks/useSEO';
 
 //Define types for Dorm data from API (IMPORTANT)
@@ -335,11 +335,7 @@ function Dorms() {
     if (e.key === 'Escape') closeLightbox();
   };
 
-  if (loading) {
-    return <PageLoader />;
-  }
-
-  if (error || !dorm) {
+  if (!loading && (error || !dorm)) {
     return (
       <div className="dorm-page">
         <NavBar />
@@ -355,6 +351,14 @@ function Dorms() {
     <div className="dorm-page">
       <NavBar />
 
+      {loading ? (
+        <main className="dorm-content">
+          <div style={{ width: '100%', padding: '20px' }}>
+            <SkeletonGrid count={4} />
+          </div>
+        </main>
+      ) : dorm && (
+      <>
       {/* Success Toast */}
       {showSuccessToast && (
         <div className="success-toast">
@@ -428,9 +432,11 @@ function Dorms() {
       <CompareModal
         isOpen={isCompareModalOpen}
         onClose={() => setIsCompareModalOpen(false)}
-        initialUni1={dorm.universitySlug}
-        initialDorm1={dorm.slug}
+        initialUni1={dorm!.universitySlug}
+        initialDorm1={dorm!.slug}
       />
+      </>
+      )}
 
       <Footer />
     </div>
