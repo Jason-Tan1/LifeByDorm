@@ -11,7 +11,6 @@ import LoginModal from '../nav/login';
 
 import CompareModal from '../compare/CompareModal.tsx';
 
-import { SkeletonGrid } from '../../components/SkeletonCard';
 import { useSEO } from '../../hooks/useSEO';
 
 //Define types for Dorm data from API (IMPORTANT)
@@ -335,6 +334,7 @@ function Dorms() {
     if (e.key === 'Escape') closeLightbox();
   };
 
+  // If finished loading and there's an error or no dorm found, show error
   if (!loading && (error || !dorm)) {
     return (
       <div className="dorm-page">
@@ -347,18 +347,17 @@ function Dorms() {
     );
   }
 
+  // Build a display-ready dorm — uses real data when loaded, slug-based fallback while loading
+  const displayDorm: APIDorm = dorm || {
+    name: dormDisplayName || 'Loading...',
+    slug: dormSlug || '',
+    universitySlug: universityName || '',
+  };
+
   return (
     <div className="dorm-page">
       <NavBar />
 
-      {loading ? (
-        <main className="dorm-content">
-          <div style={{ width: '100%', padding: '20px' }}>
-            <SkeletonGrid count={4} />
-          </div>
-        </main>
-      ) : dorm && (
-      <>
       {/* Success Toast */}
       {showSuccessToast && (
         <div className="success-toast">
@@ -376,7 +375,7 @@ function Dorms() {
       <main className="dorm-content">
         {/* Left side - Dorm Information */}
         <DormInfo
-          dorm={dorm}
+          dorm={displayDorm}
           reviews={reviews}
           universityName={universityName}
           universityLocation={univLocation || undefined}
@@ -388,9 +387,9 @@ function Dorms() {
         {/* Right side - Review Listings */}
         <ReviewsList
           universityName={universityName}
-          dorm={dorm}
+          dorm={displayDorm}
           reviews={reviews}
-          reviewsLoading={reviewsLoading}
+          reviewsLoading={loading || reviewsLoading}
           visibleReviews={visibleReviews}
           visibleCount={visibleCount}
           reviewsPerLoad={reviewsPerLoad}
@@ -432,11 +431,9 @@ function Dorms() {
       <CompareModal
         isOpen={isCompareModalOpen}
         onClose={() => setIsCompareModalOpen(false)}
-        initialUni1={dorm!.universitySlug}
-        initialDorm1={dorm!.slug}
+        initialUni1={displayDorm.universitySlug}
+        initialDorm1={displayDorm.slug}
       />
-      </>
-      )}
 
       <Footer />
     </div>
