@@ -11,7 +11,6 @@ import LoginModal from '../nav/login';
 
 import CompareModal from '../compare/CompareModal.tsx';
 
-import PageLoader from '../../components/PageLoader';
 import { useSEO } from '../../hooks/useSEO';
 
 //Define types for Dorm data from API (IMPORTANT)
@@ -130,7 +129,18 @@ function Dorms() {
             bestRating: '5',
             worstRating: '1',
             ratingCount: reviews.length.toString()
-          }
+          },
+          review: reviews.slice(0, 5).map((r: any) => ({
+            '@type': 'Review',
+            reviewRating: {
+              '@type': 'Rating',
+              ratingValue: ([r.room, r.bathroom, r.building, r.amenities, r.location].reduce((a: number, b: number) => a + b, 0) / 5).toFixed(1),
+              bestRating: '5',
+              worstRating: '1'
+            },
+            author: { '@type': 'Person', name: 'Student' },
+            reviewBody: r.description ? r.description.slice(0, 500) : ''
+          }))
         } : {})
       },
       {
@@ -152,7 +162,8 @@ function Dorms() {
       ? `${dormDisplayName} at ${uniDisplayName} has a ${avgRating.toFixed(1)}/5 rating from ${reviews.length} student reviews. See real photos and detailed ratings.`
       : `Read student reviews and see real photos of ${dormDisplayName} at ${uniDisplayName}. Get insights before you move in.`,
     canonicalPath: `/universities/${universityName}/dorms/${dormSlug}`,
-    jsonLd: dormJsonLd
+    jsonLd: dormJsonLd,
+    ogImage: dorm?.imageUrl || undefined
   });
 
   // Fetch reviews for this dorm
@@ -323,11 +334,8 @@ function Dorms() {
     if (e.key === 'Escape') closeLightbox();
   };
 
-  if (loading) {
-    return <PageLoader />;
-  }
-
-  if (error || !dorm) {
+  // If finished loading and there's an error or no dorm found, show error
+  if (!loading && (error || !dorm)) {
     return (
       <div className="dorm-page">
         <NavBar />
@@ -338,6 +346,13 @@ function Dorms() {
       </div>
     );
   }
+
+  // Build a display-ready dorm — uses real data when loaded, slug-based fallback while loading
+  const displayDorm: APIDorm = dorm || {
+    name: dormDisplayName || 'Loading...',
+    slug: dormSlug || '',
+    universitySlug: universityName || '',
+  };
 
   return (
     <div className="dorm-page">
@@ -360,7 +375,7 @@ function Dorms() {
       <main className="dorm-content">
         {/* Left side - Dorm Information */}
         <DormInfo
-          dorm={dorm}
+          dorm={displayDorm}
           reviews={reviews}
           universityName={universityName}
           universityLocation={univLocation || undefined}
@@ -372,9 +387,9 @@ function Dorms() {
         {/* Right side - Review Listings */}
         <ReviewsList
           universityName={universityName}
-          dorm={dorm}
+          dorm={displayDorm}
           reviews={reviews}
-          reviewsLoading={reviewsLoading}
+          reviewsLoading={loading || reviewsLoading}
           visibleReviews={visibleReviews}
           visibleCount={visibleCount}
           reviewsPerLoad={reviewsPerLoad}
@@ -416,8 +431,8 @@ function Dorms() {
       <CompareModal
         isOpen={isCompareModalOpen}
         onClose={() => setIsCompareModalOpen(false)}
-        initialUni1={dorm.universitySlug}
-        initialDorm1={dorm.slug}
+        initialUni1={displayDorm.universitySlug}
+        initialDorm1={displayDorm.slug}
       />
 
       <Footer />

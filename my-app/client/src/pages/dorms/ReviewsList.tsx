@@ -1,7 +1,8 @@
 import Star from '@mui/icons-material/Star';
 import { useTranslation } from 'react-i18next';
 import AdUnit from '../../components/AdUnit';
-
+import LBDLogo from '../../assets/LBDLogo.webp';
+import '../../components/PageLoader.css';
 const UpArrowIcon = ({ active }: { active: boolean }) => (
   <svg width="24" height="24" viewBox="0 0 24 24" fill={active ? "currentColor" : "none"} stroke="currentColor" strokeWidth="2" strokeLinejoin="round">
     <path d="M12 4 L4 12 h5 v8 h6 v-8 h5 Z" />
@@ -72,7 +73,14 @@ function ReviewsList({
   return (
     <div className="reviews-list">
       {reviewsLoading ? (
-        <p>{t('dorms.loading')}</p>
+        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', width: '100%', minHeight: '300px' }}>
+          <div className="loader-content">
+            <div className="logo-pulse">
+              <img src={LBDLogo} alt="" className="loader-logo" />
+            </div>
+            <div className="loader-spinner" />
+          </div>
+        </div>
       ) : reviews.length === 0 ? (
         <div className="reviews-grid">
           <div className="review-card empty-reviews-card">

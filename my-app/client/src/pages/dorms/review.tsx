@@ -10,6 +10,7 @@ import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import DefaultDormImage from '../../assets/Default_Dorm.webp';
 import { compressImage } from '../../utils/imageUtils';
 import LoginModal from '../nav/login';
+import { useSEO } from '../../hooks/useSEO';
 
 // Use relative path '' on localhost to leverage the Vite proxy
 const isLocal = typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1');
@@ -18,6 +19,7 @@ const API_BASE = isLocal ? '' : ((import.meta as any).env?.VITE_API_BASE || '');
 function Reviews() {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  useSEO({ title: 'Submit a Review', noIndex: true });
   const [ratings, setRatings] = useState({
     room: 0,
     bathrooms: 0,

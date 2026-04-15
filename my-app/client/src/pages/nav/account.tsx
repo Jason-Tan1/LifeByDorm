@@ -5,6 +5,7 @@ import Footer from '../home/footer.tsx';
 import Star from '@mui/icons-material/Star';
 import EditReviewModal from './EditReviewModal.tsx';
 import './account.css';
+import { useSEO } from '../../hooks/useSEO';
 
 // Use relative path '' on localhost to leverage the Vite proxy
 const isLocal = typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1');
@@ -31,6 +32,7 @@ interface Review {
 
 function Account() {
   const navigate = useNavigate();
+  useSEO({ title: 'My Account', noIndex: true });
   const [userEmail, setUserEmail] = useState<string>('');
   const [reviews, setReviews] = useState<Review[]>([]);
   const [loading, setLoading] = useState(true);

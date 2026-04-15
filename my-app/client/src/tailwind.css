@@ -11,8 +11,8 @@
 /* Google AdSense ad container */
 .ad-unit-container {
   width: 100%;
-  max-width: 728px;
-  margin: 24px auto;
+  max-width: 100%;
+  margin: 16px auto;
   text-align: center;
   overflow: hidden;
 }

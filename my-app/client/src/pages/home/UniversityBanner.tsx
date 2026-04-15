@@ -18,9 +18,9 @@ const universities = [
   { name: "University of Guelph", url: "https://www.uniscope.ca/_next/image?url=%2Flogos%2Fguelph-crest.webp&w=256&q=75", isHorizontal: false }
 ];
 
-// Combine the array with itself a few times to ensure seamless infinite scrolling
-// (needs enough items to fill the screen + overflow)
-const extendedUniversities = [...universities, ...universities, ...universities, ...universities];
+// Only duplicate twice instead of 4x — still enough for seamless scrolling,
+// but halves the number of external image requests (20 instead of 40)
+const extendedUniversities = [...universities, ...universities];
 
 const UniversityBanner: React.FC = () => {
   const trackRef = useRef<HTMLDivElement>(null);
@@ -32,7 +32,7 @@ const UniversityBanner: React.FC = () => {
     const animation = trackRef.current.animate(
       [
         { transform: 'translateX(0)' },
-        { transform: 'translateX(-25%)' }
+        { transform: 'translateX(-50%)' }
       ],
       {
         duration: 60000, // 60s

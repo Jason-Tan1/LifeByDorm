@@ -6,7 +6,7 @@ import './allUniversities.css';
 import '../legal/legal.css';
 import '../nav/contactme.css';
 import { useUniversityData } from '../../context/UniversityDataContext';
-import PageLoader from '../../components/PageLoader';
+import { SkeletonGrid } from '../../components/SkeletonCard';
 import { useSEO } from '../../hooks/useSEO';
 
 function AllUniversities() {
@@ -20,8 +20,6 @@ function AllUniversities() {
     canonicalPath: '/universities'
   });
 
-  if (loading) return <PageLoader />;
-
   return (
     <div className="all-universities-page legal-page-wrapper">
       <NavBar />
@@ -30,11 +28,13 @@ function AllUniversities() {
         <h1 className="legal-page-title">{t('universityList.title')}</h1>
         <div className="legal-section">
           <h2>
-            {t('universityList.allUniversities')} ({universities.length})
+            {loading ? t('universityList.allUniversities') : `${t('universityList.allUniversities')} (${universities.length})`}
           </h2>
         </div>
         {error && <p>Error: {error}</p>}
-        {!loading && !error && (
+        {loading ? (
+          <SkeletonGrid count={12} showRating={false} />
+        ) : (
           <ul className="university-list">
             {universities.map((uni) => (
               <li key={uni.slug}>

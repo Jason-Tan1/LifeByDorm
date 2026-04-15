@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback, useRef, useMemo } from 'react';
+import { useEffect, useState, useCallback, useRef, useMemo, lazy, Suspense } from 'react';
 import { useTranslation } from 'react-i18next';
 import './home.css';
 
@@ -11,10 +11,15 @@ import DefaultCampus from '../../assets/Default_Campus.webp';
 import DefaultDorm from '../../assets/Default_Dorm.webp';
 import GiveawayBanner from './GiveawayBanner';
 import UniversityBanner from './UniversityBanner';
-import InfoSection from './InfoSection';
-import AdUnit from '../../components/AdUnit';
-import RecentReviewsSection, { type RecentVerifiedReview } from './RecentReviewsSection';
 import { useSEO } from '../../hooks/useSEO';
+
+// Import type directly (not lazy — types are compile-time only, zero runtime cost)
+import type { RecentVerifiedReview } from './RecentReviewsSection';
+
+// Lazy load below-the-fold sections
+const InfoSection = lazy(() => import('./InfoSection'));
+const AdUnit = lazy(() => import('../../components/AdUnit'));
+const RecentReviewsSection = lazy(() => import('./RecentReviewsSection'));
 
 // Use relative path '' on localhost to leverage the Vite proxy
 const isLocal = typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1');
@@ -290,7 +295,7 @@ function Home() {
         </div>
 
         {/* Most Rated Dorms Section */}
-        <div className="featured-container" style={{ marginTop: '40px' }}>
+        <div className="featured-container" style={{ marginTop: '30px' }}>
           <div className="featured-header">
             <h2 className="featured-title">{t('home.mostRatedDorms')}</h2>
             <div className="slider-controls">
@@ -388,15 +393,23 @@ function Home() {
           </div>
         </div>
 
-        <AdUnit adSlot="6590802616" />
+        <div className="featured-container" style={{ padding: '0 clamp(8px, 2vw, 20px)', marginTop: '20px', marginBottom: '20px', boxSizing: 'border-box' }}>
+          <Suspense fallback={null}>
+            <AdUnit adSlot="6590802616" />
+          </Suspense>
+        </div>
 
         {/* LifeByDorm Info Section Banner */}
-        <InfoSection />
+        <Suspense fallback={null}>
+          <InfoSection />
+        </Suspense>
 
-        <RecentReviewsSection
-          isLoading={isLoading}
-          recentVerifiedReviews={recentVerifiedReviews}
-        />
+        <Suspense fallback={<SkeletonSlider count={4} />}>
+          <RecentReviewsSection
+            isLoading={isLoading}
+            recentVerifiedReviews={recentVerifiedReviews}
+          />
+        </Suspense>
 
       </main>
 

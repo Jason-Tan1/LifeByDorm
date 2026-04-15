@@ -3,8 +3,10 @@ import { lazy, Suspense } from 'react';
 import { UniversityDataProvider } from './context/UniversityDataContext';
 import PageLoader from './components/PageLoader';
 import ScrollToTop from './components/ScrollToTop';
-import CookieConsent from './components/CookieConsent';
-import GoogleOneTapPrompt from './components/GoogleOneTapPrompt';
+
+// Lazy load non-critical shell components — they don't affect first paint
+const CookieConsent = lazy(() => import('./components/CookieConsent'));
+const GoogleOneTapPrompt = lazy(() => import('./components/GoogleOneTapPrompt'));
 
 // Lazy load the Google OAuth provider so the SDK doesn't block first paint
 const LazyGoogleOAuthProvider = lazy(() => import('./components/LazyGoogleOAuthProvider'));
@@ -57,8 +59,10 @@ function App() {
               </Routes>
             </Suspense>
 
-            <CookieConsent />
-            <GoogleOneTapPrompt />
+            <Suspense fallback={null}>
+              <CookieConsent />
+              <GoogleOneTapPrompt />
+            </Suspense>
           </Router>
         </UniversityDataProvider>
       </LazyGoogleOAuthProvider>

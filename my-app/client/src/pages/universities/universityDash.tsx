@@ -11,7 +11,8 @@ import '../home/searchbar.css';
 import { FaSearch, FaInstagram } from 'react-icons/fa';
 import DefaultCampus from '../../assets/Default_Campus.webp';
 import DefaultDorm from '../../assets/Default_Dorm.webp';
-import PageLoader from '../../components/PageLoader';
+import LBDLogo from '../../assets/LBDLogo.webp';
+import '../../components/PageLoader.css';
 import { useSEO } from '../../hooks/useSEO';
 import CompareModal from '../compare/CompareModal';
 import CompareCard from '../../components/CompareCard/CompareCard';
@@ -106,7 +107,8 @@ function UniversityDash() {
     title: `${uniDisplayName} Dorm Reviews & Residence Photos`,
     description: `Read real student reviews and see photos of dorms at ${uniDisplayName}. Compare ${dorms.length} residences to find your perfect campus home.`,
     canonicalPath: `/universities/${universityName}`,
-    jsonLd: universityJsonLd
+    jsonLd: universityJsonLd,
+    ogImage: university?.imageUrl || undefined
   });
 
   // Fetch university and dorm data when component mounts or universityName changes
@@ -237,21 +239,8 @@ function UniversityDash() {
     setFilteredDorms(result);
   }, [dorms, searchQuery, filterOption, reviewCounts, dormRatings]);
 
-  // Function to render star ratings (kept for future use)
-  // const _renderStars = (rating: number) => {
-  //   const fullStars = Math.floor(rating);
-  //   const hasHalfStar = rating - fullStars >= 0.5;
-  //   const emptyStars = 5 - fullStars - (hasHalfStar ? 1 : 0);
-  //   return "★".repeat(fullStars) + (hasHalfStar ? "⯨" : "") + "☆".repeat(emptyStars);
-  // };
-
-  // Main component render
-  if (loading) {
-    return <PageLoader />;
-  }
-
-  // Handle error state
-  if (error || !university) {
+  // Handle error state (only after loading completes)
+  if (!loading && (error || !university)) {
     return (
       <div className="university-dash">
         <NavBar />
@@ -262,7 +251,15 @@ function UniversityDash() {
     );
   }
 
-  // Render university dashboard
+  // Build display-ready university — uses real data when loaded, slug-based fallback while loading
+  const displayUniversity: APIUniversity = university || {
+    name: uniDisplayName || 'Loading...',
+    slug: universityName || '',
+    location: null,
+    website: null,
+    imageUrl: null,
+  };
+
   return (
     <div className="university-dash">
       <NavBar />
@@ -275,27 +272,27 @@ function UniversityDash() {
               <HomeIcon style={{ fontSize: '1.2rem', color: '#1a1a1a' }} />
             </Link>
             <span className="breadcrumb-separator" style={{ margin: '0 8px', color: '#666' }}>›</span>
-            <span className="breadcrumb-current" style={{ fontWeight: 600, color: '#1a1a1a' }}>{university.name} {t('universityDash.dorms')}</span>
+            <span className="breadcrumb-current" style={{ fontWeight: 600, color: '#1a1a1a' }}>{displayUniversity.name} {t('universityDash.dorms')}</span>
           </div>
 
           <div className="university-image-container">
             <img
-              src={university.imageUrl || DefaultCampus}
-              alt={`${university.name} campus photo`}
+              src={displayUniversity.imageUrl || DefaultCampus}
+              alt={`${displayUniversity.name} campus photo`}
               className="university-main-image"
             />
             <div className="university-image-overlay"></div>
             <div className="university-header-content">
-              <h1>{university.name}</h1>
-              {university.location && <p className="university-location">{university.location}</p>}
+              <h1>{displayUniversity.name}</h1>
+              {displayUniversity.location && <p className="university-location">{displayUniversity.location}</p>}
             </div>
           </div>
 
           <div className="university-website-card">
             <h2>{t('universityDash.needInfo')}</h2>
-            <p>{t('universityDash.visitWebsite', { name: university.name })}</p>
+            <p>{t('universityDash.visitWebsite', { name: displayUniversity.name })}</p>
             <a
-              href={university.website || '#'}
+              href={displayUniversity.website || '#'}
               target="_blank"
               rel="noopener noreferrer"
               className="university-website-btn"
@@ -307,7 +304,7 @@ function UniversityDash() {
           {/* Add Dorm Section */}
           <AddDorm
             universitySlug={universityName || ''}
-            universityName={university.name}
+            universityName={displayUniversity.name}
             onDormSubmitted={() => {
               // Optionally refresh dorms list (though pending dorms won't show)
               // Dorm submitted successfully
@@ -322,7 +319,7 @@ function UniversityDash() {
           />
 
           {/* Specifically for York University - Get_Yorked Instagram Link */}
-          {university.slug === 'york-university' && (
+          {displayUniversity.slug === 'york-university' && (
             <a
               href="https://www.instagram.com/get_yorked/"
               target="_blank"
@@ -398,7 +395,16 @@ function UniversityDash() {
           </div>
 
           <div className="dorms-grid">
-            {filteredDorms.length > 0 ? (
+            {loading ? (
+              <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', width: '100%', minHeight: '300px' }}>
+                <div className="loader-content">
+                  <div className="logo-pulse">
+                    <img src={LBDLogo} alt="" className="loader-logo" />
+                  </div>
+                  <div className="loader-spinner" />
+                </div>
+              </div>
+            ) : filteredDorms.length > 0 ? (
               filteredDorms.map(dorm => (
                 <Link
                   key={`${dorm.universitySlug}-${dorm.slug}`}

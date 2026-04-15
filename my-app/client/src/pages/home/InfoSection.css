@@ -1,163 +1,200 @@
 .info-section-container {
   width: 100%;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 30px clamp(8px, 2vw, 20px);
   display: flex;
   justify-content: center;
-  margin: 60px 0;
-  padding: 0 20px;
+  box-sizing: border-box;
 }
 
 .info-section-content {
   width: 100%;
-  max-width: 1200px;
-  background-color: #ffe5e5;
-  border-radius: 20px;
+  background-color: #ffebee;
+  /* Pastel red/pink instead of Trustpilot green */
+  border-radius: 12px;
   display: flex;
-  align-items: stretch;
+  flex-direction: row;
+  align-items: center;
 }
 
 .info-left {
   flex: 1;
-  padding: 60px;
+  padding: 50px 40px 50px 50px;
   display: flex;
   flex-direction: column;
   justify-content: center;
 }
 
 .info-title {
-  font-size: 2.5rem;
+  font-size: 2.2rem;
   font-weight: 800;
   color: #1a1a1a;
-  margin-bottom: 20px;
+  margin-bottom: 16px;
   font-family: 'Inter', sans-serif;
+  margin-top: 0;
+  border-bottom: none !important;
+}
+
+.info-title::after,
+.info-title::before {
+  display: none !important;
+  content: none !important;
 }
 
 .info-description {
-  font-size: 1.15rem;
-  color: #333;
-  line-height: 1.6;
-  margin-bottom: 30px;
+  font-size: 1.1rem;
+  color: #3a3a3a;
+  line-height: 1.5;
+  margin-bottom: 24px;
   max-width: 90%;
 }
 
 .info-primary-btn {
   align-self: flex-start;
-  background-color: #1a1a1a;
+  background-color: #d62828;
   color: #fff;
   border: none;
-  padding: 12px 30px;
+  padding: 12px 24px;
   border-radius: 50px;
-  font-size: 1rem;
+  font-size: 0.95rem;
   font-weight: 600;
   cursor: pointer;
+  text-decoration: none;
   transition: background-color 0.2s, transform 0.2s;
 }
 
 .info-primary-btn:hover {
-  background-color: #333;
+  background-color: #b91c1c;
   transform: translateY(-2px);
 }
 
-/* Right Card */
-.info-right-card {
+/* Right Inner Banner Wrapper */
+.info-right-wrapper {
   flex: 1;
-  background-color: #8b0000;
-  /* Deep dark red to fit LifeByDorm theme */
-  border-radius: 20px;
-  margin: 30px;
-  padding: 40px;
-  position: relative;
+  padding: 40px 60px 40px 0;
   display: flex;
-  flex-direction: column;
+  align-items: center;
   justify-content: center;
+}
+
+.info-inner-banner {
+  width: 100%;
+  background-color: #8f2f2f;
+  /* Deep red matching Trustpilot dark green */
+  border-radius: 12px;
+  padding: 30px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  position: relative;
   overflow: hidden;
   color: white;
 }
 
-
-/* Custom LifeByDorm Graphic: Floating Dorm Review Card */
-.info-card-graphic {
-  position: relative;
-  margin: 0 auto;
-  width: 100%;
-  max-width: 400px;
-  height: 350px;
-  z-index: 1;
-  perspective: 1000px;
+.banner-text-content {
+  flex: 1;
+  z-index: 2;
+  padding-right: 180px;
+  /* Prevent text collision with graphic */
 }
 
-.graphic-dorm-card {
+.banner-text-content h3 {
+  font-size: 1.25rem;
+  font-weight: 700;
+  margin: 0 0 10px 0;
+  font-family: 'Inter', sans-serif;
+}
+
+.banner-text-content p {
+  font-size: 0.95rem;
+  line-height: 1.4;
+  margin-bottom: 20px;
+  color: rgba(255, 255, 255, 0.9);
+  max-width: 90%;
+}
+
+.banner-secondary-btn {
+  display: inline-block;
+  background-color: transparent;
+  color: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.8);
+  padding: 10px 20px;
+  border-radius: 50px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: all 0.2s;
+}
+
+.banner-secondary-btn:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+  border-color: #fff;
+}
+
+/* Graphic - Photo Stack */
+.banner-graphic-photos {
   position: absolute;
+  right: 40px;
   top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%) rotate(-5deg);
-  width: 280px;
+  transform: translateY(-50%);
+  width: 140px;
+  height: 140px;
+  z-index: 1;
+}
+
+.photo-card {
+  position: absolute;
+  width: 110px;
+  height: 110px;
   background-color: white;
-  border-radius: 16px;
-  padding: 15px;
-  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(255, 255, 255, 0.1);
-  z-index: 2;
+  border-radius: 8px;
+  border: 4px solid white;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+  background-size: cover;
+  background-position: center;
   transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
-.info-card-graphic:hover .graphic-dorm-card {
-  transform: translate(-50%, -50%) rotate(0deg) scale(1.05);
-}
-
-.graphic-dorm-image {
-  width: 100%;
-  height: 160px;
-  background-color: #f0f0f0;
-  background-size: cover;
-  background-position: center;
-  border-radius: 10px;
-  margin-bottom: 15px;
-}
-
-.graphic-dorm-details {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.graphic-dorm-title {
-  font-family: 'Inter', sans-serif;
-  font-size: 1.1rem;
-  font-weight: 800;
-  color: #1a1a1a;
-}
-
-.graphic-dorm-stars {
-  color: #ffb400;
-  font-size: 1.2rem;
-  letter-spacing: 3px;
-}
-
-/* Abstract Accents */
-.graphic-accent-pill {
-  position: absolute;
-  background-color: rgba(255, 255, 255, 0.15);
-  border-radius: 50px;
-  backdrop-filter: blur(4px);
-  -webkit-backdrop-filter: blur(4px);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-}
-
-.graphic-accent-1 {
-  width: 100px;
-  height: 40px;
-  top: 50px;
-  left: 20px;
-  transform: rotate(15deg);
-  z-index: 1;
-}
-
-.graphic-accent-2 {
-  width: 150px;
-  height: 30px;
-  bottom: 40px;
-  right: 10px;
+.photo-back {
+  top: 5px;
+  left: 0;
   transform: rotate(-10deg);
-  z-index: 3;
+  z-index: 1;
+  opacity: 0.9;
+  filter: grayscale(20%);
+}
+
+.photo-front {
+  top: 20px;
+  right: 0;
+  transform: rotate(8deg);
+  z-index: 2;
+  display: flex;
+  justify-content: flex-end;
+  align-items: flex-start;
+}
+
+.photo-like-badge {
+  background-color: #d62828;
+  color: white;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 0.8rem;
+  margin: -10px -10px 0 0;
+  box-shadow: 0 4px 10px rgba(214, 40, 40, 0.4);
+}
+
+.banner-graphic-photos:hover .photo-back {
+  transform: rotate(-15deg) translate(-10px, -5px) scale(1.05);
+}
+
+.banner-graphic-photos:hover .photo-front {
+  transform: rotate(12deg) translate(10px, -5px) scale(1.05);
 }
 
 /* Responsive adjustments */
@@ -173,75 +210,51 @@
   }
 
   .info-left {
-    padding: 60px 20px 20px 20px;
+    padding: 60px 4%;
   }
 
-  .info-right-card {
-    margin: 20px 20px 60px 20px;
-    padding: 20px;
+  .info-right-wrapper {
+    padding: 0 4% 60px 4%;
   }
 
-  .info-card-graphic {
-    position: relative;
-    right: 0;
-    top: 0;
-    transform: none;
-    height: 250px;
-    width: 100%;
-    margin-top: 0;
-  }
-
-  .graphic-dorm-card {
-    transform: translate(-50%, -50%) rotate(0deg) scale(0.8);
-  }
-
-  .graphic-accent-1 {
-    top: 10px;
-    left: 10px;
-    transform: rotate(15deg) scale(0.8);
-  }
-
-  .graphic-accent-2 {
-    bottom: 10px;
-    right: 10px;
-    transform: rotate(-10deg) scale(0.8);
+  .info-description,
+  .banner-text-content p {
+    max-width: 100%;
   }
 }
 
-@media (max-width: 480px) {
-  .info-section-container {
-    padding: 0;
-    box-sizing: border-box;
+@media (max-width: 600px) {
+  .info-inner-banner {
+    flex-direction: column;
+    padding: 24px;
   }
 
-  .info-section-content {
+  .banner-text-content {
+    padding-right: 0;
+    text-align: center;
+  }
+
+  .banner-text-content h3 {
+    text-align: center;
+  }
+
+  .banner-graphic-photos {
+    position: relative;
+    right: auto;
+    top: auto;
+    transform: none;
+    height: 140px;
+    margin-top: 20px;
     width: 100%;
-    max-width: 100%;
+    display: flex;
+    justify-content: center;
   }
 
-  .info-left {
-    padding: 30px 15px;
+  .photo-back {
+    left: calc(50% - 60px);
   }
 
-  .info-title {
-    font-size: 2rem;
-  }
-
-  .info-right-card {
-    margin: 0 10px 20px 10px;
-    padding: 20px 10px;
-  }
-
-  .info-card-graphic {
-    height: 220px;
-  }
-
-  .graphic-dorm-card {
-    transform: translate(-50%, -50%) rotate(0deg) scale(0.65);
-    transition: none;
-  }
-
-  .info-card-graphic:hover .graphic-dorm-card {
-    transform: translate(-50%, -50%) rotate(0deg) scale(0.65);
+  .photo-front {
+    right: calc(50% - 60px);
   }
 }

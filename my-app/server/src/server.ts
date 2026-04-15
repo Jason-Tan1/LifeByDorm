@@ -2636,6 +2636,55 @@ app.post('/api/contact', submitLimiter, validate(contactSchema), async (req: Req
 });
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
+// DYNAMIC SITEMAP ENDPOINT
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+app.get('/sitemap.xml', async (_req: Request, res: Response) => {
+  try {
+    const [universities, dorms] = await Promise.all([
+      University.find({}).lean(),
+      Dorm.find({ status: 'approved' }).lean()
+    ]);
+
+    const today = new Date().toISOString().split('T')[0];
+
+    const staticUrls = [
+      { loc: 'https://www.lifebydorm.ca/', changefreq: 'daily', priority: '1.0' },
+      { loc: 'https://www.lifebydorm.ca/universities', changefreq: 'weekly', priority: '0.8' },
+    ];
+
+    const uniUrls = (universities as any[]).map((u) => ({
+      loc: `https://www.lifebydorm.ca/universities/${u.slug}`,
+      changefreq: 'weekly',
+      priority: '0.9'
+    }));
+
+    const dormUrls = (dorms as any[]).map((d) => ({
+      loc: `https://www.lifebydorm.ca/universities/${d.universitySlug}/dorms/${d.slug}`,
+      changefreq: 'monthly',
+      priority: '0.8'
+    }));
+
+    const allUrls = [...staticUrls, ...uniUrls, ...dormUrls];
+
+    const xml = `<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+${allUrls.map(u => `  <url>
+    <loc>${u.loc}</loc>
+    <lastmod>${today}</lastmod>
+    <changefreq>${u.changefreq}</changefreq>
+    <priority>${u.priority}</priority>
+  </url>`).join('\n')}
+</urlset>`;
+
+    res.setHeader('Content-Type', 'application/xml');
+    res.setHeader('Cache-Control', 'public, max-age=3600');
+    res.send(xml);
+  } catch (error) {
+    res.status(500).send('<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"></urlset>');
+  }
+});
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////
 // HEALTH CHECK ENDPOINT (for Docker/Kubernetes health probes)
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 app.get('/api/health', async (req: Request, res: Response) => {
