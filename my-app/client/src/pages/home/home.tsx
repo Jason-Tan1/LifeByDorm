@@ -295,7 +295,7 @@ function Home() {
         </div>
 
         {/* Most Rated Dorms Section */}
-        <div className="featured-container" style={{ marginTop: '40px' }}>
+        <div className="featured-container" style={{ marginTop: '30px' }}>
           <div className="featured-header">
             <h2 className="featured-title">{t('home.mostRatedDorms')}</h2>
             <div className="slider-controls">
@@ -393,9 +393,11 @@ function Home() {
           </div>
         </div>
 
-        <Suspense fallback={null}>
-          <AdUnit adSlot="6590802616" />
-        </Suspense>
+        <div className="featured-container" style={{ padding: '0 clamp(8px, 2vw, 20px)', marginTop: '20px', marginBottom: '20px', boxSizing: 'border-box' }}>
+          <Suspense fallback={null}>
+            <AdUnit adSlot="6590802616" />
+          </Suspense>
+        </div>
 
         {/* LifeByDorm Info Section Banner */}
         <Suspense fallback={null}>

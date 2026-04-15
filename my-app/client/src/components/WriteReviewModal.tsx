@@ -27,19 +27,25 @@ const WriteReviewModal: React.FC<WriteReviewModalProps> = ({ isOpen, onClose }) 
   const [uniSearchQuery, setUniSearchQuery] = useState('');
   const [showUniDropdown, setShowUniDropdown] = useState(false);
   const uniWrapperRef = useRef<HTMLDivElement>(null);
+  const [showDormDropdown, setShowDormDropdown] = useState(false);
+  const dormWrapperRef = useRef<HTMLDivElement>(null);
 
   const [selectedDormSlug, setSelectedDormSlug] = useState('');
   
   const [dorms, setDorms] = useState<DormOption[]>([]);
   const [isDormLoading, setIsDormLoading] = useState(false);
 
-  // Close dropdown when clicking outside
+  // Close suggestion list when clicking outside the input area.
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (uniWrapperRef.current && !uniWrapperRef.current.contains(event.target as Node)) {
         setShowUniDropdown(false);
       }
+      if (dormWrapperRef.current && !dormWrapperRef.current.contains(event.target as Node)) {
+        setShowDormDropdown(false);
+      }
     };
+
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
@@ -51,26 +57,40 @@ const WriteReviewModal: React.FC<WriteReviewModalProps> = ({ isOpen, onClose }) 
       setUniSearchQuery('');
       setShowUniDropdown(false);
       setSelectedDormSlug('');
+      setShowDormDropdown(false);
       setDorms([]);
     }
   }, [isOpen]);
 
-  // Filter universities based on search query
-  const filteredUniversities = universities.filter(uni => 
-    uni.name.toLowerCase().includes(uniSearchQuery.toLowerCase())
-  );
+  const filteredUniversities = universities
+    .filter((uni) => uni.name.toLowerCase().includes(uniSearchQuery.trim().toLowerCase()))
+    .slice(0, 6);
+
+  // Require an exact university name match to proceed, without showing a custom dropdown.
+  useEffect(() => {
+    const normalizedQuery = uniSearchQuery.trim().toLowerCase();
+    if (!normalizedQuery) {
+      setSelectedUniSlug('');
+      return;
+    }
+
+    const matchedUni = universities.find((uni) => uni.name.toLowerCase() === normalizedQuery);
+    setSelectedUniSlug(matchedUni ? matchedUni.slug : '');
+  }, [uniSearchQuery, universities]);
 
   // Fetch dorms when university changes
   useEffect(() => {
     if (!selectedUniSlug) {
       setDorms([]);
       setSelectedDormSlug('');
+      setShowDormDropdown(false);
       return;
     }
 
     const fetchDorms = async () => {
       setIsDormLoading(true);
       setSelectedDormSlug(''); // Reset dorm selection
+      setShowDormDropdown(false);
       try {
         const response = await fetch(`${API_BASE}/api/universities/${selectedUniSlug}/dorms`);
         if (response.ok) {
@@ -114,6 +134,8 @@ const WriteReviewModal: React.FC<WriteReviewModalProps> = ({ isOpen, onClose }) 
     }
   };
 
+  const selectedDorm = dorms.find((dorm) => dorm.slug === selectedDormSlug);
+
   return (
     <div className="review-modal-overlay" onClick={onClose}>
       <div className="review-modal-card" onClick={(e) => e.stopPropagation()}>
@@ -132,20 +154,19 @@ const WriteReviewModal: React.FC<WriteReviewModalProps> = ({ isOpen, onClose }) 
                 placeholder={isUniLoading ? 'Loading universities...' : 'Type to search...'}
                 value={uniSearchQuery}
                 onChange={(e) => {
-                  setUniSearchQuery(e.target.value);
-                  setShowUniDropdown(true);
-                  if (selectedUniSlug) setSelectedUniSlug(''); // clear selection if they type
+                  const nextValue = e.target.value;
+                  setUniSearchQuery(nextValue);
+                  setShowUniDropdown(nextValue.trim().length > 0);
                 }}
-                onFocus={() => setShowUniDropdown(true)}
                 disabled={isUniLoading}
               />
-              {showUniDropdown && filteredUniversities.length > 0 && (
+              {showUniDropdown && uniSearchQuery.trim().length > 0 && filteredUniversities.length > 0 && (
                 <div className="modal-search-dropdown">
                   {filteredUniversities.map((uni) => (
                     <div
                       key={uni.slug}
                       className="modal-search-dropdown-item"
-                      onMouseDown={(e) => e.preventDefault()} // prevent blur before click
+                      onMouseDown={(e) => e.preventDefault()}
                       onClick={() => {
                         setSelectedUniSlug(uni.slug);
                         setUniSearchQuery(uni.name);
@@ -160,28 +181,50 @@ const WriteReviewModal: React.FC<WriteReviewModalProps> = ({ isOpen, onClose }) 
             </div>
           </div>
 
-          <div className="modal-input-group">
+          <div className="modal-input-group" ref={dormWrapperRef}>
             <label htmlFor="dorm-select">Select your Dorm</label>
-            <select
-              id="dorm-select"
-              className="modal-select"
-              value={selectedDormSlug}
-              onChange={(e) => setSelectedDormSlug(e.target.value)}
-              disabled={!selectedUniSlug || isDormLoading}
-            >
-              <option value="" disabled>
-                {!selectedUniSlug 
-                  ? 'Select a university first' 
-                  : isDormLoading 
-                    ? 'Loading dorms...' 
-                    : 'Choose a dorm...'}
-              </option>
-              {dorms.map((dorm) => (
-                <option key={dorm._id || dorm.slug} value={dorm.slug}>
-                  {dorm.name}
-                </option>
-              ))}
-            </select>
+            <div className="modal-search-wrapper modal-dorm-wrapper">
+              <button
+                id="dorm-select"
+                type="button"
+                className="modal-select modal-custom-dropdown-trigger"
+                onClick={() => {
+                  if (!selectedUniSlug || isDormLoading) return;
+                  setShowDormDropdown((prev) => !prev);
+                }}
+                disabled={!selectedUniSlug || isDormLoading}
+                aria-expanded={showDormDropdown}
+              >
+                {!selectedUniSlug
+                  ? 'Select a university first'
+                  : isDormLoading
+                    ? 'Loading dorms...'
+                    : selectedDorm
+                      ? selectedDorm.name
+                      : 'Choose a dorm...'}
+              </button>
+              {showDormDropdown && selectedUniSlug && !isDormLoading && (
+                <div className="modal-search-dropdown modal-dorm-dropdown">
+                  {dorms.length > 0 ? (
+                    dorms.map((dorm) => (
+                      <div
+                        key={dorm._id || dorm.slug}
+                        className={`modal-search-dropdown-item ${selectedDormSlug === dorm.slug ? 'is-selected' : ''}`}
+                        onMouseDown={(e) => e.preventDefault()}
+                        onClick={() => {
+                          setSelectedDormSlug(dorm.slug);
+                          setShowDormDropdown(false);
+                        }}
+                      >
+                        {dorm.name}
+                      </div>
+                    ))
+                  ) : (
+                    <div className="modal-search-dropdown-empty">No dorms available</div>
+                  )}
+                </div>
+              )}
+            </div>
           </div>
 
           <div className="modal-button-group">
