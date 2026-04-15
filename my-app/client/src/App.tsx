@@ -1,12 +1,20 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import { lazy, Suspense } from 'react';
+import React, { lazy, Suspense } from 'react';
 import { UniversityDataProvider } from './context/UniversityDataContext';
 import PageLoader from './components/PageLoader';
 import ScrollToTop from './components/ScrollToTop';
 
-// Lazy load non-critical shell components — they don't affect first paint
-const CookieConsent = lazy(() => import('./components/CookieConsent'));
-const GoogleOneTapPrompt = lazy(() => import('./components/GoogleOneTapPrompt'));
+// Lazy load non-critical shell components — they don't affect first paint.
+// Renamed from CookieConsent to ConsentBanner so ad blockers don't block the chunk by filename.
+// .catch fallbacks render a no-op component if a chunk is blocked (ERR_BLOCKED_BY_CLIENT),
+// so we fail soft instead of crashing the whole Router tree.
+const noopModule = { default: (() => null) as React.FC };
+const ConsentBanner = lazy(() =>
+  import('./components/ConsentBanner').catch(() => noopModule)
+);
+const GoogleOneTapPrompt = lazy(() =>
+  import('./components/GoogleOneTapPrompt').catch(() => noopModule)
+);
 
 // Lazy load the Google OAuth provider so the SDK doesn't block first paint
 const LazyGoogleOAuthProvider = lazy(() => import('./components/LazyGoogleOAuthProvider'));
@@ -60,7 +68,7 @@ function App() {
             </Suspense>
 
             <Suspense fallback={null}>
-              <CookieConsent />
+              <ConsentBanner />
               <GoogleOneTapPrompt />
             </Suspense>
           </Router>

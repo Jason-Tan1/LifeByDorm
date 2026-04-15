@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import './CookieConsent.css';
+import './ConsentBanner.css';
 
-const CookieConsent: React.FC = () => {
+const ConsentBanner: React.FC = () => {
     const [isVisible, setIsVisible] = useState(false);
 
     useEffect(() => {
@@ -51,4 +51,4 @@ const CookieConsent: React.FC = () => {
     );
 };
 
-export default CookieConsent;
+export default ConsentBanner;
