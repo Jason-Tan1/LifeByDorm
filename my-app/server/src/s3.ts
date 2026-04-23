@@ -45,6 +45,27 @@ function getS3Client(): S3Client | null {
 const ALLOWED_MIME_TYPES = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
 const DANGEROUS_MIME_TYPES = ['image/svg+xml', 'text/html', 'application/javascript', 'text/javascript', 'application/xml'];
 
+const MAGIC_BYTES: Record<string, Buffer[]> = {
+  'image/jpeg': [Buffer.from([0xFF, 0xD8, 0xFF])],
+  'image/png':  [Buffer.from([0x89, 0x50, 0x4E, 0x47])],
+  'image/gif':  [Buffer.from('GIF87a'), Buffer.from('GIF89a')],
+  'image/webp': [Buffer.from('RIFF')],
+};
+
+function validateMagicBytes(buffer: Buffer, claimedMime: string): void {
+  const signatures = MAGIC_BYTES[claimedMime];
+  if (!signatures) {
+    throw new Error(`No signature validation available for ${claimedMime}`);
+  }
+  const matches = signatures.some(sig => buffer.subarray(0, sig.length).equals(sig));
+  if (!matches) {
+    throw new Error('File content does not match claimed image type');
+  }
+  if (claimedMime === 'image/webp' && buffer.length >= 12 && buffer.subarray(8, 12).toString() !== 'WEBP') {
+    throw new Error('File content does not match claimed image type');
+  }
+}
+
 /**
  * Validates that the MIME type is allowed for upload
  */
@@ -88,6 +109,9 @@ export async function uploadToS3(base64Data: string, folder: string = 'uploads')
   validateMimeType(contentType);
 
   const buffer = Buffer.from(matches[2], 'base64');
+
+  // Security: Validate file content matches claimed MIME type via magic bytes
+  validateMagicBytes(buffer, contentType);
 
   // Security: Validate file size (max 10MB)
   const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB

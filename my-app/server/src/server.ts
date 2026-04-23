@@ -924,8 +924,9 @@ app.get('/api/stats/homepage', readOnlyLimiter, async (req: Request, res: Respon
         const userEmail = userMap.get(rawUser) || (rawUser.includes('@') ? rawUser : '');
         const firstVisibleChar = userEmail.match(/[A-Za-z0-9]/)?.[0] || 'A';
 
+        const { user: _user, ...safeReview } = review;
         return {
-          ...review,
+          ...safeReview,
           dormSlug: dormData?.slug || dorm.toLowerCase().replace(/\s+/g, '-'),
           universitySlug: uniSlug,
           universityName: universityNameMap.get(uniSlug) || uniSlug,
@@ -1973,7 +1974,8 @@ app.post('/api/reviews', submitLimiter, validate(reviewSchema), async (req: Requ
         user: saved.user || '(none)'
       });
     }
-    res.status(201).json(saved);
+    const { user: _u, ...safeResponse } = saved.toObject();
+    res.status(201).json(safeResponse);
   } catch (err) {
     console.error('Error saving review', err);
     // If this is a Mongoose validation error, return 400 with details
@@ -2042,7 +2044,7 @@ app.get('/api/reviews', readOnlyLimiter, async (req: Request, res: Response) => 
       { $sort: { hasWrittenDescription: -1, createdAt: -1 } },
       { $skip: skip },
       { $limit: limit },
-      { $project: { hasWrittenDescription: 0 } }
+      { $project: { hasWrittenDescription: 0, user: 0 } }
     ]);
 
     setCache(cacheKey, reviews);
@@ -2167,7 +2169,8 @@ app.put('/api/reviews/:id', authenticationToken, validate(editReviewSchema), asy
       console.log('✅ Pending edit saved for review:', id);
     }
 
-    res.json({ message: 'Edit submitted for review', review });
+    const { user: _u, ...safeReview } = review.toObject();
+    res.json({ message: 'Edit submitted for review', review: safeReview });
   } catch (err) {
     console.error('Error editing review', err);
     res.status(500).json({ message: 'Error editing review' });
