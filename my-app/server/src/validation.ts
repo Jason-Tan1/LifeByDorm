@@ -58,11 +58,32 @@ export const googleAuthSchema = z.object({
   message: "Either credential (ID token) or access_token is required"
 });
 
+// Accept an empty value (no image), a base64 data URI for a supported image type
+// (which the server will upload to S3), or a URL already on our own S3 bucket.
+// External/hotlinked URLs are rejected — we serve dorm images from our own infrastructure.
+const DATA_URI_IMAGE_RE = /^data:image\/(jpeg|png|gif|webp);base64,[A-Za-z0-9+/=]+$/;
+const OWN_S3_HOST_RE = (() => {
+  const bucket = (process.env.AWS_BUCKET_NAME || '').trim();
+  const region = (process.env.AWS_REGION || '').trim();
+  if (!bucket || !region) return null;
+  const escape = (s: string) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  return new RegExp(`^https:\\/\\/${escape(bucket)}\\.s3\\.${escape(region)}\\.amazonaws\\.com\\/`);
+})();
+
+const dormImageUrlSchema = z.string().refine((val) => {
+  if (val === '' || val == null) return true;
+  if (DATA_URI_IMAGE_RE.test(val)) return true;
+  if (OWN_S3_HOST_RE && OWN_S3_HOST_RE.test(val)) return true;
+  return false;
+}, {
+  message: 'imageUrl must be empty, a base64 image data URI, or a URL on our own S3 bucket'
+}).optional().or(z.literal("")).nullable();
+
 export const dormSchema = z.object({
   name: z.string().min(2).max(100).trim(),
   universitySlug: z.string().min(1).max(100).trim(),
   description: z.string().max(2000).optional(),
-  imageUrl: z.string().url().optional().or(z.literal("")), // Allow empty string or valid URL
+  imageUrl: dormImageUrlSchema,
   amenities: z.array(z.string().max(50)).optional(),
   roomTypes: z.array(z.string().max(50)).optional()
 }).strict();

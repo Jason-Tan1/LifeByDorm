@@ -44,5 +44,17 @@ const userSchema = new Schema<IUser>({
   }
 });
 
+const stripSensitiveFields = (_doc: any, ret: any) => {
+  delete ret.password;
+  delete ret.verificationCode;
+  delete ret.verificationCodeExpires;
+  delete ret.googleId;
+  delete ret.__v;
+  return ret;
+};
+
+userSchema.set('toJSON', { transform: stripSensitiveFields });
+userSchema.set('toObject', { transform: stripSensitiveFields });
+
 export const User = mongoose.model<IUser>('user', userSchema);
 export const user = User;

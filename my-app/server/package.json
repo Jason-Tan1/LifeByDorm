@@ -10,6 +10,7 @@
     "dev": "ts-node src/server.ts",
     "devStart": "nodemon --exec ts-node src/server.ts",
     "seed": "ts-node seed/seed.ts",
+    "migrate:dorm-images": "ts-node seed/migrateDormImages.ts",
     "test": "vitest",
     "test:run": "vitest run"
   },

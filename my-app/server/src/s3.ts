@@ -81,6 +81,53 @@ function validateMimeType(mimeType: string): void {
   }
 }
 
+const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
+
+/**
+ * Uploads a raw image buffer to S3 after running the full security validation
+ * chain (MIME type allowlist, magic-byte signature, size cap). Returns the
+ * public S3 URL.
+ *
+ * Prefer this when bytes come from somewhere other than a base64 data URI —
+ * e.g. a server-side download during a migration.
+ */
+export async function uploadBufferToS3(
+  buffer: Buffer,
+  contentType: string,
+  folder: string = 'uploads'
+): Promise<string> {
+  const client = getS3Client();
+  if (!client || !bucketName) {
+    throw new Error('AWS S3 is not configured — cannot upload image');
+  }
+
+  validateMimeType(contentType);
+  validateMagicBytes(buffer, contentType);
+
+  if (buffer.length > MAX_FILE_SIZE) {
+    throw new Error('File size exceeds maximum allowed size of 10MB');
+  }
+
+  const extension = contentType.split('/')[1] || 'jpg';
+  const fileName = `${folder}/${crypto.randomUUID()}.${extension}`;
+
+  const command = new PutObjectCommand({
+    Bucket: bucketName,
+    Key: fileName,
+    Body: buffer,
+    ContentType: contentType,
+    ACL: 'public-read'
+  });
+
+  try {
+    await client.send(command);
+    return `https://${bucketName}.s3.${process.env.AWS_REGION}.amazonaws.com/${fileName}`;
+  } catch (error) {
+    console.error('Error uploading to S3:', error);
+    throw new Error('Failed to upload image to S3');
+  }
+}
+
 /**
  * Uploads a base64 image string to S3 and returns the public URL.
  * Expected format: "data:image/png;base64,iVBORw0KGgo..."
@@ -94,54 +141,16 @@ export async function uploadToS3(base64Data: string, folder: string = 'uploads')
     return base64Data;
   }
 
-  // 1. Parse Base64 Data
-  // Format is usually: "data:<mime-type>;base64,<data>"
   const matches = base64Data.match(/^data:([A-Za-z-+\/]+);base64,(.+)$/);
-
   if (!matches || matches.length !== 3) {
-    // If it doesn't match the pattern, it might be a normal URL or invalid
+    // Not a data URI — likely an already-uploaded URL. Return as-is.
     return base64Data;
   }
 
   const contentType = matches[1];
-
-  // Security: Validate MIME type before processing
-  validateMimeType(contentType);
-
   const buffer = Buffer.from(matches[2], 'base64');
 
-  // Security: Validate file content matches claimed MIME type via magic bytes
-  validateMagicBytes(buffer, contentType);
-
-  // Security: Validate file size (max 10MB)
-  const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
-  if (buffer.length > MAX_FILE_SIZE) {
-    throw new Error(`File size exceeds maximum allowed size of 10MB`);
-  }
-
-  // 2. Generate Unique Filename
-  const extension = contentType.split('/')[1] || 'jpg';
-  const fileName = `${folder}/${crypto.randomUUID()}.${extension}`;
-
-  // 3. Upload to S3
-  const command = new PutObjectCommand({
-    Bucket: bucketName,
-    Key: fileName,
-    Body: buffer,
-    ContentType: contentType,
-    // ensure the bucket/object can be read publicly if that's the intention
-    ACL: 'public-read' // Note: Many new buckets block ACLs by default. Use Bucket Policy instead.
-  });
-
-  try {
-    await client.send(command);
-    // Return the URL
-    // Format: https://<bucket>.s3.<region>.amazonaws.com/<key>
-    return `https://${bucketName}.s3.${process.env.AWS_REGION}.amazonaws.com/${fileName}`;
-  } catch (error) {
-    console.error('Error uploading to S3:', error);
-    throw new Error('Failed to upload image to S3');
-  }
+  return uploadBufferToS3(buffer, contentType, folder);
 }
 /**
  * Generates a presigned URL for a given S3 file key.

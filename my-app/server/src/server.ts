@@ -1824,6 +1824,23 @@ app.post('/api/dorms', authenticationToken, validate(dormSchema), async (req: Au
       return res.status(400).json({ message: 'Name and university are required' });
     }
 
+    // If the submitter provided a base64 data URI, upload it to our S3 bucket so
+    // we never store external/hotlinked image URLs. The dormSchema validator has
+    // already rejected any other URL that isn't on our own S3 bucket.
+    let processedImageUrl: string | null = null;
+    if (typeof imageUrl === 'string' && imageUrl.startsWith('data:')) {
+      try {
+        processedImageUrl = await uploadToS3(imageUrl, 'dorms');
+      } catch (err) {
+        console.error('Failed to upload dorm image to S3:', err);
+        const message = err instanceof Error ? err.message : 'Failed to upload image';
+        return res.status(400).json({ message });
+      }
+    } else if (typeof imageUrl === 'string' && imageUrl.length > 0) {
+      // Already an S3 URL (validated by dormSchema) — store as-is.
+      processedImageUrl = imageUrl;
+    }
+
     // Create slug from name
     const slug = name.toLowerCase()
       .replace(/[^a-z0-9]+/g, '-')
@@ -1841,7 +1858,7 @@ app.post('/api/dorms', authenticationToken, validate(dormSchema), async (req: Au
       slug,
       universitySlug,
       description: description || '',
-      imageUrl: imageUrl || null,
+      imageUrl: processedImageUrl,
       amenities: amenities || [],
       roomTypes: roomTypes || [],
       status: 'pending',
@@ -2699,8 +2716,7 @@ app.get('/api/health', async (req: Request, res: Response) => {
       status: 'healthy',
       timestamp: new Date().toISOString(),
       uptime: process.uptime(),
-      database: dbStatus,
-      environment: process.env.NODE_ENV || 'development'
+      database: dbStatus
     });
   } catch (error) {
     res.status(503).json({
