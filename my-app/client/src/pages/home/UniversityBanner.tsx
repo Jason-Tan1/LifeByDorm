@@ -1,21 +1,29 @@
 import React, { useRef, useEffect } from 'react';
 import './UniversityBanner.css';
 
-// Using Clearbit Logo API for consistent logos (or specific verified URLs)
-// Some are placeholders if Clearbit doesn't have a good one, but major unis should be fine.
-// Using inline SVGs or direct image links for the logos requested.
+// Local logo imports — faster, reliable, Vite-optimized
+import UofTLogo from '../../assets/UofT.webp';
+import McGillLogo from '../../assets/mcgill-logo.webp';
+import UBCLogo from '../../assets/UBC.webp';
+import WaterlooLogo from '../../assets/Waterloo.webp';
+import MontrealLogo from '../../assets/Montreal.webp';
+import WesternLogo from '../../assets/Western.webp';
+import QueensLogo from '../../assets/queens-logo.webp';
+import YorkLogo from '../../assets/York.webp';
+import LaurierLogo from '../../assets/laurier-logo.webp';
+import GuelphLogo from '../../assets/guelph-crest.webp';
 
 const universities = [
-  { name: 'University of Toronto', url: 'https://upload.wikimedia.org/wikipedia/en/thumb/0/04/Utoronto_coa.svg/1200px-Utoronto_coa.svg.png', isHorizontal: false },
-  { name: 'McGill University', url: 'https://www.uniscope.ca/_next/image?url=%2Flogos%2Fmcgill-logo.png&w=256&q=75', isHorizontal: false },
-  { name: 'University of British Columbia', url: 'https://ires.ubc.ca/files/2019/10/ubc-logo.png', isHorizontal: false },
-  { name: 'University of Waterloo', url: 'https://upload.wikimedia.org/wikipedia/en/thumb/6/6e/University_of_Waterloo_seal.svg/1200px-University_of_Waterloo_seal.svg.png', isHorizontal: false },
-  { name: 'University ofhttps://www.frog3d.com/wp-content/uploads/2022/11/york-university.png', url: 'https://www.ipsa.org/sites/default/files/news-announcements/joboffer/logo-186377.png', isHorizontal: true },
-  { name: 'Western University', url: 'https://uniscope.ca/logos/western-logo2.png', isHorizontal: true },
-  { name: "Queen's University", url: 'https://www.uniscope.ca/_next/image?url=%2Flogos%2Fqueens-logo.png&w=256&q=75', isHorizontal: true },
-  { name: "York University", url: "https://www.frog3d.com/wp-content/uploads/2022/11/york-university.png", isHorizontal: true },
-  { name: "Wilfrid Laurier University", url: "https://www.uniscope.ca/_next/image?url=%2Flogos%2Flaurier-logo.png&w=256&q=75", isHorizontal: false },
-  { name: "University of Guelph", url: "https://www.uniscope.ca/_next/image?url=%2Flogos%2Fguelph-crest.webp&w=256&q=75", isHorizontal: false }
+  { name: 'University of Toronto', url: UofTLogo, isHorizontal: false, scale: 1.75 },
+  { name: 'McGill University', url: McGillLogo, isHorizontal: false },
+  { name: 'University of British Columbia', url: UBCLogo, isHorizontal: false },
+  { name: 'University of Waterloo', url: WaterlooLogo, isHorizontal: false, scale: 1.4 },
+  { name: 'Université de Montréal', url: MontrealLogo, isHorizontal: true },
+  { name: 'Western University', url: WesternLogo, isHorizontal: true },
+  { name: "Queen's University", url: QueensLogo, isHorizontal: true },
+  { name: 'York University', url: YorkLogo, isHorizontal: true },
+  { name: 'Wilfrid Laurier University', url: LaurierLogo, isHorizontal: false },
+  { name: 'University of Guelph', url: GuelphLogo, isHorizontal: false }
 ];
 
 // Only duplicate twice instead of 4x — still enough for seamless scrolling,
@@ -72,6 +80,8 @@ const UniversityBanner: React.FC = () => {
               alt={`${uni.name} logo`}
               className={`university-logo ${uni.isHorizontal ? 'logo-horizontal' : 'logo-standard'}`}
               loading="lazy"
+              style={uni.scale ? { transform: `scale(${uni.scale})` } : undefined}
+              onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = 'none'; }}
             />
           </div>
         ))}

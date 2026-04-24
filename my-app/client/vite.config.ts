@@ -4,7 +4,10 @@ import react from '@vitejs/plugin-react'
 // https://vite.dev/config/
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), '');
-  const adsenseClientId = env.VITE_GOOGLE_ADSENSE_CLIENT_ID;
+  // loadEnv only reads .env* files; on Vercel the value comes via process.env,
+  // so fall back to that or the ADSENSE_SCRIPT placeholder gets stripped in prod.
+  const adsenseClientId =
+    env.VITE_GOOGLE_ADSENSE_CLIENT_ID || process.env.VITE_GOOGLE_ADSENSE_CLIENT_ID;
 
   return {
     plugins: [
