@@ -101,6 +101,8 @@ function ReviewsList({
         </div>
       ) : (
         <>
+          <AdUnit adSlot="7928953910" />
+
           <div className="reviews-grid">
             {visibleReviews.map((review) => (
               <div key={review._id} className="review-card">
@@ -197,7 +199,7 @@ function ReviewsList({
             </div>
           )}
 
-          <AdUnit adSlot="1150044728" />
+          <AdUnit adSlot="1150044728" adFormat="auto" />
         </>
       )}
     </div>

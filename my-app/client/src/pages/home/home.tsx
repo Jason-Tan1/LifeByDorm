@@ -126,8 +126,8 @@ function Home() {
         setRecentVerifiedReviews(
           Array.isArray(stats.recentVerifiedReviews)
             ? stats.recentVerifiedReviews.filter(
-                (review: any) => review?.verified === true && /\S/.test(String(review?.description || ''))
-              )
+              (review: any) => review?.verified === true && /\S/.test(String(review?.description || ''))
+            )
             : []
         );
       } catch (e) {
@@ -395,7 +395,7 @@ function Home() {
 
         <div className="featured-container" style={{ padding: '0 clamp(8px, 2vw, 20px)', marginTop: '20px', marginBottom: '20px', boxSizing: 'border-box' }}>
           <Suspense fallback={null}>
-            <AdUnit adSlot="6590802616" />
+            <AdUnit adSlot="6590802616" adFormat="auto" />
           </Suspense>
         </div>
 
@@ -410,6 +410,12 @@ function Home() {
             recentVerifiedReviews={recentVerifiedReviews}
           />
         </Suspense>
+
+        <div className="featured-container" style={{ padding: '0 clamp(8px, 2vw, 20px)', marginTop: '20px', marginBottom: '20px', boxSizing: 'border-box' }}>
+          <Suspense fallback={null}>
+            <AdUnit adSlot="8050349200" />
+          </Suspense>
+        </div>
 
       </main>
 

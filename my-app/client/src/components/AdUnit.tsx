@@ -13,7 +13,7 @@ interface AdUnitProps {
   style?: React.CSSProperties;
 }
 
-function AdUnit({ adSlot, adFormat = 'auto', fullWidthResponsive = true, style }: AdUnitProps) {
+function AdUnit({ adSlot, adFormat = 'horizontal', fullWidthResponsive = true, style }: AdUnitProps) {
   const adRef = useRef<HTMLModElement>(null);
   const pushed = useRef(false);
   const clientId = import.meta.env.VITE_GOOGLE_ADSENSE_CLIENT_ID;
@@ -32,23 +32,25 @@ function AdUnit({ adSlot, adFormat = 'auto', fullWidthResponsive = true, style }
   if (!clientId && !isDev) return null;
 
   return (
-    <div className="ad-unit-container" style={{ width: '100%', margin: '20px 0', ...style }}>
+    <div className="ad-unit-container" style={{ width: '100%', margin: '16px 0', ...style }}>
       {isDev ? (
         <div style={{
           width: '100%',
-          minHeight: '250px',
+          minHeight: '120px',
+          maxHeight: '160px',
           backgroundColor: '#ffffff',
           borderRadius: '8px',
           border: '1px solid #eaeaea',
           boxShadow: '0 4px 6px rgba(0,0,0,0.05)',
           display: 'flex',
-          flexDirection: 'column',
+          flexDirection: 'row',
           alignItems: 'center',
-          justifyContent: 'center',
+          justifyContent: 'space-between',
           position: 'relative',
           overflow: 'hidden',
-          padding: '20px',
-          boxSizing: 'border-box'
+          padding: '12px 16px',
+          boxSizing: 'border-box',
+          gap: '16px'
         }}>
           {/* Mock Google Ad Choices Badge */}
           <div style={{
@@ -71,30 +73,20 @@ function AdUnit({ adSlot, adFormat = 'auto', fullWidthResponsive = true, style }
             <span style={{ fontSize: '10px' }}>&times;</span>
           </div>
 
-          {/* Mock Ad Content */}
-          <div style={{
-             width: '100%',
-             maxWidth: '900px',
-             display: 'flex',
-             flexDirection: 'column',
-             gap: '12px'
-          }}>
-            <div style={{ height: '140px', backgroundColor: '#f9f9f9', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1px solid #f0f0f0' }}>
-              <span style={{ color: '#b0b0b0', fontSize: '1.2rem', fontWeight: 600 }}>Advertisement Image</span>
-            </div>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-               <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                 <div style={{ height: '18px', width: '200px', backgroundColor: '#eaeaea', borderRadius: '4px' }}></div>
-                 <div style={{ height: '14px', width: '120px', backgroundColor: '#f5f5f5', borderRadius: '4px' }}></div>
-               </div>
-               <button style={{ backgroundColor: '#1a1a1a', color: 'white', border: 'none', padding: '10px 20px', borderRadius: '50px', fontWeight: 'bold', cursor: 'pointer', fontSize: '0.9rem' }}>
-                 Visit Site
-               </button>
+          {/* Mock Ad Content — horizontal banner layout */}
+          <div style={{ height: '88px', width: '120px', flexShrink: 0, backgroundColor: '#f9f9f9', borderRadius: '6px', display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1px solid #f0f0f0' }}>
+            <span style={{ color: '#b0b0b0', fontSize: '0.75rem', fontWeight: 600 }}>Ad Image</span>
+          </div>
+          <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '6px', minWidth: 0 }}>
+            <div style={{ height: '16px', width: '70%', backgroundColor: '#eaeaea', borderRadius: '4px' }}></div>
+            <div style={{ height: '12px', width: '45%', backgroundColor: '#f5f5f5', borderRadius: '4px' }}></div>
+            <div style={{ fontSize: '10px', color: '#b8b8b8', textTransform: 'uppercase', letterSpacing: '0.05em', marginTop: '2px' }}>
+              Local Ad Placeholder ({adSlot})
             </div>
           </div>
-          <div style={{ marginTop: '20px', fontSize: '11px', color: '#b8b8b8', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-            Local AdSense Placeholder ({adSlot})
-          </div>
+          <button style={{ backgroundColor: '#1a1a1a', color: 'white', border: 'none', padding: '8px 16px', borderRadius: '50px', fontWeight: 'bold', cursor: 'pointer', fontSize: '0.8rem', flexShrink: 0 }}>
+            Visit Site
+          </button>
         </div>
       ) : (
         <ins

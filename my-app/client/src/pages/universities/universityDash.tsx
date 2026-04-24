@@ -394,6 +394,8 @@ function UniversityDash() {
             </div>
           </div>
 
+          <AdUnit adSlot="6737267534" />
+
           <div className="dorms-grid">
             {loading ? (
               <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', width: '100%', minHeight: '300px' }}>
@@ -445,7 +447,7 @@ function UniversityDash() {
             )}
           </div>
 
-          <AdUnit adSlot="6505275777" />
+          <AdUnit adSlot="6505275777" adFormat="auto" />
         </div>
       </main>
       <Footer />
