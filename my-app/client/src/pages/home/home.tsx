@@ -43,8 +43,8 @@ function Home() {
   }), []);
 
   useSEO({
-    title: 'LifeByDorm | Real Student Photos & Dorm Reviews for Canadian Schools',
-    description: 'Read real, unbiased dorm reviews and see authentic photos from students at Canadian universities. Find the best college residences before you move in on LifeByDorm.',
+    title: 'LifeByDorm — Honest Dorm Reviews for Canadian Universities',
+    description: 'Read real dorm reviews and student photos from Canadian universities. Compare residences and find your best dorm before move-in day.',
     canonicalPath: '/',
     jsonLd: homepageJsonLd
   });

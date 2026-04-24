@@ -14,12 +14,12 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap" onload="this.onload=null;this.rel='stylesheet'" />
   <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap" /></noscript>
-  <title>LifeByDorm | Real Student Photos & Dorm Reviews for Canadian Schools</title>
+  <title>LifeByDorm — Honest Dorm Reviews for Canadian Universities</title>
 
   <!-- Primary Meta Tags -->
-  <meta name="title" content="LifeByDorm | Real Student Photos & Dorm Reviews for Canadian Schools" />
+  <meta name="title" content="LifeByDorm — Honest Dorm Reviews for Canadian Universities" />
   <meta name="description"
-    content="Read real, unbiased dorm reviews and see authentic photos from students at Canadian universities. Find the best college residences before you move in on LifeByDorm." />
+    content="Read real dorm reviews and student photos from Canadian universities. Compare residences and find your best dorm before move-in day." />
   <meta name="keywords"
     content="LifeByDorm, dorm reviews, residence reviews, canadian universities, student housing, college dorms, university residence, real student photos, uoft dorms, york university dorms, western university residence, mcgill dorms, waterloo residence, ubc dorms, best dorms in canada, university housing reviews, college residence ratings, first year dorms canada, student accommodation canada" />
   <meta name="author" content="LifeByDorm" />
@@ -34,20 +34,20 @@
   <meta property="og:site_name" content="LifeByDorm" />
   <meta property="og:locale" content="en_CA" />
   <meta property="og:locale:alternate" content="fr_CA" />
-  <meta property="og:title" content="LifeByDorm | Real Student Photos & Dorm Reviews" />
+  <meta property="og:title" content="LifeByDorm — Honest Dorm Reviews for Canadian Universities" />
   <meta property="og:description"
-    content="Read real, unbiased dorm reviews and see authentic photos from students at Canadian universities. Find the best college residences before you move in." />
+    content="Read real dorm reviews and student photos from Canadian universities. Compare residences and find your best dorm before move-in day." />
   <meta property="og:image" content="https://www.lifebydorm.ca/LifeByDormShortLogoSquare.png" />
   <meta property="og:image:width" content="1200" />
   <meta property="og:image:height" content="630" />
-  <meta property="og:image:alt" content="LifeByDorm — Real student dorm reviews for Canadian universities" />
+  <meta property="og:image:alt" content="LifeByDorm — Honest dorm reviews for Canadian universities" />
 
   <!-- Twitter -->
   <meta property="twitter:card" content="summary_large_image" />
   <meta property="twitter:url" content="https://www.lifebydorm.ca/" />
-  <meta property="twitter:title" content="LifeByDorm | Real Student Photos & Dorm Reviews" />
+  <meta property="twitter:title" content="LifeByDorm — Honest Dorm Reviews for Canadian Universities" />
   <meta property="twitter:description"
-    content="Read real, unbiased dorm reviews and see authentic photos from students at Canadian universities. Find the best college residences before you move in." />
+    content="Read real dorm reviews and student photos from Canadian universities. Compare residences and find your best dorm before move-in day." />
   <meta property="twitter:image" content="https://www.lifebydorm.ca/LifeByDormShortLogoSquare.png" />
 
   <!-- Preconnect to third-party origins -->
@@ -56,22 +56,13 @@
   <link rel="preconnect" href="https://www.googletagmanager.com" />
   <link rel="dns-prefetch" href="https://www.googletagmanager.com" />
 
-  <!-- Google Analytics 4 (deferred) -->
+  <!-- Google Analytics 4 -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-GG4MC5H4PE"></script>
   <script>
     window.dataLayer = window.dataLayer || [];
     function gtag() { dataLayer.push(arguments); }
-    if ('requestIdleCallback' in window) {
-      requestIdleCallback(function() {
-        gtag('js', new Date());
-        gtag('config', 'G-GG4MC5H4PE');
-      });
-    } else {
-      setTimeout(function() {
-        gtag('js', new Date());
-        gtag('config', 'G-GG4MC5H4PE');
-      }, 0);
-    }
+    gtag('js', new Date());
+    gtag('config', 'G-GG4MC5H4PE');
   </script>
   <!-- Google AdSense (injected at build time if VITE_GOOGLE_ADSENSE_CLIENT_ID is set) -->
   <!--ADSENSE_SCRIPT-->
@@ -84,7 +75,10 @@
       "name": "LifeByDorm",
       "url": "https://www.lifebydorm.ca",
       "logo": "https://www.lifebydorm.ca/LifeByDormShortLogoSquare.png",
-      "description": "Real student photos and dorm reviews for Canadian universities. Find the best Canadian residences before you move in."
+      "description": "Read real dorm reviews and student photos from Canadian universities. Compare residences and find your best dorm before move-in day.",
+      "sameAs": [
+        "https://www.instagram.com/lifebydorm/"
+      ]
     }
   </script>
 </head>
@@ -92,6 +86,31 @@
 <body>
   <div id="root"></div>
   <script type="module" src="/src/main.tsx"></script>
+
+  <!-- SEO: Crawlers that don't run JS see this fallback content -->
+  <noscript>
+    <h1>LifeByDorm — Honest Dorm Reviews for Canadian Universities</h1>
+    <p>Read real dorm reviews and student photos from Canadian universities. Compare residences and find your best dorm before move-in day.</p>
+    <nav>
+      <h2>Popular Universities</h2>
+      <ul>
+        <li><a href="/universities/york-university">York University Dorms</a></li>
+        <li><a href="/universities/university-of-toronto">University of Toronto Dorms</a></li>
+        <li><a href="/universities/mcgill-university">McGill University Dorms</a></li>
+        <li><a href="/universities/university-of-british-columbia">UBC Dorms</a></li>
+        <li><a href="/universities/university-of-waterloo">University of Waterloo Dorms</a></li>
+        <li><a href="/universities/western-university">Western University Dorms</a></li>
+        <li><a href="/universities/queens-university">Queen's University Dorms</a></li>
+        <li><a href="/universities/wilfrid-laurier-university">Wilfrid Laurier Dorms</a></li>
+        <li><a href="/universities/university-of-guelph">University of Guelph Dorms</a></li>
+      </ul>
+      <h2>Quick Links</h2>
+      <ul>
+        <li><a href="/review">Write a Dorm Review</a></li>
+        <li><a href="/contact">Contact Us</a></li>
+      </ul>
+    </nav>
+  </noscript>
 </body>
 
 </html>

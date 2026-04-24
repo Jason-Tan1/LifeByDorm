@@ -150,11 +150,11 @@ app.use(helmet({
   contentSecurityPolicy: isProduction ? {
     directives: {
       defaultSrc: ["'self'"],
-      scriptSrc: ["'self'", "'unsafe-inline'", "https://accounts.google.com", "https://apis.google.com", "https://www.googletagmanager.com"],
+      scriptSrc: ["'self'", "'unsafe-inline'", "https://accounts.google.com", "https://apis.google.com", "https://www.googletagmanager.com", "https://www.google-analytics.com", "https://pagead2.googlesyndication.com"],
       styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
       imgSrc: ["'self'", "data:", "https:", "blob:"],
       fontSrc: ["'self'", "https://fonts.gstatic.com"],
-      connectSrc: ["'self'", process.env.FRONTEND_URL || '', "https://accounts.google.com", "https://www.googleapis.com", "https://www.google-analytics.com"].filter(Boolean),
+      connectSrc: ["'self'", process.env.FRONTEND_URL || '', "https://accounts.google.com", "https://www.googleapis.com", "https://www.google-analytics.com", "https://analytics.google.com", "https://region1.google-analytics.com", "https://pagead2.googlesyndication.com"].filter(Boolean),
       frameSrc: ["https://accounts.google.com"],
       objectSrc: ["'none'"],
       upgradeInsecureRequests: [],
