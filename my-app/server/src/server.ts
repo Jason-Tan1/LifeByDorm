@@ -1902,7 +1902,7 @@ app.post('/api/reviews', submitLimiter, validate(reviewSchema), async (req: Requ
       images
     } = req.body;
 
-    // Check if user is logged in and has an academic email for verified badge
+    // Check if user is logged in — any signed-in user is verified
     let isVerified = false;
     let userEmail = '';
     const authHeader = req.headers.authorization;
@@ -1916,9 +1916,9 @@ app.post('/api/reviews', submitLimiter, validate(reviewSchema), async (req: Requ
       try {
         const decoded = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET as Secret, { algorithms: [JWT_ALGORITHM] }) as JwtPayload;
         userEmail = decoded.name || '';
-        // Verified badge requires a recognized university email
-        isVerified = userEmail ? await isAcademicEmail(userEmail) : false;
-        if (!isProduction) console.log('🎓 Academic email check:', userEmail, '→', isVerified);
+        // Any authenticated user gets the verified badge
+        isVerified = !!userEmail;
+        if (!isProduction) console.log('🎓 Verified student check:', userEmail, '→', isVerified);
       } catch (err) {
         if (!isProduction) console.log('🔑 Token verification failed:', err instanceof Error ? err.message : 'Unknown error');
         isVerified = false;
