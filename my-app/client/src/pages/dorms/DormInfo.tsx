@@ -28,6 +28,11 @@ interface DormInfoProps {
   reviews: any[];
   universityName?: string;
   universityLocation?: string;
+  // Server-computed values (from /api/universities/:slug/dorms/:dormSlug).
+  // When provided, these let the panel render before /api/reviews loads.
+  totalReviewCount?: number;
+  wouldDormAgainPercent?: number;
+  reviewImagesFromServer?: string[];
   calculateAverageRating: () => number;
   calculateCategoryAverages: () => {
     room: number;
@@ -42,7 +47,7 @@ interface DormInfoProps {
   onAddPhotosClick: () => void;
 }
 
-function DormInfo({ dorm, reviews, universityName, universityLocation, calculateAverageRating, calculateCategoryAverages, onOpenCompare, openLightbox, onShowAllPhotos, onAddPhotosClick }: DormInfoProps) {
+function DormInfo({ dorm, reviews, universityName, universityLocation, totalReviewCount, wouldDormAgainPercent, reviewImagesFromServer, calculateAverageRating, calculateCategoryAverages, onOpenCompare, openLightbox, onShowAllPhotos, onAddPhotosClick }: DormInfoProps) {
   const [showMap, setShowMap] = useState(false);
 
   const renderStars = (rating: number) => {
@@ -63,11 +68,12 @@ function DormInfo({ dorm, reviews, universityName, universityLocation, calculate
     );
   };
 
-  const getWouldDormAgainPercentage = () => {
-    if (reviews.length === 0) return 0;
-    const yesCount = reviews.filter(r => r.wouldDormAgain === true).length;
-    return Math.round((yesCount / reviews.length) * 100);
-  };
+  // Effective review count and would-dorm-again % prefer server-provided values
+  // so this panel renders correctly before /api/reviews has resolved.
+  const effectiveReviewCount = typeof totalReviewCount === 'number' ? totalReviewCount : reviews.length;
+  const effectiveWouldDormAgainPercent = typeof wouldDormAgainPercent === 'number'
+    ? wouldDormAgainPercent
+    : (reviews.length === 0 ? 0 : Math.round((reviews.filter(r => r.wouldDormAgain === true).length / reviews.length) * 100));
 
   return (
     <div className="dorm-info">
@@ -118,7 +124,7 @@ function DormInfo({ dorm, reviews, universityName, universityLocation, calculate
               { label: 'Amenities', value: calculateCategoryAverages().amenities },
               { label: 'Location', value: calculateCategoryAverages().location },
             ].map((item) => {
-              const hasReviews = reviews.length > 0;
+              const hasReviews = effectiveReviewCount > 0;
               const percentage = hasReviews ? (item.value / 5) * 100 : 0;
               return (
                 <div key={item.label} className="distribution-item">
@@ -149,16 +155,16 @@ function DormInfo({ dorm, reviews, universityName, universityLocation, calculate
 
             <div className="would-dorm-again-box">
               <div className="would-dorm-percentage-large">
-                {reviews.length > 0 ? `${getWouldDormAgainPercentage()}%` : 'N/A'}
-                {reviews.length > 0 && <CheckCircleIcon className="checkmark-icon" />}
+                {effectiveReviewCount > 0 ? `${effectiveWouldDormAgainPercent}%` : 'N/A'}
+                {effectiveReviewCount > 0 && <CheckCircleIcon className="checkmark-icon" />}
               </div>
               <span className="would-dorm-text">Would Dorm Again</span>
             </div>
 
             <div className="average-rating-box">
-              <span className="average-rating-label">Average Rating: <strong>{reviews.length > 0 ? calculateAverageRating().toFixed(1) : 'N/A'}</strong></span>
+              <span className="average-rating-label">Average Rating: <strong>{effectiveReviewCount > 0 ? calculateAverageRating().toFixed(1) : 'N/A'}</strong></span>
               <div className="stars-display">
-                {reviews.length > 0 ? renderStars(calculateAverageRating()) : renderStars(0)}
+                {effectiveReviewCount > 0 ? renderStars(calculateAverageRating()) : renderStars(0)}
               </div>
             </div>
           </div>
@@ -175,8 +181,12 @@ function DormInfo({ dorm, reviews, universityName, universityLocation, calculate
         </div>
         
         {(() => {
+          // Server sample (reviewImagesFromServer) is available immediately on
+          // page load; reviews.flatMap covers any newer images that show up
+          // once the lazy /api/reviews fetch resolves.
           const allPhotos = [...new Set([
             ...(dorm.images || []),
+            ...(reviewImagesFromServer || []),
             ...reviews.flatMap(r => r.images || []),
             ...reviews.map(r => r.fileImage).filter(Boolean)
           ])];
@@ -224,7 +234,7 @@ function DormInfo({ dorm, reviews, universityName, universityLocation, calculate
             )}
             <div className="ai-summary-footer">
               <span className="ai-summary-disclaimer">
-                Based on {reviews.length} student review{reviews.length !== 1 ? 's' : ''}
+                Based on {effectiveReviewCount} student review{effectiveReviewCount !== 1 ? 's' : ''}
               </span>
             </div>
           </div>

@@ -60,10 +60,12 @@ function Home() {
   const [dormScrollPosition, setDormScrollPosition] = useState(0);
   const [recentVerifiedReviews, setRecentVerifiedReviews] = useState<RecentVerifiedReview[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-
+  const [recentReviewsLoading, setRecentReviewsLoading] = useState(true);
 
   // Track if data has been fetched to prevent duplicate calls
   const hasFetched = useRef(false);
+  const hasFetchedRecentReviews = useRef(false);
+  const recentReviewsAnchorRef = useRef<HTMLDivElement | null>(null);
 
   const calculateOverallRating = useCallback((review: any) => {
     const ratings = [review.room, review.bathroom, review.building, review.amenities, review.location];
@@ -78,12 +80,13 @@ function Home() {
 
     hasFetched.current = true;
 
-    // Optimized: Fetch all homepage data in a single request (no longer waits for university context)
-    const fetchAllData = async () => {
+    // Above-the-fold stats: sliders, totals, and the giveaway counter.
+    // Recent verified reviews load separately (see lazy-load effect below)
+    // so the page paints without waiting for them.
+    const fetchStats = async () => {
       setIsLoading(true);
 
       try {
-        // Single API call to get all stats
         const statsRes = await fetch(`${API_BASE}/api/stats/homepage`);
 
         if (!statsRes.ok) {
@@ -122,14 +125,6 @@ function Home() {
         if (stats.totalReviewsCount !== undefined) {
           setTotalReviewsCount(stats.totalReviewsCount);
         }
-
-        setRecentVerifiedReviews(
-          Array.isArray(stats.recentVerifiedReviews)
-            ? stats.recentVerifiedReviews.filter(
-              (review: any) => review?.verified === true && /\S/.test(String(review?.description || ''))
-            )
-            : []
-        );
       } catch (e) {
         console.error('Failed to fetch data', e);
       } finally {
@@ -137,8 +132,58 @@ function Home() {
       }
     };
 
-    fetchAllData();
+    fetchStats();
   }, [calculateOverallRating]);
+
+  // Lazy-load recent verified reviews when the section nears the viewport.
+  // Falls back to fetching after the initial render if IntersectionObserver
+  // is unavailable (e.g., very old browsers).
+  useEffect(() => {
+    if (hasFetchedRecentReviews.current) return;
+
+    const fetchRecentReviews = async () => {
+      if (hasFetchedRecentReviews.current) return;
+      hasFetchedRecentReviews.current = true;
+      setRecentReviewsLoading(true);
+
+      try {
+        const res = await fetch(`${API_BASE}/api/stats/recent-reviews`);
+        if (!res.ok) throw new Error('Failed to fetch recent reviews');
+        const data = await res.json();
+        setRecentVerifiedReviews(
+          Array.isArray(data)
+            ? data.filter(
+              (review: any) => review?.verified === true && /\S/.test(String(review?.description || ''))
+            )
+            : []
+        );
+      } catch (e) {
+        console.error('Failed to fetch recent reviews', e);
+        setRecentVerifiedReviews([]);
+      } finally {
+        setRecentReviewsLoading(false);
+      }
+    };
+
+    const target = recentReviewsAnchorRef.current;
+    if (!target || typeof IntersectionObserver === 'undefined') {
+      // Fallback: fetch shortly after first paint so we don't block above-the-fold rendering
+      const id = window.setTimeout(fetchRecentReviews, 0);
+      return () => window.clearTimeout(id);
+    }
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries.some(e => e.isIntersecting)) {
+          observer.disconnect();
+          fetchRecentReviews();
+        }
+      },
+      { rootMargin: '400px 0px' }
+    );
+    observer.observe(target);
+    return () => observer.disconnect();
+  }, []);
 
   /* Helper to scroll a container by exactly one card width + gap */
   const scrollContainer = (containerId: string, direction: 'left' | 'right', setPos: (pos: number) => void) => {
@@ -404,12 +449,14 @@ function Home() {
           <InfoSection />
         </Suspense>
 
-        <Suspense fallback={<SkeletonSlider count={4} />}>
-          <RecentReviewsSection
-            isLoading={isLoading}
-            recentVerifiedReviews={recentVerifiedReviews}
-          />
-        </Suspense>
+        <div ref={recentReviewsAnchorRef}>
+          <Suspense fallback={<SkeletonSlider count={4} />}>
+            <RecentReviewsSection
+              isLoading={recentReviewsLoading}
+              recentVerifiedReviews={recentVerifiedReviews}
+            />
+          </Suspense>
+        </div>
 
         <div className="featured-container" style={{ padding: '0 clamp(8px, 2vw, 20px)', marginTop: '20px', marginBottom: '20px', boxSizing: 'border-box' }}>
           <Suspense fallback={null}>

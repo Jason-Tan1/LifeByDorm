@@ -1,11 +1,10 @@
-import { useEffect, useState, useMemo, useRef } from 'react';
+import { useEffect, useState, useMemo, useRef, lazy, Suspense } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link, useParams, useNavigate } from 'react-router-dom';
 import NavBar from '../nav/navbar';
 import Footer from '../home/footer';
 import Star from '@mui/icons-material/Star';
 import HomeIcon from '@mui/icons-material/Home';
-import AddDorm from './AddDorm';
 import './universityDash.css';
 import '../home/searchbar.css';
 import { FaSearch, FaInstagram } from 'react-icons/fa';
@@ -14,10 +13,14 @@ import DefaultDorm from '../../assets/Default_Dorm.webp';
 import LBDLogo from '../../assets/LBDLogo.webp';
 import '../../components/PageLoader.css';
 import { useSEO } from '../../hooks/useSEO';
-import CompareModal from '../compare/CompareModal';
 import CompareCard from '../../components/CompareCard/CompareCard';
 import AdUnit from '../../components/AdUnit';
 import GetYorkedProfile from '../../assets/Get_Yorked.png';
+
+// Lazy boundaries: AddDorm is below the fold and CompareModal pulls in
+// react-markdown — neither is needed for first paint.
+const AddDorm = lazy(() => import('./AddDorm'));
+const CompareModal = lazy(() => import('../compare/CompareModal'));
 
 // Define types for University and Dorm data from API
 type APIUniversity = {
@@ -61,6 +64,7 @@ function UniversityDash() {
   const [reviewCounts, setReviewCounts] = useState<{ [dormName: string]: number }>({});
   const [dormRatings, setDormRatings] = useState<{ [dormName: string]: number }>({});
   const [loading, setLoading] = useState(true);
+  const [dormsLoading, setDormsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isCompareModalOpen, setIsCompareModalOpen] = useState(false);
 
@@ -111,11 +115,14 @@ function UniversityDash() {
     ogImage: university?.imageUrl || undefined
   });
 
-  // Fetch university and dorm data when component mounts or universityName changes
+  // Fetch university and dorm data when component mounts or universityName changes.
+  // The two fetches now resolve independently so the university card can paint
+  // while the dorms grid is still loading its stats.
   useEffect(() => {
     if (!universityName) return;
     let cancelled = false;
     setLoading(true);
+    setDormsLoading(true);
     setError(null);
 
     // Helper to calculate overall rating from a review
@@ -124,35 +131,35 @@ function UniversityDash() {
       return ratings.reduce((acc, rating) => acc + rating, 0) / ratings.length;
     };
 
-    // Fetch data from APIs - try optimized endpoint first, fallback to old method
-    async function fetchData() {
+    // 1. University card data (small payload, paints first)
+    (async () => {
       try {
-        // Fetch university data and dorm stats in parallel (both only need the slug from URL)
-        const [uniRes, dormsStatsRes] = await Promise.all([
-          fetch(`${API_BASE}/api/universities/${encodeURIComponent(universityName!)}`),
-          fetch(`${API_BASE}/api/universities/${encodeURIComponent(universityName!)}/dorms-stats`)
-        ]);
-
-        if (!uniRes.ok) {
-          throw new Error(`Failed to load university: ${uniRes.status}`);
-        }
+        const uniRes = await fetch(`${API_BASE}/api/universities/${encodeURIComponent(universityName!)}`);
+        if (!uniRes.ok) throw new Error(`Failed to load university: ${uniRes.status}`);
         const uniData: APIUniversity = await uniRes.json();
+        if (!cancelled) setUniversity(uniData);
+      } catch (e: any) {
+        if (!cancelled) setError(e?.message || 'Failed to load data');
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    })();
+
+    // 2. Dorms list with stats (independent — grid stays in skeleton until done)
+    (async () => {
+      try {
+        const dormsStatsRes = await fetch(`${API_BASE}/api/universities/${encodeURIComponent(universityName!)}/dorms-stats`);
 
         let dormsWithStats: APIDorm[] = [];
 
         if (dormsStatsRes.ok) {
-          // Use the optimized endpoint - dorms come with stats pre-calculated
           dormsWithStats = await dormsStatsRes.json();
         } else {
-          // Fallback to old method if new endpoint not available (404)
-          // Fallback to old dorms endpoint
+          // Fallback to old method if dorms-stats endpoint isn't available
           const dormsRes = await fetch(`${API_BASE}/api/universities/${encodeURIComponent(universityName!)}/dorms`);
-          if (!dormsRes.ok) {
-            throw new Error(`Failed to load dorms: ${dormsRes.status}`);
-          }
+          if (!dormsRes.ok) throw new Error(`Failed to load dorms: ${dormsRes.status}`);
           const dormsData = await dormsRes.json();
 
-          // Fetch reviews for each dorm (old N+1 method)
           const reviewPromises = dormsData.map(async (dorm: any) => {
             try {
               const reviewRes = await fetch(
@@ -175,29 +182,24 @@ function UniversityDash() {
         }
 
         if (!cancelled) {
-          setUniversity(uniData);
           setDorms(dormsWithStats);
 
-          // Extract ratings and counts from the stats
           const counts: { [dormName: string]: number } = {};
           const ratings: { [dormName: string]: number } = {};
-
           dormsWithStats.forEach((dorm: any) => {
             counts[dorm.name] = dorm.reviewCount || 0;
             ratings[dorm.name] = dorm.avgRating || 0;
           });
-
           setReviewCounts(counts);
           setDormRatings(ratings);
         }
-      } catch (e: any) {
-        if (!cancelled) setError(e?.message || 'Failed to load data');
+      } catch (e) {
+        console.error('Error fetching dorm stats', e);
       } finally {
-        if (!cancelled) setLoading(false);
+        if (!cancelled) setDormsLoading(false);
       }
-    }
+    })();
 
-    fetchData();
     return () => {
       cancelled = true;
     };
@@ -301,15 +303,17 @@ function UniversityDash() {
             </a>
           </div>
 
-          {/* Add Dorm Section */}
-          <AddDorm
-            universitySlug={universityName || ''}
-            universityName={displayUniversity.name}
-            onDormSubmitted={() => {
-              // Optionally refresh dorms list (though pending dorms won't show)
-              // Dorm submitted successfully
-            }}
-          />
+          {/* Add Dorm Section — defer the form chunk until React idles */}
+          <Suspense fallback={null}>
+            <AddDorm
+              universitySlug={universityName || ''}
+              universityName={displayUniversity.name}
+              onDormSubmitted={() => {
+                // Optionally refresh dorms list (though pending dorms won't show)
+                // Dorm submitted successfully
+              }}
+            />
+          </Suspense>
 
           {/* Compare Dorms Section */}
           <CompareCard
@@ -397,7 +401,7 @@ function UniversityDash() {
           <AdUnit adSlot="6737267534" />
 
           <div className="dorms-grid">
-            {loading ? (
+            {dormsLoading ? (
               <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', width: '100%', minHeight: '300px' }}>
                 <div className="loader-content">
                   <div className="logo-pulse">
@@ -451,11 +455,15 @@ function UniversityDash() {
         </div>
       </main>
       <Footer />
-      <CompareModal
-        isOpen={isCompareModalOpen}
-        onClose={() => setIsCompareModalOpen(false)}
-        initialUni1={universityName}
-      />
+      {isCompareModalOpen && (
+        <Suspense fallback={null}>
+          <CompareModal
+            isOpen={isCompareModalOpen}
+            onClose={() => setIsCompareModalOpen(false)}
+            initialUni1={universityName}
+          />
+        </Suspense>
+      )}
     </div>
   );
 }

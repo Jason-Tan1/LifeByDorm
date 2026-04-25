@@ -777,8 +777,11 @@ app.get('/api/stats/homepage', readOnlyLimiter, async (req: Request, res: Respon
     }
 
     // Use aggregation pipeline to compute stats on the database server
-    // instead of fetching entire collections into memory
-    const [universities, dorms, reviewStats, recentVerifiedReviewsRaw] = await Promise.all([
+    // instead of fetching entire collections into memory.
+    // Note: recent verified reviews are served by a separate endpoint
+    // (/api/stats/recent-reviews) so this payload stays small and the
+    // homepage's above-the-fold sections paint without waiting for them.
+    const [universities, dorms, reviewStats] = await Promise.all([
       University.find({}).lean(),
       Dorm.find({
         $or: [{ status: 'approved' }, { status: { $exists: false } }]
@@ -796,18 +799,7 @@ app.get('/api/stats/homepage', readOnlyLimiter, async (req: Request, res: Respon
             reviewCount: { $sum: 1 }
           }
         }
-      ]),
-      UserReview.find({
-        verified: true,
-        description: { $regex: /\S/ },
-        $or: [
-          { status: 'approved' },
-          { status: { $exists: false } }
-        ]
-      })
-        .sort({ createdAt: -1 })
-        .limit(50)
-        .lean()
+      ])
     ]);
 
     // Build lookup maps from aggregation results
@@ -881,13 +873,66 @@ app.get('/api/stats/homepage', readOnlyLimiter, async (req: Request, res: Respon
       .sort((a, b) => b.reviewCount - a.reviewCount)
       .slice(0, 10);
 
+    const result = {
+      topUniversities,
+      topRatedDorms,
+      mostReviewedDorms,
+      universityStats,
+      dormStats,
+      totalReviewsCount
+    };
+
+    // Cache the result
+    setCache(cacheKey, result);
+
+    res.set('Cache-Control', 'public, max-age=300, s-maxage=600, stale-while-revalidate=60');
+    res.json(result);
+  } catch (err) {
+    console.error('Error fetching homepage stats', err);
+    res.status(500).json({ message: 'Error fetching homepage stats' });
+  }
+});
+
+// Recent verified reviews for homepage carousel - lazy-loaded separately so the
+// above-the-fold sliders don't wait for a full reviews fetch + user lookup.
+app.get('/api/stats/recent-reviews', readOnlyLimiter, async (req: Request, res: Response) => {
+  try {
+    const cacheKey = 'homepage-recent-reviews';
+    const cachedResult = getCached<any>(cacheKey);
+    if (cachedResult) {
+      res.set('Cache-Control', 'public, max-age=300, s-maxage=600, stale-while-revalidate=60');
+      return res.json(cachedResult);
+    }
+
+    const [universities, dorms, recentVerifiedReviewsRaw] = await Promise.all([
+      University.find({}).select('name slug').lean(),
+      Dorm.find({
+        $or: [{ status: 'approved' }, { status: { $exists: false } }]
+      }).select('name slug universitySlug imageUrl').lean(),
+      UserReview.find({
+        verified: true,
+        description: { $regex: /\S/ },
+        $or: [
+          { status: 'approved' },
+          { status: { $exists: false } }
+        ]
+      })
+        .sort({ createdAt: -1 })
+        .limit(50)
+        .lean()
+    ]);
+
+    const universityNameMap = new Map<string, string>();
+    universities.forEach((uni: any) => {
+      if (uni.slug && uni.name) universityNameMap.set(uni.slug, uni.name);
+    });
+
     const dormLookupByName = new Map<string, any>();
-    enrichedDorms.forEach((dorm: any) => {
+    dorms.forEach((dorm: any) => {
       const dormNameKey = `${dorm.universitySlug}:${String(dorm.name || '').trim().toLowerCase()}`;
       dormLookupByName.set(dormNameKey, dorm);
     });
 
-    // Fetch user details for recent reviews (supports reviews storing either user id or email)
     const userIdentifiers = [...new Set(recentVerifiedReviewsRaw.map((r: any) => String(r.user || '').trim()).filter(Boolean))];
     const objectIdRegex = /^[a-f\d]{24}$/i;
     const objectUserIds = userIdentifiers.filter((id) => objectIdRegex.test(id));
@@ -937,24 +982,12 @@ app.get('/api/stats/homepage', readOnlyLimiter, async (req: Request, res: Respon
       .filter((review: any) => !!review.universitySlug && !!review.dormSlug)
       .slice(0, 30);
 
-    const result = {
-      topUniversities,
-      topRatedDorms,
-      mostReviewedDorms,
-      recentVerifiedReviews,
-      universityStats,
-      dormStats,
-      totalReviewsCount
-    };
-
-    // Cache the result
-    setCache(cacheKey, result);
-
+    setCache(cacheKey, recentVerifiedReviews);
     res.set('Cache-Control', 'public, max-age=300, s-maxage=600, stale-while-revalidate=60');
-    res.json(result);
+    res.json(recentVerifiedReviews);
   } catch (err) {
-    console.error('Error fetching homepage stats', err);
-    res.status(500).json({ message: 'Error fetching homepage stats' });
+    console.error('Error fetching recent reviews', err);
+    res.status(500).json({ message: 'Error fetching recent reviews' });
   }
 });
 
@@ -1506,8 +1539,15 @@ app.get('/api/universities/:slug/dorms-stats', readOnlyLimiter, async (req: Requ
 
 // ========================================
 // SINGLE DORM ENDPOINT - Optimized for dorm detail page
-// Returns a single dorm with its ratings and review count
+// Returns a single dorm with its ratings, per-category averages, photo
+// sample, and review count so the client can render DormInfo from one
+// response (no follow-up /api/reviews fetch required for first paint).
 // ========================================
+
+// Tracks dorm IDs whose AI summary is being regenerated in the background
+// so we don't kick off duplicate Groq calls for the same dorm.
+const summaryRegenInFlight = new Set<string>();
+
 app.get('/api/universities/:slug/dorms/:dormSlug', readOnlyLimiter, async (req: Request, res: Response) => {
   try {
     const { slug, dormSlug } = req.params;
@@ -1539,20 +1579,67 @@ app.get('/api/universities/:slug/dorms/:dormSlug', readOnlyLimiter, async (req: 
     }).lean();
 
     let avgRating = 0;
+    const totals = { room: 0, bathroom: 0, building: 0, amenities: 0, location: 0 };
+    let wouldDormAgainCount = 0;
     if (reviews.length > 0) {
-      const total = reviews.reduce((sum: number, r: any) => {
-        return sum + (r.room + r.bathroom + r.building + r.amenities + r.location) / 5;
-      }, 0);
-      avgRating = total / reviews.length;
+      for (const r of reviews as any[]) {
+        totals.room += r.room || 0;
+        totals.bathroom += r.bathroom || 0;
+        totals.building += r.building || 0;
+        totals.amenities += r.amenities || 0;
+        totals.location += r.location || 0;
+        if (r.wouldDormAgain === true) wouldDormAgainCount++;
+      }
+      const overallTotal = totals.room + totals.bathroom + totals.building + totals.amenities + totals.location;
+      avgRating = overallTotal / reviews.length / 5;
+    }
+
+    const categoryAverages = reviews.length > 0
+      ? {
+          room: totals.room / reviews.length,
+          bathroom: totals.bathroom / reviews.length,
+          building: totals.building / reviews.length,
+          amenities: totals.amenities / reviews.length,
+          location: totals.location / reviews.length
+        }
+      : { room: 0, bathroom: 0, building: 0, amenities: 0, location: 0 };
+
+    const wouldDormAgainPercent = reviews.length > 0
+      ? Math.round((wouldDormAgainCount / reviews.length) * 100)
+      : 0;
+
+    // Sample of review photos for the photo gallery — covers the gallery's
+    // 8-thumbnail grid + "+N more" overlay without sending every photo.
+    const REVIEW_IMAGE_SAMPLE_LIMIT = 16;
+    const seenImages = new Set<string>();
+    const reviewImages: string[] = [];
+    for (const r of reviews as any[]) {
+      const candidates: string[] = [];
+      if (Array.isArray(r.images)) candidates.push(...r.images.filter((i: any) => typeof i === 'string'));
+      if (typeof r.fileImage === 'string' && r.fileImage) candidates.push(r.fileImage);
+      for (const img of candidates) {
+        if (!img || seenImages.has(img)) continue;
+        seenImages.add(img);
+        reviewImages.push(img);
+        if (reviewImages.length >= REVIEW_IMAGE_SAMPLE_LIMIT) break;
+      }
+      if (reviewImages.length >= REVIEW_IMAGE_SAMPLE_LIMIT) break;
     }
 
     const result: any = {
       ...dorm,
       avgRating,
-      reviewCount: reviews.length
+      reviewCount: reviews.length,
+      categoryAverages,
+      wouldDormAgainPercent,
+      reviewImages
     };
 
-    // AI summary: lazy weekly refresh
+    // AI summary: lazy weekly refresh. Regeneration runs as a background
+    // task — the response returns the existing cached summary immediately
+    // (or nothing, if there isn't one yet) so the page never waits for the
+    // LLM. The next request will see the freshly generated summary because
+    // we drop the cache entry once regen completes.
     const SEVEN_DAYS_MS = 7 * 24 * 60 * 60 * 1000;
     const dormObj = dorm as any;
     if (reviews.length >= 5) {
@@ -1563,17 +1650,18 @@ app.get('/api/universities/:slug/dorms/:dormSlug', readOnlyLimiter, async (req: 
       const promptChanged = dormObj.summaryPromptHash !== SUMMARY_PROMPT_HASH;
 
       if (summaryAge > SEVEN_DAYS_MS || promptChanged) {
-        const newSummary = await generateDormSummary(
-          dormObj._id.toString(), dormObj.name, slug, dormSlug
-        );
-        if (newSummary) {
-          result.aiSummary = newSummary;
-          result.summaryGeneratedAt = new Date();
-          // Re-fetch to get the aiTags that were saved during generation
-          const updatedDorm = await Dorm.findById(dormObj._id).lean() as any;
-          if (updatedDorm?.aiTags) {
-            result.aiTags = updatedDorm.aiTags;
-          }
+        const dormId = dormObj._id.toString();
+        if (!summaryRegenInFlight.has(dormId)) {
+          summaryRegenInFlight.add(dormId);
+          // Fire-and-forget: do NOT await. generateDormSummary persists the
+          // new summary to MongoDB; we drop the cache so the next request
+          // surfaces it without waiting for the 5-min TTL.
+          generateDormSummary(dormId, dormObj.name, slug, dormSlug)
+            .catch((err) => console.error('Background AI summary regen failed', err))
+            .finally(() => {
+              summaryRegenInFlight.delete(dormId);
+              cache.delete(cacheKey);
+            });
         }
       }
     }
