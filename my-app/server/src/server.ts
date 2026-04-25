@@ -1883,6 +1883,63 @@ app.post('/api/dorms', authenticationToken, validate(dormSchema), async (req: Au
   }
 });
 
+// Photo Gallery API: Add photos to a dorm
+app.post('/api/universities/:universitySlug/dorms/:dormSlug/photos', submitLimiter, authenticationToken, async (req: AuthRequest, res: Response): Promise<void> => {
+  try {
+    const { universitySlug, dormSlug } = req.params;
+    const { images } = req.body;
+
+    if (!images || !Array.isArray(images) || images.length === 0) {
+      res.status(400).json({ message: 'Images array is required.' });
+      return;
+    }
+
+    if (images.length > 5) {
+      res.status(400).json({ message: 'Maximum 5 images allowed per upload.' });
+      return;
+    }
+
+    // Process images: upload base64 strings to S3
+    let processedImages = [];
+    if (!isProduction) console.log(`📤 Uploading ${images.length} dorm photos to S3...`);
+    processedImages = await Promise.all(images.map(async (img: string) => {
+      if (typeof img === 'string' && img.startsWith('data:')) {
+        try {
+          return await uploadToS3(img, 'dorms/gallery');
+        } catch (err) {
+          console.error('❌ Failed to upload gallery image:', err);
+          return null; // Ignore failed uploads
+        }
+      }
+      return img;
+    }));
+
+    // Filter out failed uploads
+    processedImages = processedImages.filter((img) => img !== null);
+
+    if (processedImages.length === 0) {
+      res.status(500).json({ message: 'Failed to process images.' });
+      return;
+    }
+
+    const updatedDorm = await Dorm.findOneAndUpdate(
+      { universitySlug, slug: dormSlug },
+      { $push: { images: { $each: processedImages } } },
+      { new: true }
+    );
+
+    if (!updatedDorm) {
+      res.status(404).json({ message: 'Dorm not found' });
+      return;
+    }
+
+    res.status(200).json({ message: 'Photos added successfully', images: processedImages });
+  } catch (err) {
+    console.error('Error adding dorm photos:', err);
+    res.status(500).json({ message: 'Error adding dorm photos' });
+  }
+});
+
 // Reviews API: create and fetch reviews
 app.post('/api/reviews', submitLimiter, validate(reviewSchema), async (req: Request, res: Response) => {
   try {

@@ -10,6 +10,7 @@ import { useParams, useLocation, useNavigate } from 'react-router-dom';
 import LoginModal from '../nav/login';
 
 import CompareModal from '../compare/CompareModal.tsx';
+import PhotoUploadModal from './PhotoUploadModal';
 
 import { useSEO } from '../../hooks/useSEO';
 
@@ -26,6 +27,7 @@ type APIDorm = {
   roomTypes?: string[];
   aiSummary?: string;
   aiTags?: string[];
+  images?: string[];
 };
 
 //Base URL for API requests
@@ -51,6 +53,23 @@ function Dorms() {
   const [showSuccessToast, setShowSuccessToast] = useState(false);
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [isCompareModalOpen, setIsCompareModalOpen] = useState(false);
+  const [showPhotoModal, setShowPhotoModal] = useState(false);
+  const [showAllPhotosModal, setShowAllPhotosModal] = useState(false);
+  const [allPhotosForModal, setAllPhotosForModal] = useState<string[]>([]);
+
+  const handleShowAllPhotos = (photos: string[]) => {
+    setAllPhotosForModal(photos);
+    setShowAllPhotosModal(true);
+  };
+
+  const handlePhotoUploadSuccess = (newImages: string[]) => {
+    if (dorm) {
+      setDorm({
+        ...dorm,
+        images: [...(dorm.images || []), ...newImages]
+      });
+    }
+  };
 
   useEffect(() => {
     // Check if we were redirected here after submitting a review
@@ -382,6 +401,16 @@ function Dorms() {
           calculateAverageRating={calculateAverageRating}
           calculateCategoryAverages={calculateCategoryAverages}
           onOpenCompare={() => setIsCompareModalOpen(true)}
+          openLightbox={openLightbox}
+          onShowAllPhotos={handleShowAllPhotos}
+          onAddPhotosClick={() => {
+            const token = localStorage.getItem('token');
+            if (!token) {
+              setShowLoginModal(true);
+            } else {
+              setShowPhotoModal(true);
+            }
+          }}
         />
 
         {/* Right side - Review Listings */}
@@ -423,6 +452,40 @@ function Dorms() {
         </div>
       )}
 
+      {showAllPhotosModal && (
+        <div
+          className="all-photos-modal-overlay"
+          onClick={() => setShowAllPhotosModal(false)}
+        >
+          <div
+            className="all-photos-modal-content"
+            onClick={e => e.stopPropagation()}
+          >
+            <div className="all-photos-modal-header">
+              <h3>All Photos ({allPhotosForModal.length})</h3>
+              <button
+                className="all-photos-modal-close"
+                onClick={() => setShowAllPhotosModal(false)}
+              >×</button>
+            </div>
+            <div className="all-photos-modal-grid">
+              {allPhotosForModal.map((photo, idx) => (
+                <div
+                  key={idx}
+                  className="all-photos-modal-thumb"
+                  onClick={() => {
+                    setShowAllPhotosModal(false);
+                    openLightbox(allPhotosForModal, idx);
+                  }}
+                >
+                  <img src={photo} alt={`Dorm photo ${idx + 1}`} loading="lazy" />
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+
       <LoginModal
         isOpen={showLoginModal}
         onClose={() => setShowLoginModal(false)}
@@ -433,6 +496,14 @@ function Dorms() {
         onClose={() => setIsCompareModalOpen(false)}
         initialUni1={displayDorm.universitySlug}
         initialDorm1={displayDorm.slug}
+      />
+
+      <PhotoUploadModal
+        isOpen={showPhotoModal}
+        onClose={() => setShowPhotoModal(false)}
+        universitySlug={universityName || ''}
+        dormSlug={dormSlug || ''}
+        onSuccess={handlePhotoUploadSuccess}
       />
 
       <Footer />

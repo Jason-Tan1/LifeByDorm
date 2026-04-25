@@ -20,6 +20,7 @@ type APIDorm = {
   roomTypes?: string[];
   aiSummary?: string;
   aiTags?: string[];
+  images?: string[];
 };
 
 interface DormInfoProps {
@@ -36,9 +37,12 @@ interface DormInfoProps {
     location: number;
   };
   onOpenCompare: () => void;
+  openLightbox: (images: string[], index: number) => void;
+  onShowAllPhotos: (photos: string[]) => void;
+  onAddPhotosClick: () => void;
 }
 
-function DormInfo({ dorm, reviews, universityName, universityLocation, calculateAverageRating, calculateCategoryAverages, onOpenCompare }: DormInfoProps) {
+function DormInfo({ dorm, reviews, universityName, universityLocation, calculateAverageRating, calculateCategoryAverages, onOpenCompare, openLightbox, onShowAllPhotos, onAddPhotosClick }: DormInfoProps) {
   const [showMap, setShowMap] = useState(false);
 
   const renderStars = (rating: number) => {
@@ -159,6 +163,50 @@ function DormInfo({ dorm, reviews, universityName, universityLocation, calculate
             </div>
           </div>
         </div>
+      </div>
+
+      {/* Photo Gallery Section */}
+      <div className="dorm-details photo-gallery-container">
+        <div className="gallery-header">
+          <h2>Photo Gallery</h2>
+          <button className="add-photos-btn" onClick={onAddPhotosClick}>
+            + Add Photos
+          </button>
+        </div>
+        
+        {(() => {
+          const allPhotos = [...new Set([
+            ...(dorm.images || []),
+            ...reviews.flatMap(r => r.images || []),
+            ...reviews.map(r => r.fileImage).filter(Boolean)
+          ])];
+
+          if (allPhotos.length === 0) {
+            return (
+              <p className="no-photos-text">No photos have been added yet. Be the first to share!</p>
+            );
+          }
+
+          const displayPhotos = allPhotos.slice(0, 8);
+          const hasMore = allPhotos.length > 8;
+
+          return (
+            <div className="photo-gallery-grid">
+              {displayPhotos.map((photo, idx) => (
+                <div
+                  key={idx}
+                  className={`gallery-thumbnail ${hasMore && idx === 7 ? 'has-more-overlay' : ''}`}
+                  onClick={() => hasMore && idx === 7 ? onShowAllPhotos(allPhotos) : openLightbox(allPhotos, idx)}
+                >
+                  <img src={photo} alt={`Dorm photo ${idx + 1}`} loading="lazy" />
+                  {hasMore && idx === 7 && (
+                    <div className="more-photos-text">+{allPhotos.length - 8}</div>
+                  )}
+                </div>
+              ))}
+            </div>
+          );
+        })()}
       </div>
 
       {/* AI Summary Section */}
