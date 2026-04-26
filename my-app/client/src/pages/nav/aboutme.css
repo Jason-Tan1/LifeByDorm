@@ -1,7 +1,0 @@
-/* DM Sans loaded globally via tailwind.css */
-
-.about-page {
-    font-family: 'DM Sans', sans-serif;
-    background-color: #f5f5f5;
-    min-height: 100vh;
-}

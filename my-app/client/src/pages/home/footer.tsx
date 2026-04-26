@@ -62,7 +62,7 @@ function Footer() {
           {/* Column 2: Company */}
           <div className="footer-link-column">
             <h4 className="footer-column-title">Company</h4>
-            <Link to="/aboutme" className="footer-link">{t('footer.about', 'About Us')}</Link>
+            <Link to="/about" className="footer-link">{t('footer.about', 'About Us')}</Link>
             <Link to="/contactme" className="footer-link">{t('footer.contactMe', 'Contact Us')}</Link>
             <a href="https://www.linkedin.com/in/jasontan5/" target="_blank" rel="noopener noreferrer" className="footer-link">
               Founder LinkedIn
