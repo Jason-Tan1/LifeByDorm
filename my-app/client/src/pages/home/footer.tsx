@@ -91,14 +91,6 @@ function Footer() {
       {/* Bottom Legal / Copyright Area */}
       <div className="footer-bottom">
         <div className="footer-bottom-content">
-          <div className="hiring-box">
-            <Trans
-              i18nKey="footer.hiringMessage"
-              components={{
-                link: <a href="https://www.linkedin.com/in/jasontan5/" target="_blank" rel="noopener noreferrer" />
-              }}
-            />
-          </div>
           <p>&copy; {new Date().getFullYear()} LifeByDorm. {t('footer.rightsReserved', 'All rights reserved.')}</p>
         </div>
       </div>
