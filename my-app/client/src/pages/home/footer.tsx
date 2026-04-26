@@ -1,6 +1,6 @@
 // import React from 'react';
 import { Link } from 'react-router-dom';
-import { useTranslation, Trans } from 'react-i18next';
+import { useTranslation } from 'react-i18next';
 import { FaLinkedin, FaInstagram, FaTiktok } from 'react-icons/fa';
 import { FaXTwitter } from 'react-icons/fa6';
 import './footer.css';
@@ -62,7 +62,7 @@ function Footer() {
           {/* Column 2: Company */}
           <div className="footer-link-column">
             <h4 className="footer-column-title">Company</h4>
-            <Link to="/aboutme" className="footer-link">{t('footer.about', 'About Us')}</Link>
+            <Link to="/about" className="footer-link">{t('footer.about', 'About Us')}</Link>
             <Link to="/contactme" className="footer-link">{t('footer.contactMe', 'Contact Us')}</Link>
             <a href="https://www.linkedin.com/in/jasontan5/" target="_blank" rel="noopener noreferrer" className="footer-link">
               Founder LinkedIn
@@ -91,14 +91,6 @@ function Footer() {
       {/* Bottom Legal / Copyright Area */}
       <div className="footer-bottom">
         <div className="footer-bottom-content">
-          <div className="hiring-box">
-            <Trans
-              i18nKey="footer.hiringMessage"
-              components={{
-                link: <a href="https://www.linkedin.com/in/jasontan5/" target="_blank" rel="noopener noreferrer" />
-              }}
-            />
-          </div>
           <p>&copy; {new Date().getFullYear()} LifeByDorm. {t('footer.rightsReserved', 'All rights reserved.')}</p>
         </div>
       </div>

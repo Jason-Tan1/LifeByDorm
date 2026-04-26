@@ -48,10 +48,10 @@ function RecentReviewsSection({ isLoading, recentVerifiedReviews }: RecentReview
 
     let newPosition;
     if (direction === 'right') {
-      const nextIndex = Math.floor((currentScroll + tolerance) / itemWidth) + 1;
+      const nextIndex = Math.floor((currentScroll + tolerance) / itemWidth) + 2;
       newPosition = nextIndex * itemWidth;
     } else {
-      const prevIndex = Math.ceil((currentScroll - tolerance) / itemWidth) - 1;
+      const prevIndex = Math.ceil((currentScroll - tolerance) / itemWidth) - 2;
       newPosition = Math.max(0, prevIndex * itemWidth);
     }
 

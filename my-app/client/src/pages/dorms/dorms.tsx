@@ -1,4 +1,4 @@
-import { useEffect, useState, useMemo } from 'react';
+import { useEffect, useState, useMemo, useRef, lazy, Suspense } from 'react';
 import { useTranslation } from 'react-i18next';
 import NavBar from '../nav/navbar.tsx';
 import Footer from '../home/footer.tsx';
@@ -9,11 +9,22 @@ import '../nav/navbar.css';
 import { useParams, useLocation, useNavigate } from 'react-router-dom';
 import LoginModal from '../nav/login';
 
-import CompareModal from '../compare/CompareModal.tsx';
+// Heavy modals are loaded on demand — CompareModal pulls in react-markdown,
+// and PhotoUploadModal is only opened from a button click.
+const CompareModal = lazy(() => import('../compare/CompareModal.tsx'));
+const PhotoUploadModal = lazy(() => import('./PhotoUploadModal'));
 
 import { useSEO } from '../../hooks/useSEO';
 
 //Define types for Dorm data from API (IMPORTANT)
+type CategoryAverages = {
+  room: number;
+  bathroom: number;
+  building: number;
+  amenities: number;
+  location: number;
+};
+
 type APIDorm = {
   name: string;
   slug: string;
@@ -26,6 +37,12 @@ type APIDorm = {
   roomTypes?: string[];
   aiSummary?: string;
   aiTags?: string[];
+  images?: string[];
+  avgRating?: number;
+  reviewCount?: number;
+  categoryAverages?: CategoryAverages;
+  wouldDormAgainPercent?: number;
+  reviewImages?: string[];
 };
 
 //Base URL for API requests
@@ -51,6 +68,23 @@ function Dorms() {
   const [showSuccessToast, setShowSuccessToast] = useState(false);
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [isCompareModalOpen, setIsCompareModalOpen] = useState(false);
+  const [showPhotoModal, setShowPhotoModal] = useState(false);
+  const [showAllPhotosModal, setShowAllPhotosModal] = useState(false);
+  const [allPhotosForModal, setAllPhotosForModal] = useState<string[]>([]);
+
+  const handleShowAllPhotos = (photos: string[]) => {
+    setAllPhotosForModal(photos);
+    setShowAllPhotosModal(true);
+  };
+
+  const handlePhotoUploadSuccess = (newImages: string[]) => {
+    if (dorm) {
+      setDorm({
+        ...dorm,
+        images: [...(dorm.images || []), ...newImages]
+      });
+    }
+  };
 
   useEffect(() => {
     // Check if we were redirected here after submitting a review
@@ -101,17 +135,25 @@ function Dorms() {
   }, [universityName, dormSlug]);
 
   const [reviews, setReviews] = useState<any[]>([]);
-  const [reviewsLoading, setReviewsLoading] = useState(false);
-  const [visibleCount, setVisibleCount] = useState(10);
+  // Start true so the right-side reviews panel shows the LBDLogo loader from
+  // initial render until the lazy /api/reviews fetch resolves — matches the
+  // original UX. The lazy fetch itself still defers via IntersectionObserver.
+  const [reviewsLoading, setReviewsLoading] = useState(true);
+  const [reviewsPageLoading, setReviewsPageLoading] = useState(false);
   const reviewsPerLoad = 10;
+  const reviewsAnchorRef = useRef<HTMLDivElement | null>(null);
+  const hasFetchedReviews = useRef(false);
+  // The dorm endpoint returns the authoritative review count; until reviews
+  // have been fetched, fall back to it so "Load More" knows there's more to load.
+  const totalReviews = dorm?.reviewCount ?? reviews.length;
 
-  // SEO: Dynamic title, description, canonical, and structured data for dorm page
+  // SEO: Dynamic title, description, canonical, and structured data for dorm page.
+  // Use server-computed avgRating / reviewCount so SEO doesn't wait for the
+  // lazy /api/reviews fetch.
   const formatName = (slug: string) => slug?.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ') || '';
   const dormDisplayName = dorm?.name || formatName(dormSlug || '');
   const uniDisplayName = formatName(universityName || '');
-  const avgRating = reviews.length > 0
-    ? (reviews.reduce((sum: number, r: any) => sum + ([r.room, r.bathroom, r.building, r.amenities, r.location].reduce((a: number, b: number) => a + b, 0) / 5), 0) / reviews.length)
-    : 0;
+  const avgRating = dorm?.avgRating ?? 0;
 
   const dormJsonLd = useMemo(() => {
     if (!dorm) return undefined;
@@ -122,25 +164,27 @@ function Dorms() {
         name: dorm.name,
         description: dorm.description || `Student residence at ${uniDisplayName}`,
         ...(dorm.imageUrl ? { image: dorm.imageUrl } : {}),
-        ...(reviews.length > 0 ? {
+        ...(totalReviews > 0 ? {
           aggregateRating: {
             '@type': 'AggregateRating',
             ratingValue: avgRating.toFixed(1),
             bestRating: '5',
             worstRating: '1',
-            ratingCount: reviews.length.toString()
+            ratingCount: totalReviews.toString()
           },
-          review: reviews.slice(0, 5).map((r: any) => ({
-            '@type': 'Review',
-            reviewRating: {
-              '@type': 'Rating',
-              ratingValue: ([r.room, r.bathroom, r.building, r.amenities, r.location].reduce((a: number, b: number) => a + b, 0) / 5).toFixed(1),
-              bestRating: '5',
-              worstRating: '1'
-            },
-            author: { '@type': 'Person', name: 'Student' },
-            reviewBody: r.description ? r.description.slice(0, 500) : ''
-          }))
+          ...(reviews.length > 0 ? {
+            review: reviews.slice(0, 5).map((r: any) => ({
+              '@type': 'Review',
+              reviewRating: {
+                '@type': 'Rating',
+                ratingValue: ([r.room, r.bathroom, r.building, r.amenities, r.location].reduce((a: number, b: number) => a + b, 0) / 5).toFixed(1),
+                bestRating: '5',
+                worstRating: '1'
+              },
+              author: { '@type': 'Person', name: 'Student' },
+              reviewBody: r.description ? r.description.slice(0, 500) : ''
+            }))
+          } : {})
         } : {})
       },
       {
@@ -154,41 +198,63 @@ function Dorms() {
       }
     ];
     return schemas;
-  }, [dorm, reviews.length, avgRating, universityName, dormSlug, uniDisplayName]);
+  }, [dorm, totalReviews, reviews, avgRating, universityName, dormSlug, uniDisplayName]);
 
   useSEO({
     title: `${dormDisplayName} at ${uniDisplayName} — Reviews & Photos`,
-    description: reviews.length > 0
-      ? `${dormDisplayName} at ${uniDisplayName} has a ${avgRating.toFixed(1)}/5 rating from ${reviews.length} student reviews. See real photos and detailed ratings.`
+    description: totalReviews > 0
+      ? `${dormDisplayName} at ${uniDisplayName} has a ${avgRating.toFixed(1)}/5 rating from ${totalReviews} student reviews. See real photos and detailed ratings.`
       : `Read student reviews and see real photos of ${dormDisplayName} at ${uniDisplayName}. Get insights before you move in.`,
     canonicalPath: `/universities/${universityName}/dorms/${dormSlug}`,
     jsonLd: dormJsonLd,
     ogImage: dorm?.imageUrl || undefined
   });
 
-  // Fetch reviews for this dorm
+  // Lazy-fetch reviews when the right-side ReviewsList is near the viewport.
+  // The dorm endpoint already returns avgRating, categoryAverages, and a
+  // photo sample, so DormInfo can paint without these reviews.
   useEffect(() => {
     if (!universityName || !dorm) return;
+    if (hasFetchedReviews.current) return;
 
-    const dormName = dorm.name; // Capture the name before async function
+    const dormName = dorm.name;
 
-    async function fetchReviews() {
+    const fetchFirstPage = async () => {
+      if (hasFetchedReviews.current) return;
+      hasFetchedReviews.current = true;
       try {
         setReviewsLoading(true);
-        const response = await fetch(`${API_BASE}/api/reviews?university=${encodeURIComponent(universityName!)}&dorm=${encodeURIComponent(dormName)}`);
+        const response = await fetch(
+          `${API_BASE}/api/reviews?university=${encodeURIComponent(universityName!)}&dorm=${encodeURIComponent(dormName)}&limit=${reviewsPerLoad}&skip=0`
+        );
         if (!response.ok) throw new Error('Failed to fetch reviews');
-
         const data = await response.json();
-        setReviews(data);
+        setReviews(Array.isArray(data) ? data : []);
       } catch (e) {
         console.error('Error fetching reviews:', e);
         setReviews([]);
       } finally {
         setReviewsLoading(false);
       }
+    };
+
+    const target = reviewsAnchorRef.current;
+    if (!target || typeof IntersectionObserver === 'undefined') {
+      const id = window.setTimeout(fetchFirstPage, 0);
+      return () => window.clearTimeout(id);
     }
 
-    fetchReviews();
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries.some(e => e.isIntersecting)) {
+          observer.disconnect();
+          fetchFirstPage();
+        }
+      },
+      { rootMargin: '600px 0px' }
+    );
+    observer.observe(target);
+    return () => observer.disconnect();
   }, [universityName, dorm]);
 
   const calculateOverallRating = (review: any) => {
@@ -218,23 +284,21 @@ function Dorms() {
     return `${month} ${day}${daySuffix(day)}, ${year}`;
   };
 
+  // Prefer server-computed averages (from /api/universities/:slug/dorms/:dormSlug)
+  // so DormInfo paints without waiting for the lazy /api/reviews fetch. Fall back
+  // to client computation if the dorm response somehow lacks them.
   const calculateAverageRating = () => {
+    if (typeof dorm?.avgRating === 'number') return dorm.avgRating;
     if (reviews.length === 0) return 0;
     const totalRating = reviews.reduce((sum, review) => sum + calculateOverallRating(review), 0);
     return totalRating / reviews.length;
   };
 
   const calculateCategoryAverages = () => {
+    if (dorm?.categoryAverages) return dorm.categoryAverages;
     if (reviews.length === 0) {
-      return {
-        room: 0,
-        bathroom: 0,
-        building: 0,
-        amenities: 0,
-        location: 0
-      };
+      return { room: 0, bathroom: 0, building: 0, amenities: 0, location: 0 };
     }
-
     const totals = reviews.reduce((acc, review) => {
       acc.room += review.room || 0;
       acc.bathroom += review.bathroom || 0;
@@ -243,7 +307,6 @@ function Dorms() {
       acc.location += review.location || 0;
       return acc;
     }, { room: 0, bathroom: 0, building: 0, amenities: 0, location: 0 });
-
     return {
       room: totals.room / reviews.length,
       bathroom: totals.bathroom / reviews.length,
@@ -297,11 +360,35 @@ function Dorms() {
     }
   };
 
-  // Load More logic - simple slice of reviews
-  const visibleReviews = reviews.slice(0, visibleCount);
+  // Reviews are paginated server-side now: each "Load More" click fetches the
+  // next batch using skip=loaded. ReviewsList renders the entire `reviews`
+  // array as visible because the server only sends what's been requested.
+  const visibleReviews = reviews;
+  const visibleCount = reviews.length;
 
-  const handleLoadMore = () => {
-    setVisibleCount(prev => Math.min(prev + reviewsPerLoad, reviews.length));
+  const handleLoadMore = async () => {
+    if (!universityName || !dorm) return;
+    if (reviewsPageLoading) return;
+    if (reviews.length >= totalReviews) return;
+    try {
+      setReviewsPageLoading(true);
+      const response = await fetch(
+        `${API_BASE}/api/reviews?university=${encodeURIComponent(universityName)}&dorm=${encodeURIComponent(dorm.name)}&limit=${reviewsPerLoad}&skip=${reviews.length}`
+      );
+      if (!response.ok) throw new Error('Failed to fetch reviews');
+      const data = await response.json();
+      if (Array.isArray(data) && data.length > 0) {
+        setReviews(prev => {
+          const seen = new Set(prev.map((r: any) => String(r._id)));
+          const additions = data.filter((r: any) => !seen.has(String(r._id)));
+          return [...prev, ...additions];
+        });
+      }
+    } catch (e) {
+      console.error('Error loading more reviews:', e);
+    } finally {
+      setReviewsPageLoading(false);
+    }
   };
 
   const openLightbox = (images: string[], index: number) => {
@@ -379,27 +466,43 @@ function Dorms() {
           reviews={reviews}
           universityName={universityName}
           universityLocation={univLocation || undefined}
+          totalReviewCount={dorm?.reviewCount}
+          wouldDormAgainPercent={dorm?.wouldDormAgainPercent}
+          reviewImagesFromServer={dorm?.reviewImages}
           calculateAverageRating={calculateAverageRating}
           calculateCategoryAverages={calculateCategoryAverages}
           onOpenCompare={() => setIsCompareModalOpen(true)}
+          openLightbox={openLightbox}
+          onShowAllPhotos={handleShowAllPhotos}
+          onAddPhotosClick={() => {
+            const token = localStorage.getItem('token');
+            if (!token) {
+              setShowLoginModal(true);
+            } else {
+              setShowPhotoModal(true);
+            }
+          }}
         />
 
-        {/* Right side - Review Listings */}
-        <ReviewsList
-          universityName={universityName}
-          dorm={displayDorm}
-          reviews={reviews}
-          reviewsLoading={loading || reviewsLoading}
-          visibleReviews={visibleReviews}
-          visibleCount={visibleCount}
-          reviewsPerLoad={reviewsPerLoad}
-          calculateOverallRating={calculateOverallRating}
-          getRatingClass={getRatingClass}
-          formatReviewTime={formatReviewTime}
-          openLightbox={openLightbox}
-          handleLoadMore={handleLoadMore}
-          handleVote={handleVote}
-        />
+        {/* Right side - Review Listings (lazy-fetched via IntersectionObserver) */}
+        <div ref={reviewsAnchorRef}>
+          <ReviewsList
+            universityName={universityName}
+            dorm={displayDorm}
+            reviews={reviews}
+            reviewsLoading={reviewsLoading}
+            visibleReviews={visibleReviews}
+            visibleCount={visibleCount}
+            reviewsPerLoad={reviewsPerLoad}
+            totalReviewCount={totalReviews}
+            calculateOverallRating={calculateOverallRating}
+            getRatingClass={getRatingClass}
+            formatReviewTime={formatReviewTime}
+            openLightbox={openLightbox}
+            handleLoadMore={handleLoadMore}
+            handleVote={handleVote}
+          />
+        </div>
       </main>
 
       {/* Lightbox Modal */}
@@ -423,17 +526,68 @@ function Dorms() {
         </div>
       )}
 
+      {showAllPhotosModal && (
+        <div
+          className="all-photos-modal-overlay"
+          onClick={() => setShowAllPhotosModal(false)}
+        >
+          <div
+            className="all-photos-modal-content"
+            onClick={e => e.stopPropagation()}
+          >
+            <div className="all-photos-modal-header">
+              <h3>All Photos ({allPhotosForModal.length})</h3>
+              <button
+                className="all-photos-modal-close"
+                onClick={() => setShowAllPhotosModal(false)}
+              >×</button>
+            </div>
+            <div className="all-photos-modal-grid">
+              {allPhotosForModal.map((photo, idx) => (
+                <div
+                  key={idx}
+                  className="all-photos-modal-thumb"
+                  onClick={() => {
+                    setShowAllPhotosModal(false);
+                    openLightbox(allPhotosForModal, idx);
+                  }}
+                >
+                  <img src={photo} alt={`Dorm photo ${idx + 1}`} loading="lazy" />
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+
       <LoginModal
         isOpen={showLoginModal}
         onClose={() => setShowLoginModal(false)}
       />
 
-      <CompareModal
-        isOpen={isCompareModalOpen}
-        onClose={() => setIsCompareModalOpen(false)}
-        initialUni1={displayDorm.universitySlug}
-        initialDorm1={displayDorm.slug}
-      />
+      {/* Lazy-mount: chunk only loads when the user opens the modal */}
+      {isCompareModalOpen && (
+        <Suspense fallback={null}>
+          <CompareModal
+            isOpen={isCompareModalOpen}
+            onClose={() => setIsCompareModalOpen(false)}
+            initialUni1={displayDorm.universitySlug}
+            initialDorm1={displayDorm.slug}
+          />
+        </Suspense>
+      )}
+
+      {showPhotoModal && (
+        <Suspense fallback={null}>
+          <PhotoUploadModal
+            isOpen={showPhotoModal}
+            onClose={() => setShowPhotoModal(false)}
+            universitySlug={universityName || ''}
+            dormSlug={dormSlug || ''}
+            onSuccess={handlePhotoUploadSuccess}
+          />
+        </Suspense>
+      )}
 
       <Footer />
     </div>
