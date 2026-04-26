@@ -3,6 +3,7 @@ import React, { lazy, Suspense } from 'react';
 import { UniversityDataProvider } from './context/UniversityDataContext';
 import PageLoader from './components/PageLoader';
 import ScrollToTop from './components/ScrollToTop';
+import GoogleAnalytics from './components/GoogleAnalytics';
 
 // Lazy load non-critical shell components — they don't affect first paint.
 // Renamed from CookieConsent to ConsentBanner so ad blockers don't block the chunk by filename.
@@ -43,6 +44,7 @@ function App() {
       <LazyGoogleOAuthProvider>
         <UniversityDataProvider>
           <Router>
+            <GoogleAnalytics />
             <ScrollToTop />
             <Suspense fallback={<PageLoader />}>
               <Routes>
