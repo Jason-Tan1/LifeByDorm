@@ -18,7 +18,7 @@ const InfoSection: React.FC = () => {
           <p className="info-description">
             We're a dorm review platform built by students, for students. Our vision is to become the universal hub for Canadian university living by empowering students to share real experiences, share authentic photos, and choose their perfect home with confidence.
           </p>
-          <Link to="/aboutme" className="info-primary-btn">
+          <Link to="/about" className="info-primary-btn">
             What we do
           </Link>
         </div>

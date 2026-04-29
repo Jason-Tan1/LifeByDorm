@@ -35,6 +35,7 @@ interface ReviewsListProps {
   visibleReviews: any[];
   visibleCount: number;
   reviewsPerLoad: number;
+  totalReviewCount?: number;
   calculateOverallRating: (review: any) => number;
   getRatingClass: (rating: number) => string;
   formatReviewTime: (createdAt: string) => string;
@@ -51,6 +52,7 @@ function ReviewsList({
   visibleReviews,
   visibleCount,
   // reviewsPerLoad, (Removed unused)
+  totalReviewCount,
   calculateOverallRating,
   getRatingClass,
   formatReviewTime,
@@ -59,7 +61,9 @@ function ReviewsList({
   handleVote
 }: ReviewsListProps) {
   const { t } = useTranslation();
-  const totalReviews = reviews.length;
+  // Server-side pagination: parent passes totalReviewCount from the dorm
+  // endpoint so we know there's more to load even before any reviews arrive.
+  const totalReviews = typeof totalReviewCount === 'number' ? totalReviewCount : reviews.length;
   const hasMoreReviews = visibleCount < totalReviews;
 
   let currentUserId = '';
@@ -81,7 +85,7 @@ function ReviewsList({
             <div className="loader-spinner" />
           </div>
         </div>
-      ) : reviews.length === 0 ? (
+      ) : reviews.length === 0 && totalReviews === 0 ? (
         <div className="reviews-grid">
           <div className="review-card empty-reviews-card">
             <div className="review-header">

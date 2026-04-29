@@ -256,8 +256,8 @@ body {
   transform: scale(0.96);
 }
 
-/* Styling for secondary buttons (About Me, Contact Me) */
-.navbar_aboutme button,
+/* Styling for secondary buttons (About, Contact Me) */
+.navbar_about button,
 .navbar_contactme button {
   background-color: #fff1f2;
   color: #B91C1C;
@@ -265,7 +265,7 @@ body {
 }
 
 /* Hover effect for secondary buttons */
-.navbar_aboutme button:hover,
+.navbar_about button:hover,
 .navbar_contactme button:hover {
   background-color: #ffe4e6;
 }
@@ -431,7 +431,7 @@ body {
   }
 
   /* Hide secondary buttons on mobile - keep only login/account */
-  .navbar_aboutme,
+  .navbar_about,
   .navbar_contactme {
     display: none;
   }

@@ -281,7 +281,9 @@ interface GaRunReportResponse {
 }
 
 const cache: Map<string, CacheEntry<any>> = new Map();
-const CACHE_TTL = 5 * 60 * 1000; // 5 minutes cache TTL
+const CACHE_TTL = 5 * 60 * 1000; // 5 minutes — default fallback for callers that don't pick a TTL
+const CACHE_TTL_HOUR = 60 * 60 * 1000;          // 1 hour — read endpoints with event-driven invalidation
+const CACHE_TTL_DAY = 24 * 60 * 60 * 1000;      // 24 hours — universities list (almost never changes)
 
 // Separate cache for AI comparisons (longer TTL since they're expensive)
 const compareCache: Map<string, CacheEntry<any>> = new Map();
@@ -502,17 +504,45 @@ app.get('/', (req: Request, res: Response) => {
   });
 });
 
-function getCached<T>(key: string): T | null {
+function getCached<T>(key: string, ttl: number = CACHE_TTL): T | null {
   const entry = cache.get(key);
-  if (entry && Date.now() - entry.timestamp < CACHE_TTL) {
+  if (entry && Date.now() - entry.timestamp < ttl) {
     return entry.data as T;
   }
-  cache.delete(key);
+  if (entry) cache.delete(key);
   return null;
 }
 
 function setCache<T>(key: string, data: T): void {
   cache.set(key, { data, timestamp: Date.now() });
+}
+
+// Event-driven invalidation helpers — clear the precise cache keys affected
+// by a write so users see fresh data immediately, instead of waiting for the
+// 1-hour TTL to expire. Trustpilot-style: cache aggressively, purge surgically.
+function invalidateReviewCaches(opts: {
+  universitySlug: string;
+  dormName?: string;
+  dormSlug?: string;
+}): void {
+  const { universitySlug, dormName, dormSlug } = opts;
+  cache.delete('homepage-stats');
+  cache.delete('homepage-recent-reviews');
+  cache.delete(`dorms-stats-${universitySlug}`);
+  if (dormSlug) cache.delete(`dorm-${universitySlug}-${dormSlug}`);
+  if (dormName) {
+    const prefix = `reviews-${universitySlug}-${dormName}-`;
+    for (const key of cache.keys()) {
+      if (key.startsWith(prefix)) cache.delete(key);
+    }
+  }
+}
+
+function invalidateDormCaches(universitySlug: string, dormSlug: string): void {
+  cache.delete('homepage-stats');
+  cache.delete('homepage-recent-reviews');
+  cache.delete(`dorms-stats-${universitySlug}`);
+  cache.delete(`dorm-${universitySlug}-${dormSlug}`);
 }
 
 // Groq AI client (lazy-initialized)
@@ -770,15 +800,18 @@ app.get('/api/stats/homepage', readOnlyLimiter, async (req: Request, res: Respon
   try {
     // Check cache first
     const cacheKey = 'homepage-stats';
-    const cachedResult = getCached<any>(cacheKey);
+    const cachedResult = getCached<any>(cacheKey, CACHE_TTL_HOUR);
     if (cachedResult) {
-      res.set('Cache-Control', 'public, max-age=300, s-maxage=600, stale-while-revalidate=60');
+      res.set('Cache-Control', 'public, max-age=300, s-maxage=3600, stale-while-revalidate=60');
       return res.json(cachedResult);
     }
 
     // Use aggregation pipeline to compute stats on the database server
-    // instead of fetching entire collections into memory
-    const [universities, dorms, reviewStats, recentVerifiedReviewsRaw] = await Promise.all([
+    // instead of fetching entire collections into memory.
+    // Note: recent verified reviews are served by a separate endpoint
+    // (/api/stats/recent-reviews) so this payload stays small and the
+    // homepage's above-the-fold sections paint without waiting for them.
+    const [universities, dorms, reviewStats] = await Promise.all([
       University.find({}).lean(),
       Dorm.find({
         $or: [{ status: 'approved' }, { status: { $exists: false } }]
@@ -796,18 +829,7 @@ app.get('/api/stats/homepage', readOnlyLimiter, async (req: Request, res: Respon
             reviewCount: { $sum: 1 }
           }
         }
-      ]),
-      UserReview.find({
-        verified: true,
-        description: { $regex: /\S/ },
-        $or: [
-          { status: 'approved' },
-          { status: { $exists: false } }
-        ]
-      })
-        .sort({ createdAt: -1 })
-        .limit(50)
-        .lean()
+      ])
     ]);
 
     // Build lookup maps from aggregation results
@@ -881,13 +903,79 @@ app.get('/api/stats/homepage', readOnlyLimiter, async (req: Request, res: Respon
       .sort((a, b) => b.reviewCount - a.reviewCount)
       .slice(0, 10);
 
+    const result = {
+      topUniversities,
+      topRatedDorms,
+      mostReviewedDorms,
+      universityStats,
+      dormStats,
+      totalReviewsCount
+    };
+
+    // Cache the result
+    setCache(cacheKey, result);
+
+    res.set('Cache-Control', 'public, max-age=300, s-maxage=3600, stale-while-revalidate=60');
+    res.json(result);
+  } catch (err) {
+    console.error('Error fetching homepage stats', err);
+    res.status(500).json({ message: 'Error fetching homepage stats' });
+  }
+});
+
+// Recent verified reviews for homepage carousel - lazy-loaded separately so the
+// above-the-fold sliders don't wait for a full reviews fetch + user lookup.
+app.get('/api/stats/recent-reviews', readOnlyLimiter, async (req: Request, res: Response) => {
+  try {
+    const cacheKey = 'homepage-recent-reviews';
+    const cachedResult = getCached<any>(cacheKey, CACHE_TTL_HOUR);
+    if (cachedResult) {
+      res.set('Cache-Control', 'public, max-age=300, s-maxage=3600, stale-while-revalidate=60');
+      return res.json(cachedResult);
+    }
+
+    // 1. Fetch recent reviews first
+    // We fetch a larger pool (100) and filter empty strings in memory to avoid full-collection regex scans payload delays.
+    const recentReviewsSearch = await UserReview.find({
+      verified: true,
+      description: { $exists: true, $ne: "" }, // Index-friendly base filter
+      $or: [
+        { status: 'approved' },
+        { status: { $exists: false } }
+      ]
+    })
+      .sort({ createdAt: -1 })
+      .limit(100)
+      .lean();
+
+    // 2. Secondary memory filter to ensure we strictly drop whitespace-only reviews
+    const recentVerifiedReviewsRaw = (recentReviewsSearch as any[])
+      .filter((review) => /\S/.test(String(review.description || '')))
+      .slice(0, 50); // Lock to our display limit
+
+    // 3. Extract exactly what we need
+    const targetUniSlugs = [...new Set(recentVerifiedReviewsRaw.map(r => String(r.university || '').trim()))].filter(Boolean);
+
+    // 4. Fetch ONLY the related dorms and universities (eliminates mass over-fetching)
+    const [universities, dorms] = await Promise.all([
+      University.find({ slug: { $in: targetUniSlugs } }).select('name slug').lean(),
+      Dorm.find({
+        universitySlug: { $in: targetUniSlugs },
+        $or: [{ status: 'approved' }, { status: { $exists: false } }]
+      }).select('name slug universitySlug imageUrl').lean()
+    ]);
+
+    const universityNameMap = new Map<string, string>();
+    universities.forEach((uni: any) => {
+      if (uni.slug && uni.name) universityNameMap.set(uni.slug, uni.name);
+    });
+
     const dormLookupByName = new Map<string, any>();
-    enrichedDorms.forEach((dorm: any) => {
+    dorms.forEach((dorm: any) => {
       const dormNameKey = `${dorm.universitySlug}:${String(dorm.name || '').trim().toLowerCase()}`;
       dormLookupByName.set(dormNameKey, dorm);
     });
 
-    // Fetch user details for recent reviews (supports reviews storing either user id or email)
     const userIdentifiers = [...new Set(recentVerifiedReviewsRaw.map((r: any) => String(r.user || '').trim()).filter(Boolean))];
     const objectIdRegex = /^[a-f\d]{24}$/i;
     const objectUserIds = userIdentifiers.filter((id) => objectIdRegex.test(id));
@@ -937,24 +1025,12 @@ app.get('/api/stats/homepage', readOnlyLimiter, async (req: Request, res: Respon
       .filter((review: any) => !!review.universitySlug && !!review.dormSlug)
       .slice(0, 30);
 
-    const result = {
-      topUniversities,
-      topRatedDorms,
-      mostReviewedDorms,
-      recentVerifiedReviews,
-      universityStats,
-      dormStats,
-      totalReviewsCount
-    };
-
-    // Cache the result
-    setCache(cacheKey, result);
-
-    res.set('Cache-Control', 'public, max-age=300, s-maxage=600, stale-while-revalidate=60');
-    res.json(result);
+    setCache(cacheKey, recentVerifiedReviews);
+    res.set('Cache-Control', 'public, max-age=300, s-maxage=3600, stale-while-revalidate=60');
+    res.json(recentVerifiedReviews);
   } catch (err) {
-    console.error('Error fetching homepage stats', err);
-    res.status(500).json({ message: 'Error fetching homepage stats' });
+    console.error('Error fetching recent reviews', err);
+    res.status(500).json({ message: 'Error fetching recent reviews' });
   }
 });
 
@@ -1397,16 +1473,16 @@ function requireAdmin(req: AuthRequest, res: Response, next: NextFunction) {
 app.get('/api/universities', readOnlyLimiter, async (req: Request, res: Response) => {
   try {
     const cacheKey = 'all-universities';
-    const cached = getCached<any>(cacheKey);
+    const cached = getCached<any>(cacheKey, CACHE_TTL_DAY);
     if (cached) {
-      res.set('Cache-Control', 'public, max-age=300, s-maxage=600, stale-while-revalidate=60');
+      res.set('Cache-Control', 'public, max-age=600, s-maxage=86400, stale-while-revalidate=300');
       return res.json(cached);
     }
 
     const universities = await University.find({}).sort({ name: 1 }).lean();
 
     setCache(cacheKey, universities);
-    res.set('Cache-Control', 'public, max-age=300, s-maxage=600, stale-while-revalidate=60');
+    res.set('Cache-Control', 'public, max-age=600, s-maxage=86400, stale-while-revalidate=300');
     res.json(universities);
   } catch (err) {
     console.error('Error fetching universities', err);
@@ -1426,7 +1502,7 @@ app.get('/api/universities/:slug/dorms', readOnlyLimiter, async (req: Request, r
         { status: { $exists: false } }
       ]
     }).select('-submittedBy').sort({ name: 1 }).lean();
-    res.set('Cache-Control', 'public, max-age=120, s-maxage=300, stale-while-revalidate=60');
+    res.set('Cache-Control', 'public, max-age=300, s-maxage=3600, stale-while-revalidate=60');
     res.json(dorms);
   } catch (err) {
     console.error('Error fetching dorms for university', err);
@@ -1444,9 +1520,9 @@ app.get('/api/universities/:slug/dorms-stats', readOnlyLimiter, async (req: Requ
 
     // Check cache first
     const cacheKey = `dorms-stats-${slug}`;
-    const cachedData = getCached<any>(cacheKey);
+    const cachedData = getCached<any>(cacheKey, CACHE_TTL_HOUR);
     if (cachedData) {
-      res.set('Cache-Control', 'public, max-age=300, s-maxage=600, stale-while-revalidate=60');
+      res.set('Cache-Control', 'public, max-age=300, s-maxage=3600, stale-while-revalidate=60');
       return res.json(cachedData);
     }
 
@@ -1496,7 +1572,7 @@ app.get('/api/universities/:slug/dorms-stats', readOnlyLimiter, async (req: Requ
     // Cache the result
     setCache(cacheKey, enrichedDorms);
 
-    res.set('Cache-Control', 'public, max-age=300, s-maxage=600, stale-while-revalidate=60');
+    res.set('Cache-Control', 'public, max-age=300, s-maxage=3600, stale-while-revalidate=60');
     res.json(enrichedDorms);
   } catch (err) {
     console.error('Error fetching dorm stats for university', err);
@@ -1506,17 +1582,24 @@ app.get('/api/universities/:slug/dorms-stats', readOnlyLimiter, async (req: Requ
 
 // ========================================
 // SINGLE DORM ENDPOINT - Optimized for dorm detail page
-// Returns a single dorm with its ratings and review count
+// Returns a single dorm with its ratings, per-category averages, photo
+// sample, and review count so the client can render DormInfo from one
+// response (no follow-up /api/reviews fetch required for first paint).
 // ========================================
+
+// Tracks dorm IDs whose AI summary is being regenerated in the background
+// so we don't kick off duplicate Groq calls for the same dorm.
+const summaryRegenInFlight = new Set<string>();
+
 app.get('/api/universities/:slug/dorms/:dormSlug', readOnlyLimiter, async (req: Request, res: Response) => {
   try {
     const { slug, dormSlug } = req.params;
 
     // Check cache first
     const cacheKey = `dorm-${slug}-${dormSlug}`;
-    const cachedData = getCached<any>(cacheKey);
+    const cachedData = getCached<any>(cacheKey, CACHE_TTL_HOUR);
     if (cachedData) {
-      res.set('Cache-Control', 'public, max-age=300, s-maxage=600, stale-while-revalidate=60');
+      res.set('Cache-Control', 'public, max-age=300, s-maxage=3600, stale-while-revalidate=60');
       return res.json(cachedData);
     }
 
@@ -1539,20 +1622,67 @@ app.get('/api/universities/:slug/dorms/:dormSlug', readOnlyLimiter, async (req: 
     }).lean();
 
     let avgRating = 0;
+    const totals = { room: 0, bathroom: 0, building: 0, amenities: 0, location: 0 };
+    let wouldDormAgainCount = 0;
     if (reviews.length > 0) {
-      const total = reviews.reduce((sum: number, r: any) => {
-        return sum + (r.room + r.bathroom + r.building + r.amenities + r.location) / 5;
-      }, 0);
-      avgRating = total / reviews.length;
+      for (const r of reviews as any[]) {
+        totals.room += r.room || 0;
+        totals.bathroom += r.bathroom || 0;
+        totals.building += r.building || 0;
+        totals.amenities += r.amenities || 0;
+        totals.location += r.location || 0;
+        if (r.wouldDormAgain === true) wouldDormAgainCount++;
+      }
+      const overallTotal = totals.room + totals.bathroom + totals.building + totals.amenities + totals.location;
+      avgRating = overallTotal / reviews.length / 5;
+    }
+
+    const categoryAverages = reviews.length > 0
+      ? {
+          room: totals.room / reviews.length,
+          bathroom: totals.bathroom / reviews.length,
+          building: totals.building / reviews.length,
+          amenities: totals.amenities / reviews.length,
+          location: totals.location / reviews.length
+        }
+      : { room: 0, bathroom: 0, building: 0, amenities: 0, location: 0 };
+
+    const wouldDormAgainPercent = reviews.length > 0
+      ? Math.round((wouldDormAgainCount / reviews.length) * 100)
+      : 0;
+
+    // Sample of review photos for the photo gallery — covers the gallery's
+    // 8-thumbnail grid + "+N more" overlay without sending every photo.
+    const REVIEW_IMAGE_SAMPLE_LIMIT = 16;
+    const seenImages = new Set<string>();
+    const reviewImages: string[] = [];
+    for (const r of reviews as any[]) {
+      const candidates: string[] = [];
+      if (Array.isArray(r.images)) candidates.push(...r.images.filter((i: any) => typeof i === 'string'));
+      if (typeof r.fileImage === 'string' && r.fileImage) candidates.push(r.fileImage);
+      for (const img of candidates) {
+        if (!img || seenImages.has(img)) continue;
+        seenImages.add(img);
+        reviewImages.push(img);
+        if (reviewImages.length >= REVIEW_IMAGE_SAMPLE_LIMIT) break;
+      }
+      if (reviewImages.length >= REVIEW_IMAGE_SAMPLE_LIMIT) break;
     }
 
     const result: any = {
       ...dorm,
       avgRating,
-      reviewCount: reviews.length
+      reviewCount: reviews.length,
+      categoryAverages,
+      wouldDormAgainPercent,
+      reviewImages
     };
 
-    // AI summary: lazy weekly refresh
+    // AI summary: lazy weekly refresh. Regeneration runs as a background
+    // task — the response returns the existing cached summary immediately
+    // (or nothing, if there isn't one yet) so the page never waits for the
+    // LLM. The next request will see the freshly generated summary because
+    // we drop the cache entry once regen completes.
     const SEVEN_DAYS_MS = 7 * 24 * 60 * 60 * 1000;
     const dormObj = dorm as any;
     if (reviews.length >= 5) {
@@ -1563,17 +1693,18 @@ app.get('/api/universities/:slug/dorms/:dormSlug', readOnlyLimiter, async (req: 
       const promptChanged = dormObj.summaryPromptHash !== SUMMARY_PROMPT_HASH;
 
       if (summaryAge > SEVEN_DAYS_MS || promptChanged) {
-        const newSummary = await generateDormSummary(
-          dormObj._id.toString(), dormObj.name, slug, dormSlug
-        );
-        if (newSummary) {
-          result.aiSummary = newSummary;
-          result.summaryGeneratedAt = new Date();
-          // Re-fetch to get the aiTags that were saved during generation
-          const updatedDorm = await Dorm.findById(dormObj._id).select('-submittedBy').lean() as any;
-          if (updatedDorm?.aiTags) {
-            result.aiTags = updatedDorm.aiTags;
-          }
+        const dormId = dormObj._id.toString();
+        if (!summaryRegenInFlight.has(dormId)) {
+          summaryRegenInFlight.add(dormId);
+          // Fire-and-forget: do NOT await. generateDormSummary persists the
+          // new summary to MongoDB; we drop the cache so the next request
+          // surfaces it without waiting for the 5-min TTL.
+          generateDormSummary(dormId, dormObj.name, slug, dormSlug)
+            .catch((err) => console.error('Background AI summary regen failed', err))
+            .finally(() => {
+              summaryRegenInFlight.delete(dormId);
+              cache.delete(cacheKey);
+            });
         }
       }
     }
@@ -1581,7 +1712,7 @@ app.get('/api/universities/:slug/dorms/:dormSlug', readOnlyLimiter, async (req: 
     // Cache the result
     setCache(cacheKey, result);
 
-    res.set('Cache-Control', 'public, max-age=300, s-maxage=600, stale-while-revalidate=60');
+    res.set('Cache-Control', 'public, max-age=300, s-maxage=3600, stale-while-revalidate=60');
     res.json(result);
   } catch (err) {
     console.error('Error fetching dorm', err);
@@ -1760,9 +1891,9 @@ app.get('/api/universities/:slug', readOnlyLimiter, async (req: Request, res: Re
     const { slug } = req.params;
 
     const cacheKey = `university-${slug}`;
-    const cached = getCached<any>(cacheKey);
+    const cached = getCached<any>(cacheKey, CACHE_TTL_DAY);
     if (cached) {
-      res.set('Cache-Control', 'public, max-age=300, s-maxage=600, stale-while-revalidate=60');
+      res.set('Cache-Control', 'public, max-age=600, s-maxage=86400, stale-while-revalidate=300');
       return res.json(cached);
     }
 
@@ -1770,7 +1901,7 @@ app.get('/api/universities/:slug', readOnlyLimiter, async (req: Request, res: Re
     if (!university) return res.status(404).json({ message: 'University not found' });
 
     setCache(cacheKey, university);
-    res.set('Cache-Control', 'public, max-age=300, s-maxage=600, stale-while-revalidate=60');
+    res.set('Cache-Control', 'public, max-age=600, s-maxage=86400, stale-while-revalidate=300');
     res.json(university);
   } catch (err) {
     console.error('Error fetching university', err);
@@ -1782,9 +1913,9 @@ app.get('/api/universities/:slug', readOnlyLimiter, async (req: Request, res: Re
 app.get('/api/dorms/search', readOnlyLimiter, async (req: Request, res: Response) => {
   try {
     const cacheKey = 'dorms-search';
-    const cached = getCached<any>(cacheKey);
+    const cached = getCached<any>(cacheKey, CACHE_TTL_HOUR);
     if (cached) {
-      res.set('Cache-Control', 'public, max-age=300, s-maxage=600, stale-while-revalidate=60');
+      res.set('Cache-Control', 'public, max-age=300, s-maxage=3600, stale-while-revalidate=60');
       return res.json(cached);
     }
 
@@ -1794,7 +1925,7 @@ app.get('/api/dorms/search', readOnlyLimiter, async (req: Request, res: Response
     ).sort({ name: 1 }).lean();
 
     setCache(cacheKey, dorms);
-    res.set('Cache-Control', 'public, max-age=300, s-maxage=600, stale-while-revalidate=60');
+    res.set('Cache-Control', 'public, max-age=300, s-maxage=3600, stale-while-revalidate=60');
     res.json(dorms);
   } catch (err) {
     console.error('Error fetching dorms for search', err);
@@ -1881,6 +2012,66 @@ app.post('/api/dorms', authenticationToken, validate(dormSchema), async (req: Au
   } catch (err) {
     console.error('Error submitting dorm', err);
     res.status(500).json({ message: 'Error submitting dorm' });
+  }
+});
+
+// Photo Gallery API: Add photos to a dorm
+app.post('/api/universities/:universitySlug/dorms/:dormSlug/photos', submitLimiter, authenticationToken, async (req: AuthRequest, res: Response): Promise<void> => {
+  try {
+    const { universitySlug, dormSlug } = req.params;
+    const { images } = req.body;
+
+    if (!images || !Array.isArray(images) || images.length === 0) {
+      res.status(400).json({ message: 'Images array is required.' });
+      return;
+    }
+
+    if (images.length > 5) {
+      res.status(400).json({ message: 'Maximum 5 images allowed per upload.' });
+      return;
+    }
+
+    // Process images: upload base64 strings to S3
+    let processedImages = [];
+    if (!isProduction) console.log(`📤 Uploading ${images.length} dorm photos to S3...`);
+    processedImages = await Promise.all(images.map(async (img: string) => {
+      if (typeof img === 'string' && img.startsWith('data:')) {
+        try {
+          return await uploadToS3(img, 'dorms/gallery');
+        } catch (err) {
+          console.error('❌ Failed to upload gallery image:', err);
+          return null; // Ignore failed uploads
+        }
+      }
+      return img;
+    }));
+
+    // Filter out failed uploads
+    processedImages = processedImages.filter((img) => img !== null);
+
+    if (processedImages.length === 0) {
+      res.status(500).json({ message: 'Failed to process images.' });
+      return;
+    }
+
+    const updatedDorm = await Dorm.findOneAndUpdate(
+      { universitySlug, slug: dormSlug },
+      { $push: { images: { $each: processedImages } } },
+      { new: true }
+    );
+
+    if (!updatedDorm) {
+      res.status(404).json({ message: 'Dorm not found' });
+      return;
+    }
+
+    // Drop the per-dorm cache so the freshly uploaded photos appear immediately.
+    cache.delete(`dorm-${universitySlug}-${dormSlug}`);
+
+    res.status(200).json({ message: 'Photos added successfully', images: processedImages });
+  } catch (err) {
+    console.error('Error adding dorm photos:', err);
+    res.status(500).json({ message: 'Error adding dorm photos' });
   }
 });
 
@@ -2031,11 +2222,13 @@ app.get('/api/reviews', readOnlyLimiter, async (req: Request, res: Response) => 
     const limit = Math.min(parseInt(limitParam as string) || DEFAULT_LIMIT, MAX_LIMIT);
     const skip = Math.max(parseInt(skipParam as string) || 0, 0);
 
-    // Check cache (shorter TTL for reviews since they change more frequently)
+    // Check cache. 1-hour TTL paired with event-driven invalidation on review
+    // approve/decline/delete (see invalidateReviewCaches) so users see fresh
+    // data immediately when something changes, not just when the timer expires.
     const cacheKey = `reviews-${university || ''}-${dorm || ''}-${limit}-${skip}`;
-    const cached = getCached<any>(cacheKey);
+    const cached = getCached<any>(cacheKey, CACHE_TTL_HOUR);
     if (cached) {
-      res.set('Cache-Control', 'public, max-age=60, s-maxage=120, stale-while-revalidate=30');
+      res.set('Cache-Control', 'public, max-age=300, s-maxage=3600, stale-while-revalidate=60');
       return res.json(cached);
     }
 
@@ -2074,7 +2267,7 @@ app.get('/api/reviews', readOnlyLimiter, async (req: Request, res: Response) => 
     ]);
 
     setCache(cacheKey, reviews);
-    res.set('Cache-Control', 'public, max-age=60, s-maxage=120, stale-while-revalidate=30');
+    res.set('Cache-Control', 'public, max-age=300, s-maxage=3600, stale-while-revalidate=60');
     res.json(reviews);
   } catch (err) {
     console.error('Error fetching reviews', err);
@@ -2403,6 +2596,20 @@ app.patch('/api/admin/reviews/:id/approve', authenticationToken, requireAdmin, a
 
     await review.save();
 
+    // Cache invalidation: look up the dorm slug so we drop the precise per-dorm
+    // cache key. Same lookup feeds the AI-summary threshold check below.
+    const dormDoc = review.university && review.dorm
+      ? await Dorm.findOne({ universitySlug: review.university, name: review.dorm })
+      : null;
+
+    if (review.university) {
+      invalidateReviewCaches({
+        universitySlug: review.university,
+        dormName: review.dorm,
+        dormSlug: dormDoc?.slug
+      });
+    }
+
     // AI summary: check if this approval crosses the 5-review threshold
     if (!review.pendingEdit) {
       const approvedCount = await UserReview.countDocuments({
@@ -2411,16 +2618,10 @@ app.patch('/api/admin/reviews/:id/approve', authenticationToken, requireAdmin, a
         $or: [{ status: 'approved' }, { status: { $exists: false } }]
       });
 
-      if (approvedCount >= 5) {
-        const dormDoc = await Dorm.findOne({
-          universitySlug: review.university,
-          name: review.dorm
-        });
-        if (dormDoc && !dormDoc.aiSummary) {
-          await generateDormSummary(
-            (dormDoc._id as any).toString(), dormDoc.name, dormDoc.universitySlug, dormDoc.slug
-          );
-        }
+      if (approvedCount >= 5 && dormDoc && !dormDoc.aiSummary) {
+        await generateDormSummary(
+          (dormDoc._id as any).toString(), dormDoc.name, dormDoc.universitySlug, dormDoc.slug
+        );
       }
     }
 
@@ -2470,6 +2671,21 @@ app.delete('/api/admin/reviews/:id', authenticationToken, requireAdmin, async (r
     if (!review) {
       return res.status(404).json({ message: 'Review not found' });
     }
+
+    // Invalidate caches if the deleted review was actually visible
+    const wasPubliclyVisible = !review.status || review.status === 'approved';
+    if (wasPubliclyVisible && review.university && review.dorm) {
+      const dormDoc = await Dorm.findOne({
+        universitySlug: review.university,
+        name: review.dorm
+      }).select('slug').lean();
+      invalidateReviewCaches({
+        universitySlug: review.university,
+        dormName: review.dorm,
+        dormSlug: (dormDoc as any)?.slug
+      });
+    }
+
     res.json({ message: 'Review deleted permanently' });
   } catch (err) {
     console.error('Error deleting review', err);
@@ -2589,6 +2805,8 @@ app.patch('/api/admin/dorms/:id/approve', authenticationToken, requireAdmin, asy
     if (!dorm) {
       return res.status(404).json({ message: 'Dorm not found' });
     }
+    cache.delete('dorms-search');
+    invalidateDormCaches(dorm.universitySlug, dorm.slug);
     console.log('✅ Dorm approved:', dorm.name);
     res.json({ message: 'Dorm approved', dorm });
   } catch (err) {
@@ -2610,6 +2828,8 @@ app.patch('/api/admin/dorms/:id/decline', authenticationToken, requireAdmin, asy
     if (!dorm) {
       return res.status(404).json({ message: 'Dorm not found' });
     }
+    cache.delete('dorms-search');
+    invalidateDormCaches(dorm.universitySlug, dorm.slug);
     console.log('❌ Dorm declined:', dorm.name);
     res.json({ message: 'Dorm declined', dorm });
   } catch (err) {
@@ -2627,6 +2847,8 @@ app.delete('/api/admin/dorms/:id', authenticationToken, requireAdmin, async (req
     if (!dorm) {
       return res.status(404).json({ message: 'Dorm not found' });
     }
+    cache.delete('dorms-search');
+    invalidateDormCaches(dorm.universitySlug, dorm.slug);
     console.log('🗑️ Dorm deleted:', dorm.name);
     res.json({ message: 'Dorm deleted permanently' });
   } catch (err) {

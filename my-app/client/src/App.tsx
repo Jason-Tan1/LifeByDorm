@@ -3,6 +3,7 @@ import React, { lazy, Suspense } from 'react';
 import { UniversityDataProvider } from './context/UniversityDataContext';
 import PageLoader from './components/PageLoader';
 import ScrollToTop from './components/ScrollToTop';
+import GoogleAnalytics from './components/GoogleAnalytics';
 
 // Lazy load non-critical shell components — they don't affect first paint.
 // Renamed from CookieConsent to ConsentBanner so ad blockers don't block the chunk by filename.
@@ -21,7 +22,7 @@ const LazyGoogleOAuthProvider = lazy(() => import('./components/LazyGoogleOAuthP
 
 // Lazy load all page components for better initial load performance
 const Home = lazy(() => import('./pages/home/home.tsx'));
-const AboutMe = lazy(() => import('./pages/nav/aboutme.tsx'));
+const About = lazy(() => import('./pages/nav/about.tsx'));
 const ContactMe = lazy(() => import('./pages/nav/contactme.tsx'));
 const Account = lazy(() => import('./pages/nav/account.tsx'));
 const University = lazy(() => import('./pages/universities/universityDash.tsx'));
@@ -43,11 +44,12 @@ function App() {
       <LazyGoogleOAuthProvider>
         <UniversityDataProvider>
           <Router>
+            <GoogleAnalytics />
             <ScrollToTop />
             <Suspense fallback={<PageLoader />}>
               <Routes>
                 <Route path="/" element={<Home />} />
-                <Route path="/aboutme" element={<AboutMe />} />
+                <Route path="/about" element={<About />} />
                 <Route path="/contactme" element={<ContactMe />} />
                 <Route path="/account" element={<Account />} />
                 <Route path="/admin" element={<Home />} />
