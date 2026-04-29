@@ -132,7 +132,19 @@ export async function uploadBufferToS3(
  * Uploads a base64 image string to S3 and returns the public URL.
  * Expected format: "data:image/png;base64,iVBORw0KGgo..."
  * Security: Validates MIME type before upload to prevent XSS via SVG, etc.
+ *
+ * If the input is already an own-S3 URL (e.g. an unchanged image on a review
+ * edit), it is returned as-is. Anything else throws — callers must not store
+ * arbitrary strings as image references.
  */
+const OWN_S3_URL_RE = (() => {
+  const bucket = (process.env.AWS_BUCKET_NAME || '').trim();
+  const region = (process.env.AWS_REGION || '').trim();
+  if (!bucket || !region) return null;
+  const escape = (s: string) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  return new RegExp(`^https:\\/\\/${escape(bucket)}\\.s3\\.${escape(region)}\\.amazonaws\\.com\\/`);
+})();
+
 export async function uploadToS3(base64Data: string, folder: string = 'uploads'): Promise<string> {
   const client = getS3Client();
   if (!client || !bucketName) {
@@ -141,10 +153,13 @@ export async function uploadToS3(base64Data: string, folder: string = 'uploads')
     return base64Data;
   }
 
+  if (OWN_S3_URL_RE && OWN_S3_URL_RE.test(base64Data)) {
+    return base64Data;
+  }
+
   const matches = base64Data.match(/^data:([A-Za-z-+\/]+);base64,(.+)$/);
   if (!matches || matches.length !== 3) {
-    // Not a data URI — likely an already-uploaded URL. Return as-is.
-    return base64Data;
+    throw new Error('Image input must be a base64 data URI or a URL on our own S3 bucket');
   }
 
   const contentType = matches[1];
@@ -168,9 +183,16 @@ export async function getSignedFileUrl(fileUrl: string): Promise<string> {
     let key = fileUrl;
     if (fileUrl.startsWith('http')) {
       const urlObj = new URL(fileUrl);
-      // Pathname includes leading slash, remove it. 
+      // Pathname includes leading slash, remove it.
       // Also need to decodeURI in case key has spaces etc.
       key = decodeURIComponent(urlObj.pathname.substring(1));
+    }
+
+    // Defense-in-depth: only sign keys under known image prefixes so a future bug
+    // that lets user input reach this function can't mint URLs for arbitrary objects.
+    const ALLOWED_PREFIXES = ['dorms/', 'reviews/main/', 'reviews/gallery/', 'uploads/'];
+    if (!ALLOWED_PREFIXES.some(p => key.startsWith(p))) {
+      return fileUrl;
     }
 
     const command = new GetObjectCommand({

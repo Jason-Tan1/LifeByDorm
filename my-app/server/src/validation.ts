@@ -60,9 +60,9 @@ export const googleAuthSchema = z.object({
 
 // Accept an empty value (no image), a base64 data URI for a supported image type
 // (which the server will upload to S3), or a URL already on our own S3 bucket.
-// External/hotlinked URLs are rejected — we serve dorm images from our own infrastructure.
-const DATA_URI_IMAGE_RE = /^data:image\/(jpeg|png|gif|webp);base64,[A-Za-z0-9+/=]+$/;
-const OWN_S3_HOST_RE = (() => {
+// External/hotlinked URLs are rejected — we serve images from our own infrastructure.
+export const DATA_URI_IMAGE_RE = /^data:image\/(jpeg|png|gif|webp);base64,[A-Za-z0-9+/=]+$/;
+export const OWN_S3_HOST_RE = (() => {
   const bucket = (process.env.AWS_BUCKET_NAME || '').trim();
   const region = (process.env.AWS_REGION || '').trim();
   if (!bucket || !region) return null;
@@ -70,14 +70,18 @@ const OWN_S3_HOST_RE = (() => {
   return new RegExp(`^https:\\/\\/${escape(bucket)}\\.s3\\.${escape(region)}\\.amazonaws\\.com\\/`);
 })();
 
-const dormImageUrlSchema = z.string().refine((val) => {
-  if (val === '' || val == null) return true;
+const isAllowedImageString = (val: string): boolean => {
+  if (val === '') return true;
   if (DATA_URI_IMAGE_RE.test(val)) return true;
   if (OWN_S3_HOST_RE && OWN_S3_HOST_RE.test(val)) return true;
   return false;
-}, {
-  message: 'imageUrl must be empty, a base64 image data URI, or a URL on our own S3 bucket'
-}).optional().or(z.literal("")).nullable();
+};
+
+const allowedImageStringSchema = z.string().refine(isAllowedImageString, {
+  message: 'image must be empty, a base64 image data URI, or a URL on our own S3 bucket'
+});
+
+const dormImageUrlSchema = allowedImageStringSchema.optional().or(z.literal("")).nullable();
 
 export const dormSchema = z.object({
   name: z.string().min(2).max(100).trim(),
@@ -109,10 +113,10 @@ export const reviewSchema = z.object({
     z.array(z.string())
   ]),
   wouldDormAgain: z.boolean().nullable().optional(),
-  // fileImage can be string, null, undefined, or empty string
-  fileImage: z.union([z.string(), z.null()]).optional(),
-  // images can be array of strings, null, undefined, or empty array (max 10 images per review)
-  images: z.union([z.array(z.string()).max(10), z.null()]).optional()
+  // fileImage must be empty, a base64 image data URI, or a URL on our own S3 bucket
+  fileImage: z.union([allowedImageStringSchema, z.null()]).optional(),
+  // images must each be a base64 image data URI or a URL on our own S3 bucket (max 10 per review)
+  images: z.union([z.array(allowedImageStringSchema).max(10), z.null()]).optional()
 }).strict();
 
 export const editReviewSchema = z.object({
@@ -125,7 +129,7 @@ export const editReviewSchema = z.object({
   year: z.union([z.number(), z.string(), z.array(z.union([z.number(), z.string()]))]),
   roomType: z.union([z.string(), z.array(z.string())]),
   wouldDormAgain: z.boolean().nullable().optional(),
-  images: z.union([z.array(z.string()).max(10), z.null()]).optional()
+  images: z.union([z.array(allowedImageStringSchema).max(10), z.null()]).optional()
 }).strict();
 
 const slugField = z.string().min(1).max(100).regex(/^[a-z0-9-]+$/, { message: 'Must be a valid URL slug (lowercase letters, numbers, hyphens)' });

@@ -782,7 +782,7 @@ app.get('/api/stats/homepage', readOnlyLimiter, async (req: Request, res: Respon
       University.find({}).lean(),
       Dorm.find({
         $or: [{ status: 'approved' }, { status: { $exists: false } }]
-      }).lean(),
+      }).select('-submittedBy').lean(),
       UserReview.aggregate([
         { $match: { $or: [{ status: 'approved' }, { status: { $exists: false } }] } },
         {
@@ -1425,7 +1425,7 @@ app.get('/api/universities/:slug/dorms', readOnlyLimiter, async (req: Request, r
         { status: 'approved' },
         { status: { $exists: false } }
       ]
-    }).sort({ name: 1 }).lean();
+    }).select('-submittedBy').sort({ name: 1 }).lean();
     res.set('Cache-Control', 'public, max-age=120, s-maxage=300, stale-while-revalidate=60');
     res.json(dorms);
   } catch (err) {
@@ -1458,7 +1458,7 @@ app.get('/api/universities/:slug/dorms-stats', readOnlyLimiter, async (req: Requ
           { status: 'approved' },
           { status: { $exists: false } }
         ]
-      }).sort({ name: 1 }).lean(),
+      }).select('-submittedBy').sort({ name: 1 }).lean(),
       UserReview.find({
         university: slug,
         $or: [
@@ -1525,7 +1525,7 @@ app.get('/api/universities/:slug/dorms/:dormSlug', readOnlyLimiter, async (req: 
       universitySlug: slug,
       slug: dormSlug,
       $or: [{ status: 'approved' }, { status: { $exists: false } }]
-    }).lean();
+    }).select('-submittedBy').lean();
 
     if (!dorm) {
       return res.status(404).json({ message: 'Dorm not found' });
@@ -1570,7 +1570,7 @@ app.get('/api/universities/:slug/dorms/:dormSlug', readOnlyLimiter, async (req: 
           result.aiSummary = newSummary;
           result.summaryGeneratedAt = new Date();
           // Re-fetch to get the aiTags that were saved during generation
-          const updatedDorm = await Dorm.findById(dormObj._id).lean() as any;
+          const updatedDorm = await Dorm.findById(dormObj._id).select('-submittedBy').lean() as any;
           if (updatedDorm?.aiTags) {
             result.aiTags = updatedDorm.aiTags;
           }
@@ -1873,9 +1873,10 @@ app.post('/api/dorms', authenticationToken, validate(dormSchema), async (req: Au
       submittedBy: savedDorm.submittedBy
     });
 
+    const { submittedBy: _omit, ...safeDorm } = savedDorm.toObject();
     res.status(201).json({
       message: 'Dorm submitted for approval',
-      dorm: savedDorm
+      dorm: safeDorm
     });
   } catch (err) {
     console.error('Error submitting dorm', err);
@@ -1934,31 +1935,39 @@ app.post('/api/reviews', submitLimiter, validate(reviewSchema), async (req: Requ
       console.log('  - user email:', userEmail || '(none)');
     }
 
-    // Process images: upload base64 strings to S3
-    let processedFileImage = fileImage;
+    // Process images: upload base64 strings to S3. If upload fails (e.g. magic-byte
+    // mismatch from a forged data URI), drop the image rather than persisting the raw
+    // string — the schema accepted it as a "shape," only S3 validation rejected it.
+    let processedFileImage: string | null = null;
     if (fileImage && typeof fileImage === 'string' && fileImage.startsWith('data:')) {
       try {
         if (!isProduction) console.log('📤 Uploading fileImage to S3...');
         processedFileImage = await uploadToS3(fileImage, 'reviews/main');
       } catch (err) {
         console.error('❌ Failed to upload fileImage:', err);
+        processedFileImage = null;
       }
+    } else if (typeof fileImage === 'string' && fileImage.length > 0) {
+      // Already an own-S3 URL (validated by reviewSchema) — keep as-is.
+      processedFileImage = fileImage;
     }
 
-    let processedImages = images || [];
-    if (processedImages.length > 0) {
-      if (!isProduction) console.log(`📤 Uploading ${processedImages.length} additional images to S3...`);
-      processedImages = await Promise.all(processedImages.map(async (img: string) => {
+    let processedImages: string[] = [];
+    const incomingImages: string[] = images || [];
+    if (incomingImages.length > 0) {
+      if (!isProduction) console.log(`📤 Uploading ${incomingImages.length} additional images to S3...`);
+      const uploaded = await Promise.all(incomingImages.map(async (img: string): Promise<string | null> => {
         if (typeof img === 'string' && img.startsWith('data:')) {
           try {
             return await uploadToS3(img, 'reviews/gallery');
           } catch (err) {
             console.error('❌ Failed to upload gallery image:', err);
-            return img;
+            return null;
           }
         }
         return img;
       }));
+      processedImages = uploaded.filter((u): u is string => u !== null);
     }
 
     const review = new UserReview({
@@ -2148,21 +2157,24 @@ app.put('/api/reviews/:id', authenticationToken, validate(editReviewSchema), asy
       description, year, roomType, wouldDormAgain, images
     } = req.body;
 
-    // Process new images: upload base64 strings to S3
-    let processedImages = images || [];
-    if (processedImages.length > 0) {
-      if (!isProduction) console.log(`📤 Uploading ${processedImages.length} edit images to S3...`);
-      processedImages = await Promise.all(processedImages.map(async (img: string) => {
+    // Process new images: upload base64 strings to S3. Drop on failure rather
+    // than persisting the raw data URI (magic-byte forgery, oversize, etc.).
+    let processedImages: string[] = [];
+    const incomingImages: string[] = images || [];
+    if (incomingImages.length > 0) {
+      if (!isProduction) console.log(`📤 Uploading ${incomingImages.length} edit images to S3...`);
+      const uploaded = await Promise.all(incomingImages.map(async (img: string): Promise<string | null> => {
         if (typeof img === 'string' && img.startsWith('data:')) {
           try {
             return await uploadToS3(img, 'reviews/gallery');
           } catch (err) {
             console.error('❌ Failed to upload edit image:', err);
-            return img;
+            return null;
           }
         }
         return img;
       }));
+      processedImages = uploaded.filter((u): u is string => u !== null);
     }
 
     // Store the edit as a pending draft

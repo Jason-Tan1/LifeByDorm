@@ -131,49 +131,100 @@ async function main() {
   await mongoose.connect(mongoUri);
   console.log(`Connected. Mode: ${apply ? 'APPLY (writing DB changes)' : 'DRY-RUN (no DB writes, pass --apply)'}`);
 
-  const dorms = await Dorm.find({
-    imageUrl: { $exists: true, $ne: null, $nin: ['', null] }
-  });
+  const dorms = await Dorm.find({});
+  const cache = new Map<string, string>(); // originalUrl -> newUrl, so duplicates only re-upload once
 
-  const externalDorms = dorms.filter((d) => d.imageUrl && !ownS3.test(d.imageUrl));
-  console.log(`Total dorms with imageUrl: ${dorms.length}`);
-  console.log(`Already on our S3:        ${dorms.length - externalDorms.length}`);
-  console.log(`To migrate (external):    ${externalDorms.length}`);
-  console.log('');
+  let imageUrlMigrated = 0;
+  let imageUrlCleared = 0;
+  let imageUrlFailed = 0;
+  let imagesEntriesMigrated = 0;
+  let imagesEntriesDropped = 0;
+  let imagesEntriesFailed = 0;
 
-  let migrated = 0;
-  let skipped = 0;
-  let failed = 0;
+  const migrate = async (original: string, label: string): Promise<string | null> => {
+    if (cache.has(original)) return cache.get(original)!;
+    const { buffer, contentType } = await downloadImage(original);
+    const newUrl = await uploadBufferToS3(buffer, contentType, 'dorms');
+    console.log(`✓ ${label}: ${original.slice(0, 60)}... -> ${newUrl}`);
+    cache.set(original, newUrl);
+    return newUrl;
+  };
 
-  for (const dorm of externalDorms) {
+  for (const dorm of dorms) {
     const label = `${dorm.universitySlug}/${dorm.slug}`;
-    const original = dorm.imageUrl as string;
-    try {
-      const { buffer, contentType } = await downloadImage(original);
-      // uploadBufferToS3 runs MIME allowlist + magic byte + size validation
-      const newUrl = await uploadBufferToS3(buffer, contentType, 'dorms');
-      console.log(`✓ ${label}: ${original.slice(0, 60)}... -> ${newUrl}`);
-      if (apply) {
-        dorm.imageUrl = newUrl;
-        await dorm.save();
+    let dirty = false;
+
+    // 1. Single base imageUrl
+    if (dorm.imageUrl && !ownS3.test(dorm.imageUrl)) {
+      const original = dorm.imageUrl;
+      try {
+        const newUrl = await migrate(original, `${label} imageUrl`);
+        if (apply && newUrl) {
+          dorm.imageUrl = newUrl;
+          dirty = true;
+        }
+        imageUrlMigrated++;
+      } catch (err) {
+        const msg = err instanceof Error ? err.message : String(err);
+        console.warn(`✗ ${label} imageUrl: ${msg} (${original})`);
+        if (apply) {
+          // Clear the broken/rejected hotlink so the client falls back to the default image
+          dorm.imageUrl = null as any;
+          dirty = true;
+          imageUrlCleared++;
+        } else {
+          imageUrlFailed++;
+        }
       }
-      migrated++;
-    } catch (err) {
-      const msg = err instanceof Error ? err.message : String(err);
-      console.warn(`✗ ${label}: ${msg} (${original})`);
-      if (apply) {
-        // Clear the broken/rejected hotlink so the client falls back to the default image
-        dorm.imageUrl = null as any;
-        await dorm.save();
-        skipped++;
-      } else {
-        failed++;
+    }
+
+    // 2. images[] gallery — same external-host check, migrate or drop each entry
+    if (Array.isArray(dorm.images) && dorm.images.length > 0) {
+      const newImages: string[] = [];
+      let imagesChanged = false;
+      for (const img of dorm.images) {
+        if (!img) {
+          imagesChanged = true;
+          continue;
+        }
+        if (ownS3.test(img)) {
+          newImages.push(img);
+          continue;
+        }
+        try {
+          const newUrl = await migrate(img, `${label} images[]`);
+          if (newUrl) {
+            newImages.push(newUrl);
+            imagesEntriesMigrated++;
+          }
+          if (newUrl !== img) imagesChanged = true;
+        } catch (err) {
+          const msg = err instanceof Error ? err.message : String(err);
+          console.warn(`✗ ${label} images[]: ${msg} (${img})`);
+          if (apply) {
+            // Drop the broken hotlink rather than persist it
+            imagesEntriesDropped++;
+            imagesChanged = true;
+          } else {
+            newImages.push(img);
+            imagesEntriesFailed++;
+          }
+        }
       }
+      if (apply && imagesChanged) {
+        dorm.images = newImages;
+        dirty = true;
+      }
+    }
+
+    if (apply && dirty) {
+      await dorm.save();
     }
   }
 
   console.log('');
-  console.log(`Done. migrated=${migrated} cleared=${skipped} failed=${failed}`);
+  console.log(`imageUrl:  migrated=${imageUrlMigrated} cleared=${imageUrlCleared} failed=${imageUrlFailed}`);
+  console.log(`images[]:  migrated=${imagesEntriesMigrated} dropped=${imagesEntriesDropped} failed=${imagesEntriesFailed}`);
   await mongoose.disconnect();
 }
 
