@@ -25,6 +25,29 @@ const RecentReviewsSection = lazy(() => import('./RecentReviewsSection'));
 const isLocal = typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1');
 const API_BASE = isLocal ? '' : ((import.meta as any).env?.VITE_API_BASE || '');
 
+// In-memory cache for recent reviews so SPA back/forward into the home page
+// doesn't show the loading skeleton again. Mirrors the pattern in
+// UniversityDataContext. Lost on full page reload — that's fine; the server
+// also caches this endpoint with `s-maxage=3600`.
+const recentReviewsCache = {
+  data: null as RecentVerifiedReview[] | null,
+  timestamp: 0,
+  CACHE_DURATION: 5 * 60 * 1000, // 5 minutes — matches server max-age
+};
+
+function getCachedRecentReviews(): RecentVerifiedReview[] | null {
+  const now = Date.now();
+  if (recentReviewsCache.data && now - recentReviewsCache.timestamp < recentReviewsCache.CACHE_DURATION) {
+    return recentReviewsCache.data;
+  }
+  return null;
+}
+
+function setCachedRecentReviews(data: RecentVerifiedReview[]): void {
+  recentReviewsCache.data = data;
+  recentReviewsCache.timestamp = Date.now();
+}
+
 function Home() {
   const { t } = useTranslation();
 
@@ -58,9 +81,9 @@ function Home() {
   const [universityScrollPosition, setUniversityScrollPosition] = useState(0);
   const [mostRatedDormsScrollPosition, setMostRatedDormsScrollPosition] = useState(0);
   const [dormScrollPosition, setDormScrollPosition] = useState(0);
-  const [recentVerifiedReviews, setRecentVerifiedReviews] = useState<RecentVerifiedReview[]>([]);
+  const [recentVerifiedReviews, setRecentVerifiedReviews] = useState<RecentVerifiedReview[]>(() => getCachedRecentReviews() || []);
   const [isLoading, setIsLoading] = useState(true);
-  const [recentReviewsLoading, setRecentReviewsLoading] = useState(true);
+  const [recentReviewsLoading, setRecentReviewsLoading] = useState<boolean>(() => getCachedRecentReviews() === null);
 
   // Track if data has been fetched to prevent duplicate calls
   const hasFetched = useRef(false);
@@ -141,6 +164,13 @@ function Home() {
   useEffect(() => {
     if (hasFetchedRecentReviews.current) return;
 
+    // Cache hit: data was already populated by the lazy state initializer.
+    // Skip the network entirely; the next mount past the 5-min TTL will refetch.
+    if (getCachedRecentReviews()) {
+      hasFetchedRecentReviews.current = true;
+      return;
+    }
+
     const fetchRecentReviews = async () => {
       if (hasFetchedRecentReviews.current) return;
       hasFetchedRecentReviews.current = true;
@@ -150,13 +180,13 @@ function Home() {
         const res = await fetch(`${API_BASE}/api/stats/recent-reviews`);
         if (!res.ok) throw new Error('Failed to fetch recent reviews');
         const data = await res.json();
-        setRecentVerifiedReviews(
-          Array.isArray(data)
-            ? data.filter(
-              (review: any) => review?.verified === true && /\S/.test(String(review?.description || ''))
-            )
-            : []
-        );
+        const filtered = Array.isArray(data)
+          ? data.filter(
+            (review: any) => review?.verified === true && /\S/.test(String(review?.description || ''))
+          )
+          : [];
+        setRecentVerifiedReviews(filtered);
+        setCachedRecentReviews(filtered);
       } catch (e) {
         console.error('Failed to fetch recent reviews', e);
         setRecentVerifiedReviews([]);
